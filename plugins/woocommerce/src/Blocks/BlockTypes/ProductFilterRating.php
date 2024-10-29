@@ -1,10 +1,8 @@
 <?php
 namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
-use Automattic\WooCommerce\Blocks\BlockTypes\ProductCollection\Utils as ProductCollectionUtils;
-use Automattic\WooCommerce\Blocks\QueryFilters;
-use Automattic\WooCommerce\Blocks\Package;
-
+use Automattic\WooCommerce\Blocks\Utils\ProductCollectionUtils;
+use Automattic\WooCommerce\Internal\ProductFilters\Counts;
 
 /**
  * Product Filter: Rating Block
@@ -214,7 +212,6 @@ final class ProductFilterRating extends AbstractBlock {
 	 * @param WP_Block $block Block instance.
 	 */
 	private function get_rating_counts( $block ) {
-		$filters    = Package::container()->get( QueryFilters::class );
 		$query_vars = ProductCollectionUtils::get_query_vars( $block, 1 );
 
 		if ( ! empty( $query_vars['tax_query'] ) ) {
@@ -222,14 +219,7 @@ final class ProductFilterRating extends AbstractBlock {
 			$query_vars['tax_query'] = ProductCollectionUtils::remove_query_array( $query_vars['tax_query'], 'rating_filter', true );
 		}
 
-		if ( isset( $query_vars['taxonomy'] ) && false !== strpos( $query_vars['taxonomy'], 'pa_' ) ) {
-			unset(
-				$query_vars['taxonomy'],
-				$query_vars['term']
-			);
-		}
-
-		$counts = $filters->get_rating_counts( $query_vars );
+		$counts = wc_get_container()->get( Counts::class )->get_rating_counts( $query_vars );
 		$data   = array();
 
 		foreach ( $counts as $key => $value ) {

@@ -2,8 +2,7 @@
 namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
 use Automattic\WooCommerce\Blocks\BlockTypes\ProductCollection\Utils as ProductCollectionUtils;
-use Automattic\WooCommerce\Blocks\QueryFilters;
-use Automattic\WooCommerce\Blocks\Package;
+use Automattic\WooCommerce\Internal\ProductFilters\Counts;
 
 /**
  * Product Filter: Price Block.
@@ -200,7 +199,6 @@ final class ProductFilterPrice extends AbstractBlock {
 	 * @param WP_Block $block Block instance.
 	 */
 	private function get_filtered_price( $block ) {
-		$filters    = Package::container()->get( QueryFilters::class );
 		$query_vars = ProductCollectionUtils::get_query_vars( $block, 1 );
 
 		unset( $query_vars['min_price'], $query_vars['max_price'] );
@@ -210,14 +208,7 @@ final class ProductFilterPrice extends AbstractBlock {
 			$query_vars['meta_query'] = ProductCollectionUtils::remove_query_array( $query_vars['meta_query'], 'key', '_price' );
 		}
 
-		if ( isset( $query_vars['taxonomy'] ) && false !== strpos( $query_vars['taxonomy'], 'pa_' ) ) {
-			unset(
-				$query_vars['taxonomy'],
-				$query_vars['term']
-			);
-		}
-
-		$price_results = $filters->get_filtered_price( $query_vars );
+		$price_results = wc_get_container()->get( Counts::class )->get_filtered_price( $query_vars );
 
 		return array(
 			'min_price' => intval( floor( $price_results->min_price ?? 0 ) ),
