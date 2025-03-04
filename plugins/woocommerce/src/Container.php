@@ -173,7 +173,7 @@ final class Container {
 			AdminSettingsServiceProvider::class,
 			AdminSuggestionsServiceProvider::class,
 			EmailEditorServiceProvider::class,
-			BackgroundCacheServiceProvider::class,
+			BackgroundSchedulerServiceProvider::class,
 		);
 	}
 }
