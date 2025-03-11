@@ -77,4 +77,5 @@ export interface StepContent {
 	path: string;
 	order: number;
 	content: ReactNode | ( ( props: StepContentProps ) => ReactNode );
+	confirmCompletion?: () => Promise< boolean >;
 }
