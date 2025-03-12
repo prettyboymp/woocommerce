@@ -1046,7 +1046,7 @@ class PaymentsRestController extends RestApiControllerBase {
 			array(
 				'steps' => array(
 					array(
-						'id' => 'welcome',
+						'key' => 'welcome',
 						'title' => 'Welcome',
 						'description' => 'Welcome to WooCommerce',
 						'order' => 1,
@@ -1054,7 +1054,7 @@ class PaymentsRestController extends RestApiControllerBase {
 						'status' => 'completed',
 					),
 					array(
-						'id' => 'jetpack',
+						'key' => 'jetpack',
 						'title' => 'Jetpack',
 						'description' => 'Jetpack is a WordPress plugin that allows you to connect your WordPress site to Jetpack.',
 						'order' => 2,
@@ -1062,7 +1062,7 @@ class PaymentsRestController extends RestApiControllerBase {
 						'status' => 'incomplete',
 					),
 					array(
-						'id' => 'final',
+						'key' => 'final',
 						'title' => 'Final',
 						'description' => 'Final step to finish the onboarding process.',
 						'order' => 3,
