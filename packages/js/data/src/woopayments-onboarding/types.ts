@@ -1,9 +1,11 @@
 export interface StepContent {
 	key: string;
 	title: string;
+	path: string;
 	description: string;
 	completed: boolean;
 	order: number;
+	status: 'completed' | 'incomplete';
 }
 
 export interface OnboardingState {
