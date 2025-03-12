@@ -8,11 +8,22 @@ import { apiFetch } from '@wordpress/data-controls';
  */
 import { WC_ADMIN_NAMESPACE } from '../constants';
 import { OnboardingStepsResponse } from './types';
+import {
+	getOnboardingStepsRequest,
+	getOnboardingStepsSuccess,
+	getOnboardingStepsError,
+} from './actions';
 
 export function* getOnboardingSteps() {
-	const response: OnboardingStepsResponse = yield apiFetch( {
-		path: `${ WC_ADMIN_NAMESPACE }/settings/payments/onboarding-steps`,
-	} );
+	yield getOnboardingStepsRequest();
 
-	return response;
+	try {
+		const response: OnboardingStepsResponse = yield apiFetch( {
+			path: `${ WC_ADMIN_NAMESPACE }/settings/payments/onboarding-steps`,
+		} );
+
+		yield getOnboardingStepsSuccess( response.steps );
+	} catch ( e ) {
+		yield getOnboardingStepsError( e );
+	}
 }
