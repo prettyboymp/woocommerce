@@ -291,7 +291,6 @@ class WC_Shop_Customizer {
 			</script>
 			<?php
 		}
-
 	}
 
 	/**
@@ -954,8 +953,7 @@ class WC_Shop_Customizer {
 global $pagenow;
 if (
 	'customize.php' === $pagenow ||
-	isset( $_REQUEST['customize_theme'] ) || // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-	! wc_current_theme_is_fse_theme()
+	isset( $_REQUEST['customize_theme'] )
 ) {
 	new WC_Shop_Customizer();
 }

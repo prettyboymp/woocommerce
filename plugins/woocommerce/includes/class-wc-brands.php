@@ -38,9 +38,9 @@ class WC_Brands {
 		add_action( 'woocommerce_register_taxonomy', array( __CLASS__, 'init_taxonomy' ) );
 		add_action( 'widgets_init', array( $this, 'init_widgets' ) );
 
-		if ( ! wc_current_theme_is_fse_theme() ) {
-			add_filter( 'template_include', array( $this, 'template_loader' ) );
-		}
+		// if ( ! wc_current_theme_is_fse_theme() ) {
+		// add_filter( 'template_include', array( $this, 'template_loader' ) );
+		// }
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'styles' ) );
 		add_action( 'wp', array( $this, 'body_class' ) );
@@ -1118,8 +1118,8 @@ class WC_Brands {
 
 				// Check if the template already has a product brand block
 				if ( ! $this->template_already_has_brand_block( $context ) ) {
-					// Simply add the core/post-terms block type
-					$hooked_block_types[] = 'core/post-terms';
+				// Simply add the core/post-terms block type
+				$hooked_block_types[] = 'core/post-terms';
 				}
 		}
 
