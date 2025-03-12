@@ -953,6 +953,7 @@ class WC_Shop_Customizer {
 global $pagenow;
 if (
 	'customize.php' === $pagenow ||
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	isset( $_REQUEST['customize_theme'] )
 ) {
 	new WC_Shop_Customizer();
