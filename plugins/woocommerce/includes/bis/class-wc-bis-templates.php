@@ -77,7 +77,7 @@ class WC_BIS_Templates {
 		$version = Constants::get_constant( 'WC_VERSION' );
 
 		// Styles
-		wp_register_style( 'wc-bis-css', WC()->plugin_url() . '/assets/css/frontend/bis.css', false, $version, 'all' );
+		wp_register_style( 'wc-bis-css', WC()->plugin_url() . '/assets/css/bis.css', false, $version, 'all' );
 		wp_style_add_data( 'wc-bis-css', 'rtl', 'replace' );
 		wp_enqueue_style( 'wc-bis-css' );
 
