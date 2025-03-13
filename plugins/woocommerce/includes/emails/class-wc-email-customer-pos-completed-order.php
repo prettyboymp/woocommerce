@@ -62,6 +62,17 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 		}
 
 		/**
+		 * Add unit price in quantity column in order items.
+		 *
+		 * @param array $args Order items arguments.
+		 * @return array Modified arguments.
+		 */
+		public function add_unit_price_in_quantity_arg( $args ) {
+			$args['includes_unit_price_with_quantity'] = true;
+			return $args;
+		}
+
+		/**
 		 * Get email subject.
 		 *
 		 * @param bool $paid Whether the order has been paid or not.
@@ -174,7 +185,10 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 		 * @return string
 		 */
 		public function get_content_html() {
-			return wc_get_template_html(
+            // TODO: do the same for plain text email.
+            // Add filter to include unit price in the quantity column for order items table.
+			add_filter( 'woocommerce_email_order_items_args', array( $this, 'add_unit_price_in_quantity_arg' ), 10, 1 );
+			$content = wc_get_template_html(
 				$this->template_html,
 				array(
 					'order'              => $this->object,
@@ -186,6 +200,11 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 					'email'              => $this,
 				)
 			);
+
+            // Remove the filter after generating content to avoid affecting other emails.
+            remove_filter( 'woocommerce_email_order_items_args', array( $this, 'add_unit_price_in_quantity_arg' ), 10 );
+            
+            return $content;
 		}
 
 		/**
