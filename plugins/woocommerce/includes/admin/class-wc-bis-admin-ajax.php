@@ -1,4 +1,6 @@
 <?php
+declare( strict_types=1 );
+
 /**
  * WC_BIS_Admin_Ajax class
  *
@@ -21,11 +23,10 @@ class WC_BIS_Admin_Ajax {
 
 	/**
 	 * Hook in.
+	 *
+	 * @return void
 	 */
 	public static function init() {
-
-		// Notices.
-		add_action( 'wp_ajax_wc_bis_dismiss_notice', array( __CLASS__, 'dismiss_notice' ) );
 
 		// Render notifications export modal.
 		add_action( 'wp_ajax_wc_bis_modal_export_notifications_html', array( __CLASS__, 'modal_export_notifications_html' ) );
@@ -52,34 +53,12 @@ class WC_BIS_Admin_Ajax {
 	 * @return void
 	 */
 	public static function dismiss_notice() {
+		wc_deprecated_function( __METHOD__, '9.9.0' );
 
 		$failure = array(
 			'result' => 'failure',
 		);
-
-		if ( ! check_ajax_referer( 'wc_bis_dismiss_notice_nonce', 'security', false ) ) {
-			wp_send_json( $failure );
-		}
-
-		if ( empty( $_POST['notice'] ) ) {
-			wp_send_json( $failure );
-		}
-
-		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_send_json( $failure );
-		}
-
-		$dismissed = WC_BIS_Admin_Notices::dismiss_notice( wc_clean( $_POST['notice'] ) );
-
-		if ( ! $dismissed ) {
-			wp_send_json( $failure );
-		}
-
-		$response = array(
-			'result' => 'success',
-		);
-
-		wp_send_json( $response );
+		return $failure;
 	}
 
 	/*
@@ -176,7 +155,7 @@ class WC_BIS_Admin_Ajax {
 			wp_send_json( $failure );
 		}
 
-		$range    = isset( $_POST['date_range'] ) ? wc_clean( $_POST['date_range'] ) : 'week';
+		$range    = isset( $_POST['date_range'] ) ? wc_clean( wp_unslash( $_POST['date_range'] ) ) : 'week';
 		$limit    = (int) apply_filters( 'woocommerce_bis_most_subscribed_products_sql_limit', 5 );
 		$products = array();
 		$results  = array();
@@ -194,18 +173,19 @@ class WC_BIS_Admin_Ajax {
 			case 'quarter':
 				$results = WC_BIS()->db->notifications->get_most_subscribed_products( strtotime( '-4 month' ), $limit );
 				break;
-
-			/**
-			 * Filter: woocommerce_bis_most_subscribed_products_period.
-			 *
-			 * Fetch from custom periods.
-			 *
-			 * @param array $results
-			 * @param string $range
-			 * @return array
-			 */
-			$results = apply_filters( 'woocommerce_bis_most_subscribed_products_period', $results, $range );
 		}
+
+		/**
+		 * Filter: woocommerce_bis_most_subscribed_products_period.
+		 *
+		 * Fetch from custom periods.
+		 *
+		 * @since 9.9.0
+		 * @param array  $results The results array.
+		 * @param string $range   The date range.
+		 * @return array
+		 */
+		$results = apply_filters( 'woocommerce_bis_most_subscribed_products_period', $results, $range );
 
 		foreach ( $results as $product_row ) {
 			$product = wc_get_product( $product_row->product_id );
@@ -234,8 +214,8 @@ class WC_BIS_Admin_Ajax {
 	 * Search for products and echo json for new notification product.
 	 * We could use the WooCommerce's native "json_search_for_products_and_varitions" but it doesn't include an `exclude_type` param prior to WC 3.9.
 	 *
-	 * @param  string $term
-	 * @return string (JSON)
+	 * @param string $term The search term.
+	 * @return void
 	 */
 	public static function json_search_products_for_notification( $term = '' ) {
 		check_ajax_referer( 'search-products', 'security' );
