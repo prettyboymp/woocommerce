@@ -9,9 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-<div class="wrap woocommerce woocommerce-bis-notifications">
-
-	<?php WC_BIS_Admin_Menus::render_tabs(); ?>
+<div class="wrap woocommerce woocommerce-bis-activity-log">
 
 	<h1 class="wp-heading-inline"><?php esc_html_e( 'Customer stock notifications log', 'woocommerce' ); ?></h1>
 
