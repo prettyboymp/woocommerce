@@ -47,17 +47,17 @@ const WooPaymentsProvider = () => {
 				<Route
 					path="/woopayments/onboarding/*"
 					element={
-			<div className="settings-payments-onboarding-modal__wrapper">
-				<Stepper
-					steps={ stepsMapped }
-					active={ currentStep?.key ?? '' }
-					includeSidebar
+						<div className="settings-payments-onboarding-modal__wrapper">
+							<Stepper
+								steps={ stepsMapped }
+								active={ currentStep?.key ?? '' }
+								includeSidebar
 								sidebarTitle={ __(
 									'Set up WooPayments',
 									'woocommerce'
 								) }
-				/>
-			</div>
+							/>
+						</div>
 					}
 				/>
 			</Routes>
