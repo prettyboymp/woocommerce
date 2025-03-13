@@ -362,6 +362,6 @@ if ( ! function_exists( 'wc_bis_wp_theme_get_element_class_name' ) ) {
 	 * @return string
 	 */
 	function wc_bis_wp_theme_get_element_class_name( $element ) {
-		return WC_BIS_Core_Compatibility::wc_current_theme_is_fse_theme() && function_exists( 'wc_wp_theme_get_element_class_name' ) ? wc_wp_theme_get_element_class_name( $element ) : '';
+		return function_exists( 'wc_wp_theme_get_element_class_name' ) ? wc_wp_theme_get_element_class_name( $element ) : '';
 	}
 }
