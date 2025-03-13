@@ -37,7 +37,10 @@
 						if ( item.series.replace_tooltip ) {
 							tooltip_content = item.series.replace_tooltip.replace( '%notifications%', y );
 							current_date = new Date( parseInt( x, 10 ) );
-							tooltip_content = tooltip_content.replace( '%date%', current_date.getFullYear() + "/" + ( current_date.getMonth() + 1 ) + "/" + current_date.getDate() );
+							tooltip_content = tooltip_content.replace( 
+								'%date%',
+								current_date.getFullYear() + "/" + ( current_date.getMonth() + 1 ) + "/" + current_date.getDate()
+							);
 						}
 
 						showTooltip( item.pageX, item.pageY, tooltip_content );
@@ -109,7 +112,9 @@
 									$tbody.html( $tbody.html() + product_row );
 								}
 							} else {
-								$tbody.html( '<tr><td colspan="2" class="empty">' + wc_bis_admin_params.i18n_dashboard_table_no_results + '</td></tr>' );
+								$tbody.html( '<tr><td colspan="2" class="empty">'
+									+ wc_bis_admin_params.i18n_dashboard_table_no_results
+									+ '</td></tr>' );
 							}
 						} else {
 							console.error( response );
