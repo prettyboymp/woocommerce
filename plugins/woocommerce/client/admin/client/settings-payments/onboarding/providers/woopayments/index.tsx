@@ -82,9 +82,10 @@ const WooPaymentsProvider = () => {
 		return (
 			<div className="settings-payments-onboarding-modal__wrapper">
 				<Stepper
-					title={ __( 'Set up WooPayments', 'woocommerce' ) }
 					steps={ stepsMapped }
 					active={ currentStep?.key ?? '' }
+					includeSidebar
+					sidebarTitle={ __( 'Set up WooPayments', 'woocommerce' ) }
 				/>
 			</div>
 		);
