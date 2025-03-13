@@ -1,4 +1,6 @@
 <?php
+declare( strict_types=1 );
+
 /**
  * WC_BIS_Admin_Dashboard_Page class
  *
@@ -77,10 +79,34 @@ class WC_BIS_Admin_Dashboard_Page {
 		$counters['registered_today'] = wc_bis_get_notifications( $args );
 
 		// Limits.
-		$limits                     = array();
-		$limits['most_delayed']     = (int) apply_filters( 'woocommerce_bis_most_delayed_products_sql_limit', 5 );
+		$limits = array();
+
+		/**
+		 * Filter: woocommerce_bis_most_delayed_products_sql_limit.
+		 *
+		 * @since 9.9.0
+		 * @param int $limit The limit for most delayed products.
+		 * @return int
+		 */
+		$limits['most_delayed'] = (int) apply_filters( 'woocommerce_bis_most_delayed_products_sql_limit', 5 );
+
+		/**
+		 * Filter: woocommerce_bis_most_anticipated_products_sql_limit.
+		 *
+		 * @since 9.9.0
+		 * @param int $limit The limit for most anticipated products.
+		 * @return int
+		 */
 		$limits['most_anticipated'] = (int) apply_filters( 'woocommerce_bis_most_anticipated_products_sql_limit', 5 );
-		$limits['most_subscribed']  = (int) apply_filters( 'woocommerce_bis_most_subscribed_products_sql_limit', 5 );
+
+		/**
+		 * Filter: woocommerce_bis_most_subscribed_products_sql_limit.
+		 *
+		 * @since 9.9.0
+		 * @param int $limit The limit for most subscribed products.
+		 * @return int
+		 */
+		$limits['most_subscribed'] = (int) apply_filters( 'woocommerce_bis_most_subscribed_products_sql_limit', 5 );
 
 		$leaderboards                     = array();
 		$leaderboards['most_delayed']     = WC_BIS()->db->notifications->get_delayed_products( $limits['most_delayed'] );
@@ -279,7 +305,7 @@ class WC_BIS_Admin_Dashboard_Page {
 	 * @param  string $date_prop     Date property.
 	 * @param  string $data_prop     Data property.
 	 * @param  int    $interval      Interval (in days).
-	 * @param  string $start_date    Start date.
+	 * @param  int    $start_date    Start date.
 	 * @return array
 	 */
 	protected static function prepare_chart_data( $notifications, $date_prop, $data_prop, $interval, $start_date ) {
