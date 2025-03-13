@@ -679,6 +679,7 @@
 					"shardingArguments": [],
 					"changes": [],
 					"events": [
+						"on-demand",
 						"release-checks",
 						"core-e2e-pressable"
 					],
@@ -695,6 +696,7 @@
 					"shardingArguments": [],
 					"changes": [],
 					"events": [
+						"on-demand",
 						"release-checks",
 						"core-e2e-wpcom"
 					],
