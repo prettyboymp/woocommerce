@@ -86,7 +86,7 @@ class PluginsHelper {
 	 */
 	public static function init() {
 		add_action( 'woocommerce_plugins_install_callback', array( __CLASS__, 'install_plugins' ), 10, 2 );
-		add_action( 'woocommerce_plugins_install_and_activate_async_callback', array( __CLASS__, 'install_and_activate_plugins_async_callback' ), 10, 2 );
+		add_action( 'woocommerce_plugins_install_and_activate_async_callback', array( __CLASS__, 'install_and_activate_plugins_async_callback' ), 10, 3 );
 		add_action( 'woocommerce_plugins_activate_callback', array( __CLASS__, 'activate_plugins' ), 10, 2 );
 		add_action( 'admin_notices', array( __CLASS__, 'maybe_show_connect_notice_in_plugin_list' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'maybe_enqueue_scripts_for_connect_notice' ) );
@@ -222,12 +222,13 @@ class PluginsHelper {
 	/**
 	 * Install an array of plugins.
 	 *
-	 * @param array                     $plugins Plugins to install.
+	 * @param array $plugins Plugins to install.
 	 * @param PluginsInstallLogger|null $logger an optional logger.
+	 * @param string|null $source place where the request is coming from.
 	 *
 	 * @return array
 	 */
-	public static function install_plugins( $plugins, ?PluginsInstallLogger $logger = null ) {
+	public static function install_plugins( $plugins, ?PluginsInstallLogger $logger = null, string $source = null ) {
 		/**
 		 * Filter the list of plugins to install.
 		 *
@@ -235,7 +236,7 @@ class PluginsHelper {
 		 *
 		 * @since 6.4.0
 		 */
-		$plugins = apply_filters( 'woocommerce_admin_plugins_pre_install', $plugins );
+		$plugins = apply_filters( 'woocommerce_admin_plugins_pre_install', $plugins, $source );
 
 		if ( empty( $plugins ) || ! is_array( $plugins ) ) {
 			return new WP_Error(
@@ -395,11 +396,13 @@ class PluginsHelper {
 	 *
 	 * It is used to call install_plugins and activate_plugins with a custom logger.
 	 *
-	 * @param array  $plugins A list of plugins to install.
+	 * @param array $plugins A list of plugins to install.
 	 * @param string $job_id An unique job I.D.
+	 * @param string|null $source
+	 *
 	 * @return bool
 	 */
-	public static function install_and_activate_plugins_async_callback( array $plugins, string $job_id ) {
+	public static function install_and_activate_plugins_async_callback( array $plugins, string $job_id, string $source = null ) {
 		$option_name = 'woocommerce_onboarding_plugins_install_and_activate_async_' . $job_id;
 		$logger      = new AsyncPluginsInstallLogger( $option_name );
 		self::install_plugins( $plugins, $logger );
