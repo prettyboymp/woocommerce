@@ -38,6 +38,12 @@ const { test, request } = require( '@playwright/test' );
 				'wc_bis_double_opt_in_required',
 				'no'
 			);
+			await setOption(
+				request,
+				baseURL,
+				'wc_feature_woocommerce_back_in_stock_notifications_enabled',
+				'yes'
+			);
 			helper = new AcceptanceHelper( baseURL, page );
 		} );
 		test.afterEach( async ( {} ) => {

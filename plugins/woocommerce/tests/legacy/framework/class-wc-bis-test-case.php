@@ -42,4 +42,20 @@ class WC_BIS_Test_Case extends WC_Unit_Test_Case {
 			$queue_runner->process_action( $job_id );
 		}
 	}
+
+	/**
+	 * Setup test case.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		WC_BIS_Test_Helper::enable_feature();
+	}
+
+	/**
+	 * Clean up after test case.
+	 */
+	public function tearDown(): void {
+		WC_BIS_Test_Helper::reset_feature();
+		parent::tearDown();
+	}
 }
