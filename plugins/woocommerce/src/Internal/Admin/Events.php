@@ -129,7 +129,7 @@ class Events {
 	public function init() {
 		add_action( 'wc_admin_daily', array( $this, 'do_wc_admin_daily' ) );
 		add_filter( 'woocommerce_get_note_from_db', array( $this, 'get_note_from_db' ), 10, 1 );
-		add_filter( 'woocommerce_rest_api_plugins_install_logger', array( $this, 'filter_plugin_install_logger_for_core_profiler' ) );
+		add_filter( 'woocommerce_rest_api_plugins_install_logger', array( $this, 'filter_plugin_install_logger_for_core_profiler' ), 10, 2 );
 
 		// Initialize the WC_Notes_Refund_Returns Note to attach hook.
 		\WC_Notes_Refund_Returns::init();
@@ -286,10 +286,10 @@ class Events {
 	 *
 	 * @return ProcessInstallOptions|null
 	 */
-	public function filter_plugin_install_logger_for_core_profiler( PluginsInstallLogger $logger = null ) {
+	public function filter_plugin_install_logger_for_core_profiler( PluginsInstallLogger $logger = null, $source = null ) {
 		// Only proceed if the plugin install was initiated from the core profiler.
-		if ( ! str_contains( wp_get_referer(), 'wp-admin/admin.php?page=wc-admin&path=%2Fsetup-wizard&step=plugins' ) ) {
-			return null;
+		if ( 'core-profiler' !== $source ) {
+			return $logger;
 		}
 
 		// Retrieve the core profiler spec.

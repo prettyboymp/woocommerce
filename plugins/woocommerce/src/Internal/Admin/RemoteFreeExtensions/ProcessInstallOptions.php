@@ -132,10 +132,17 @@ class ProcessInstallOptions implements PluginsInstallLogger {
 	 * @param object $install_option Install option object.
 	 */
 	private function update_install_option( object $install_option ) {
-		$options = (object) ( $install_option->options ?? array(
-			'autoload'    => false,
+		$default_options = array(
 			'force_array' => false,
-		) );
+			'autoload'    => false,
+		);
+
+		$options = $install_option->options ?? new \stdClass();
+		foreach ( $default_options as $key => $value ) {
+			if ( ! isset( $options->$key ) ) {
+				$options->$key = $value;
+			}
+		}
 
 		if ( $options->force_array ) {
 			$install_option->value = json_decode( wp_json_encode( $install_option->value ), true );

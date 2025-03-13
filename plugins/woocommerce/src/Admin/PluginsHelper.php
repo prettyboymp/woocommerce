@@ -236,7 +236,7 @@ class PluginsHelper {
 		 *
 		 * @since 6.4.0
 		 */
-		$plugins = apply_filters( 'woocommerce_admin_plugins_pre_install', $plugins, $source );
+		$plugins = apply_filters( 'woocommerce_admin_plugins_pre_install', $plugins );
 
 		if ( empty( $plugins ) || ! is_array( $plugins ) ) {
 			return new WP_Error(
@@ -250,7 +250,7 @@ class PluginsHelper {
 		 *
 		 * @since 9.9
 		 */
-		$logger = apply_filters( 'woocommerce_rest_api_plugins_install_logger', $logger );
+		$logger = apply_filters( 'woocommerce_rest_api_plugins_install_logger', $logger, $source );
 
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		include_once ABSPATH . '/wp-admin/includes/admin.php';
@@ -405,7 +405,7 @@ class PluginsHelper {
 	public static function install_and_activate_plugins_async_callback( array $plugins, string $job_id, string $source = null ) {
 		$option_name = 'woocommerce_onboarding_plugins_install_and_activate_async_' . $job_id;
 		$logger      = new AsyncPluginsInstallLogger( $option_name );
-		self::install_plugins( $plugins, $logger );
+		self::install_plugins( $plugins, $logger, $source );
 		self::activate_plugins( $plugins, $logger );
 		return true;
 	}
