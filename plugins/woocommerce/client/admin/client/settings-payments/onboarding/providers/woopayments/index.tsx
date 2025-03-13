@@ -18,7 +18,6 @@ import {
 	OnboardingProvider,
 	useOnboardingContext,
 } from '../../context/OnboardingContext';
-import { getStepContent, frontEndOnlySteps } from './steps';
 
 const WooPaymentsProvider = () => {
 	const { steps, isLoading, currentStep } = useOnboardingContext();
@@ -34,14 +33,6 @@ const WooPaymentsProvider = () => {
 
 	// If we have steps, render the Stepper
 	if ( steps && steps.length > 0 ) {
-		const completeSteps = [ ...steps, ...frontEndOnlySteps ].sort(
-			( a, b ) => a.order - b.order
-		);
-		const stepsMapped = completeSteps.map( ( step ) => ( {
-			...step,
-			content: getStepContent( step.key ),
-		} ) );
-
 		return (
 			<Routes>
 				<Route
@@ -49,8 +40,8 @@ const WooPaymentsProvider = () => {
 					element={
 						<div className="settings-payments-onboarding-modal__wrapper">
 							<Stepper
-								steps={ stepsMapped }
-								active={ currentStep?.key ?? '' }
+								steps={ steps }
+								active={ currentStep?.id ?? '' }
 								includeSidebar
 								sidebarTitle={ __(
 									'Set up WooPayments',
