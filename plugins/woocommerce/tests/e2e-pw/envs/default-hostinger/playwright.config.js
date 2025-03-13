@@ -18,16 +18,20 @@ config = {
 		},
 		{
 			name: 'e2e-hostinger',
-			testMatch: [ '**/basic/**' ],
+			testIgnore: [
+				'**/api-tests/**',
+				'**/customize-store/**',
+				'**/js-file-monitor/**',
+			],
 			grepInvert,
 			dependencies: [ 'reset', 'site setup' ],
 		},
-		// {
-		// 	name: 'api-hostinger',
-		// 	testMatch: [ '**/api-tests/**' ],
-		// 	grepInvert,
-		// 	dependencies: [ 'reset', 'site setup' ],
-		// },
+		{
+			name: 'api-hostinger',
+			testMatch: [ '**/api-tests/**' ],
+			grepInvert,
+			dependencies: [ 'reset', 'site setup' ],
+		},
 	],
 };
 
