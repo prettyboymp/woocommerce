@@ -8,6 +8,8 @@ namespace Automattic\WooCommerce\Internal\Admin;
 defined( 'ABSPATH' ) || exit;
 
 use Automattic\WooCommerce\Admin\Features\Features;
+use Automattic\WooCommerce\Admin\PluginsInstallLoggers\AsyncPluginsInstallLogger;
+use Automattic\WooCommerce\Admin\PluginsInstallLoggers\PluginsInstallLogger;
 use Automattic\WooCommerce\Admin\RemoteInboxNotifications\RemoteInboxNotificationsDataSourcePoller;
 use Automattic\WooCommerce\Admin\RemoteInboxNotifications\RemoteInboxNotificationsEngine;
 use Automattic\WooCommerce\Internal\Admin\Notes\AddFirstProduct;
@@ -39,6 +41,8 @@ use Automattic\WooCommerce\Internal\Admin\Notes\UnsecuredReportFiles;
 use Automattic\WooCommerce\Internal\Admin\Notes\WooCommercePayments;
 use Automattic\WooCommerce\Internal\Admin\Notes\WooCommerceSubscriptions;
 use Automattic\WooCommerce\Internal\Admin\Notes\WooSubscriptionsNotes;
+use Automattic\WooCommerce\Internal\Admin\RemoteFreeExtensions\Init;
+use Automattic\WooCommerce\Internal\Admin\RemoteFreeExtensions\ProcessInstallOptions;
 use Automattic\WooCommerce\Internal\Admin\Schedulers\MailchimpScheduler;
 use Automattic\WooCommerce\Admin\Notes\Note;
 use Automattic\WooCommerce\Admin\Features\PaymentGatewaySuggestions\PaymentGatewaySuggestionsDataSourcePoller;
@@ -125,6 +129,7 @@ class Events {
 	public function init() {
 		add_action( 'wc_admin_daily', array( $this, 'do_wc_admin_daily' ) );
 		add_filter( 'woocommerce_get_note_from_db', array( $this, 'get_note_from_db' ), 10, 1 );
+		add_filter( 'woocommerce_rest_api_plugins_install_logger', array( $this, 'filter_plugin_install_logger_for_core_profiler' ) );
 
 		// Initialize the WC_Notes_Refund_Returns Note to attach hook.
 		\WC_Notes_Refund_Returns::init();
@@ -270,5 +275,30 @@ class Events {
 		if ( ! in_array( 'store_details', $completed_tasks, true ) && ! in_array( 'marketing', $completed_tasks, true ) ) {
 			RemoteFreeExtensionsDataSourcePoller::get_instance()->read_specs_from_data_sources();
 		}
+	}
+
+	/**
+	 * Set ProcessInstallOptions for core profiler plugin install process.
+	 *
+	 * ProcessInstallOptions will process 'install_options' property.
+	 *
+	 * @param PluginsInstallLogger|null $logger The logger instance.
+	 *
+	 * @return ProcessInstallOptions|null
+	 */
+	public function filter_plugin_install_logger_for_core_profiler( PluginsInstallLogger $logger = null ) {
+		// Only proceed if the plugin install was initiated from the core profiler.
+		if ( ! str_contains( wp_get_referer(), 'wp-admin/admin.php?page=wc-admin&path=%2Fsetup-wizard&step=plugins' ) ) {
+			return null;
+		}
+
+		// Retrieve the core profiler spec.
+		$specs = array_filter( Init::get_specs(), fn( $spec ) => 'obw/core-profiler' === $spec->key );
+
+		if ( ! $specs ) {
+			return null;
+		}
+
+		return new ProcessInstallOptions( current( $specs )->plugins, $logger instanceof AsyncPluginsInstallLogger ? $logger : null );
 	}
 }
