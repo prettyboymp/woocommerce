@@ -2,7 +2,7 @@
  * External dependencies
  */
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { getHistory, getNewPath } from '@woocommerce/navigation';
 import { __ } from '@wordpress/i18n';
 import { Spinner } from '@wordpress/components';
@@ -43,14 +43,24 @@ const WooPaymentsProvider = () => {
 		} ) );
 
 		return (
+			<Routes>
+				<Route
+					path="/woopayments/onboarding/*"
+					element={
 			<div className="settings-payments-onboarding-modal__wrapper">
 				<Stepper
 					steps={ stepsMapped }
 					active={ currentStep?.key ?? '' }
 					includeSidebar
-					sidebarTitle={ __( 'Set up WooPayments', 'woocommerce' ) }
+								sidebarTitle={ __(
+									'Set up WooPayments',
+									'woocommerce'
+								) }
 				/>
 			</div>
+					}
+				/>
+			</Routes>
 		);
 	}
 
@@ -61,6 +71,7 @@ const WooPaymentsProvider = () => {
 		</div>
 	);
 };
+
 /**
  * Modal component for WooPayments onboarding
  */
@@ -73,10 +84,31 @@ export default function WooPaymentsModal( {
 
 	// Open modal when on an onboarding route
 	React.useEffect( () => {
-		if ( location.pathname.startsWith( '/onboarding' ) && ! isOpen ) {
+		if (
+			location.pathname.startsWith( '/woopayments/onboarding' ) &&
+			! isOpen
+		) {
 			setIsOpen( true );
 		}
 	}, [ location, isOpen, setIsOpen ] );
+
+	// If the modal is open, without an onboarding route, add an onboarding route
+	React.useEffect( () => {
+		if (
+			isOpen &&
+			! location.pathname.startsWith( '/woopayments/onboarding' )
+		) {
+			const newPath = getNewPath(
+				{ path: '/woopayments/onboarding' },
+				'/woopayments/onboarding',
+				{
+					page: 'wc-settings',
+					tab: 'checkout',
+				}
+			);
+			history.push( newPath );
+		}
+	}, [ isOpen, location.pathname, history ] );
 
 	// Handle modal close by navigating away from onboarding routes
 	const handleClose = () => {
