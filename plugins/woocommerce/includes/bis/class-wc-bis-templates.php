@@ -81,12 +81,6 @@ class WC_BIS_Templates {
 		wp_style_add_data( 'wc-bis-css', 'rtl', 'replace' );
 		wp_enqueue_style( 'wc-bis-css' );
 
-		if ( WC_BIS_Core_Compatibility::wc_current_theme_is_fse_theme() ) {
-			wp_register_style( 'wc-bis-blocks-style', WC()->plugin_url() . '/assets/css/frontend/bis-blocktheme.css', false, $version );
-			wp_style_add_data( 'wc-bis-blocks-style', 'rtl', 'replace' );
-			wp_enqueue_style( 'wc-bis-blocks-style' );
-		}
-
 		$dependencies = array( 'jquery', 'jquery-ui-datepicker' );
 
 		/**
@@ -131,6 +125,7 @@ class WC_BIS_Templates {
 
 		if ( $this->should_dequeue_scripts ) {
 			wp_dequeue_script( 'wc-bis-main' );
+			wp_dequeue_style( 'wc-bis-css' );
 		}
 	}
 }
