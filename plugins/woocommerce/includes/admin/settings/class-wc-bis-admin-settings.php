@@ -70,10 +70,6 @@ if ( ! class_exists( 'WC_BIS_Settings' ) ) :
 					'type'  => 'title',
 				);
 
-				if ( ! BackInStockNotifications::is_enabled() ) {
-					$title_item['desc'] = __( 'These settings are not available when the stock notifications feature is disabled. Enable it in the <a href="' . admin_url( 'admin.php?page=wc-settings&tab=products&section=inventory' ) . '">Inventory</a> section.', 'woocommerce' );
-				}
-	
 				$settings[] = $title_item;
 
 				$default_bis_settings = array(
@@ -295,13 +291,12 @@ if ( ! class_exists( 'WC_BIS_Settings' ) ) :
 						),
 					);
 
-				if ( BackInStockNotifications::is_enabled() ) {
-					$bis_settings = apply_filters( 'woocommerce_bis_settings', $default_bis_settings );
+				$bis_settings = apply_filters( 'woocommerce_bis_settings', $default_bis_settings );
 
-					foreach ( $bis_settings as $setting ) {
-						$settings[] = $setting;
-					}
+				foreach ( $bis_settings as $setting ) {
+					$settings[] = $setting;
 				}
+				
 			}
 
 			return $settings;
