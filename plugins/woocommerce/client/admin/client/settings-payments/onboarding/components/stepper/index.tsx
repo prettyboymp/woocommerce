@@ -88,12 +88,12 @@ export default function Stepper( {
 	const { navigateToStep } = useOnboardingContext();
 	const location = useLocation();
 	// Find the active step component
-	const activeStep = steps.find( ( step ) => step.key === active );
+	const activeStep = steps.find( ( step ) => step.id === active );
 
 	// Force navigation to current step only if the URL doesn't already match
 	useEffect( () => {
 		if ( activeStep && location.pathname !== activeStep.path ) {
-			navigateToStep( activeStep.key );
+			navigateToStep( activeStep.id );
 		}
 	}, [ activeStep, navigateToStep, location.pathname ] );
 
@@ -114,7 +114,7 @@ export default function Stepper( {
 								/* translators: %1$s: current step number, %2$s: total number of steps */
 								__( 'Step %1$s of %2$s', 'woocommerce' ),
 								steps.findIndex(
-									( step ) => step.key === active
+									( step ) => step.id === active
 								) + 1,
 								steps.length
 							) }
@@ -123,11 +123,11 @@ export default function Stepper( {
 					<div className="settings-payments-onboarding-modal__sidebar--list">
 						{ steps.map( ( step ) => (
 							<SidebarItem
-								key={ step.key }
-								label={ step.title }
+								key={ step.id }
+								label={ step.label }
 								// isCompleted={ step.status === 'completed' } // Making the server as the source of truth
 								isCompleted={ step.order < activeStep.order } // This is supposing that all steps before the current one are done
-								isActive={ step.key === active }
+								isActive={ step.id === active }
 							/>
 						) ) }
 					</div>
@@ -136,7 +136,7 @@ export default function Stepper( {
 			<div className="settings-payments-onboarding-modal__content">
 				<div
 					className="settings-payments-onboarding-modal__step"
-					id={ activeStep.key }
+					id={ activeStep.id }
 				>
 					{ activeStep.content }
 				</div>
