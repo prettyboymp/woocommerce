@@ -44,15 +44,6 @@ export interface SidebarItemProps {
 }
 
 /**
- * Props for the Stepper component.
- */
-export interface StepperProps {
-	active: string;
-	steps: WooPaymentsProviderOnboardingStep[];
-	title: string;
-}
-
-/**
  * WooPayments provider onboarding step that extends the base WooPaymentsOnboardingStepContent
  * with additional fields specific to the provider implementation.
  */
