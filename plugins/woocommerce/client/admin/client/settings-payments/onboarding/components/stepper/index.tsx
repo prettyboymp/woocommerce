@@ -3,6 +3,8 @@
  */
 import { __, sprintf } from '@wordpress/i18n';
 import clsx from 'clsx';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 /**
  * Internal dependencies
@@ -12,6 +14,7 @@ import {
 	WooPaymentsProviderOnboardingStep,
 } from '~/settings-payments/onboarding/types';
 import { WC_ASSET_URL } from '~/utils/admin-settings';
+import { useOnboardingContext } from '../../context/OnboardingContext';
 
 /**
  * Sidebar navigation item component
@@ -82,8 +85,17 @@ export default function Stepper( {
 	 */
 	includeSidebar?: boolean;
 } ): React.ReactNode {
+	const { navigateToStep } = useOnboardingContext();
+	const location = useLocation();
 	// Find the active step component
 	const activeStep = steps.find( ( step ) => step.key === active );
+
+	// Force navigation to current step only if the URL doesn't already match
+	useEffect( () => {
+		if ( activeStep && location.pathname !== activeStep.path ) {
+			navigateToStep( activeStep.key );
+		}
+	}, [ activeStep, navigateToStep, location.pathname ] );
 
 	if ( ! activeStep ) return <div>No active step</div>;
 
