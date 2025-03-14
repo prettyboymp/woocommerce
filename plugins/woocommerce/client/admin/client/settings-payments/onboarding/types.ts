@@ -1,20 +1,7 @@
 /**
  * External dependencies
  */
-import React, { ReactNode } from 'react';
-
-/**
- * Props for the Onboarding Sidebar component.
- */
-export interface OnboardingSidebarProps {
-	steps: {
-		key: string;
-		label: string;
-		isCompleted?: boolean;
-		isActive?: boolean;
-		content?: React.ReactNode;
-	}[];
-}
+import { ReactNode } from 'react';
 
 /**
  * Props for the Onboarding Modal component.
@@ -30,7 +17,6 @@ export interface OnboardingModalProps {
 export interface WooPaymentsModalProps {
 	isOpen: boolean;
 	setIsOpen: ( isOpen: boolean ) => void;
-	currentStep?: number;
 }
 
 /**
@@ -56,32 +42,4 @@ export interface WooPaymentsProviderOnboardingStep {
 	dependencies?: string[];
 	actions?: string[];
 	content?: ReactNode;
-}
-
-/**
- * Props for the Step component.
- */
-export interface StepProps {
-	id: string;
-	children: ReactNode;
-	onFinish?: () => void;
-}
-
-/**
- * Props for the Step content component.
- */
-export interface StepContentProps {
-	onFinish?: () => void;
-}
-
-/**
- * Props for the Step content passed to the modal.
- */
-export interface StepContent {
-	key: string;
-	label: string;
-	path: string;
-	order: number;
-	content: ReactNode | ( ( props: StepContentProps ) => ReactNode );
-	confirmCompletion?: () => Promise< boolean >;
 }
