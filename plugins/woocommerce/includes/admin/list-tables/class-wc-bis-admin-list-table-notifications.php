@@ -678,8 +678,8 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	 */
 	protected function get_link( $args, $label, $class = '' ) {
 
-		// $base_url = admin_url( 'admin.php?page=bis_notifications' );
-		$url = add_query_arg( $args );
+		$base_url = admin_url( 'admin.php?page=bis_notifications' );
+		$url = add_query_arg( $args, $base_url );
 
 		$class_html   = '';
 		$aria_current = '';

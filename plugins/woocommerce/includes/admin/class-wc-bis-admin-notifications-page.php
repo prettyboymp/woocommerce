@@ -34,6 +34,43 @@ class WC_BIS_Admin_Notifications_Page {
 	 */
 	public static function output() {
 
+		if ( isset( $_GET['bis_notice'] ) ) {
+			$updated_notice_args = array(
+				'id'                 => 'message',
+				'type'               => 'success',
+				'additional_classes' => array( 'updated' ),
+				'dismissible'        => false,
+			);
+			switch ( $_GET['bis_notice'] ) {
+				case 'deleted':
+					wp_admin_notice( __( 'Notification deleted.', 'woocommerce' ), $updated_notice_args );
+					break;
+				case 'created':
+					wp_admin_notice( __( 'Notification created.', 'woocommerce' ), $updated_notice_args );
+					break;
+				case 'updated':
+					wp_admin_notice( __( 'Notification updated.', 'woocommerce' ), $updated_notice_args );
+					break;
+				case 'sent':
+					$recipient = isset( $_GET['recipient'] ) ? $_GET['recipient'] : '';
+					wp_admin_notice( sprintf( __( 'Notification sent to "%s".', 'woocommerce' ), $recipient ), $updated_notice_args );
+					break;
+				case 'verification_email_sent':
+					$recipient = isset( $_GET['recipient'] ) ? $_GET['recipient'] : '';
+					wp_admin_notice( sprintf( __( 'Verification e-mail sent to "%s".', 'woocommerce' ), $recipient ), $updated_notice_args );
+					break;
+				case 'error':
+					$message = isset( $_GET['error'] ) ? $_GET['error'] : __( 'An error occurred.', 'woocommerce' );
+					$updated_notice_args['type'] = 'error';
+					wp_admin_notice( $message, $updated_notice_args );
+					break;
+				case 'not_found':
+					$updated_notice_args['type'] = 'error';
+					wp_admin_notice( __( 'Notification not found.', 'woocommerce' ), $updated_notice_args );
+					break;
+			}
+		}
+
 		$search = isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : '';
 		$table  = new WC_BIS_Notifications_List_Table();
 		$table->prepare_items();
@@ -94,10 +131,21 @@ class WC_BIS_Admin_Notifications_Page {
 
 				try {
 					if ( $should_update && WC_BIS()->db->notifications->update( $notification, $update_args ) ) {
-						WC_BIS_Admin_Notices::add_notice( __( 'Notification updated.', 'woocommerce' ), 'success', true );
+						$edit_url = add_query_arg(
+							array(
+								'bis_notice' => 'updated',
+							),
+							$edit_url
+						);
 					}
 				} catch ( Exception $e ) {
-					WC_BIS_Admin_Notices::add_notice( $e->getMessage(), 'error', true );
+					$edit_url = add_query_arg(
+						array(
+							'bis_notice' => 'error',
+							'error' => $e->getMessage(),
+						),
+						$edit_url
+					);
 				}
 			}
 
@@ -116,9 +164,21 @@ class WC_BIS_Admin_Notifications_Page {
 						if ( $notification->is_active() && $product->is_in_stock() ) {
 							do_action( 'woocommerce_bis_force_send_notification_to_customer', $notification );
 							/* translators: user email */
-							WC_BIS_Admin_Notices::add_notice( sprintf( __( 'Notification sent to "%s".', 'woocommerce' ), $notification->get_user_email() ), 'success', true );
+							$edit_url = add_query_arg(
+								array(
+									'bis_notice' => 'sent',
+									'recipient' => $notification->get_user_email(),
+								),
+								$edit_url
+							);
 						} else {
-							WC_BIS_Admin_Notices::add_notice( __( 'Failed to send notification. Please make sure that (a) the notification is active, and (b) the listed product is available.', 'woocommerce' ), 'error', true );
+							$edit_url = add_query_arg(
+								array(
+									'bis_notice' => 'error',
+									'error' => __( 'Failed to send notification. Please make sure that (a) the notification is active, and (b) the listed product is available.', 'woocommerce' ),
+								),
+								$edit_url
+							);
 						}
 						break;
 
@@ -145,17 +205,34 @@ class WC_BIS_Admin_Notifications_Page {
 						if ( ! $notification->is_verified() ) {
 							do_action( 'woocommerce_bis_verify_notification_to_customer', $notification );
 							/* translators: user email */
-							WC_BIS_Admin_Notices::add_notice( sprintf( __( 'Verification e-mail sent to "%s".', 'woocommerce' ), $notification->get_user_email() ), 'success', true );
+							$edit_url = add_query_arg(
+								array(
+									'bis_notice' => 'verification_email_sent',
+									'recipient' => $notification->get_user_email(),
+								),
+								$edit_url
+							);
 						}
 						break;
 				}
 
 				try {
 					if ( $should_update && WC_BIS()->db->notifications->update( $notification, $update_args ) ) {
-						WC_BIS_Admin_Notices::add_notice( __( 'Notification updated.', 'woocommerce' ), 'success', true );
+						$edit_url = add_query_arg(
+							array(
+								'bis_notice' => 'updated',
+							),
+							$edit_url
+						);
 					}
 				} catch ( Exception $e ) {
-					WC_BIS_Admin_Notices::add_notice( $e->getMessage(), 'error', true );
+					$edit_url = add_query_arg(
+						array(
+							'bis_notice' => 'error',
+							'error' => $e->getMessage(),
+						),
+						$edit_url
+					);
 				}
 			}
 
@@ -229,7 +306,17 @@ class WC_BIS_Admin_Notifications_Page {
 					$object = current( $notification_exists );
 					if ( is_a( $object, 'WC_BIS_Notification_Data' ) ) {
 						/* translators: %s duplicate notification edit url */
-						WC_BIS_Admin_Notices::add_notice( sprintf( __( 'A <a href="%s">notification</a> for the same product and customer already exists in your database.', 'woocommerce' ), admin_url( 'admin.php?page=bis_notifications&section=edit&notification=' . $object->get_id() ) ), 'error', false );
+						wp_admin_notice( 
+							sprintf( 
+								__( 'A <a href="%s">notification</a> for the same product and customer already exists in your database.', 'woocommerce' ), 
+								admin_url( 'admin.php?page=bis_notifications&section=edit&notification=' . $object->get_id() ) 
+							), 
+							array(
+								'id'                 => 'message',
+								'additional_classes' => array( 'error' ),
+								'dismissible'        => false,
+							)
+						);
 					}
 
 					return;
@@ -243,13 +330,13 @@ class WC_BIS_Admin_Notifications_Page {
 					$notification = wc_bis_get_notification( $id );
 					if ( $notification ) {
 						$notification->add_event( 'created', wp_get_current_user() );
-						WC_BIS_Admin_Notices::add_notice( esc_html__( 'Notification created.', 'woocommerce' ), 'success', true );
 
 						// Redirect.
 						$edit_url = add_query_arg(
 							array(
 								'section'      => 'edit',
 								'notification' => $id,
+								'bis_notice' => 'created',
 							),
 							self::PAGE_URL
 						);
@@ -258,7 +345,12 @@ class WC_BIS_Admin_Notifications_Page {
 					}
 				}
 			} catch ( Exception $e ) {
-				WC_BIS_Admin_Notices::add_notice( $e->getMessage(), 'error', false );
+				wp_admin_notice( $e->getMessage(), array(
+					'id'                 => 'message',
+					'additional_classes' => array( 'error' ),
+					'dismissible'        => false,
+				) );
+
 			}
 		}
 	}
@@ -277,11 +369,14 @@ class WC_BIS_Admin_Notifications_Page {
 
 		if ( isset( $notification ) && $notification ) {
 			$notification->delete();
-			WC_BIS_Admin_Notices::add_notice( __( 'Notification deleted.', 'woocommerce' ), 'success', true );
+			
+			wp_safe_redirect( add_query_arg( 'bis_notice', 'deleted', admin_url( self::PAGE_URL ) ) );
+			exit;
+		} else {
+			
+			wp_safe_redirect( add_query_arg( 'bis_notice', 'not_found', admin_url( self::PAGE_URL ) ) );
+			exit;
 		}
-
-		wp_safe_redirect( admin_url( self::PAGE_URL ) );
-		exit;
 	}
 
 	/**
@@ -307,8 +402,8 @@ class WC_BIS_Admin_Notifications_Page {
 		}
 
 		if ( ! isset( $notification ) || ! is_a( $notification, 'WC_BIS_Notification_Data' ) ) {
-			WC_BIS_Admin_Notices::add_notice( __( 'Notification not found.', 'woocommerce' ), 'error', true );
-			wp_safe_redirect( admin_url( self::PAGE_URL ) );
+			$redirect_url = add_query_arg( 'bis_notice', 'not_found', admin_url( self::PAGE_URL ) );
+			wp_safe_redirect( $redirect_url );
 			exit;
 		}
 
@@ -349,7 +444,11 @@ class WC_BIS_Admin_Notifications_Page {
 			$updated_args = apply_filters( 'woocommerce_bis_notification_reactivation_args', $update_args, $notification );
 
 		} catch ( Exception $e ) {
-			WC_BIS_Admin_Notices::add_notice( $e->getMessage(), 'error', false );
+			wp_admin_notice( $e->getMessage(), array(
+				'id'                 => 'message',
+				'additional_classes' => array( 'error' ),
+				'dismissible'        => false,
+			) );
 		}
 	}
 
@@ -381,7 +480,11 @@ class WC_BIS_Admin_Notifications_Page {
 			$updated_args = apply_filters( 'woocommerce_bis_notification_deactivation_args', $update_args, $notification );
 
 		} catch ( Exception $e ) {
-			WC_BIS_Admin_Notices::add_notice( $e->getMessage(), 'error', false );
+			wp_admin_notice( $e->getMessage(), array(
+				'id'                 => 'message',
+				'additional_classes' => array( 'error' ),
+				'dismissible'        => false,
+			) );
 		}
 	}
 

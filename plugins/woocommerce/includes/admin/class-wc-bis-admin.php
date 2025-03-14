@@ -52,6 +52,7 @@ class WC_BIS_Admin {
 
 		// Handle bulk admin deactivation.
 		add_action( 'admin_init', array( __CLASS__, 'process_bulk_admin_deactivate' ) );
+		add_action( 'admin_notices', array( __CLASS__, 'bulk_admin_deactivate_notice' ) );
 	}
 
 	/**
@@ -393,7 +394,11 @@ class WC_BIS_Admin {
 				$bulk_deactivate_url
 			);
 
-			WC_BIS_Admin_Notices::add_notice( $notice, 'warning' );
+			wp_admin_notice( $notice, array(
+				'id'                 => 'message',
+				'type'               => 'warning',
+				'dismissible'        => false,
+			) );
 
 		} elseif ( 'yes' === get_post_meta( $product_id, '_wc_bis_disabled', true ) ) {
 
@@ -409,7 +414,11 @@ class WC_BIS_Admin {
 				$bulk_deactivate_url
 			);
 
-			WC_BIS_Admin_Notices::add_notice( $notice, 'warning' );
+			wp_admin_notice( $notice, array(
+				'id'                 => 'message',
+				'type'               => 'warning',
+				'dismissible'        => false,
+			) );
 		}
 
 		$confirmation = __( 'This action cannot be undone. Continue?', 'woocommerce' );
@@ -445,8 +454,36 @@ class WC_BIS_Admin {
 
 		if ( $updated > 0 ) {
 
-			$notice = sprintf(
-			// translators: placeholder 1 is the number of deactivated notifications.
+			$url = add_query_arg(
+				array(
+					'wc_bis_admin_bulk_deactivated' => $updated,
+					'post' => $product_id,
+					'notification_count' => $updated 
+				),
+				$url
+			);
+		}
+
+		wp_safe_redirect( $url );
+		exit;
+	}
+
+	/**
+	 * Display a notice when bulk deactivation is successful.
+	 *
+	 * @since  9.9.0
+	 *
+	 * @return void
+	 */
+	public static function bulk_admin_deactivate_notice() {
+		if ( ! isset( $_GET['wc_bis_admin_bulk_deactivated'], $_GET['post'], $_GET['notification_count'] ) ) {	
+			return;
+		}
+
+		$updated = absint( $_GET['notification_count'] );
+		wp_admin_notice( 
+			sprintf(
+				// translators: placeholder 1 is the number of deactivated notifications.
 				_n(
 					'%1$s notification deactivated.',
 					'%1$s notifications deactivated.',
@@ -454,13 +491,13 @@ class WC_BIS_Admin {
 					'woocommerce'
 				),
 				number_format_i18n( $updated )
-			);
-
-			WC_BIS_Admin_Notices::add_notice( $notice, 'success', true );
-		}
-
-		wp_safe_redirect( $url );
-		exit;
+			),
+			array(
+				'id'                 => 'message',
+				'type'               => 'success',
+				'dismissible'        => false,
+			)
+		);
 	}
 
 	/**
