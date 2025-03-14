@@ -105,6 +105,7 @@ export const steps: WooPaymentsProviderOnboardingStep[] = [
 		order: 4,
 		type: 'backend',
 		label: 'Payment methods',
+		dependencies: [ 'congratulations' ],
 		content: <OtherStep />,
 	},
 ];
