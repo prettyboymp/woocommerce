@@ -6,6 +6,8 @@ import {
 	useContext,
 	useCallback,
 	useMemo,
+	useState,
+	useEffect,
 } from '@wordpress/element';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { woopaymentsOnboardingStore } from '@woocommerce/data';
@@ -24,6 +26,17 @@ import { WooPaymentsProviderOnboardingStep } from '../types';
 /**
  * Internal dependencies
  */
+
+interface OnboardingStepsResponse {
+	steps: Array< {
+		id: string;
+		label: string;
+		path: string;
+		order: number;
+		status: 'completed' | 'incomplete';
+		dependencies: string[];
+	} >;
+}
 
 interface OnboardingContextType {
 	steps: WooPaymentsProviderOnboardingStep[];
@@ -54,23 +67,40 @@ export const OnboardingProvider: React.FC< { children: React.ReactNode } > = ( {
 } ) => {
 	const history = getHistory();
 
-	const { steps, isLoading } = useSelect(
+	// Use React state to manage steps and loading state
+	const [ stateStoreSteps, setStateStoreSteps ] = useState<
+		OnboardingStepsResponse[ 'steps' ]
+	>( [] );
+	const [ isLocalLoading, setIsLocalLoading ] = useState( true );
+
+	// Initial data fetch from store
+	const { storeSteps, isStoreLoading } = useSelect(
 		( select ) => ( {
-			steps: select( woopaymentsOnboardingStore ).getOnboardingSteps(),
-			isLoading: select(
+			storeSteps: select(
+				woopaymentsOnboardingStore
+			).getOnboardingSteps(),
+			isStoreLoading: select(
 				woopaymentsOnboardingStore
 			).isOnboardingStepsRequestPending(),
 		} ),
 		[]
 	);
 
+	// Update local state when store data changes
+	useEffect( () => {
+		if ( ! isStoreLoading && storeSteps.length > 0 ) {
+			setStateStoreSteps( storeSteps );
+			setIsLocalLoading( false );
+		}
+	}, [ storeSteps, isStoreLoading ] );
+
 	// Make UI refresh when plugin is installed.
-	const { invalidateResolutionForStoreSelector, getOnboardingStepsSuccess } =
+	const { getOnboardingStepsSuccess, invalidateResolutionForStoreSelector } =
 		useDispatch( woopaymentsOnboardingStore );
 
 	const allSteps = useMemo(
-		() => [ ...steps, ...frontEndOnlySteps ],
-		[ steps ]
+		() => [ ...stateStoreSteps, ...frontEndOnlySteps ],
+		[ stateStoreSteps ]
 	)
 		.map( ( step ) => ( {
 			...step,
@@ -133,18 +163,19 @@ export const OnboardingProvider: React.FC< { children: React.ReactNode } > = ( {
 			// Mark current step as completed
 			if ( currentStep?.status === 'incomplete' ) {
 				// Is this a BE step?
-				const isBackendStep = steps.find(
+				const isBackendStep = stateStoreSteps.find(
 					( s ) => s.id === currentStep.id
 				);
 
 				if ( isBackendStep ) {
-					const updatedSteps = steps.map( ( s ) =>
+					const updatedSteps = stateStoreSteps.map( ( s ) =>
 						s.id === currentStep.id
 							? { ...s, status: 'completed' as const }
 							: s
 					);
 
-					// Update the steps in the store
+					// Update both local state and the store
+					setStateStoreSteps( updatedSteps );
 					getOnboardingStepsSuccess( updatedSteps );
 				}
 			}
@@ -156,7 +187,7 @@ export const OnboardingProvider: React.FC< { children: React.ReactNode } > = ( {
 		}
 	}, [
 		currentStep,
-		steps,
+		stateStoreSteps,
 		allSteps,
 		navigateToStep,
 		getOnboardingStepsSuccess,
@@ -170,7 +201,7 @@ export const OnboardingProvider: React.FC< { children: React.ReactNode } > = ( {
 		<OnboardingContext.Provider
 			value={ {
 				steps: allSteps,
-				isLoading,
+				isLoading: isLocalLoading,
 				currentStep,
 				navigateToStep,
 				navigateToNextStep,
