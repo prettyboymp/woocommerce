@@ -2,62 +2,17 @@
  * External dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import clsx from 'clsx';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 /**
  * Internal dependencies
  */
+import SidebarItem from './sidebar-item';
 import {
-	SidebarItemProps,
 	WooPaymentsProviderOnboardingStep,
 } from '~/settings-payments/onboarding/types';
-import { WC_ASSET_URL } from '~/utils/admin-settings';
 import { useOnboardingContext } from '../../context/OnboardingContext';
-
-/**
- * Sidebar navigation item component
- */
-const SidebarItem = ( {
-	label,
-	isCompleted,
-	isActive,
-}: SidebarItemProps ): React.ReactNode => {
-	return (
-		<div
-			className={ clsx(
-				'settings-payments-onboarding-modal__sidebar--list-item',
-				{
-					'is-active': isActive,
-					'is-completed': isCompleted,
-				}
-			) }
-		>
-			<span className="settings-payments-onboarding-modal__sidebar--list-item-icon">
-				{ isCompleted ? (
-					<img
-						src={
-							WC_ASSET_URL +
-							'images/onboarding/icons/complete.svg'
-						}
-						alt={ __( 'Step completed', 'woocommerce' ) }
-					/>
-				) : (
-					<img
-						src={
-							WC_ASSET_URL + 'images/onboarding/icons/pending.svg'
-						}
-						alt={ __( 'Step active', 'woocommerce' ) }
-					/>
-				) }
-			</span>
-			<span className="settings-payments-onboarding-modal__sidebar--list-item-label">
-				{ label }
-			</span>
-		</div>
-	);
-};
 
 /**
  * Stepper component that renders only the active step from its children
