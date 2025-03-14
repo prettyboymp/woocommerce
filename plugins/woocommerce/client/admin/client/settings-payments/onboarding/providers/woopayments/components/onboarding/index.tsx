@@ -12,7 +12,7 @@ import { useEffect } from 'react';
 import Stepper from '~/settings-payments/onboarding/components/stepper';
 import {
 	useOnboardingContext,
-} from '~/settings-payments/onboarding/context/OnboardingContext';
+} from '../../data/onboarding-context';
 
 /**
  * RecommendedMethods component for WooPayments onboarding

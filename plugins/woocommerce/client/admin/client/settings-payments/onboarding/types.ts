@@ -12,20 +12,22 @@ export interface OnboardingModalProps {
 }
 
 /**
- * Props for the WooPayments onboarding modal.
- */
-export interface WooPaymentsModalProps {
-	isOpen: boolean;
-	setIsOpen: ( isOpen: boolean ) => void;
-}
-
-/**
  * Sidebar navigation item props
  */
 export interface SidebarItemProps {
 	label: string;
 	isCompleted?: boolean;
 	isActive?: boolean;
+}
+
+// To-do: Move WooPayments related types to a separate file.
+
+/**
+ * Props for the WooPayments onboarding modal.
+ */
+export interface WooPaymentsModalProps {
+	isOpen: boolean;
+	setIsOpen: ( isOpen: boolean ) => void;
 }
 
 /**
@@ -42,4 +44,19 @@ export interface WooPaymentsProviderOnboardingStep {
 	dependencies?: string[];
 	actions?: string[];
 	content?: ReactNode;
+}
+
+/**
+ * WooPayments provider onboarding context type.
+ */
+export interface OnboardingContextType {
+	steps: WooPaymentsProviderOnboardingStep[];
+	isLoading: boolean;
+	currentStep: WooPaymentsProviderOnboardingStep | undefined;
+	navigateToStep: ( stepKey: string ) => void;
+	navigateToNextStep: () => void;
+	getStepByKey: (
+		stepKey: string
+	) => WooPaymentsProviderOnboardingStep | undefined;
+	refreshOnboardingSteps: () => void;
 }

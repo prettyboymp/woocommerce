@@ -18,21 +18,15 @@ import { getHistory, getNewPath } from '@woocommerce/navigation';
 /**
  * Internal dependencies
  */
-import { steps as woopaymentsSteps } from '../providers/woopayments/steps';
-import { WooPaymentsProviderOnboardingStep } from '../types';
+import {
+	WooPaymentsProviderOnboardingStep,
+	OnboardingContextType
+} from '~/settings-payments/onboarding/types';
+import { steps as woopaymentsSteps } from '../steps';
 
-interface OnboardingContextType {
-	steps: WooPaymentsProviderOnboardingStep[];
-	isLoading: boolean;
-	currentStep: WooPaymentsProviderOnboardingStep | undefined;
-	navigateToStep: ( stepKey: string ) => void;
-	navigateToNextStep: () => void;
-	getStepByKey: (
-		stepKey: string
-	) => WooPaymentsProviderOnboardingStep | undefined;
-	refreshOnboardingSteps: () => void;
-}
-
+/**
+ * Context to manage onboarding steps
+ */
 const OnboardingContext = createContext< OnboardingContextType >( {
 	steps: [],
 	isLoading: true,

@@ -8,13 +8,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import '../../style.scss';
 import Modal from '~/settings-payments/onboarding/components/modal';
 import WooPaymentsOnboarding from './components/onboarding';
 import { WooPaymentsModalProps } from '~/settings-payments/onboarding/types';
 import {
 	OnboardingProvider,
-} from '../../context/OnboardingContext';
+} from './data/onboarding-context';
+import '~/settings-payments/onboarding/style.scss';
 
 /**
  * Modal component for WooPayments onboarding

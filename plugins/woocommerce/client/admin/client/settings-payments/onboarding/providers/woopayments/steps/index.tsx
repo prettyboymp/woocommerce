@@ -6,7 +6,7 @@ import React from 'react';
 /**
  * Internal dependencies
  */
-import { useOnboardingContext } from '~/settings-payments/onboarding/context/OnboardingContext';
+import { useOnboardingContext } from '../data/onboarding-context';
 import { WooPaymentsProviderOnboardingStep } from '~/settings-payments/onboarding/types';
 import WooPaymentsStepHeader from '../components/header';
 
