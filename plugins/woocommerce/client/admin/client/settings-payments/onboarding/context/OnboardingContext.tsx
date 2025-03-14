@@ -9,7 +9,10 @@ import {
 	useEffect,
 } from '@wordpress/element';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { woopaymentsOnboardingStore } from '@woocommerce/data';
+import {
+	woopaymentsOnboardingStore,
+	WooPaymentsOnboardingStepContent,
+} from '@woocommerce/data';
 import { getHistory, getNewPath } from '@woocommerce/navigation';
 
 /**
@@ -17,21 +20,6 @@ import { getHistory, getNewPath } from '@woocommerce/navigation';
  */
 import { steps as woopaymentsSteps } from '../providers/woopayments/steps';
 import { WooPaymentsProviderOnboardingStep } from '../types';
-
-/**
- * Internal dependencies
- */
-
-interface OnboardingStepsResponse {
-	steps: Array< {
-		id: string;
-		label: string;
-		path: string;
-		order: number;
-		status: 'completed' | 'incomplete';
-		dependencies: string[];
-	} >;
-}
 
 interface OnboardingContextType {
 	steps: WooPaymentsProviderOnboardingStep[];
@@ -64,9 +52,16 @@ export const OnboardingProvider: React.FC< { children: React.ReactNode } > = ( {
 
 	// Use React state to manage steps and loading state
 	const [ stateStoreSteps, setStateStoreSteps ] = useState<
-		OnboardingStepsResponse[ 'steps' ]
+		WooPaymentsOnboardingStepContent[]
 	>( [] );
-	const [ isLocalLoading, setIsLocalLoading ] = useState( true );
+	const [ isStateStoreLoading, setIsStateStoreLoading ] = useState( true );
+	const [ allSteps, setAllSteps ] = useState<
+		WooPaymentsProviderOnboardingStep[]
+	>( [] );
+
+	const { invalidateResolutionForStoreSelector } = useDispatch(
+		woopaymentsOnboardingStore
+	);
 
 	// Initial data fetch from store
 	const { storeSteps, isStoreLoading } = useSelect(
@@ -81,19 +76,9 @@ export const OnboardingProvider: React.FC< { children: React.ReactNode } > = ( {
 		[]
 	);
 
-	// Update local state when store data changes
-	useEffect( () => {
-		if ( ! isStoreLoading && storeSteps.length > 0 ) {
-			setStateStoreSteps( storeSteps );
-			setIsLocalLoading( false );
-		}
-	}, [ storeSteps, isStoreLoading ] );
-
-	const [ allSteps, setAllSteps ] = useState<
-		WooPaymentsProviderOnboardingStep[]
-	>( [] );
-
-	// Helper function to get step by key
+	/**
+	 * Helper functions
+	 */
 	const getStepByKey = useCallback(
 		( stepKey: string ) => {
 			return allSteps.find( ( step ) => step.id === stepKey );
@@ -120,58 +105,7 @@ export const OnboardingProvider: React.FC< { children: React.ReactNode } > = ( {
 		},
 		[]
 	);
-
-	// Update all steps when stateStoreSteps changes
-	useEffect( () => {
-		const mapWooPaymentsSteps = woopaymentsSteps.map( ( step ) => {
-			// If step type is backend, add the status, path and dependencies from the store
-			if ( step.type === 'backend' ) {
-				const backendStep = stateStoreSteps.find(
-					( s ) => s.id === step.id
-				);
-
-				return Object.assign( {}, step, {
-					status: backendStep?.status || 'incomplete',
-					dependencies: backendStep?.dependencies || [],
-					path: backendStep?.path,
-					// Maybe actions too
-				} );
-			}
-
-			// For frontend steps, create a base step object first
-			return Object.assign( {}, step );
-		} );
-
-		// Now determine dependencies status in a second pass to avoid stale data
-		const stepsWithDependenciesResolved = mapWooPaymentsSteps.map(
-			( step ) => {
-				if ( step.type === 'frontend' ) {
-					return {
-						...step,
-						status: areStepDependenciesCompleted(
-							step,
-							mapWooPaymentsSteps
-						)
-							? ( 'completed' as const )
-							: ( 'incomplete' as const ),
-					};
-				}
-				return step;
-			}
-		);
-
-		setAllSteps(
-			stepsWithDependenciesResolved as WooPaymentsProviderOnboardingStep[]
-		);
-	}, [ stateStoreSteps, areStepDependenciesCompleted ] );
-
-	// Make UI refresh when plugin is installed.
-	const { invalidateResolutionForStoreSelector } = useDispatch(
-		woopaymentsOnboardingStore
-	);
-
 	// Navigation helper
-	// useCallback is used to avoid re-rendering the tree each time the component is rendered
 	const navigateToStep = useCallback(
 		( stepKey: string ) => {
 			const step = getStepByKey( stepKey );
@@ -221,11 +155,66 @@ export const OnboardingProvider: React.FC< { children: React.ReactNode } > = ( {
 		invalidateResolutionForStoreSelector( 'getOnboardingSteps' );
 	}, [ invalidateResolutionForStoreSelector ] );
 
+	/**
+	 * useEffect functions
+	 */
+	// Update local state when store data changes
+	useEffect( () => {
+		if ( ! isStoreLoading && storeSteps.length > 0 ) {
+			setStateStoreSteps( storeSteps );
+			setIsStateStoreLoading( false );
+		}
+	}, [ storeSteps, isStoreLoading ] );
+
+	// Update all steps when stateStoreSteps changes
+	useEffect( () => {
+		const mapWooPaymentsSteps = woopaymentsSteps.map( ( step ) => {
+			// If step type is backend, add the status, path and dependencies from the store
+			if ( step.type === 'backend' ) {
+				const backendStep = stateStoreSteps.find(
+					( s ) => s.id === step.id
+				);
+
+				return Object.assign( {}, step, {
+					status: backendStep?.status || 'incomplete',
+					dependencies: backendStep?.dependencies || [],
+					path: backendStep?.path,
+					// Maybe actions too
+				} );
+			}
+
+			// For frontend steps, create a base step object first
+			return Object.assign( {}, step );
+		} );
+
+		// Now determine dependencies status in a second pass to avoid stale data
+		const stepsWithDependenciesResolved = mapWooPaymentsSteps.map(
+			( step ) => {
+				if ( step.type === 'frontend' ) {
+					return {
+						...step,
+						status: areStepDependenciesCompleted(
+							step,
+							mapWooPaymentsSteps
+						)
+							? ( 'completed' as const )
+							: ( 'incomplete' as const ),
+					};
+				}
+				return step;
+			}
+		);
+
+		setAllSteps(
+			stepsWithDependenciesResolved as WooPaymentsProviderOnboardingStep[]
+		);
+	}, [ stateStoreSteps, areStepDependenciesCompleted ] );
+
 	return (
 		<OnboardingContext.Provider
 			value={ {
 				steps: allSteps,
-				isLoading: isLocalLoading,
+				isLoading: isStateStoreLoading,
 				currentStep,
 				navigateToStep,
 				navigateToNextStep,
