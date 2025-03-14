@@ -8,6 +8,7 @@ import React from 'react';
  */
 import { useOnboardingContext } from '~/settings-payments/onboarding/context/OnboardingContext';
 import { WooPaymentsProviderOnboardingStep } from '~/settings-payments/onboarding/types';
+import WooPaymentsStepHeader from '../components/header';
 
 /**
  * Step Components
@@ -16,15 +17,18 @@ export const WelcomeStep = () => {
 	const { navigateToNextStep, refreshOnboardingSteps } =
 		useOnboardingContext();
 	return (
-		<div>
-			Welcome Step Content
-			<button onClick={ () => navigateToNextStep() }>
-				Next (Front-end only)
-			</button>
-			<button onClick={ () => refreshOnboardingSteps() }>
-				Refresh redux store
-			</button>
-		</div>
+		<>
+			<WooPaymentsStepHeader onClose={ () => {} } />
+			<div className="settings-payments-onboarding-modal__step-content">
+				Welcome Step Content
+				<button onClick={ () => navigateToNextStep() }>
+					Next (Front-end only)
+				</button>
+				<button onClick={ () => refreshOnboardingSteps() }>
+					Refresh redux store
+				</button>
+			</div>
+		</>
 	);
 };
 
@@ -32,15 +36,21 @@ export const JetpackStep = () => {
 	const { navigateToNextStep, refreshOnboardingSteps } =
 		useOnboardingContext();
 	return (
-		<div>
-			Jetpack Step Content{ ' ' }
-			<button onClick={ () => navigateToNextStep() }>
-				Next (Front-end only)
-			</button>
-			<button onClick={ () => refreshOnboardingSteps() }>
-				Refresh redux store
-			</button>
-		</div>
+		<>
+			<WooPaymentsStepHeader onClose={ () => {} } />
+			<div className="settings-payments-onboarding-modal__step-content">
+				<div>
+					Jetpack Step Content{ ' ' }
+					<button onClick={ () => navigateToNextStep() }>
+						Next (Front-end only)
+					</button>
+					<button onClick={ () => refreshOnboardingSteps() }>
+						Refresh redux store
+					</button>
+				</div>
+			</div>
+		</>
+		
 	);
 };
 
@@ -48,15 +58,18 @@ export const OtherStep = () => {
 	const { navigateToNextStep, refreshOnboardingSteps } =
 		useOnboardingContext();
 	return (
-		<div>
-			Other Step Content
-			<button onClick={ () => navigateToNextStep() }>
-				Next (Front-end only)
-			</button>
-			<button onClick={ () => refreshOnboardingSteps() }>
-				Refresh redux store
-			</button>
-		</div>
+		<>
+			<WooPaymentsStepHeader onClose={ () => {} } />
+			<div className="settings-payments-onboarding-modal__step-content">
+				Other Step Content
+				<button onClick={ () => navigateToNextStep() }>
+					Next (Front-end only)
+				</button>
+				<button onClick={ () => refreshOnboardingSteps() }>
+					Refresh redux store
+				</button>
+			</div>
+		</>
 	);
 };
 
@@ -64,15 +77,18 @@ export const FrontendStep = () => {
 	const { navigateToNextStep, refreshOnboardingSteps } =
 		useOnboardingContext();
 	return (
-		<div>
-			Frontend Step Content
-			<button onClick={ () => navigateToNextStep() }>
-				Next (Front-end only)
-			</button>
-			<button onClick={ () => refreshOnboardingSteps() }>
-				Refresh redux store
-			</button>
-		</div>
+		<>
+			<WooPaymentsStepHeader onClose={ () => {} } />
+			<div className="settings-payments-onboarding-modal__step-content">
+				Frontend Step Content
+				<button onClick={ () => navigateToNextStep() }>
+					Next (Front-end only)
+				</button>
+				<button onClick={ () => refreshOnboardingSteps() }>
+					Refresh redux store
+				</button>
+			</div>
+		</>
 	);
 };
 
