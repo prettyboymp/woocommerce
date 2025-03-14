@@ -15,7 +15,7 @@ import {
 } from '../../data/onboarding-context';
 
 /**
- * RecommendedMethods component for WooPayments onboarding
+ * WooPaymentsOnboarding component for the WooPayments onboarding modal.
  */
 export default function WooPaymentsOnboarding(): React.ReactNode {
 	const { steps, isLoading, currentStep } = useOnboardingContext();

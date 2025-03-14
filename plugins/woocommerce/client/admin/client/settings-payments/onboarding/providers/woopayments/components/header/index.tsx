@@ -16,7 +16,7 @@ interface WooPaymentsStepHeaderProps {
 }
 
 /**
- * RecommendedMethods component for WooPayments onboarding
+ * WooPaymentsStepHeader component for WooPayments onboarding
  */
 export default function WooPaymentsStepHeader(
 	{ onClose }: WooPaymentsStepHeaderProps
