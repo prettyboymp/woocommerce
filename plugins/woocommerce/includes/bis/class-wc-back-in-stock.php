@@ -225,9 +225,6 @@ class WC_Back_In_Stock {
 		// Templates.
 		require_once WC_ABSPATH . 'includes/bis/class-wc-bis-templates.php';
 
-		// Front-end AJAX handlers.
-		// require_once  WC_ABSPATH . 'includes/class-wc-bis-ajax.php' ;
-
 		// Account.
 		require_once WC_ABSPATH . 'includes/bis/class-wc-bis-account.php';
 
