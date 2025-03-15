@@ -106,6 +106,9 @@ const blocks = {
 	'product-gallery-thumbnails': {
 		customDir: 'product-gallery/inner-blocks/product-gallery-thumbnails',
 	},
+	'product-main-image': {
+		isExperimental: true,
+	},
 	'product-new': {},
 	'product-on-sale': {},
 	'product-query': {},

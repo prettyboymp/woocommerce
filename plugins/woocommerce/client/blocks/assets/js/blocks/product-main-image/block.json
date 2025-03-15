@@ -1,0 +1,18 @@
+{
+	"name": "woocommerce/product-main-image",
+	"version": "1.0.0",
+	"title": "Product Main Image (Experimental)",
+	"description": "Showcase your product's main image.",
+	"category": "woocommerce-product-elements",
+	"keywords": [ "WooCommerce" ],
+	"textdomain": "woocommerce",
+	"usesContext": [ "postId" ],
+	"attributes": {
+		"linkToProduct": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"apiVersion": 3,
+	"$schema": "https://schemas.wp.org/trunk/block.json"
+}
