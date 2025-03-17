@@ -99,7 +99,7 @@ if ( ! empty( $order->get_billing_first_name() ) ) {
  * @hooked WC_Structured_Data::output_structured_data() Outputs structured data.
  * @since 2.5.0
  */
-do_action( 'woocommerce_email_order_details', $order, $sent_to_admin, $plain_text, $email );
+do_action( 'woocommerce_pos_email_order_details', $order, $sent_to_admin, $plain_text, $email );
 
 /**
  * Hook for the woocommerce_email_order_meta.

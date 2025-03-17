@@ -244,8 +244,8 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 			// TODO: do the same for plain text email.
 			// Add filter to include unit price in the quantity column for order items table.
 			add_filter( 'woocommerce_email_order_items_args', array( $this, 'add_unit_price_in_quantity_arg' ), 10, 1 );
-			// Override default action handling in wc-emails.php to show the order details table with payment auth code.
-			add_action( 'woocommerce_email_order_details', array( $this, 'order_details' ), 10, 4 );
+			// Custom action to show the order details table with payment auth code.
+			add_action( 'woocommerce_pos_email_order_details', array( $this, 'order_details' ), 10, 4 );
 			$content = wc_get_template_html(
 				$this->template_html,
 				array(
