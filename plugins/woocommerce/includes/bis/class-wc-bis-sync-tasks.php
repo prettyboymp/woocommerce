@@ -37,7 +37,7 @@ class WC_BIS_Sync_Tasks {
 		add_action( 'wc_bis_process_notifications_batch', array( __CLASS__, 'async_process_notifications_batch' ), 10, 2 );
 
 		// Sync product delete.
-		add_action( 'before_delete_post', array( __CLASS__, 'handle_product_delete' ), 0 );
+		add_action( 'before_delete_post', array( __CLASS__, 'handle_product_delete' ), 10, 2 );
 
 		// Force queue notifications.
 		add_action( 'admin_init', array( __CLASS__, 'force_queue_notifications' ) );
