@@ -177,10 +177,10 @@ class Packages {
 	 * Especially useful when running actions early in the 'plugins_loaded' timeline.
 	 */
 	public static function prepare_packages() {
-		// Prepare all merged packages for initialization even if they are disabled.
+		// Set up all merged packages for initialization even if they are disabled.
 		foreach ( self::$merged_packages as $package_name => $package_class ) {
-			if ( method_exists( $package_class, 'prepare_always' ) ) {
-				call_user_func( array( $package_class, 'prepare_always' ) );
+			if ( method_exists( $package_class, 'setup' ) ) {
+				call_user_func( array( $package_class, 'setup' ) );
 			}
 		}
 

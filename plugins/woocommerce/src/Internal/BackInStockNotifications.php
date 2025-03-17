@@ -64,7 +64,7 @@ class BackInStockNotifications {
 	 *
 	 * @internal
 	 */
-	public static function prepare_always() {
+	public static function setup() {
 		// Enable/disable events when the feature flag is changed.
 		add_action( 'update_option_wc_feature_woocommerce_back_in_stock_notifications_enabled', array( __CLASS__, 'maybe_update_bis_infrastructure' ), 10, 3 );
 		add_action( 'add_option_wc_feature_woocommerce_back_in_stock_notifications_enabled', array( __CLASS__, 'handle_add_option' ), 10, 2 );
