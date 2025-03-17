@@ -23,7 +23,7 @@ class WC_BIS_Test_Helper {
 	 * @return void
 	 */
 	public static function enable_feature() {
-		update_option( BackInStockNotifications::$ENABLE_OPTION_NAME, 'yes' );
+		update_option( BackInStockNotifications::$enable_option_name, 'yes' );
 	}
 
 	/**
@@ -32,7 +32,7 @@ class WC_BIS_Test_Helper {
 	 * @return void
 	 */
 	public static function disable_feature() {
-		update_option( BackInStockNotifications::$ENABLE_OPTION_NAME, 'no' );
+		update_option( BackInStockNotifications::$enable_option_name, 'no' );
 	}
 
 	/**
@@ -41,6 +41,6 @@ class WC_BIS_Test_Helper {
 	 * @return void
 	 */
 	public static function reset_feature() {
-		delete_option( BackInStockNotifications::$ENABLE_OPTION_NAME );
+		delete_option( BackInStockNotifications::$enable_option_name );
 	}
 } 

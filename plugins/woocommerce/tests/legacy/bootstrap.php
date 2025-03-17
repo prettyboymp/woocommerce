@@ -84,6 +84,13 @@ class WC_Unit_Tests_Bootstrap {
 		*/
 		define( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH', __DIR__ . '/../../vendor/yoast/phpunit-polyfills/phpunitpolyfills-autoload.php' );
 
+		require_once $this->tests_dir . '/framework/helpers/class-wc-bis-test-helper.php';
+
+		// Enable the BIS feature flag for tests.
+		tests_add_filter( 'plugins_loaded', function() {
+			WC_BIS_Test_Helper::enable_feature();
+		}, -120 );
+
 		// load the WP testing environment.
 		require_once $this->wp_tests_dir . '/includes/bootstrap.php';
 
