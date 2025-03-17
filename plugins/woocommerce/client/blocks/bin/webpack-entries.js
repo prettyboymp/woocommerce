@@ -70,6 +70,10 @@ const blocks = {
 		isExperimental: true,
 		customDir: 'product-details',
 	},
+	'product-description': {
+		isExperimental: true,
+		customDir: 'product-description',
+	},
 	'catalog-sorting': {},
 	'coming-soon': {},
 	'customer-account': {},
@@ -102,9 +106,6 @@ const blocks = {
 	'product-gallery-large-image-next-previous': {
 		customDir:
 			'product-gallery/inner-blocks/product-gallery-large-image-next-previous',
-	},
-	'product-gallery-pager': {
-		customDir: 'product-gallery/inner-blocks/product-gallery-pager',
 	},
 	'product-gallery-thumbnails': {
 		customDir: 'product-gallery/inner-blocks/product-gallery-thumbnails',
