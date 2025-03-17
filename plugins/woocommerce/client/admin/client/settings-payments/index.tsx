@@ -2,7 +2,7 @@
  * External dependencies
  */
 import { Gridicon } from '@automattic/components';
-import { Button, SelectControl } from '@wordpress/components';
+import { Button, Placeholder, SelectControl } from '@wordpress/components';
 import { paymentSettingsStore } from '@woocommerce/data';
 import { useSelect } from '@wordpress/data';
 import React, {
@@ -73,6 +73,27 @@ const SettingsPaymentsWooCommercePaymentsChunk = lazy(
 		import(
 			/* webpackChunkName: "settings-payments-woocommerce-payments" */ './settings-payments-woocommerce-payments'
 		)
+);
+
+const SettingsPaymentsBacsChunk = lazy(
+	() =>
+		import(
+			/* webpackChunkName: "settings-payments-bacs" */ './settings-payments-bacs'
+		)
+);
+
+const SettingsPaymentsCodChunk = lazy(
+	() =>
+		import(
+			/* webpackChunkName: "settings-payments-bacs" */ './settings-payments-cod'
+			)
+);
+
+const SettingsPaymentsChequeChunk = lazy(
+	() =>
+		import(
+			/* webpackChunkName: "settings-payments-bacs" */ './settings-payments-cheque'
+			)
 );
 
 /**
@@ -333,6 +354,56 @@ export const SettingsPaymentsOfflineWrapper = () => {
 			>
 				<SettingsPaymentsOfflineChunk />
 			</Suspense>
+		</>
+	);
+};
+
+export const SettingsPaymentsBacsWrapper = () => {
+	return (
+		<>
+			<Header
+				title={ __( 'Direct bank transfer', 'woocommerce' ) }
+				backLink={ getAdminLink(
+					'admin.php?page=wc-settings&tab=checkout&section=offline'
+				) }
+			/>
+			<Suspense
+				fallback={
+					<>
+						<div className="settings-payments-bacs__container">
+							<div className="settings-payment-gateways">
+								<div className="settings-payment-gateways__header">
+									<div className="settings-payment-gateways__header-title">
+										{ __(
+											'Direct bank transfer',
+											'woocommerce'
+										) }
+									</div>
+								</div>
+								<Placeholder />
+							</div>
+						</div>
+					</>
+				}
+			>
+				<SettingsPaymentsBacsChunk />
+			</Suspense>
+		</>
+	);
+};
+
+export const SettingsPaymentsCodWrapper = () => {
+	return (
+		<>
+			<h1>COD ROOT</h1>
+		</>
+	);
+};
+
+export const SettingsPaymentsChequeWrapper = () => {
+	return (
+		<>
+			<h1>Cheque ROOT</h1>
 		</>
 	);
 };

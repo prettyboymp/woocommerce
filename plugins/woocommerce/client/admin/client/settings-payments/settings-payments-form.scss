@@ -1,0 +1,4 @@
+/* Form styling for any forms used on the settings pages. */
+.form-field:not(:first-child) {
+	margin-top: 24px;
+}

@@ -8,3 +8,8 @@ html {
 #wpcontent {
 	background-color: #fff;
 }
+
+// Fix to remove box shadow from settings cards.
+.payment-settings-card__wrapper {
+	box-shadow: none;
+}

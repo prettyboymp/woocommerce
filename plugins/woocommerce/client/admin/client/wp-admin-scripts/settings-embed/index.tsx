@@ -12,19 +12,20 @@ import { createRoot } from '@wordpress/element';
  */
 import { isFeatureEnabled } from '~/utils/features';
 import {
+	SettingsPaymentsBacsWrapper, SettingsPaymentsChequeWrapper, SettingsPaymentsCodWrapper,
 	SettingsPaymentsMainWrapper,
 	SettingsPaymentsOfflineWrapper,
 	SettingsPaymentsWooCommercePaymentsWrapper,
-} from '../../settings-payments';
+} from '~/settings-payments';
 
-import { possiblyRenderSettingsSlots } from '../../settings/settings-slots';
-import { registerTaxSettingsConflictErrorFill } from '../../settings/conflict-error-slotfill';
-import { registerPaymentsSettingsBannerFill } from '../../payments/payments-settings-banner-slotfill';
-import { registerSiteVisibilitySlotFill } from '../../launch-your-store';
-import { registerBlueprintSlotfill } from '../../blueprint';
-import { registerSettingsEmailColorPaletteFill } from '../../settings-email/settings-email-color-palette-slotfill';
-import { registerSettingsEmailImageUrlFill } from '../../settings-email/settings-email-image-url-slotfill';
-import { registerSettingsEmailPreviewFill } from '../../settings-email/settings-email-preview-slotfill';
+import { possiblyRenderSettingsSlots } from '~/settings/settings-slots';
+import { registerTaxSettingsConflictErrorFill } from '~/settings/conflict-error-slotfill';
+import { registerPaymentsSettingsBannerFill } from '~/payments/payments-settings-banner-slotfill';
+import { registerSiteVisibilitySlotFill } from '~/launch-your-store';
+import { registerBlueprintSlotfill } from '~/blueprint';
+import { registerSettingsEmailColorPaletteFill } from '~/settings-email/settings-email-color-palette-slotfill';
+import { registerSettingsEmailImageUrlFill } from '~/settings-email/settings-email-image-url-slotfill';
+import { registerSettingsEmailPreviewFill } from '~/settings-email/settings-email-preview-slotfill';
 import { registerSettingsEmailFeedbackFill } from '~/settings-email/settings-email-feedback-slotfill';
 
 const renderPaymentsSettings = () => {
@@ -41,6 +42,15 @@ const renderPaymentsSettings = () => {
 	);
 	const paymentsOfflineRoot = document.getElementById(
 		'experimental_wc_settings_payments_offline'
+	);
+	const bacsRoot = document.getElementById(
+		'experimental_wc_settings_payments_bacs'
+	);
+	const chequeRoot = document.getElementById(
+		'experimental_wc_settings_payments_cheque'
+	);
+	const codRoot = document.getElementById(
+		'experimental_wc_settings_payments_cod'
 	);
 	const paymentsWooCommercePaymentsRoot = document.getElementById(
 		'experimental_wc_settings_payments_woocommerce_payments'
@@ -62,6 +72,33 @@ const renderPaymentsSettings = () => {
 				null
 			)
 		).render( <SettingsPaymentsOfflineWrapper /> );
+	}
+
+	if ( bacsRoot ) {
+		createRoot(
+			bacsRoot.insertBefore(
+				document.createElement( 'div' ),
+				null
+			)
+		).render( <SettingsPaymentsBacsWrapper />);
+	}
+
+	if ( chequeRoot ) {
+		createRoot(
+			chequeRoot.insertBefore(
+				document.createElement( 'div' ),
+				null
+			)
+		).render( <SettingsPaymentsChequeWrapper />);
+	}
+
+	if ( codRoot ) {
+		createRoot(
+			codRoot.insertBefore(
+				document.createElement( 'div' ),
+				null
+			)
+		).render( <SettingsPaymentsCodWrapper />);
 	}
 
 	if ( paymentsWooCommercePaymentsRoot ) {
