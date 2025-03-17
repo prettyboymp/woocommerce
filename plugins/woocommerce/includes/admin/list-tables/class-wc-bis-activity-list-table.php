@@ -6,6 +6,8 @@
  * @since    1.0.0
  */
 
+declare( strict_types=1 );
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -45,7 +47,9 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 	private $notification;
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 *
+	 * @param int $notification The notification ID to show activity for.
 	 */
 	public function __construct( $notification = 0 ) {
 		global $status, $page;
@@ -62,27 +66,26 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * This is a default column renderer
+	 * This is a default column renderer.
 	 *
-	 * @param $item - row (key, value array)
-	 * @param $column_name - string (key)
-	 * @return string
+	 * @param array  $item         Row data.
+	 * @param string $column_name Column name.
+	 * @return void
 	 */
 	public function column_default( $item, $column_name ) {
 
 		if ( isset( $item[ $column_name ] ) ) {
-
 			echo wp_kses_post( $item[ $column_name ] );
-
 		} else {
-
 			/**
 			 * Fires in each custom column in the Notifications Activity list table.
 			 *
 			 * This hook only fires if the current column_name is not set inside the $item's keys.
 			 *
+			 * @since 9.9.0
+			 *
 			 * @param string $column_name The name of the column to display.
-			 * @param array  $item
+			 * @param array  $item        The item data.
 			 */
 			do_action( 'manage_bis_notifications_activity_custom_column', $column_name, $item );
 		}
@@ -91,7 +94,8 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 	/**
 	 * Handles the title column output.
 	 *
-	 * @param array $item
+	 * @param array $item Row data.
+	 * @return void
 	 */
 	public function column_notification_id( $item ) {
 
@@ -100,7 +104,6 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 		if ( ! empty( $this->notification ) ) {
 			echo esc_html( $title );
 		} else {
-
 			$actions = array(
 				/* translators: view link label */
 				'edit' => sprintf( '<a href="' . admin_url( 'admin.php?page=bis_notifications&section=edit&notification=%d' ) . '">%s</a>', $item['notification_id'], __( 'View Notification', 'woocommerce' ) ),
@@ -119,11 +122,12 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 	/**
 	 * Handles the user column output.
 	 *
-	 * @param array $item
+	 * @param array $item Row data.
+	 * @return void
 	 */
 	public function column_user( $item ) {
 
-		if ( 0 == $item['user_id'] && empty( $item['user_email'] ) ) {
+		if ( 0 === (int) $item['user_id'] && empty( $item['user_email'] ) ) {
 			?>
 			<mark>
 				<?php
@@ -150,14 +154,13 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 	/**
 	 * Handles the product column output.
 	 *
-	 * @param array $item
+	 * @param array $item Row data.
+	 * @return void
 	 */
 	public function column_product( $item ) {
 		$product = wc_get_product( absint( $item['product_id'] ) );
 		if ( is_a( $product, 'WC_Product' ) ) {
-
 			printf( '<a target="_blank" href="' . esc_url( admin_url( 'post.php?post=%d&action=edit' ) ) . '">%s</a>', esc_html( $product->get_parent_id() ? absint( $product->get_parent_id() ) : absint( $item['product_id'] ) ), esc_html( $product->get_parent_id() ? $product->get_name() : $product->get_title() ) );
-
 		} else {
 			echo '&mdash;';
 		}
@@ -166,7 +169,8 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 	/**
 	 * Handles the type column output.
 	 *
-	 * @param array $item
+	 * @param array $item Row data.
+	 * @return void
 	 */
 	public function column_type( $item ) {
 		echo esc_html( wc_bis_get_activity_type_label( $item['type'] ) );
@@ -175,7 +179,8 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 	/**
 	 * Handles the date column output.
 	 *
-	 * @param array $item
+	 * @param array $item Row data.
+	 * @return void
 	 */
 	public function column_date( $item ) {
 
@@ -195,6 +200,8 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 	/**
 	 * Get a list of columns. The format is:
 	 * 'internal-name' => 'Title'
+	 *
+	 * @return array
 	 */
 	public function get_columns() {
 
@@ -211,6 +218,8 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 
 		/**
 		 * Filters the columns displayed in the Notifications list table.
+		 *
+		 * @since 9.9.0
 		 *
 		 * @param array $columns An associative array of column headings.
 		 */
@@ -238,13 +247,11 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 	public function prepare_items() {
 
 		/**
-		 * `woocommerce_bis_admin_activity_per_page` filter.
-		 *
 		 * Control how many activities are displayed per page in admin list table.
 		 *
-		 * @since  1.3.2
+		 * @since 9.9.0
 		 *
-		 * @param  int  $per_page
+		 * @param int $per_page Number of items per page.
 		 * @return int
 		 */
 		$per_page = (int) apply_filters( 'woocommerce_bis_admin_activity_per_page', $this->notification ? 10 : 20 );
@@ -256,9 +263,9 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 
 		// Setup params.
-		$paged   = isset( $_REQUEST['paged'] ) ? max( 0, intval( $_REQUEST['paged'] ) - 1 ) : 0;
-		$orderby = ( isset( $_REQUEST['orderby'] ) && in_array( $_REQUEST['orderby'], array_keys( $this->get_sortable_columns() ) ) ) ? wc_clean( $_REQUEST['orderby'] ) : 'id';
-		$order   = ( isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], array( 'asc', 'desc' ) ) ) ? wc_clean( $_REQUEST['order'] ) : 'desc';
+		$paged   = isset( $_REQUEST['paged'] ) ? max( 0, (int) wp_unslash( $_REQUEST['paged'] ) - 1 ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$orderby = ( isset( $_REQUEST['orderby'] ) && in_array( wp_unslash( $_REQUEST['orderby'] ), array_keys( $this->get_sortable_columns() ), true ) ) ? wc_clean( wp_unslash( $_REQUEST['orderby'] ) ) : 'id'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$order   = ( isset( $_REQUEST['order'] ) && in_array( wp_unslash( $_REQUEST['order'] ), array( 'asc', 'desc' ), true ) ) ? wc_clean( wp_unslash( $_REQUEST['order'] ) ) : 'desc'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		// Query args.
 		$query_args = array(
@@ -272,18 +279,18 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 		}
 
 		// Search.
-		if ( isset( $_REQUEST['s'] ) && ! empty( $_REQUEST['s'] ) ) {
-			$query_args['search'] = wc_clean( $_REQUEST['s'] );
+		if ( isset( $_REQUEST['s'] ) && ! empty( $_REQUEST['s'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$query_args['search'] = wc_clean( wp_unslash( $_REQUEST['s'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 
 		// Filters.
-		if ( ! empty( $_GET['_customer_filter'] ) ) {
-			$filter                = absint( $_GET['_customer_filter'] );
+		if ( ! empty( $_GET['_customer_filter'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$filter                = absint( wp_unslash( $_GET['_customer_filter'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$query_args['user_id'] = array( $filter );
 		}
-		if ( ! empty( $_GET['_type_filter'] ) ) {
+		if ( ! empty( $_GET['_type_filter'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			// Sanity check.
-			$filter = in_array( $_GET['_type_filter'], array_keys( wc_bis_get_activity_types() ) ) ? wc_clean( $_GET['_type_filter'] ) : '';
+			$filter = in_array( wp_unslash( $_GET['_type_filter'] ), array_keys( wc_bis_get_activity_types() ), true ) ? wc_clean( wp_unslash( $_GET['_type_filter'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if ( $filter ) {
 				$query_args['type'] = array( $filter );
 			}
@@ -291,7 +298,7 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 
 		// Fetch the items.
 		// It's safe to ignore semgrep warning, as everything is properly escaped.
-		$this->items = WC_BIS()->db->activity->query( $query_args ); // nosemgrep: audit.php.wp.security.sqli.input-in-sinks
+		$this->items = WC_BIS()->db->activity->query( $query_args ); // nosemgrep: audit.php.wp.security.sqli.input-in-sinks.
 
 		// Count total items.
 		$query_args['count'] = true;
@@ -302,9 +309,9 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 		// Configure pagination.
 		$this->set_pagination_args(
 			array(
-				'total_items' => $total_items, // total items defined above
-				'per_page'    => $per_page, // per page constant defined at top of method
-				'total_pages' => ceil( $total_items / $per_page ), // calculate pages count
+				'total_items' => $total_items, // Total items defined above.
+				'per_page'    => $per_page, // Per page constant defined at top of method.
+				'total_pages' => ceil( $total_items / $per_page ), // Calculate pages count.
 			)
 		);
 	}
@@ -328,7 +335,6 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 				</p>
 			</div>
 			<?php
-
 		} else {
 			?>
 			<p class="main">
@@ -341,25 +347,25 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 	/**
 	 * Construct a link string from args.
 	 *
-	 * @param  array  $args
-	 * @param  string $label
-	 * @param  string $class
+	 * @param array  $args  Query arguments.
+	 * @param string $label Link label.
+	 * @param string $css_class CSS class for the link.
 	 * @return string
 	 */
-	protected function get_link( $args, $label, $class = '' ) {
+	protected function get_link( $args, $label, $css_class = '' ) {
 
 		$base_url = admin_url( 'admin.php?page=bis_notifications' );
 		$url      = add_query_arg( $args, $base_url );
 
 		$class_html   = '';
 		$aria_current = '';
-		if ( ! empty( $class ) ) {
+		if ( ! empty( $css_class ) ) {
 			$class_html = sprintf(
 				' class="%s"',
-				esc_attr( $class )
+				esc_attr( $css_class )
 			);
 
-			if ( 'current' === $class ) {
+			if ( 'current' === $css_class ) {
 				$aria_current = ' aria-current="page"';
 			}
 		}
@@ -376,7 +382,7 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 	/**
 	 * Display table extra nav.
 	 *
-	 * @param  string $which top|bottom
+	 * @param string $which The location of the extra tablenav: 'top' or 'bottom'.
 	 * @return void
 	 */
 	public function extra_tablenav( $which ) {
@@ -405,9 +411,8 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 		$user_string = '';
 		$user_id     = '';
 
-		if ( ! empty( $_GET['_customer_filter'] ) ) {
-
-			$user_id = wc_clean( $_GET['_customer_filter'] );
+		if ( ! empty( $_GET['_customer_filter'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$user_id = wc_clean( wp_unslash( $_GET['_customer_filter'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$user    = get_user_by( 'id', absint( $user_id ) );
 
 			if ( $user ) {
@@ -435,7 +440,7 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	protected function display_types_dropdown() {
-		$type_filter = ! empty( $_GET['_type_filter'] ) ? wc_clean( $_GET['_type_filter'] ) : 0;
+		$type_filter = ! empty( $_GET['_type_filter'] ) ? wc_clean( wp_unslash( $_GET['_type_filter'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		?>
 		<label for="filter-by-type" class="screen-reader-text"><?php esc_html_e( 'Filter by type', 'woocommerce' ); ?></label>
 		<select name="_type_filter" id="filter-by-type">
@@ -465,24 +470,23 @@ class WC_BIS_Activity_List_Table extends WP_List_Table {
 		$months      = WC_BIS()->db->activity->get_distinct_dates();
 		$month_count = count( $months );
 
-		if ( ! $month_count || ( 1 == $month_count && 0 == $months[0]->month ) ) {
+		if ( ! $month_count || ( 1 === $month_count && 0 === (int) $months[0]->month ) ) {
 			return;
 		}
 
-		$m = isset( $_GET['m'] ) ? (int) $_GET['m'] : 0;
+		$m = isset( $_GET['m'] ) ? (int) wp_unslash( $_GET['m'] ) : 0; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 		?>
 		<label for="filter-by-date" class="screen-reader-text"><?php esc_html_e( 'Filter by date', 'woocommerce' ); ?></label>
 		<select name="m" id="filter-by-date">
 			<option<?php selected( $m, 0 ); ?> value="0"><?php esc_html_e( 'All dates', 'woocommerce' ); ?></option>
 			<?php
 			foreach ( $months as $arc_row ) {
-				if ( 0 == $arc_row->year ) {
+				if ( 0 === (int) $arc_row->year ) {
 					continue;
 				}
 
 				$month = zeroise( $arc_row->month, 2 );
 				$year  = $arc_row->year;
-				/* translators: 1: selected attrbute 2: value 3: label */
 				printf(
 					"<option %s value='%s'>%s</option>\n",
 					selected( $m, $year . $month, false ),

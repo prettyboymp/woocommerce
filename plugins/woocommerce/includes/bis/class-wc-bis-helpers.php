@@ -6,6 +6,8 @@
  * @since    1.2.0
  */
 
+declare( strict_types=1 );
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -29,9 +31,9 @@ class WC_BIS_Helpers {
 	/**
 	 * Simple runtime cache getter.
 	 *
-	 * @param  string $key
-	 * @param  string $group_key
-	 * @return mixed
+	 * @param string $key The cache key to retrieve.
+	 * @param string $group_key Optional. The cache group key.
+	 * @return mixed The cached value or null if not found.
 	 */
 	public static function cache_get( $key, $group_key = '' ) {
 
@@ -40,7 +42,7 @@ class WC_BIS_Helpers {
 		if ( $group_key ) {
 
 			$group_id = self::cache_get( $group_key . '_id' );
-			if ( $group_id ) { // ΒΟΟΜ
+			if ( $group_id ) { // ΒΟΟΜ.
 				$value = self::cache_get( $group_key . '_' . $group_id . '_' . $key );
 			}
 		} elseif ( isset( self::$cache[ $key ] ) ) {
@@ -53,9 +55,9 @@ class WC_BIS_Helpers {
 	/**
 	 * Simple runtime cache setter.
 	 *
-	 * @param  string $key
-	 * @param  mixed  $value
-	 * @param  string $group_key
+	 * @param string $key The cache key to set.
+	 * @param mixed  $value The value to cache.
+	 * @param string $group_key Optional. The cache group key.
 	 * @return void
 	 */
 	public static function cache_set( $key, $value, $group_key = '' ) {
@@ -78,9 +80,8 @@ class WC_BIS_Helpers {
 	/**
 	 * Simple runtime cache unsetter.
 	 *
-	 * @param  string $key
-	 * @param  mixed  $value
-	 * @param  string $group_key
+	 * @param string $key The cache key to delete.
+	 * @param string $group_key Optional. The cache group key.
 	 * @return void
 	 */
 	public static function cache_delete( $key, $group_key = '' ) {
@@ -101,9 +102,7 @@ class WC_BIS_Helpers {
 	 *
 	 * @since  5.7.4
 	 *
-	 * @param  string $key
-	 * @param  string $group_key
-	 * @param  mixed  $value
+	 * @param string $group_key Optional. The cache group key to invalidate. If empty, invalidates all cache.
 	 * @return void
 	 */
 	public static function cache_invalidate( $group_key = '' ) {

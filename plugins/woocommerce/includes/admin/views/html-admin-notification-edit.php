@@ -147,7 +147,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<?php if ( isset( $user ) && is_a( $user, 'WP_User' ) ) { ?>
 									<a href="<?php echo esc_url( get_edit_user_link( $user->ID ) ); ?>"><?php esc_html_e( 'View profile &rarr;', 'woocommerce' ); ?></a>
 								<?php } ?>
-								<a href="<?php echo esc_url( admin_url( self::PAGE_URL . '&s=' . urlencode( $notification->get_user_email() ) ) ); ?>"><?php esc_html_e( 'View notifications &rarr;', 'woocommerce' ); ?></a>
+								<a href="<?php echo esc_url( admin_url( self::PAGE_URL . '&s=' . rawurlencode( $notification->get_user_email() ) ) ); ?>"><?php esc_html_e( 'View notifications &rarr;', 'woocommerce' ); ?></a>
 							</div>
 
 							<div class="wp-clearfix"></div>
@@ -242,7 +242,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div><!-- .postbox -->
 
 				<h2 class="activity-table-title"><?php esc_html_e( 'Activity', 'woocommerce' ); ?></h2>
-				<input type="hidden" name="page" value="<?php echo isset( $_REQUEST['page'] ) ? intval( $_REQUEST['page'] ) : 1; ?>"/>
+				<input type="hidden" name="page" value="<?php echo isset( $_REQUEST['page'] ) ? (int) $_REQUEST['page'] : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>"/>
 				<?php $activity_table->display(); ?>
 
 			</div><!-- #container2 -->

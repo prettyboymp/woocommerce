@@ -45,7 +45,7 @@ class BackInStockNotifications {
 	 * 
 	 * @var string
 	 */
-	public static $ENABLE_OPTION_NAME = 'wc_feature_woocommerce_back_in_stock_notifications_enabled';
+	public static $enable_option_name = 'wc_feature_woocommerce_back_in_stock_notifications_enabled';
 
 	/**
 	 * Package name.
@@ -117,7 +117,7 @@ class BackInStockNotifications {
 			'is_experimental'    => false,
 			'is_legacy'          => true,
 			'disable_ui'         => false,
-			'option_key'         => self::$ENABLE_OPTION_NAME,
+			'option_key'         => self::$enable_option_name,
 		);
 
 		$features_controller->add_feature_definition(

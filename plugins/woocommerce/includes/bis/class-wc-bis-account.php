@@ -6,6 +6,8 @@
  * @since    1.0.0
  */
 
+declare( strict_types=1 );
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -71,6 +73,7 @@ class WC_BIS_Account {
 	/**
 	 * Render page html.
 	 *
+	 * @param string $current_page Current page.
 	 * @return void
 	 */
 	public function render_page( $current_page ) {
@@ -192,7 +195,7 @@ class WC_BIS_Account {
 				'product_exists' => true,
 				'product_status' => 'publish',
 				'user_id'        => get_current_user_id(),
-				'meta_query'     => array(
+				'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 					'relation' => 'AND',
 					array(
 						'key'     => 'awaiting_verification',
@@ -237,20 +240,21 @@ class WC_BIS_Account {
 		);
 	}
 
-	/*
-	---------------------------------------------------*/
-	/*
-		Action handlers.                                 */
-	/*---------------------------------------------------*/
+	/**
+	 * Action handlers.
+	 */
 
 	/**
 	 * Process registration.
 	 *
+	 * @throws Exception If the notification cannot be created or updated.
+	 *
 	 * @return void
 	 */
 	public function process_registration() {
+		// Can't add nonce to front end registration form as the HTML page can be cached.
 
-		if ( ! empty( $_GET['wc_bis_registration'] ) ) {
+		if ( ! empty( $_GET['wc_bis_registration'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 			if ( ! is_wc_endpoint_url( 'backinstock' ) ) {
 				return;
@@ -269,7 +273,7 @@ class WC_BIS_Account {
 			}
 
 			// Sanity.
-			if ( ! isset( $_GET['args'] ) ) {
+			if ( ! isset( $_GET['args'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				return;
 			}
 
@@ -277,8 +281,8 @@ class WC_BIS_Account {
 
 				// Init props.
 				$args = array(
-					'product_id'     => isset( $_GET['args']['product_id'] ) ? absint( $_GET['args']['product_id'] ) : 0,
-					'subscribe_date' => isset( $_GET['args']['subscribe_date'] ) ? absint( $_GET['args']['subscribe_date'] ) : 0,
+					'product_id'     => isset( $_GET['args']['product_id'] ) ? absint( $_GET['args']['product_id'] ) : 0, // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					'subscribe_date' => isset( $_GET['args']['subscribe_date'] ) ? absint( $_GET['args']['subscribe_date'] ) : 0, // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				);
 
 				// Parse current current user.
@@ -287,8 +291,8 @@ class WC_BIS_Account {
 				$args['user_email'] = $user->user_email;
 
 				// Parse posted attributes.
-				$handle_posted_attributes = isset( $_GET['handle_posted_attributes'] ) && 1 == $_GET['handle_posted_attributes'] ? true : false;
-				$posted_attributes        = isset( $_GET['posted_attributes'] ) ? wc_clean( $_GET['posted_attributes'] ) : array();
+				$handle_posted_attributes = isset( $_GET['handle_posted_attributes'] ) && 1 === (int) $_GET['handle_posted_attributes'] ? true : false; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$posted_attributes        = isset( $_GET['posted_attributes'] ) ? wc_clean( wp_unslash( $_GET['posted_attributes'] ) ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 				/**
 				 * Handle sign-up.
@@ -312,6 +316,14 @@ class WC_BIS_Account {
 			}
 
 			if ( ! empty( $redirect_url ) ) {
+				/**
+				 * `woocommerce_bis_after_login_page_redirect_url` filter.
+				 *
+				 * @since 9.9.0
+				 *
+				 * @param string $redirect_url Redirect URL.
+				 * @param WC_BIS_Notification_Data $notification Notification data.
+				 */
 				$redirect_url = apply_filters( 'woocommerce_bis_after_login_page_redirect_url', $redirect_url, $notification );
 				wp_safe_redirect( $redirect_url );
 				exit;
@@ -327,7 +339,7 @@ class WC_BIS_Account {
 	 *
 	 * @since 1.2.0
 	 *
-	 * @throws Exception
+	 * @throws Exception If the notification cannot be created or updated.
 	 *
 	 * @param  array $args        Notification args.
 	 * @param  array $attributes  Variation attributes in a 'key=>value' format.
@@ -370,6 +382,14 @@ class WC_BIS_Account {
 					if ( $notification->maybe_setup_verification_data() ) {
 
 						$notification->save();
+
+						/**
+						 * `woocommerce_bis_verify_notification_to_customer` action: Send the verification e-mail.
+						 *
+						 * @since 9.9.0
+						 *
+						 * @param WC_BIS_Notification_Data $notification Notification data.
+						 */
 						do_action( 'woocommerce_bis_verify_notification_to_customer', $notification );
 
 						if ( $account_created ) {
@@ -413,7 +433,13 @@ class WC_BIS_Account {
 						wc_add_notice( $notice_text, 'success' );
 					}
 
-					// Send email.
+					/**
+					 * `woocommerce_bis_confirm_notification_to_customer` action: Send the confirmation e-mail.
+					 *
+					 * @since 9.9.0
+					 *
+					 * @param WC_BIS_Notification_Data $notification Notification data.
+					 */
 					do_action( 'woocommerce_bis_confirm_notification_to_customer', $notification );
 				}
 			}
@@ -454,7 +480,13 @@ class WC_BIS_Account {
 						wc_add_notice( $notice_text, 'success' );
 					}
 
-					// Send email.
+					/**
+					 * `woocommerce_bis_confirm_notification_to_customer` action: Send the confirmation e-mail.
+					 *
+					 * @since 9.9.0
+					 *
+					 * @param WC_BIS_Notification_Data $notification Notification data.
+					 */
 					do_action( 'woocommerce_bis_confirm_notification_to_customer', $notification );
 
 				} else {
@@ -469,6 +501,13 @@ class WC_BIS_Account {
 						wc_add_notice( esc_html__( 'Thanks for signing up! Please complete the sign-up process by following the verification link sent to your e-mail.', 'woocommerce' ) );
 					}
 
+					/**
+					 * `woocommerce_bis_verify_notification_to_customer` action: Send the verification e-mail.
+					 *
+					 * @since 9.9.0
+					 *
+					 * @param WC_BIS_Notification_Data $notification Notification data.
+					 */
 					do_action( 'woocommerce_bis_verify_notification_to_customer', $notification );
 				}
 
@@ -493,7 +532,7 @@ class WC_BIS_Account {
 			return;
 		}
 
-		if ( ! is_numeric( $_GET['wc_bis_reactivate'] ) || ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( wc_clean( $_REQUEST['_wpnonce'] ), 'reactivate_notification_account_nonce' ) ) {
+		if ( ! is_numeric( $_GET['wc_bis_reactivate'] ) || ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( wc_clean( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'reactivate_notification_account_nonce' ) ) {
 			wc_add_notice( __( 'We were unable to process your request. Please try again later, or get in touch with us for assistance.', 'woocommerce' ), 'error' );
 			wp_safe_redirect( $this->get_endpoint_url() );
 			exit;
@@ -540,7 +579,7 @@ class WC_BIS_Account {
 			return;
 		}
 
-		if ( ! is_numeric( $_GET['wc_bis_deactivate'] ) || ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( wc_clean( $_REQUEST['_wpnonce'] ), 'deactivate_notification_account_nonce' ) ) {
+		if ( ! is_numeric( $_GET['wc_bis_deactivate'] ) || ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( wc_clean( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'deactivate_notification_account_nonce' ) ) {
 			wc_add_notice( __( 'We were unable to process your request. Please try again later, or get in touch with us for assistance.', 'woocommerce' ), 'error' );
 			wp_safe_redirect( $this->get_endpoint_url() );
 			exit;
@@ -587,13 +626,14 @@ class WC_BIS_Account {
 	 * @return void
 	 */
 	public function process_verify() {
-		if ( empty( $_GET['bis_ver'] ) ) {
+		// Not adding nonce check as the implementation below should allow for single use of the link without expiration.
+		if ( empty( $_GET['bis_ver'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
 		}
 
-		$requested_notification = isset( $_GET['bis_ver_id'] ) ? absint( $_GET['bis_ver_id'] ) : 0;
-		$verify_hash            = isset( $_GET['bis_ver'] ) ? wc_clean( $_GET['bis_ver'] ) : '';
-		$verify_code            = isset( $_GET['bis_ver_code'] ) ? wc_clean( $_GET['bis_ver_code'] ) : '';
+		$requested_notification = isset( $_GET['bis_ver_id'] ) ? absint( wp_unslash( $_GET['bis_ver_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$verify_hash            = isset( $_GET['bis_ver'] ) ? wc_clean( wp_unslash( $_GET['bis_ver'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$verify_code            = isset( $_GET['bis_ver_code'] ) ? wc_clean( wp_unslash( $_GET['bis_ver_code'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$current_notification   = wc_bis_get_notification( $requested_notification );
 
 		/**
@@ -624,7 +664,7 @@ class WC_BIS_Account {
 			exit;
 		}
 
-		$hash_to_check = urldecode( base64_decode( $verify_hash ) );
+		$hash_to_check = urldecode( base64_decode( $verify_hash ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 		if ( ! $current_notification->validate_verification_code( $verify_code, $hash_to_check ) ) {
 			wc_add_notice( esc_html__( 'Invalid link.', 'woocommerce' ), 'error' );
 			wp_safe_redirect( $url );
@@ -647,7 +687,13 @@ class WC_BIS_Account {
 		$current_notification->save();
 		$current_notification->add_event( 'verified' );
 
-		// Send the confirmation e-mail.
+		/**
+		 * `woocommerce_bis_confirm_notification_to_customer` action: Send the confirmation e-mail.
+		 *
+		 * @since 9.9.0
+		 *
+		 * @param WC_BIS_Notification_Data $current_notification Notification data.
+		 */
 		do_action( 'woocommerce_bis_confirm_notification_to_customer', $current_notification );
 
 		/* translators: %s product name */
@@ -673,18 +719,19 @@ class WC_BIS_Account {
 	 * @return void
 	 */
 	public function process_unsubscribe() {
+		// Not adding nonce check as the implementation below should allow for single use of the link without expiration.
 
-		if ( empty( $_GET['bis_unsub'] ) ) {
+		if ( empty( $_GET['bis_unsub'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
 		}
 
-		$requested_notification = isset( $_GET['bis_unsub_id'] ) ? absint( $_GET['bis_unsub_id'] ) : 0;
-		$unsubscribing_hash     = wc_clean( $_GET['bis_unsub'] );
-		$is_confirmation        = isset( $_GET['bis_unsub_ref'] ) && 'confirmation' === $_GET['bis_unsub_ref'];
+		$requested_notification = isset( $_GET['bis_unsub_id'] ) ? absint( $_GET['bis_unsub_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$unsubscribing_hash     = wc_clean( wp_unslash( $_GET['bis_unsub'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$is_confirmation        = isset( $_GET['bis_unsub_ref'] ) && 'confirmation' === $_GET['bis_unsub_ref']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		// Check for backwards compatibility hashes.
 		// Hint: Previous hash requests didn't include a 'bis_unsub_id' param.
-		$is_legacy_request = empty( $requested_notification );
+		$is_legacy_request = false;
 
 		/**
 		 * `woocommerce_bis_unsubscribe_url` filter.
@@ -709,7 +756,7 @@ class WC_BIS_Account {
 		} else {
 
 			$current_notification = wc_bis_get_notification( $requested_notification );
-			$hash_to_check        = urldecode( base64_decode( $unsubscribing_hash ) );
+			$hash_to_check        = urldecode( base64_decode( $unsubscribing_hash ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 			if ( ! $current_notification || ! $current_notification->validate_hash( $hash_to_check ) ) {
 				// Reset for safety.
 				$current_notification = false;
@@ -846,7 +893,7 @@ class WC_BIS_Account {
 			WC()->session->set_customer_session_cookie( true );
 		}
 
-		if ( ! is_numeric( $_GET['wc_bis_resend_notification'] ) || ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( wc_clean( $_REQUEST['_wpnonce'] ), 'resend_verification_email_nonce' ) ) {
+		if ( ! is_numeric( $_GET['wc_bis_resend_notification'] ) || ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( wc_clean( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'resend_verification_email_nonce' ) ) {
 			wc_add_notice( __( 'We were unable to process your request. Please try again later, or get in touch with us for assistance.', 'woocommerce' ), 'error' );
 			wp_safe_redirect( $url );
 			exit;
@@ -868,7 +915,13 @@ class WC_BIS_Account {
 		// Before make sure that a new verification code is sent every time.
 		$notification->invalidate_verification_data();
 
-		// Force send the email.
+		/**
+		 * `woocommerce_bis_verify_notification_to_customer` action.
+		 *
+		 * @since 9.9.0
+		 *
+		 * @param WC_BIS_Notification_Data $notification Notification data.
+		 */
 		do_action( 'woocommerce_bis_verify_notification_to_customer', $notification );
 
 		/* translators: %s user email */
@@ -899,7 +952,7 @@ class WC_BIS_Account {
 			WC()->session->set_customer_session_cookie( true );
 		}
 
-		if ( ! is_numeric( $_GET['wc_bis_cancel_pending_notification'] ) || ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( wc_clean( $_REQUEST['_wpnonce'] ), 'cancel_pending_verification_nonce' ) ) {
+		if ( ! is_numeric( $_GET['wc_bis_cancel_pending_notification'] ) || ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( wc_clean( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'cancel_pending_verification_nonce' ) ) {
 			wc_add_notice( __( 'We were unable to process your request. Please try again later, or get in touch with us for assistance.', 'woocommerce' ), 'error' );
 			wp_safe_redirect( $url );
 			exit;
@@ -931,15 +984,13 @@ class WC_BIS_Account {
 	}
 
 	/*
-	---------------------------------------------------*/
-	/*
-		Account Page.                                    */
-	/*---------------------------------------------------*/
+	 * Account Page.
+	 */
 
 	/**
 	 * Add navigation item.
 	 *
-	 * @param  array $items
+	 * @param  array $items Items.
 	 * @return array
 	 */
 	public function add_navigation_item( $items ) {
@@ -959,7 +1010,7 @@ class WC_BIS_Account {
 	/**
 	 * Add endpoint.
 	 *
-	 * @param  array $settings
+	 * @param  array $settings Settings.
 	 * @return array
 	 */
 	public function add_endpoint_setting( $settings ) {
@@ -1005,8 +1056,8 @@ class WC_BIS_Account {
 	/**
 	 * Get the endpoint page title.
 	 *
-	 * @param  string $title
-	 * @param  string $endpoint
+	 * @param  string $title    Title.
+	 * @param  string $endpoint Endpoint.
 	 * @return string
 	 */
 	public function get_endpoint_title( $title, $endpoint ) {
@@ -1021,7 +1072,7 @@ class WC_BIS_Account {
 	/**
 	 * Add endpoint slug as query var.
 	 *
-	 * @param  array $query_vars
+	 * @param  array $query_vars Query vars.
 	 * @return array
 	 */
 	public function add_query_var( $query_vars ) {
@@ -1029,17 +1080,15 @@ class WC_BIS_Account {
 		return $query_vars;
 	}
 
-	/*
-	---------------------------------------------------*/
-	/*
-		User data functions.                             */
-	/*---------------------------------------------------*/
+	/**
+	 * User data functions.
+	 */
 
 	/**
 	 * Process data when re-activate.
 	 *
-	 * @param  string $email
-	 * @return void
+	 * @param  string $email Email.
+	 * @return int|false
 	 */
 	public function create_customer( $email ) {
 
@@ -1063,7 +1112,7 @@ class WC_BIS_Account {
 	/**
 	 * Migrating existing notifications when user is added.
 	 *
-	 * @param  int $user_id
+	 * @param  int $user_id User ID.
 	 * @return void
 	 */
 	public function migrate_new_user_data( $user_id ) {
@@ -1096,10 +1145,10 @@ class WC_BIS_Account {
 	}
 
 	/**
-	 * Migrating existing notifications when a user changes his email.
+	 * Migrating existing notifications when a user changes their email.
 	 *
-	 * @param  int   $user_id
-	 * @param  array $old_user
+	 * @param  int   $user_id  User ID.
+	 * @param  array $old_user Previous user data.
 	 * @return void
 	 */
 	public function migrate_updated_user_data( $user_id, $old_user ) {

@@ -6,6 +6,8 @@
  * @since    1.0.0
  */
 
+declare( strict_types=1 );
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -24,7 +26,6 @@ class WC_BIS_Install {
 	 */
 	public static function init() {
 		wc_deprecated_function( 'WC_BIS_Install::init', '9.9.0' );
-		// TODO: Haven't ported the db upgrade when updating to 1.1.0, so perhaps add some info to folks on older BIS?
 	}
 
 	/**
@@ -181,9 +182,9 @@ class WC_BIS_Install {
 	/**
 	 * Update DB version to current.
 	 *
-	 * @param  string $version
+	 * @param  string $version Optional. The version to update to.
 	 */
-	public static function update_db_version( $version = null ) {
+	public static function update_db_version( $version = null ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		wc_deprecated_function( 'WC_BIS_Install::update_db_version', '9.9.0' );
 		// Migrated to WC core's install routine.
 	}
@@ -202,11 +203,11 @@ class WC_BIS_Install {
 	/**
 	 * Show row meta on the plugin screen.
 	 *
-	 * @param   mixed $links
-	 * @param   mixed $file
+	 * @param   mixed $links Array of links.
+	 * @param   mixed $file  File.
 	 * @return  array
 	 */
-	public static function plugin_row_meta( $links, $file ) {
+	public static function plugin_row_meta( $links, $file ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		wc_deprecated_function( 'WC_BIS_Install::plugin_row_meta', '9.9.0' );
 		// Migrated to WC core's install routine.
 		return array();

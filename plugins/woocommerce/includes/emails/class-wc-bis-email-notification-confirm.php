@@ -141,6 +141,15 @@ if ( ! class_exists( 'WC_BIS_Email_Notification_Confirm', false ) ) :
 		 * @return string
 		 */
 		public function get_into_content() {
+			return $this->get_intro_content();
+		}
+
+		/**
+		 * Get email content.
+		 *
+		 * @return string
+		 */
+		public function get_intro_content() {
 			return apply_filters( 'woocommerce_bis_email_intro_content', $this->format_string( $this->get_option( 'intro_content', $this->get_default_intro_content() ) ), $this->object, $this );
 		}
 
@@ -155,7 +164,7 @@ if ( ! class_exists( 'WC_BIS_Email_Notification_Confirm', false ) ) :
 			$template_args = array(
 				'notification'       => $this->object,
 				'email_heading'      => $this->get_heading(),
-				'intro_content'      => $this->get_into_content(),
+				'intro_content'      => $this->get_intro_content(),
 				'additional_content' => $this->get_additional_content(),
 				'email'              => $this,
 			);
@@ -179,7 +188,7 @@ if ( ! class_exists( 'WC_BIS_Email_Notification_Confirm', false ) ) :
 					'notification'       => $this->object,
 					'product'            => $this->object->get_product(),
 					'email_heading'      => $this->get_heading(),
-					'intro_content'      => $this->get_into_content(),
+					'intro_content'      => $this->get_intro_content(),
 					'additional_content' => $this->get_additional_content(),
 					'email'              => $this,
 				)

@@ -1,12 +1,12 @@
 <?php
-declare( strict_types=1 );
-
 /**
  * WC_BIS_Admin_Dashboard_Page class
  *
  * @package  WooCommerce Back In Stock Notifications
  * @since    1.0.0
  */
+
+declare( strict_types=1 );
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

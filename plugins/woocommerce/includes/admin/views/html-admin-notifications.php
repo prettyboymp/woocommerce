@@ -28,9 +28,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<p class="search-box">
 				<label for="post-search-input" class="screen-reader-text"><?php esc_html_e( 'Search Notifications', 'woocommerce' ); ?>:</label>
 				<input type="search" value="<?php echo esc_attr( $search ); ?>" name="s" id="bis-search-input">
-				<input type="submit" value="<?php echo esc_attr( 'Search', 'woocommerce' ); ?>" class="button" id="search-submit" name="">
+				<input type="submit" value="<?php echo esc_attr__( 'Search', 'woocommerce' ); ?>" class="button" id="search-submit" name="">
 			</p>
-			<input type="hidden" name="page" value="<?php echo isset( $_REQUEST['page'] ) ? esc_attr( wc_clean( $_REQUEST['page'] ) ) : ''; ?>"/>
+			<input type="hidden" name="page" value="<?php echo isset( $_REQUEST['page'] ) ? (int) $_REQUEST['page'] : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>"/>
 			<?php $table->display(); ?>
 		</form>
 

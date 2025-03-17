@@ -1,7 +1,12 @@
 <?php
 /**
  * Class WC_Back_In_Stock
+ *
+ * @package WooCommerce Back In Stock Notifications
+ * @since   9.9.0
  */
+
+declare( strict_types=1 );
 
 use Automattic\Jetpack\Constants;
 
@@ -72,7 +77,7 @@ class WC_Back_In_Stock {
 	 *
 	 * @var WC_Back_In_Stock
 	 */
-	protected static $_instance = null;
+	protected static $_instance = null; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * Main WC_Back_In_Stock instance. Ensures only one instance is loaded or can be loaded - @see 'WC_BIS()'.
@@ -144,8 +149,8 @@ class WC_Back_In_Stock {
 	/**
 	 * Plugin version getter.
 	 *
-	 * @param  boolean $base
-	 * @param  string  $version
+	 * @param  bool   $base   Base.
+	 * @param  string $version Version.
 	 * @return string
 	 */
 	public function get_plugin_version( $base = false, $version = '' ) {
@@ -239,7 +244,6 @@ class WC_Back_In_Stock {
 		if ( is_admin() ) {
 			$this->admin_includes();
 		}
-
 	}
 
 	/**
@@ -257,8 +261,8 @@ class WC_Back_In_Stock {
 		require_once WC_ABSPATH . 'includes/admin/class-wc-bis-admin-activity-page.php';
 
 		// List Tables.
-		require_once WC_ABSPATH . 'includes/admin/list-tables/class-wc-bis-admin-list-table-notifications.php';
-		require_once WC_ABSPATH . 'includes/admin/list-tables/class-wc-bis-admin-list-table-activity.php';
+		require_once WC_ABSPATH . 'includes/admin/list-tables/class-wc-bis-notifications-list-table.php';
+		require_once WC_ABSPATH . 'includes/admin/list-tables/class-wc-bis-activity-list-table.php';
 	}
 
 	/**
@@ -266,15 +270,14 @@ class WC_Back_In_Stock {
 	 */
 	public function load_translation() {
 		wc_deprecated_function( __METHOD__, '9.9.0' );
-
 	}
 
 	/**
 	 * Log using 'WC_Logger' class.
 	 *
-	 * @param  string $message
-	 * @param  string $level
-	 * @param  string $context
+	 * @param  string $message Message.
+	 * @param  string $level   Level.
+	 * @param  string $context Context.
 	 */
 	public function log( $message, $level, $context ) {
 		$logger = wc_get_logger();
@@ -313,7 +316,7 @@ class WC_Back_In_Stock {
 	/**
 	 * Checks if the current admin screen belongs to extension.
 	 *
-	 * @param   array $extra_screens_to_check (Optional)
+	 * @param   array $extra_screens_to_check (Optional).
 	 * @return  bool
 	 */
 	public function is_current_screen( $extra_screens_to_check = array() ) {
@@ -326,7 +329,7 @@ class WC_Back_In_Stock {
 			return true;
 		}
 
-		if ( ! empty( $extra_screens_to_check ) && in_array( $screen_id, $extra_screens_to_check ) ) {
+		if ( ! empty( $extra_screens_to_check ) && in_array( $screen_id, $extra_screens_to_check, true ) ) {
 			return true;
 		}
 
@@ -336,7 +339,7 @@ class WC_Back_In_Stock {
 	/**
 	 * Returns URL to a doc or support resource.
 	 *
-	 * @param  string $handle
+	 * @param  string $handle Resource handle.
 	 * @return string
 	 */
 	public function get_resource_url( $handle ) {
@@ -365,7 +368,7 @@ if ( ! function_exists( 'WC_BIS' ) ) {
 	 *
 	 * @return  WC_Back_In_Stock
 	 */
-	function WC_BIS() {
+	function WC_BIS() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid, Universal.Files.SeparateFunctionsFromOO.Mixed
 		return WC_Back_In_Stock::instance();
 	}
 
@@ -374,4 +377,3 @@ if ( ! function_exists( 'WC_BIS' ) ) {
 	// and during which the standalone plugin gets deactivated.
 	WC_BIS();
 }
-

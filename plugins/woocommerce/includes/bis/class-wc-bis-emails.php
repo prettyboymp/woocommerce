@@ -6,6 +6,8 @@
  * @since    1.0.0
  */
 
+declare( strict_types=1 );
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -54,19 +56,19 @@ class WC_BIS_Emails {
 	/**
 	 * Registers custom emails actions.
 	 *
-	 * @param  array $actions
+	 * @param  array $actions Array of actions.
 	 * @return array
 	 */
 	public function email_actions( $actions ) {
 
-		// WC_BIS_Email_Notification_Received
+		// WC_BIS_Email_Notification_Received.
 		$actions[] = 'woocommerce_bis_send_notification_to_customer';
 		$actions[] = 'woocommerce_bis_force_send_notification_to_customer';
 
-		// WC_BIS_Email_Notification_Confirm
+		// WC_BIS_Email_Notification_Confirm.
 		$actions[] = 'woocommerce_bis_confirm_notification_to_customer';
 
-		// WC_BIS_Email_Notification_Verify
+		// WC_BIS_Email_Notification_Verify.
 		$actions[] = 'woocommerce_bis_verify_notification_to_customer';
 
 		return $actions;
@@ -77,7 +79,7 @@ class WC_BIS_Emails {
 	 *
 	 * @since 1.3.2
 	 *
-	 * @param  WC_Notification_Data $notification
+	 * @param  WC_Notification_Data $notification Notification data.
 	 * @return void
 	 */
 	public function maybe_restore_customer_data( $notification ) {
@@ -128,8 +130,8 @@ class WC_BIS_Emails {
 	/**
 	 * Prints in the email.
 	 *
-	 * @param  WC_BIS_Notification_Data $notification
-	 * @param  WC_Email                 $email
+	 * @param  WC_BIS_Notification_Data $notification Notification data.
+	 * @param  WC_Email                 $email (Optional).
 	 * @return void
 	 */
 	public function notification_email_html( $notification, $email = null ) {
@@ -147,10 +149,19 @@ class WC_BIS_Emails {
 		$is_user = $user && is_a( $user, 'WP_User' );
 
 		// Unsubscribe URL.
+		/**
+		 * `woocommerce_bis_email_received_unsubscribe_href` filter.
+		 *
+		 * @since 9.9.0
+		 *
+		 * @param string $url
+		 * @param WC_BIS_Notification_Data $notification
+		 * @return string
+		 */
 		$base_url         = (string) apply_filters( 'woocommerce_bis_email_received_unsubscribe_href', get_permalink( wc_get_page_id( 'shop' ) ), $notification );
 		$unsubscribe_href = add_query_arg(
 			array(
-				'bis_unsub'     => urlencode( base64_encode( $notification->get_hash() ) ),
+				'bis_unsub'     => rawurlencode( base64_encode( $notification->get_hash() ) ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 				'bis_unsub_ref' => 'notification',
 				'bis_unsub_id'  => $notification->get_id(),
 			),
@@ -161,7 +172,7 @@ class WC_BIS_Emails {
 		$template_args = array(
 			'notification'       => $notification,
 			'product'            => $product,
-			'intro_content'      => $email->get_into_content(),
+			'intro_content'      => $email->get_intro_content(),
 			'additional_content' => $email->get_additional_content(),
 			'is_user'            => $is_user,
 			'unsubscribe_href'   => $unsubscribe_href,
@@ -171,6 +182,14 @@ class WC_BIS_Emails {
 		// Render notification part.
 		wc_get_template(
 			'emails/html-back-in-stock-notification-received.php',
+			/**
+			 * `woocommerce_bis_email_received_template_args` filter.
+			 *
+			 * @since 9.9.0
+			 *
+			 * @param array $template_args
+			 * @return array
+			 */
 			(array) apply_filters( 'woocommerce_bis_email_received_template_args', $template_args, $notification, $email )
 		);
 	}
@@ -178,8 +197,8 @@ class WC_BIS_Emails {
 	/**
 	 * Prints in the email.
 	 *
-	 * @param  WC_BIS_Notification_Data $notification
-	 * @param  WC_Email                 $email
+	 * @param  WC_BIS_Notification_Data $notification Notification data.
+	 * @param  WC_Email                 $email (Optional).
 	 * @return void
 	 */
 	public function confirm_notification_email_html( $notification, $email = null ) {
@@ -197,10 +216,19 @@ class WC_BIS_Emails {
 		$is_user = $user && is_a( $user, 'WP_User' );
 
 		// Unsubscribe URL.
+		/**
+		 * `woocommerce_bis_email_confirm_unsubscribe_href` filter.
+		 *
+		 * @since 9.9.0
+		 *
+		 * @param string $url
+		 * @param WC_BIS_Notification_Data $notification
+		 * @return string
+		 */
 		$base_url         = (string) apply_filters( 'woocommerce_bis_email_confirm_unsubscribe_href', $notification->get_product_permalink(), $notification );
 		$unsubscribe_href = add_query_arg(
 			array(
-				'bis_unsub'     => urlencode( base64_encode( $notification->get_hash() ) ),
+				'bis_unsub'     => rawurlencode( base64_encode( $notification->get_hash() ) ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 				'bis_unsub_ref' => 'confirmation',
 				'bis_unsub_id'  => $notification->get_id(),
 			),
@@ -211,7 +239,7 @@ class WC_BIS_Emails {
 		$template_args = array(
 			'notification'       => $notification,
 			'product'            => $product,
-			'intro_content'      => $email->get_into_content(),
+			'intro_content'      => $email->get_intro_content(),
 			'additional_content' => $email->get_additional_content(),
 			'is_user'            => $is_user,
 			'unsubscribe_href'   => $unsubscribe_href,
@@ -221,6 +249,16 @@ class WC_BIS_Emails {
 		// Render notification part.
 		wc_get_template(
 			'emails/html-back-in-stock-notification-confirm.php',
+			/**
+			 * `woocommerce_bis_email_confirm_template_args` filter.
+			 *
+			 * @since 9.9.0
+			 *
+			 * @param array $template_args
+			 * @param WC_BIS_Notification_Data $notification
+			 * @param WC_Email $email
+			 * @return array
+			 */
 			(array) apply_filters( 'woocommerce_bis_email_confirm_template_args', $template_args, $notification, $email )
 		);
 	}
@@ -230,8 +268,8 @@ class WC_BIS_Emails {
 	 *
 	 * @since 1.2.0
 	 *
-	 * @param  WC_BIS_Notification_Data $notification
-	 * @param  WC_Email                 $email
+	 * @param  WC_BIS_Notification_Data $notification Notification data.
+	 * @param  WC_Email                 $email (Optional).
 	 * @return void
 	 */
 	public function verify_notification_email_html( $notification, $email = null ) {
@@ -249,10 +287,19 @@ class WC_BIS_Emails {
 		$is_user = $user && is_a( $user, 'WP_User' );
 
 		// Verification URL.
+		/**
+		 * `woocommerce_bis_email_verify_button_href` filter.
+		 *
+		 * @since 9.9.0
+		 *
+		 * @param string $url
+		 * @param WC_BIS_Notification_Data $notification
+		 * @return string
+		 */
 		$base_url                          = (string) apply_filters( 'woocommerce_bis_email_verify_button_href', get_permalink( wc_get_page_id( 'shop' ) ), $notification );
 		$verification_href                 = add_query_arg(
 			array(
-				'bis_ver'      => urlencode( base64_encode( $notification->get_verification_hash() ) ),
+				'bis_ver'      => rawurlencode( base64_encode( $notification->get_verification_hash() ) ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 				'bis_ver_id'   => $notification->get_id(),
 				'bis_ver_code' => $notification->get_meta( '_verification_code' ),
 			),
@@ -264,7 +311,7 @@ class WC_BIS_Emails {
 		$template_args = array(
 			'notification'                      => $notification,
 			'product'                           => $product,
-			'intro_content'                     => $email->get_into_content(),
+			'intro_content'                     => $email->get_intro_content(),
 			'verification_href'                 => $verification_href,
 			'verification_expiration_threshold' => $verification_expiration_threshold,
 			'is_user'                           => $is_user,
@@ -275,6 +322,16 @@ class WC_BIS_Emails {
 		// Render notification part.
 		wc_get_template(
 			'emails/html-back-in-stock-notification-verify.php',
+			/**
+			 * `woocommerce_bis_email_verify_template_args` filter.
+			 *
+			 * @since 9.9.0
+			 *
+			 * @param array $template_args
+			 * @param WC_BIS_Notification_Data $notification
+			 * @param WC_Email $email
+			 * @return array
+			 */
 			(array) apply_filters( 'woocommerce_bis_email_verify_template_args', $template_args, $notification, $email )
 		);
 	}
@@ -282,9 +339,9 @@ class WC_BIS_Emails {
 	/**
 	 * Prints CSS in the emails.
 	 *
-	 * @param  string   $css
-	 * @param  WC_Email $email (Optional)
-	 * @return void
+	 * @param  string   $css Basic set of CSS rules to append to.
+	 * @param  WC_Email $email (Optional).
+	 * @return string
 	 */
 	public function add_stylesheets( $css, $email = null ) {
 		// Hint: $email param is not added until WC 3.6.
@@ -296,7 +353,7 @@ class WC_BIS_Emails {
 		 *
 		 * @return array
 		 */
-		if ( ( is_null( $email ) || ! in_array( $email->id, (array) apply_filters( 'woocommerce_bis_emails_to_style', array( 'bis_notification_confirm', 'bis_notification_received', 'bis_notification_verify' ) ) ) ) ) {
+		if ( ( is_null( $email ) || ! in_array( $email->id, (array) apply_filters( 'woocommerce_bis_emails_to_style', array( 'bis_notification_confirm', 'bis_notification_received', 'bis_notification_verify' ) ), true ) ) ) {
 			return $css;
 		}
 
@@ -307,7 +364,16 @@ class WC_BIS_Emails {
 		// Email body background color.
 		$body = get_option( 'woocommerce_email_body_background_color' );
 		// Primary color.
-		$base      = get_option( 'woocommerce_email_base_color' );
+		$base = get_option( 'woocommerce_email_base_color' );
+		/**
+		 * `woocommerce_bis_email_base_text_color` filter.
+		 *
+		 * @since 9.9.0
+		 *
+		 * @param string $color
+		 * @param WC_Email $email
+		 * @return string
+		 */
 		$base_text = (string) apply_filters( 'woocommerce_bis_email_base_text_color', wc_light_or_dark( $base, '#202020', '#ffffff' ), $email );
 
 		ob_start();

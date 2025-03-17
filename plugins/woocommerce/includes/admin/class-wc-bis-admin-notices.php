@@ -6,6 +6,8 @@
  * @since    1.0.0
  */
 
+declare( strict_types=1 );
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -59,11 +61,12 @@ class WC_BIS_Admin_Notices {
 	 *
 	 * @since 1.7.0 Added the args.actions parameter.
 	 *
-	 * @param  string  $text
-	 * @param  mixed   $args
-	 * @param  boolean $save_notice
+	 * @param string  $text       The notice text.
+	 * @param mixed   $args       Additional arguments for the notice.
+	 * @param boolean $save_notice Whether to save the notice for the next request.
+	 * @return boolean False as the method is deprecated.
 	 */
-	public static function add_notice( $text, $args, $save_notice = false ) {
+	public static function add_notice( $text, $args, $save_notice = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		wc_deprecated_function( __METHOD__, '9.9.0' );
 		return false;
 	}
@@ -71,12 +74,12 @@ class WC_BIS_Admin_Notices {
 	/**
 	 * Get a setting for a notice type.
 	 *
-	 * @param  string $notice_name
-	 * @param  string $key
-	 * @param  mixed  $default
-	 * @return array
+	 * @param string $notice_name   The notice name.
+	 * @param string $key           The setting key.
+	 * @param mixed  $default_value The default value if setting not found.
+	 * @return array Empty array as the method is deprecated.
 	 */
-	public static function get_notice_option( $notice_name, $key, $default = null ) {
+	public static function get_notice_option( $notice_name, $key, $default_value = null ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		wc_deprecated_function( __METHOD__, '9.9.0' );
 		return array();
 	}
@@ -84,12 +87,12 @@ class WC_BIS_Admin_Notices {
 	/**
 	 * Set a setting for a notice type.
 	 *
-	 * @param  string $notice_name
-	 * @param  string $key
-	 * @param  mixed  $value
-	 * @return array
+	 * @param string $notice_name The notice name.
+	 * @param string $key         The setting key.
+	 * @param mixed  $value       The value to set.
+	 * @return array Empty array as the method is deprecated.
 	 */
-	public static function set_notice_option( $notice_name, $key, $value ) {
+	public static function set_notice_option( $notice_name, $key, $value ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		wc_deprecated_function( __METHOD__, '9.9.0' );
 		return array();
 	}
@@ -97,21 +100,21 @@ class WC_BIS_Admin_Notices {
 	/**
 	 * Checks if a maintenance notice is visible.
 	 *
-	 * @param  string $notice_name
-	 * @return boolean
+	 * @param string $notice_name The notice name to check.
+	 * @return boolean True if the notice is visible.
 	 */
 	public static function is_maintenance_notice_visible( $notice_name ) {
-		return in_array( $notice_name, self::$maintenance_notices );
+		return in_array( $notice_name, self::$maintenance_notices, true );
 	}
 
 	/**
 	 * Checks if a dismissible notice has been dismissed in the past.
 	 *
-	 * @param  string $notice_name
-	 * @return boolean
+	 * @param string $notice_name The notice name to check.
+	 * @return boolean True if the notice has been dismissed.
 	 */
 	public static function is_dismissible_notice_dismissed( $notice_name ) {
-		return in_array( $notice_name, self::$dismissed_notices );
+		return in_array( $notice_name, self::$dismissed_notices, true );
 	}
 
 	/**
@@ -136,21 +139,22 @@ class WC_BIS_Admin_Notices {
 	}
 
 	/**
-	 * Add a dimissible notice/error.
+	 * Add a dismissible notice/error.
 	 *
-	 * @param  string $text
-	 * @param  mixed  $args
+	 * @param string $text The notice text.
+	 * @param mixed  $args Additional arguments for the notice.
 	 */
-	public static function add_dismissible_notice( $text, $args ) {
+	public static function add_dismissible_notice( $text, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		wc_deprecated_function( __METHOD__, '9.9.0' );
 	}
 
 	/**
 	 * Remove a dismissible notice.
 	 *
-	 * @param  string $notice_name
+	 * @param string $notice_name The notice name to remove.
+	 * @return boolean False as the method is deprecated.
 	 */
-	public static function remove_dismissible_notice( $notice_name ) {
+	public static function remove_dismissible_notice( $notice_name ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		wc_deprecated_function( __METHOD__, '9.9.0' );
 		return false;
 	}
@@ -158,9 +162,10 @@ class WC_BIS_Admin_Notices {
 	/**
 	 * Add a maintenance notice to be displayed.
 	 *
-	 * @param  string $notice_name
+	 * @param string $notice_name The notice name to add.
+	 * @return boolean False as the method is deprecated.
 	 */
-	public static function add_maintenance_notice( $notice_name ) {
+	public static function add_maintenance_notice( $notice_name ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		wc_deprecated_function( __METHOD__, '9.9.0' );
 		return false;
 	}
@@ -168,9 +173,10 @@ class WC_BIS_Admin_Notices {
 	/**
 	 * Remove a maintenance notice.
 	 *
-	 * @param  string $notice_name
+	 * @param string $notice_name The notice name to remove.
+	 * @return boolean False as the method is deprecated.
 	 */
-	public static function remove_maintenance_notice( $notice_name ) {
+	public static function remove_maintenance_notice( $notice_name ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		wc_deprecated_function( __METHOD__, '9.9.0' );
 		return false;
 	}
@@ -185,9 +191,9 @@ class WC_BIS_Admin_Notices {
 	/**
 	 * Dismisses a notice. Dismissible maintenance notices cannot be dismissed forever.
 	 *
-	 * @param  string $notice
+	 * @param string $notice The notice to dismiss.
 	 */
-	public static function dismiss_notice( $notice ) {
+	public static function dismiss_notice( $notice ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		wc_deprecated_function( __METHOD__, '9.9.0' );
 	}
 }

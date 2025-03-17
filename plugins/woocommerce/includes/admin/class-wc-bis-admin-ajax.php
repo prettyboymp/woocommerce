@@ -1,12 +1,12 @@
 <?php
-declare( strict_types=1 );
-
 /**
  * WC_BIS_Admin_Ajax class
  *
  * @package  WooCommerce Back In Stock Notifications
  * @since    1.0.0
  */
+
+declare( strict_types=1 );
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -58,7 +58,7 @@ class WC_BIS_Admin_Ajax {
 		$failure = array(
 			'result' => 'failure',
 		);
-		return $failure;
+		wp_send_json( $failure );
 	}
 
 	/*
@@ -155,7 +155,15 @@ class WC_BIS_Admin_Ajax {
 			wp_send_json( $failure );
 		}
 
-		$range    = isset( $_POST['date_range'] ) ? wc_clean( wp_unslash( $_POST['date_range'] ) ) : 'week';
+		$range = isset( $_POST['date_range'] ) ? wc_clean( wp_unslash( $_POST['date_range'] ) ) : 'week';
+		/**
+		 * Filter: woocommerce_bis_most_subscribed_products_sql_limit
+		 *
+		 * Filters the maximum number of products to show in the most subscribed products list.
+		 *
+		 * @since 9.9.0
+		 * @param int $limit The maximum number of products to return. Default 5.
+		 */
 		$limit    = (int) apply_filters( 'woocommerce_bis_most_subscribed_products_sql_limit', 5 );
 		$products = array();
 		$results  = array();
@@ -232,6 +240,14 @@ class WC_BIS_Admin_Ajax {
 		if ( ! empty( $_GET['limit'] ) ) {
 			$limit = absint( $_GET['limit'] );
 		} else {
+			/**
+			 * Filter the number of products returned in JSON search results.
+			 *
+			 * Used elsewhere in WooCommerce core.
+			 *
+			 * @since 9.9.0
+			 * @param int $limit The maximum number of products to return. Default 30.
+			 */
 			$limit = absint( apply_filters( 'woocommerce_json_search_limit', 30 ) );
 		}
 
@@ -252,6 +268,14 @@ class WC_BIS_Admin_Ajax {
 			$products[ $product_object->get_id() ] = rawurldecode( $formatted_name );
 		}
 
+		/**
+		 * Filter: woocommerce_json_search_found_products
+		 *
+		 * Used elsewhere in WooCommerce core.
+		 *
+		 * @since 9.9.0
+		 * @param array $products The products array.
+		 */
 		wp_send_json( apply_filters( 'woocommerce_json_search_found_products', $products ) );
 	}
 }

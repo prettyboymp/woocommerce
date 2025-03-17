@@ -6,6 +6,8 @@
  * @since    1.0.0
  */
 
+declare( strict_types=1 );
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -24,6 +26,9 @@ class WC_BIS_Admin_Notifications_Page {
 	 */
 	const PAGE_URL = 'admin.php?page=bis_notifications';
 
+	/**
+	 * Initialize the class.
+	 */
 	public static function init() {
 		// Add JS template.
 		add_action( 'admin_footer', array( __CLASS__, 'add_js_template' ) );
@@ -34,14 +39,14 @@ class WC_BIS_Admin_Notifications_Page {
 	 */
 	public static function output() {
 
-		if ( isset( $_GET['bis_notice'] ) ) {
+		if ( isset( $_GET['bis_notice'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$updated_notice_args = array(
 				'id'                 => 'message',
 				'type'               => 'success',
 				'additional_classes' => array( 'updated' ),
 				'dismissible'        => false,
 			);
-			switch ( $_GET['bis_notice'] ) {
+			switch ( $_GET['bis_notice'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				case 'deleted':
 					wp_admin_notice( __( 'Notification deleted.', 'woocommerce' ), $updated_notice_args );
 					break;
@@ -52,15 +57,20 @@ class WC_BIS_Admin_Notifications_Page {
 					wp_admin_notice( __( 'Notification updated.', 'woocommerce' ), $updated_notice_args );
 					break;
 				case 'sent':
-					$recipient = isset( $_GET['recipient'] ) ? $_GET['recipient'] : '';
+					$recipient = isset( $_GET['recipient'] ) ? sanitize_text_field( wp_unslash( $_GET['recipient'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					/* translators: %s user email */
 					wp_admin_notice( sprintf( __( 'Notification sent to "%s".', 'woocommerce' ), $recipient ), $updated_notice_args );
 					break;
 				case 'verification_email_sent':
-					$recipient = isset( $_GET['recipient'] ) ? $_GET['recipient'] : '';
+					$recipient = isset( $_GET['recipient'] ) ? sanitize_text_field( wp_unslash( $_GET['recipient'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					/* translators: %s user email */
 					wp_admin_notice( sprintf( __( 'Verification e-mail sent to "%s".', 'woocommerce' ), $recipient ), $updated_notice_args );
 					break;
+				case 'queued_aborted':
+					wp_admin_notice( __( 'Queued notifications aborted.', 'woocommerce' ), $updated_notice_args );
+					break;
 				case 'error':
-					$message = isset( $_GET['error'] ) ? $_GET['error'] : __( 'An error occurred.', 'woocommerce' );
+					$message                     = isset( $_GET['error'] ) ? sanitize_text_field( wp_unslash( $_GET['error'] ) ) : __( 'An error occurred.', 'woocommerce' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					$updated_notice_args['type'] = 'error';
 					wp_admin_notice( $message, $updated_notice_args );
 					break;
@@ -71,7 +81,7 @@ class WC_BIS_Admin_Notifications_Page {
 			}
 		}
 
-		$search = isset( $_REQUEST['s'] ) ? sanitize_text_field( $_REQUEST['s'] ) : '';
+		$search = isset( $_REQUEST['s'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$table  = new WC_BIS_Notifications_List_Table();
 		$table->prepare_items();
 
@@ -142,7 +152,7 @@ class WC_BIS_Admin_Notifications_Page {
 					$edit_url = add_query_arg(
 						array(
 							'bis_notice' => 'error',
-							'error' => $e->getMessage(),
+							'error'      => $e->getMessage(),
 						),
 						$edit_url
 					);
@@ -152,7 +162,7 @@ class WC_BIS_Admin_Notifications_Page {
 			// Process action.
 			if ( ! empty( $_POST['wc_bis_action'] ) ) {
 
-				$action        = wc_clean( $_POST['wc_bis_action'] );
+				$action        = wc_clean( wp_unslash( $_POST['wc_bis_action'] ) );
 				$should_update = false;
 				$update_args   = array();
 
@@ -162,12 +172,21 @@ class WC_BIS_Admin_Notifications_Page {
 						$product = $notification->get_product();
 
 						if ( $notification->is_active() && $product->is_in_stock() ) {
+							/**
+							 * Action: woocommerce_bis_force_send_notification_to_customer
+							 *
+							 * Fires when a notification is manually sent to a customer.
+							 *
+							 * @since 9.9.0
+							 *
+							 * @param WC_BIS_Notification_Data $notification The notification object.
+							 */
 							do_action( 'woocommerce_bis_force_send_notification_to_customer', $notification );
 							/* translators: user email */
 							$edit_url = add_query_arg(
 								array(
 									'bis_notice' => 'sent',
-									'recipient' => $notification->get_user_email(),
+									'recipient'  => $notification->get_user_email(),
 								),
 								$edit_url
 							);
@@ -175,7 +194,7 @@ class WC_BIS_Admin_Notifications_Page {
 							$edit_url = add_query_arg(
 								array(
 									'bis_notice' => 'error',
-									'error' => __( 'Failed to send notification. Please make sure that (a) the notification is active, and (b) the listed product is available.', 'woocommerce' ),
+									'error'      => __( 'Failed to send notification. Please make sure that (a) the notification is active, and (b) the listed product is available.', 'woocommerce' ),
 								),
 								$edit_url
 							);
@@ -203,12 +222,21 @@ class WC_BIS_Admin_Notifications_Page {
 						$product = $notification->get_product();
 
 						if ( ! $notification->is_verified() ) {
+							/**
+							 * Action: woocommerce_bis_verify_notification_to_customer
+							 *
+							 * Fires when a verification email is sent to a customer.
+							 *
+							 * @since 1.0.0
+							 *
+							 * @param WC_BIS_Notification_Data $notification The notification object.
+							 */
 							do_action( 'woocommerce_bis_verify_notification_to_customer', $notification );
 							/* translators: user email */
 							$edit_url = add_query_arg(
 								array(
 									'bis_notice' => 'verification_email_sent',
-									'recipient' => $notification->get_user_email(),
+									'recipient'  => $notification->get_user_email(),
 								),
 								$edit_url
 							);
@@ -229,7 +257,7 @@ class WC_BIS_Admin_Notifications_Page {
 					$edit_url = add_query_arg(
 						array(
 							'bis_notice' => 'error',
-							'error' => $e->getMessage(),
+							'error'      => $e->getMessage(),
 						),
 						$edit_url
 					);
@@ -305,12 +333,12 @@ class WC_BIS_Admin_Notifications_Page {
 				if ( ! empty( $notification_exists ) ) {
 					$object = current( $notification_exists );
 					if ( is_a( $object, 'WC_BIS_Notification_Data' ) ) {
-						/* translators: %s duplicate notification edit url */
-						wp_admin_notice( 
-							sprintf( 
-								__( 'A <a href="%s">notification</a> for the same product and customer already exists in your database.', 'woocommerce' ), 
-								admin_url( 'admin.php?page=bis_notifications&section=edit&notification=' . $object->get_id() ) 
-							), 
+						wp_admin_notice(
+							sprintf(
+								/* translators: %s duplicate notification edit url */
+								__( 'A <a href="%s">notification</a> for the same product and customer already exists in your database.', 'woocommerce' ),
+								admin_url( 'admin.php?page=bis_notifications&section=edit&notification=' . $object->get_id() )
+							),
 							array(
 								'id'                 => 'message',
 								'additional_classes' => array( 'error' ),
@@ -336,7 +364,7 @@ class WC_BIS_Admin_Notifications_Page {
 							array(
 								'section'      => 'edit',
 								'notification' => $id,
-								'bis_notice' => 'created',
+								'bis_notice'   => 'created',
 							),
 							self::PAGE_URL
 						);
@@ -345,11 +373,14 @@ class WC_BIS_Admin_Notifications_Page {
 					}
 				}
 			} catch ( Exception $e ) {
-				wp_admin_notice( $e->getMessage(), array(
-					'id'                 => 'message',
-					'additional_classes' => array( 'error' ),
-					'dismissible'        => false,
-				) );
+				wp_admin_notice(
+					$e->getMessage(),
+					array(
+						'id'                 => 'message',
+						'additional_classes' => array( 'error' ),
+						'dismissible'        => false,
+					)
+				);
 
 			}
 		}
@@ -369,18 +400,18 @@ class WC_BIS_Admin_Notifications_Page {
 
 		if ( isset( $notification ) && $notification ) {
 			$notification->delete();
-			
+
 			wp_safe_redirect( add_query_arg( 'bis_notice', 'deleted', admin_url( self::PAGE_URL ) ) );
 			exit;
 		} else {
-			
+
 			wp_safe_redirect( add_query_arg( 'bis_notice', 'not_found', admin_url( self::PAGE_URL ) ) );
 			exit;
 		}
 	}
 
 	/**
-	 * Render createe page.
+	 * Render create page.
 	 */
 	public static function create_output() {
 		$args = array();
@@ -396,7 +427,7 @@ class WC_BIS_Admin_Notifications_Page {
 	 */
 	public static function edit_output() {
 
-		$notification_id = isset( $_GET['notification'] ) ? absint( $_GET['notification'] ) : 0;
+		$notification_id = isset( $_GET['notification'] ) ? absint( $_GET['notification'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( $notification_id ) {
 			$notification = wc_bis_get_notification( $notification_id );
 		}
@@ -416,8 +447,8 @@ class WC_BIS_Admin_Notifications_Page {
 	/**
 	 * Handle notification activation.
 	 *
-	 * @param  WC_BIS_Notification_Data $notification
-	 * @param  array                    $update_args
+	 * @param WC_BIS_Notification_Data $notification The notification object.
+	 * @param array                    $update_args  The update arguments.
 	 * @return void
 	 */
 	public static function handle_reactivation( $notification, &$update_args ) {
@@ -436,27 +467,32 @@ class WC_BIS_Admin_Notifications_Page {
 			$notification->add_event( 'reactivated', wp_get_current_user() );
 
 			/**
-			 * Filter: `woocommerce_bis_notification_reactivation_args`.
+			 * Filter: woocommerce_bis_notification_reactivation_args
 			 *
-			 * @param  array
-			 * @param  WC_BIS_Notification_Data
+			 * @since 9.9.0
+			 *
+			 * @param array                    $update_args  The update arguments.
+			 * @param WC_BIS_Notification_Data $notification The notification object.
 			 */
 			$updated_args = apply_filters( 'woocommerce_bis_notification_reactivation_args', $update_args, $notification );
 
 		} catch ( Exception $e ) {
-			wp_admin_notice( $e->getMessage(), array(
-				'id'                 => 'message',
-				'additional_classes' => array( 'error' ),
-				'dismissible'        => false,
-			) );
+			wp_admin_notice(
+				$e->getMessage(),
+				array(
+					'id'                 => 'message',
+					'additional_classes' => array( 'error' ),
+					'dismissible'        => false,
+				)
+			);
 		}
 	}
 
 	/**
 	 * Handle notification deactivation.
 	 *
-	 * @param  WC_BIS_Notification_Data $notification
-	 * @param  array                    $update_args
+	 * @param WC_BIS_Notification_Data $notification The notification object.
+	 * @param array                    $update_args  The update arguments.
 	 * @return void
 	 */
 	public static function handle_deactivation( $notification, &$update_args ) {
@@ -472,19 +508,24 @@ class WC_BIS_Admin_Notifications_Page {
 			$notification->add_event( 'deactivated', wp_get_current_user() );
 
 			/**
-			 * Filter: `woocommerce_bis_notification_deactivation_args`.
+			 * Filter: woocommerce_bis_notification_deactivation_args
 			 *
-			 * @param  array
-			 * @param  WC_BIS_Notification_Data
+			 * @since 9.9.0
+			 *
+			 * @param array                    $update_args  The update arguments.
+			 * @param WC_BIS_Notification_Data $notification The notification object.
 			 */
 			$updated_args = apply_filters( 'woocommerce_bis_notification_deactivation_args', $update_args, $notification );
 
 		} catch ( Exception $e ) {
-			wp_admin_notice( $e->getMessage(), array(
-				'id'                 => 'message',
-				'additional_classes' => array( 'error' ),
-				'dismissible'        => false,
-			) );
+			wp_admin_notice(
+				$e->getMessage(),
+				array(
+					'id'                 => 'message',
+					'additional_classes' => array( 'error' ),
+					'dismissible'        => false,
+				)
+			);
 		}
 	}
 

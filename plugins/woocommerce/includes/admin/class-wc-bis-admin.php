@@ -6,6 +6,8 @@
  * @since    1.0.0
  */
 
+declare(strict_types=1);
+
 use Automattic\Jetpack\Constants;
 
 // Exit if accessed directly.
@@ -72,9 +74,6 @@ class WC_BIS_Admin {
 
 		// Export.
 		require_once WC_ABSPATH . 'includes/admin/class-wc-bis-admin-exporters.php';
-
-		// Reports.
-		// require_once  WC_ABSPATH . 'includes/admin/reports/class-wc-bis-admin-reports.php' ;
 
 		// Admin AJAX.
 		require_once WC_ABSPATH . 'includes/admin/class-wc-bis-admin-ajax.php';
@@ -146,12 +145,12 @@ class WC_BIS_Admin {
 	/**
 	 * Add 'Stock Notifications' tab to WooCommerce Settings tabs.
 	 *
-	 * @param  array $settings
-	 * @return array $settings
+	 * @param array $settings Array of settings pages.
+	 * @return array Array of settings pages.
 	 */
 	public static function add_settings_page( $settings ) {
 
-		$settings[] = include 'settings/class-wc-bis-admin-settings.php';
+		$settings[] = include 'settings/class-wc-bis-settings.php';
 
 		return $settings;
 	}
@@ -169,7 +168,7 @@ class WC_BIS_Admin {
 		wp_register_style( 'wc-bis-admin', WC()->plugin_url() . '/assets/css/bis-admin.css', array(), $version );
 		wp_style_add_data( 'wc-bis-admin', 'rtl', 'replace' );
 
-		wp_register_script( 'wc-bis-writepanel', WC()->plugin_url() . '/assets/js/admin/wc-bis-admin' . $suffix . '.js', array( 'jquery', 'jquery-ui-datepicker', 'wp-util', 'wc-backbone-modal' ), $version );
+		wp_register_script( 'wc-bis-writepanel', WC()->plugin_url() . '/assets/js/admin/wc-bis-admin' . $suffix . '.js', array( 'jquery', 'jquery-ui-datepicker', 'wp-util', 'wc-backbone-modal' ), $version, true );
 
 		$params = array(
 			'wc_ajax_url'                               => admin_url( 'admin-ajax.php' ),
@@ -189,7 +188,7 @@ class WC_BIS_Admin {
 			'i18n_dashboard_sent_chart_tooltip'         => __( '%notifications% sent on %date%', 'woocommerce' ),
 		);
 
-		wp_register_script( 'wc-bis-dashboard', WC()->plugin_url() . '/assets/js/admin/wc-bis-admin-dashboard' . $suffix . '.js', array( 'jquery', 'wc-bis-writepanel' ), $version );
+		wp_register_script( 'wc-bis-dashboard', WC()->plugin_url() . '/assets/js/admin/wc-bis-admin-dashboard' . $suffix . '.js', array( 'jquery', 'wc-bis-writepanel' ), $version, true );
 
 		/*
 		 * Enqueue specific styles & scripts.
@@ -222,7 +221,8 @@ class WC_BIS_Admin {
 	/**
 	 * Add screen ids.
 	 *
-	 * @return void
+	 * @param array $screens Array of screen IDs.
+	 * @return array Array of screen IDs.
 	 */
 	public static function add_wc_screens( $screens ) {
 		$screens = array_merge( $screens, WC_BIS()->get_screen_ids() );
@@ -232,8 +232,8 @@ class WC_BIS_Admin {
 	/**
 	 * Inject custom notices into variation's metabox.
 	 *
-	 * @param  bool $show_invalid_variations_notice
-	 * @return bool
+	 * @param bool $show_invalid_variations_notice Whether to show invalid variations notice.
+	 * @return bool Whether to show invalid variations notice.
 	 */
 	public static function inject_custom_notices( $show_invalid_variations_notice ) {
 		WC_BIS_Admin_Notices::output_notices();
@@ -268,7 +268,8 @@ class WC_BIS_Admin {
 						' ',
 						array_map(
 							function ( $type ) {
-								return 'show_if_' . $type; },
+								return 'show_if_' . $type;
+							},
 							wc_bis_get_supported_types()
 						)
 					) . ' hide_if_composite',
@@ -284,13 +285,13 @@ class WC_BIS_Admin {
 		?>
 			<img class="info-icon" src="<?php echo esc_url( $info_img_url ); ?>" /><p>
 					<?php
-						/* translators: Settings page for Back in Stock Notifications */
-						echo wp_kses_post( 
-							sprintf( 
-								__( 'Sign-ups for stock notifications are disabled for all products in the store. To control sign-ups for this product, first enable the global <a href="%s">"Allow sign-ups"</a> option.', 'woocommerce' ), 
+						echo wp_kses_post(
+							sprintf(
+								/* translators: Settings page for Back in Stock Notifications */
+								__( 'Sign-ups for stock notifications are disabled for all products in the store. To control sign-ups for this product, first enable the global <a href="%s">"Allow sign-ups"</a> option.', 'woocommerce' ),
 								esc_url( admin_url( 'admin.php?page=wc-settings&tab=products&section=bis_settings' ) )
-								)
-							);
+							)
+						);
 					?>
 				</p>
 			</div>
@@ -302,7 +303,7 @@ class WC_BIS_Admin {
 	 *
 	 * @since  1.2.0
 	 *
-	 * @param  WC_Product $product
+	 * @param WC_Product $product The product object.
 	 * @return void
 	 */
 	public static function process_product_object( $product ) {
@@ -394,11 +395,14 @@ class WC_BIS_Admin {
 				$bulk_deactivate_url
 			);
 
-			wp_admin_notice( $notice, array(
-				'id'                 => 'message',
-				'type'               => 'warning',
-				'dismissible'        => false,
-			) );
+			wp_admin_notice(
+				$notice,
+				array(
+					'id'          => 'message',
+					'type'        => 'warning',
+					'dismissible' => false,
+				)
+			);
 
 		} elseif ( 'yes' === get_post_meta( $product_id, '_wc_bis_disabled', true ) ) {
 
@@ -414,11 +418,14 @@ class WC_BIS_Admin {
 				$bulk_deactivate_url
 			);
 
-			wp_admin_notice( $notice, array(
-				'id'                 => 'message',
-				'type'               => 'warning',
-				'dismissible'        => false,
-			) );
+			wp_admin_notice(
+				$notice,
+				array(
+					'id'          => 'message',
+					'type'        => 'warning',
+					'dismissible' => false,
+				)
+			);
 		}
 
 		$confirmation = __( 'This action cannot be undone. Continue?', 'woocommerce' );
@@ -447,7 +454,7 @@ class WC_BIS_Admin {
 		}
 
 		$url        = remove_query_arg( array( 'wc_bis_admin_bulk_deactivate', '_wpnonce' ) );
-		$product_id = absint( wc_clean( $_GET['wc_bis_admin_bulk_deactivate'] ) );
+		$product_id = absint( wc_clean( wp_unslash( $_GET['wc_bis_admin_bulk_deactivate'] ) ) );
 		check_admin_referer( 'wc_bis_admin_bulk_deactivate_' . $product_id );
 
 		$updated = self::handle_bulk_admin_deactivation( $product_id );
@@ -457,8 +464,8 @@ class WC_BIS_Admin {
 			$url = add_query_arg(
 				array(
 					'wc_bis_admin_bulk_deactivated' => $updated,
-					'post' => $product_id,
-					'notification_count' => $updated 
+					'post'                          => $product_id,
+					'notification_count'            => $updated,
 				),
 				$url
 			);
@@ -476,12 +483,12 @@ class WC_BIS_Admin {
 	 * @return void
 	 */
 	public static function bulk_admin_deactivate_notice() {
-		if ( ! isset( $_GET['wc_bis_admin_bulk_deactivated'], $_GET['post'], $_GET['notification_count'] ) ) {	
+		if ( ! isset( $_GET['wc_bis_admin_bulk_deactivated'], $_GET['post'], $_GET['notification_count'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
 		}
 
-		$updated = absint( $_GET['notification_count'] );
-		wp_admin_notice( 
+		$updated = absint( $_GET['notification_count'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		wp_admin_notice(
 			sprintf(
 				// translators: placeholder 1 is the number of deactivated notifications.
 				_n(
@@ -493,9 +500,9 @@ class WC_BIS_Admin {
 				number_format_i18n( $updated )
 			),
 			array(
-				'id'                 => 'message',
-				'type'               => 'success',
-				'dismissible'        => false,
+				'id'          => 'message',
+				'type'        => 'success',
+				'dismissible' => false,
 			)
 		);
 	}
@@ -505,8 +512,8 @@ class WC_BIS_Admin {
 	 *
 	 * @since  1.7.0
 	 *
-	 * @param  $product_id  integer
-	 * @return bool
+	 * @param int $product_id The product ID.
+	 * @return int Number of notifications deactivated.
 	 */
 	public static function handle_bulk_admin_deactivation( $product_id ) {
 

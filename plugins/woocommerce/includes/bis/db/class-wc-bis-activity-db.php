@@ -50,7 +50,7 @@ class WC_BIS_Activity_DB {
 	 *         - 'objects': WC_BIS_Activity_Data objects.
 	 * }
 	 *
-	 * @return array
+	 * @return array|int
 	 */
 	public function query( $args ) {
 		global $wpdb;
@@ -444,7 +444,7 @@ class WC_BIS_Activity_DB {
 	 * @since  1.0.10
 	 *
 	 * @param  int $user_id
-	 * @return array
+	 * @return int
 	 */
 	public function get_total_activity_records_by_user( $user_id ) {
 		global $wpdb;

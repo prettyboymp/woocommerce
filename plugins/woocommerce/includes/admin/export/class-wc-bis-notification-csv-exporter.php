@@ -6,6 +6,8 @@
  * @since    1.0.0
  */
 
+declare( strict_types=1 );
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -47,13 +49,6 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 	protected $filters = false;
 
 	/**
-	 * Constructor.
-	 */
-	public function __construct() {
-		parent::__construct();
-	}
-
-	/**
 	 * Force-Cast percent to integer.
 	 *
 	 * @override
@@ -74,12 +69,12 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 	/**
 	 * Set filters.
 	 *
-	 * @param  array $post_data
+	 * @param array $post_data The post data containing filter values.
 	 * @return void
 	 */
 	public function set_filters( $post_data ) {
 		$this->filters = array(
-			'date'     => isset( $post_data['date_filter'] ) && 0 != $post_data['date_filter'] ? absint( $post_data['date_filter'] ) : false,
+			'date'     => isset( $post_data['date_filter'] ) && 0 !== (int) $post_data['date_filter'] ? absint( $post_data['date_filter'] ) : false,
 			'customer' => isset( $post_data['customer_filter'] ) && 'false' !== $post_data['customer_filter'] ? absint( $post_data['customer_filter'] ) : false,
 			'product'  => isset( $post_data['product_filter'] ) && 'false' !== $post_data['product_filter'] ? absint( $post_data['product_filter'] ) : false,
 			'status'   => isset( $post_data['status_filter'] ) && 'false' !== $post_data['status_filter'] ? wc_clean( $post_data['status_filter'] ) : false,
@@ -92,6 +87,13 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 	 * @return array
 	 */
 	public function get_default_column_names() {
+		/**
+		 * Filter the default column names for the export.
+		 *
+		 * @since 9.9.0
+		 *
+		 * @param array $columns Array of column names.
+		 */
 		return apply_filters(
 			"woocommerce_{$this->export_type}_export_default_columns",
 			array(
@@ -125,7 +127,7 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 
 		// Has filters?
 		if ( ! empty( $this->filters ) && is_array( $this->filters ) ) {
-			if ( 0 != $this->filters['date'] && 6 === strlen( $this->filters['date'] ) ) {
+			if ( 0 !== (int) $this->filters['date'] && 6 === strlen( $this->filters['date'] ) ) {
 				$year               = substr( $this->filters['date'], 0, 4 );
 				$month              = substr( $this->filters['date'], 4, 6 );
 				$args['start_date'] = strtotime( $year . '/' . $month . '/1 00:00:00' );
@@ -145,6 +147,13 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 			}
 		}
 
+		/**
+		 * Filter the query arguments for the export.
+		 *
+		 * @since 9.9.0
+		 *
+		 * @param array $args Query arguments.
+		 */
 		$notifications = wc_bis_get_notifications( apply_filters( "woocommerce_{$this->export_type}_export_query_args", $args ) );
 		unset( $args['return'] );
 		unset( $args['limit'] );
@@ -180,7 +189,15 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 			}
 
 			if ( has_filter( "woocommerce_{$this->export_type}_export_column_{$column_id}" ) ) {
-				// Filter for 3rd parties.
+				/**
+				 * Filter for 3rd parties.
+				 *
+				 * @since 9.9.0
+				 *
+				 * @param string                   $value        The value to filter.
+				 * @param WC_BIS_Notification_Data $notification The notification object.
+				 * @param string                   $column_id    The column ID.
+				 */
 				$value = apply_filters( "woocommerce_{$this->export_type}_export_column_{$column_id}", '', $notification, $column_id );
 
 			} elseif ( is_callable( array( $this, "get_column_value_{$column_id}" ) ) ) {
@@ -190,7 +207,7 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 			} elseif ( is_callable( array( $notification, "get_{$column_id}" ) ) ) {
 				// Default and custom handling.
 				$value = $notification->{"get_{$column_id}"}();
-				if ( 0 != $value && false !== strpos( '_date', $column_id ) ) {
+				if ( 0 !== (int) $value && false !== strpos( '_date', $column_id ) ) {
 					$value = date_i18n( 'Y-m-d H:i:s', absint( $value ) );
 				}
 			}
@@ -199,6 +216,15 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 		}
 
 		$this->prepare_meta_for_export( $notification, $row );
+
+		/**
+		 * Filter the row data for export.
+		 *
+		 * @since 9.9.0
+		 *
+		 * @param array                    $row          Row data.
+		 * @param WC_BIS_Notification_Data $notification Notification object.
+		 */
 		return apply_filters( "woocommerce_{$this->export_type}_export_row_data", $row, $notification );
 	}
 
@@ -213,6 +239,14 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 			$meta_data = $notification->get_meta_data();
 
 			if ( count( $meta_data ) ) {
+				/**
+				 * Filter the meta keys to skip during export.
+				 *
+				 * @since 9.9.0
+				 *
+				 * @param array                    $meta_keys_to_skip Array of meta keys to skip.
+				 * @param WC_BIS_Notification_Data $notification      Notification object.
+				 */
 				$meta_keys_to_skip = apply_filters( "woocommerce_{$this->export_type}_export_skip_meta_keys", array(), $notification );
 
 				$i = 1;
@@ -222,7 +256,7 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 					}
 
 					if ( ! is_scalar( $value ) ) {
-						$value = json_encode( $value );
+						$value = wp_json_encode( $value );
 					}
 
 					$column_key = 'meta:' . esc_attr( $key );
@@ -235,16 +269,14 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 		}
 	}
 
-	/*
-	---------------------------------------------------*/
-	/*
-		Columns.                                         */
-	/*---------------------------------------------------*/
+	/**
+	 * Columns.
+	 */
 
 	/**
 	 * Get product title.
 	 *
-	 * @param  WC_BIS_Notification_Data $notification Notification being exported.
+	 * @param WC_BIS_Notification_Data $notification Notification being exported.
 	 * @return string
 	 */
 	protected function get_column_value_product_title( $notification ) {
@@ -259,7 +291,7 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 	/**
 	 * Get product name.
 	 *
-	 * @param  WC_BIS_Notification_Data $notification Notification being exported.
+	 * @param WC_BIS_Notification_Data $notification Notification being exported.
 	 * @return string
 	 */
 	protected function get_column_value_product_name( $notification ) {
@@ -274,7 +306,7 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 	/**
 	 * Get product SKU.
 	 *
-	 * @param  WC_BIS_Notification_Data $notification Notification being exported.
+	 * @param WC_BIS_Notification_Data $notification Notification being exported.
 	 * @return string
 	 */
 	protected function get_column_value_product_sku( $notification ) {
@@ -289,7 +321,7 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 	/**
 	 * Get user firstname.
 	 *
-	 * @param  WC_BIS_Notification_Data $notification Notification being exported.
+	 * @param WC_BIS_Notification_Data $notification Notification being exported.
 	 * @return string
 	 */
 	protected function get_column_value_user_firstname( $notification ) {
@@ -303,7 +335,7 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 	/**
 	 * Get user lastname.
 	 *
-	 * @param  WC_BIS_Notification_Data $notification Notification being exported.
+	 * @param WC_BIS_Notification_Data $notification Notification being exported.
 	 * @return string
 	 */
 	protected function get_column_value_user_lastname( $notification ) {
@@ -317,7 +349,7 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 	/**
 	 * Get date created.
 	 *
-	 * @param  WC_BIS_Notification_Data $notification Notification being exported.
+	 * @param WC_BIS_Notification_Data $notification Notification being exported.
 	 * @return string
 	 */
 	protected function get_column_value_create_date( $notification ) {
@@ -327,7 +359,7 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 	/**
 	 * Get date subscribed.
 	 *
-	 * @param  WC_BIS_Notification_Data $notification Notification being exported.
+	 * @param WC_BIS_Notification_Data $notification Notification being exported.
 	 * @return string
 	 */
 	protected function get_column_value_subscribe_date( $notification ) {
@@ -337,7 +369,7 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 	/**
 	 * Get last notified date.
 	 *
-	 * @param  WC_BIS_Notification_Data $notification Notification being exported.
+	 * @param WC_BIS_Notification_Data $notification Notification being exported.
 	 * @return string
 	 */
 	protected function get_column_value_last_notified_date( $notification ) {
@@ -347,7 +379,7 @@ class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 	/**
 	 * Get active status column.
 	 *
-	 * @param  WC_BIS_Notification_Data $notification Notification being exported.
+	 * @param WC_BIS_Notification_Data $notification Notification being exported.
 	 * @return string
 	 */
 	protected function get_column_value_is_active( $notification ) {

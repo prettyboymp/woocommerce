@@ -6,6 +6,8 @@
  * @since    1.0.0
  */
 
+declare( strict_types=1 );
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -47,22 +49,22 @@ class WC_BIS_Notices {
 	/**
 	 * Get a setting for a notice type.
 	 *
-	 * @param  string $notice_name
-	 * @param  string $key
-	 * @param  mixed  $default
-	 * @return array
+	 * @param string $notice_name The name of the notice.
+	 * @param string $key         The key to retrieve.
+	 * @param mixed  $default_value The default value if key doesn't exist.
+	 * @return mixed The notice option value.
 	 */
-	public static function get_notice_option( $notice_name, $key, $default = null ) {
-		return isset( self::$notice_options[ $notice_name ] ) && is_array( self::$notice_options[ $notice_name ] ) && isset( self::$notice_options[ $notice_name ][ $key ] ) ? self::$notice_options[ $notice_name ][ $key ] : $default;
+	public static function get_notice_option( $notice_name, $key, $default_value = null ) {
+		return isset( self::$notice_options[ $notice_name ] ) && is_array( self::$notice_options[ $notice_name ] ) && isset( self::$notice_options[ $notice_name ][ $key ] ) ? self::$notice_options[ $notice_name ][ $key ] : $default_value;
 	}
 
 	/**
 	 * Set a setting for a notice type.
 	 *
-	 * @param  string $notice_name
-	 * @param  string $key
-	 * @param  mixed  $value
-	 * @return array
+	 * @param string $notice_name The name of the notice.
+	 * @param string $key         The key to set.
+	 * @param mixed  $value       The value to set.
+	 * @return void
 	 */
 	public static function set_notice_option( $notice_name, $key, $value ) {
 
@@ -115,10 +117,10 @@ class WC_BIS_Notices {
 	 *
 	 * @since  1.0.1
 	 *
-	 * @param  int $time_overdue
-	 * @return boolean
+	 * @param int $time_overdue Time in seconds to consider a delivery overdue.
+	 * @return boolean Whether there are overdue deliveries.
 	 */
-	public static function has_overdue_deliveries( $time_overdue = DAY_IN_SECONDS ) {
+	public static function has_overdue_deliveries( $time_overdue = DAY_IN_SECONDS ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		wc_deprecated_function( 'WC_BIS_Notices::has_overdue_deliveries', '9.9.0' );
 		return false;
 	}

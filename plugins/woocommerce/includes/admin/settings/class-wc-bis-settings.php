@@ -6,6 +6,8 @@
  * @since    1.0.0
  */
 
+declare( strict_types=1 );
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -25,7 +27,6 @@ if ( ! class_exists( 'WC_BIS_Settings' ) ) :
 		 * Constructor.
 		 */
 		public function __construct() {
-
 			$this->id    = 'bis_settings';
 			$this->label = __( 'Stock Notifications', 'woocommerce' );
 
@@ -39,10 +40,16 @@ if ( ! class_exists( 'WC_BIS_Settings' ) ) :
 			add_action( 'admin_notices', array( $this, 'output_admin_notices' ) );
 		}
 
+		/**
+		 * Add BIS section to product settings.
+		 *
+		 * @param array $sections Product settings sections.
+		 * @return array Modified product settings sections.
+		 */
 		public function add_bis_section_to_product_settings( array $sections ): array {
 			// Add bis_settings section to products tab after Inventory section.
-			$inventory_index = array_search( 'inventory', array_keys( $sections ) );
-			if ( $inventory_index !== false ) {
+			$inventory_index = array_search( 'inventory', array_keys( $sections ), true );
+			if ( false !== $inventory_index ) {
 				$sections = array_slice( $sections, 0, $inventory_index + 1, true ) +
 					array( 'bis_settings' => __( 'Customer stock notifications', 'woocommerce' ) ) +
 					array_slice( $sections, $inventory_index + 1, null, true );
@@ -52,7 +59,6 @@ if ( ! class_exists( 'WC_BIS_Settings' ) ) :
 
 			return $sections;
 		}
-
 
 		/**
 		 * Handler for 'woocommerce_get_settings_products', adds the settings related to the Back In Stock Notifications.
@@ -294,55 +300,59 @@ if ( ! class_exists( 'WC_BIS_Settings' ) ) :
 				),
 			);
 
+			/**
+			 * Filter the Back In Stock Notifications settings.
+			 *
+			 * @since 9.9.0
+			 *
+			 * @param array $default_bis_settings The default settings array.
+			 */
 			$bis_settings = apply_filters( 'woocommerce_bis_settings', $default_bis_settings );
 
 			foreach ( $bis_settings as $setting ) {
 				$settings[] = $setting;
 			}
-			
 
 			return $settings;
 		}
 
 		/**
-		 * Add warning notice before displaying content.
+		 * Output admin notices for the BIS settings page.
+		 *
+		 * @return void
 		 */
-		public function output() {
-			parent::output();
-		}
-
 		public function output_admin_notices() {
 			// Only show notices on the BIS settings page.
 			$screen = get_current_screen();
-			if ( ! $screen || 'woocommerce_page_wc-settings' !== $screen->id || ! isset( $_GET['section'] ) || 'bis_settings' !== $_GET['section'] ) {
+			if ( ! $screen || 'woocommerce_page_wc-settings' !== $screen->id || ! isset( $_GET['section'] ) || 'bis_settings' !== $_GET['section'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				return;
 			}
 
 			if ( 'no' === get_option( 'woocommerce_registration_generate_password', 'no' ) && 'yes' === get_option( 'wc_bis_create_new_account_on_registration', 'no' ) ) {
-				wp_admin_notice( 
-					sprintf( 
+				wp_admin_notice(
+					sprintf(
 						/* translators: %s settings page link */
-						__( 'WooCommerce is currently <a href="%s">configured</a> to create new accounts without generating passwords automatically. Guests who sign up to receive stock notifications will need to reset their password before they can log into their new account.', 'woocommerce' ), 
-						esc_url( admin_url( 'admin.php?page=wc-settings&tab=account' ) ) 
-					), 
+						__( 'WooCommerce is currently <a href="%s">configured</a> to create new accounts without generating passwords automatically. Guests who sign up to receive stock notifications will need to reset their password before they can log into their new account.', 'woocommerce' ),
+						esc_url( admin_url( 'admin.php?page=wc-settings&tab=account' ) )
+					),
 					array(
-						'id' => 'message',
-						'type' => 'warning',
+						'id'          => 'message',
+						'type'        => 'warning',
 						'dismissible' => false,
 					)
 				);
 			}
 
 			if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) ) {
-				wp_admin_notice( 
-					sprintf( 
+				wp_admin_notice(
+					sprintf(
 						/* translators: %s settings page link */
-						__( 'WooCommerce is currently <a href="%s">configured</a> to hide out-of-stock products from your catalog. Customers will not be able sign up for back-in-stock notifications while this option is enabled.', 'woocommerce' ), 
-						esc_url( admin_url( 'admin.php?page=wc-settings&tab=products&section=inventory' ) ) 
-					), 
+						__( 'WooCommerce is currently <a href="%s">configured</a> to hide out-of-stock products from your catalog. Customers will not be able sign up for back-in-stock notifications while this option is enabled.', 'woocommerce' ),
+						esc_url( admin_url( 'admin.php?page=wc-settings&tab=products&section=inventory' ) )
+					),
 					array(
-						'id' => 'message',
-						'type' => 'warning',
+						'id'          => 'message',
+						'type'        => 'warning',
 						'dismissible' => false,
 					)
 				);

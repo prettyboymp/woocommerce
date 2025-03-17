@@ -5,6 +5,10 @@
  * @package  WooCommerce Back In Stock Notifications
  * @since    1.0.0
  */
+
+declare( strict_types=1 );
+
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -34,6 +38,8 @@ class WC_BIS_Product {
 	/**
 	 * Handles the form submission.
 	 *
+	 * @throws Exception If the form submission fails.
+	 *
 	 * @return void
 	 */
 	public function handle_form_submit() {
@@ -51,7 +57,7 @@ class WC_BIS_Product {
 			 * @return bool
 			 */
 			$use_security = ! (bool) apply_filters( 'woocommerce_bis_prevent_sign_up_security', true );
-			if ( $use_security && ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( wc_clean( $_POST['security'] ), 'wc-bis-registration-form' ) ) ) {
+			if ( $use_security && ( ! isset( $_POST['security'] ) || ! wp_verify_nonce( wc_clean( wp_unslash( $_POST['security'] ) ), 'wc-bis-registration-form' ) ) ) {
 				wc_add_notice( __( 'Sign-up failed. If this issue persists, please refresh the page and try again.', 'woocommerce' ), 'error' );
 				return;
 			}
@@ -96,7 +102,7 @@ class WC_BIS_Product {
 
 				// Filter out 'any' variations, which are empty, as they need to be explicitly specified.
 				$variation_attributes = $variation->get_variation_attributes();
-				$variation_attributes = array_filter( $variation_attributes ); // nosemgrep: audit.php.lang.misc.array-filter-no-callback
+				$variation_attributes = array_filter( $variation_attributes ); // nosemgrep: audit.php.lang.misc.array-filter-no-callback.
 
 				// Gather posted attributes.
 				foreach ( $product->get_attributes() as $attribute ) {
@@ -118,16 +124,12 @@ class WC_BIS_Product {
 					// Has `any` attribute on variation. Save $posted_attributes to a `posted_attributes` meta key.
 					$handle_posted_attributes = true;
 				}
-			} else {
-
+			} elseif ( ! $product->is_in_stock() ) {
 				// Mark waiting time now if product is currently outofstock.
-				if ( ! $product->is_in_stock() ) {
-					$args['subscribe_date'] = time();
-				}
+				$args['subscribe_date'] = time();
 			}
 
 			try {
-
 				/*
 				 * If registration is required redirect to myaccount.
 				 */
@@ -141,6 +143,13 @@ class WC_BIS_Product {
 					 * @return array
 					 */
 					$http_query_args = http_build_query(
+						/**
+						 * `woocommerce_bis_sign_up_resume_args` filter.
+						 *
+						 * @since 9.9.0
+						 * @param  array $args
+						 * @return array
+						 */
 						(array) apply_filters(
 							'woocommerce_bis_sign_up_resume_args',
 							array(
@@ -169,13 +178,13 @@ class WC_BIS_Product {
 				} else {
 
 					// Check for valid email.
-					$email_input = isset( $_POST['wc_bis_email'] ) ? wc_clean( $_POST['wc_bis_email'] ) : false;
+					$email_input = isset( $_POST['wc_bis_email'] ) ? wc_clean( wp_unslash( $_POST['wc_bis_email'] ) ) : false;
 					if ( ! $email_input || ! wc_bis_is_email( $email_input ) ) {
 						throw new Exception( __( 'Invalid e-mail.', 'woocommerce' ) );
 					}
 
 					// Check for valid privacy terms.
-					$privacy_input = isset( $_POST['wc_bis_opt_in'] ) ? wc_clean( $_POST['wc_bis_opt_in'] ) : false;
+					$privacy_input = isset( $_POST['wc_bis_opt_in'] ) ? wc_clean( wp_unslash( $_POST['wc_bis_opt_in'] ) ) : false;
 					if ( wc_bis_is_opt_in_required() && 'on' !== $privacy_input ) {
 						throw new Exception( __( 'To proceed, please consent to the creation of a new account with your e-mail.', 'woocommerce' ) );
 					}
@@ -258,8 +267,8 @@ class WC_BIS_Product {
 	/**
 	 * Display the form on variations.
 	 *
-	 * @param  string $html
-	 * @param  mixed  $product
+	 * @param  string $html The HTML.
+	 * @param  mixed  $product The product.
 	 * @return string
 	 */
 	public function handle_display_form_variation( $html, $product ) {
@@ -297,7 +306,7 @@ class WC_BIS_Product {
 	/**
 	 * Display the form.
 	 *
-	 * @param  mixed $product
+	 * @param  mixed $product The product.
 	 * @return void
 	 */
 	public function display_form( $product ) {
@@ -385,12 +394,30 @@ class WC_BIS_Product {
 		}
 
 		// Registration count texts.
+		/**
+		 * Filter: woocommerce_bis_show_product_registrations_count
+		 *
+		 * @since 9.9.0
+		 *
+		 * @param  bool    $show_count Whether to show the product registrations count.
+		 * @param  WC_Product $product The product.
+		 * @return bool
+		 */
 		$show_count = (bool) apply_filters( 'woocommerce_bis_show_product_registrations_count', 'yes' === get_option( 'wc_bis_show_product_registrations_count', 'no' ), $product );
 		$count_text = '';
 
 		if ( $show_count ) {
 
 			$count = wc_bis_get_notifications_count( $product->get_id(), true );
+			/**
+			 * Filter: woocommerce_bis_show_product_registrations_count_threshold
+			 *
+			 * @since 9.9.0
+			 *
+			 * @param  int     $threshold The threshold.
+			 * @param  WC_Product $product The product.
+			 * @return int
+			 */
 			if ( $count < (int) apply_filters( 'woocommerce_bis_show_product_registrations_count_threshold', 1, $product ) ) {
 				$show_count = false;
 			} else {
@@ -417,9 +444,9 @@ class WC_BIS_Product {
 	 *
 	 * @since  1.2.0
 	 *
-	 * @param  mixed  $product
-	 * @param  string $context singe or catalog.
-	 * @return void
+	 * @param  mixed  $product The product.
+	 * @param  string $context single or catalog.
+	 * @return bool
 	 */
 	public function is_eligible( $product, $context = 'single' ) {
 
@@ -458,6 +485,8 @@ class WC_BIS_Product {
 		/**
 		 * Filter: woocommerce_bis_is_available_for_product
 		 *
+		 * @since 9.9.0
+		 *
 		 * @param  bool        $is_eligible
 		 * @param  WC_Product  $product
 		 * @param  string      $context
@@ -471,7 +500,7 @@ class WC_BIS_Product {
 	 *
 	 * @since  1.2.0
 	 *
-	 * @param  WC_Product $product
+	 * @param  WC_Product $product The product.
 	 * @return bool
 	 */
 	public function is_disabled( $product ) {
@@ -503,8 +532,8 @@ class WC_BIS_Product {
 	 *
 	 * @since  1.2.0
 	 *
-	 * @param  string     $link
-	 * @param  WC_Product $product
+	 * @param  string     $link    The link HTML.
+	 * @param  WC_Product $product The product.
 	 * @return string
 	 */
 	public function loop_add_to_cart_link_signup_prompt( $link, $product ) {
@@ -530,9 +559,9 @@ class WC_BIS_Product {
 	/**
 	 * Returns the actual HTML markup to display the signup prompt.
 	 *
-	 * @since  1.2.0
+	 * @since  9.9.0
 	 *
-	 * @param  mixed $product
+	 * @param  mixed $product The product.
 	 * @return void
 	 */
 	public function display_signup_prompt( $product ) {
@@ -581,6 +610,14 @@ class WC_BIS_Product {
 		if ( ! $has_already_signed_up ) {
 
 			// Hint: If the template is called with AJAX (ie Product Recommendations) the scripts should be enqueued manually on every page.
+			/**
+			 * Filter: woocommerce_bis_should_enqueue_scripts
+			 *
+			 * @since 9.9.0
+			 *
+			 * @param  bool
+			 * @return bool
+			 */
 			if ( (bool) apply_filters( 'woocommerce_bis_should_enqueue_scripts', true ) ) {
 				WC_BIS()->templates->enqueue_scripts();
 			}
@@ -653,8 +690,8 @@ class WC_BIS_Product {
 
 		// Discussed and decided that we'll ignore this semgrep rule, similarly to add_to_cart_action.
 		$use_security = false;
-		// nosemgrep: scanner.php.wp.security.csrf.nonce-flawed-logic
-		if ( $use_security && isset( $_POST['security'] ) && ! wp_verify_nonce( wc_clean( $_POST['security'] ), 'wc-bis-sign-up-prompt-notice' ) ) {
+		// nosemgrep: scanner.php.wp.security.csrf.nonce-flawed-logic.
+		if ( $use_security && isset( $_POST['security'] ) && ! wp_verify_nonce( wc_clean( wp_unslash( $_POST['security'] ) ), 'wc-bis-sign-up-prompt-notice' ) ) {
 			wc_add_notice( __( 'Session expired. Please reload the page and try again.', 'woocommerce' ), 'error' );
 			return;
 		}

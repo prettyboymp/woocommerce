@@ -6,6 +6,8 @@
  * @since    1.0.0
  */
 
+declare( strict_types=1 );
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -103,25 +105,22 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	/**
 	 * This is a default column renderer
 	 *
-	 * @param $notification - row (key, value array)
-	 * @param $column_name - string (key)
-	 * @return string
+	 * @param array  $notification Row (key, value array).
+	 * @param string $column_name Column name.
+	 * @return void
 	 */
 	public function column_default( $notification, $column_name ) {
-
 		if ( isset( $notification[ $column_name ] ) ) {
-
 			echo wp_kses_post( $notification[ $column_name ] );
-
 		} else {
-
 			/**
 			 * Fires in each custom column in the Back In Stock list table.
 			 *
 			 * This hook only fires if the current column_name is not set inside the $notification's keys.
 			 *
+			 * @since 9.9.0
 			 * @param string $column_name The name of the column to display.
-			 * @param array  $notification
+			 * @param array  $notification The notification data.
 			 */
 			do_action( 'manage_bis_notifications_custom_column', $column_name, $notification );
 		}
@@ -130,10 +129,10 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	/**
 	 * Handles the checkbox column output.
 	 *
-	 * @param array $notification
+	 * @param WC_BIS_Notification $notification The notification object.
+	 * @return void
 	 */
 	public function column_cb( $notification ) {
-
 		?><label class="screen-reader-text" for="cb-select-<?php echo absint( $notification->get_id() ); ?>">
 		<?php
 			/* translators: %s: Notification code */
@@ -147,7 +146,8 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	/**
 	 * Handles the title column output.
 	 *
-	 * @param array $notification
+	 * @param WC_BIS_Notification $notification The notification object.
+	 * @return void
 	 */
 	public function column_id( $notification ) {
 		$actions = array(
@@ -170,10 +170,10 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	/**
 	 * Handles the status column output.
 	 *
-	 * @param array $notification
+	 * @param WC_BIS_Notification $notification The notification object.
+	 * @return void
 	 */
 	public function column_status( $notification ) {
-
 		// Build tooltip.
 		$tooltip = '';
 
@@ -202,10 +202,10 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	/**
 	 * Handles the redeemed user column output.
 	 *
-	 * @param array $notification
+	 * @param WC_BIS_Notification $notification The notification object.
+	 * @return void
 	 */
 	public function column_user( $notification ) {
-
 		if ( $notification->get_user_id() ) {
 			$user = get_user_by( 'id', $notification->get_user_id() );
 		}
@@ -220,13 +220,12 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	/**
 	 * Handles the product column output.
 	 *
-	 * @param array $notification
+	 * @param WC_BIS_Notification $notification The notification object.
+	 * @return void
 	 */
 	public function column_product( $notification ) {
-
 		$product = $notification->get_product();
 		if ( is_a( $product, 'WC_Product' ) ) {
-
 			echo wp_kses_post(
 				sprintf(
 					'<a target="_blank" href="' . admin_url( 'post.php?post=%d&action=edit' ) . '">%s</a>',
@@ -234,7 +233,6 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 					wp_kses_post( $notification->get_product_formatted_name() )
 				)
 			);
-
 		} else {
 			echo '&mdash;';
 		}
@@ -243,10 +241,10 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	/**
 	 * Handles the product SKU output.
 	 *
-	 * @param array $notification
+	 * @param WC_BIS_Notification $notification The notification object.
+	 * @return void
 	 */
 	public function column_sku( $notification ) {
-
 		$product = $notification->get_product();
 		$sku     = false;
 
@@ -264,10 +262,10 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	/**
 	 * Handles the notification date column output.
 	 *
-	 * @param array $notification
+	 * @param WC_BIS_Notification $notification The notification object.
+	 * @return void
 	 */
 	public function column_date_subscribed( $notification ) {
-
 		if ( ! $notification->get_create_date() ) {
 			$t_time = __( 'Unpublished', 'woocommerce' );
 			$h_time = $t_time;
@@ -282,10 +280,10 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	/**
 	 * Handles the waiting since column output.
 	 *
-	 * @param array $notification
+	 * @param WC_BIS_Notification $notification The notification object.
+	 * @return void
 	 */
 	public function column_waiting_since( $notification ) {
-
 		if ( empty( $notification->get_subscribe_date() ) || $notification->is_delivered() || ! $notification->is_active() ) {
 			$t_time    = __( '&mdash;', 'woocommerce' );
 			$h_time    = $t_time;
@@ -324,6 +322,8 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 		/**
 		 * Filters the columns displayed in the Back In Stock list table.
 		 *
+		 * @since 9.9.0
+		 *
 		 * @param array $columns An associative array of column headings.
 		 */
 		return apply_filters( 'manage_bis_notifications_columns', $columns );
@@ -361,9 +361,7 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	private function process_bulk_action() {
-
 		if ( $this->current_action() ) {
-
 			check_admin_referer( 'bulk-' . $this->_args['plural'] );
 
 			$notifications = isset( $_GET['notification'] ) && is_array( $_GET['notification'] ) ? array_map( 'absint', $_GET['notification'] ) : array();
@@ -372,10 +370,10 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 				return;
 			}
 
+			$redirect_url = self::PAGE_URL;
+
 			if ( 'enable' === $this->current_action() ) {
-
 				foreach ( $notifications as $id ) {
-
 					$args = array(
 						'is_active' => 'on',
 					);
@@ -385,13 +383,14 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 
 					WC_BIS()->db->notifications->update( $id, $args );
 				}
-
-				WC_BIS_Admin_Notices::add_notice( __( 'Notifications updated.', 'woocommerce' ), 'success', true );
-
+				$redirect_url = add_query_arg(
+					array(
+						'bis_notice' => 'updated',
+					),
+					$redirect_url
+				);
 			} elseif ( 'disable' === $this->current_action() ) {
-
 				foreach ( $notifications as $id ) {
-
 					$args = array(
 						'is_active' => 'off',
 					);
@@ -402,18 +401,26 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 					WC_BIS()->db->notifications->update( $id, $args );
 				}
 
-				WC_BIS_Admin_Notices::add_notice( __( 'Notifications updated.', 'woocommerce' ), 'success', true );
-
+				$redirect_url = add_query_arg(
+					array(
+						'bis_notice' => 'updated',
+					),
+					$redirect_url
+				);
 			} elseif ( 'delete' === $this->current_action() ) {
-
 				foreach ( $notifications as $id ) {
 					WC_BIS()->db->notifications->delete( $id );
 				}
 
-				WC_BIS_Admin_Notices::add_notice( __( 'Notifications deleted.', 'woocommerce' ), 'success', true );
+				$redirect_url = add_query_arg(
+					array(
+						'bis_notice' => 'deleted',
+					),
+					$redirect_url
+				);
 			}
 
-			wp_safe_redirect( admin_url( self::PAGE_URL ) );
+			wp_safe_redirect( $redirect_url );
 			exit();
 		}
 	}
@@ -426,7 +433,6 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	private function process_clear_queue_action() {
-
 		if ( isset( $_REQUEST['bis_clear_queued_items'] ) ) {
 			check_admin_referer( 'wc_bis_abort_all_queued_notifications' );
 
@@ -434,6 +440,7 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 			$query_args['is_queued'] = 'on';
 			$notifications           = wc_bis_get_notifications( $query_args );
 			$aborted                 = 0;
+			$redirect_url            = admin_url( 'admin.php?page=bis_notifications' );
 
 			if ( $notifications ) {
 				foreach ( $notifications as $notification ) {
@@ -447,10 +454,15 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 			}
 
 			if ( $aborted === $this->total_queued_items ) {
-				WC_BIS_Admin_Notices::add_notice( __( 'Queued notifications aborted.', 'woocommerce' ), 'success', true );
+				$redirect_url = add_query_arg(
+					array(
+						'bis_notice' => 'queued_aborted',
+					),
+					$redirect_url
+				);
 			}
 
-			wp_safe_redirect( admin_url( 'admin.php?page=bis_notifications' ) );
+			wp_safe_redirect( $redirect_url );
 			return;
 		}
 	}
@@ -461,15 +473,14 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	public function prepare_items() {
-
 		/**
 		 * `woocommerce_bis_admin_notifications_per_page` filter.
 		 *
 		 * Control how many notifications are displayed per page in admin list table.
 		 *
-		 * @since  1.3.2
+		 * @since 9.9.0
 		 *
-		 * @param  int  $per_page
+		 * @param int $per_page Number of items per page.
 		 * @return int
 		 */
 		$per_page = (int) apply_filters( 'woocommerce_bis_admin_notifications_per_page', 10 );
@@ -486,9 +497,9 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 		$this->process_clear_queue_action();
 
 		// Setup params.
-		$paged   = isset( $_REQUEST['paged'] ) ? max( 0, intval( $_REQUEST['paged'] ) - 1 ) : 0;
-		$orderby = ( isset( $_REQUEST['orderby'] ) && in_array( $_REQUEST['orderby'], array_keys( $this->get_sortable_columns() ) ) ) ? wc_clean( $_REQUEST['orderby'] ) : 'id';
-		$order   = ( isset( $_REQUEST['order'] ) && in_array( $_REQUEST['order'], array( 'asc', 'desc' ) ) ) ? wc_clean( $_REQUEST['order'] ) : 'desc';
+		$paged   = isset( $_REQUEST['paged'] ) ? max( 0, (int) wp_unslash( $_REQUEST['paged'] ) - 1 ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$orderby = ( isset( $_REQUEST['orderby'] ) && in_array( wp_unslash( $_REQUEST['orderby'] ), array_keys( $this->get_sortable_columns() ), true ) ) ? wc_clean( wp_unslash( $_REQUEST['orderby'] ) ) : 'id'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$order   = ( isset( $_REQUEST['order'] ) && in_array( wp_unslash( $_REQUEST['order'] ), array( 'asc', 'desc' ), true ) ) ? wc_clean( wp_unslash( $_REQUEST['order'] ) ) : 'desc'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		// Query args.
 		$query_args = array(
@@ -498,28 +509,26 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 		);
 
 		// Search.
-		if ( isset( $_REQUEST['s'] ) && ! empty( $_REQUEST['s'] ) ) {
-			$query_args['search'] = wc_clean( $_REQUEST['s'] );
+		if ( isset( $_REQUEST['s'] ) && ! empty( $_REQUEST['s'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$query_args['search'] = wc_clean( wp_unslash( $_REQUEST['s'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 
 		// Views.
-		if ( ! empty( $_REQUEST['status'] ) && 'active_bis_notifications' === $_REQUEST['status'] ) {
+		if ( ! empty( $_REQUEST['status'] ) && 'active_bis_notifications' === $_REQUEST['status'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$query_args['is_active'] = 'on';
-		} elseif ( ! empty( $_REQUEST['status'] ) && 'inactive_bis_notifications' === $_REQUEST['status'] ) {
+		} elseif ( ! empty( $_REQUEST['status'] ) && 'inactive_bis_notifications' === $_REQUEST['status'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$query_args['is_active'] = 'off';
-		} elseif ( ! empty( $_REQUEST['status'] ) && 'queued_bis_notifications' === $_REQUEST['status'] ) {
+		} elseif ( ! empty( $_REQUEST['status'] ) && 'queued_bis_notifications' === $_REQUEST['status'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$query_args['is_queued'] = 'on';
 		}
 
 		// Filters.
-		if ( ! empty( $_GET['m'] ) ) {
-
-			$filter = absint( $_GET['m'] );
-			$month  = substr( $filter, 4, 6 );
-			$year   = substr( $filter, 0, 4 ); // This will break at year 10.000 AC :)
+		if ( ! empty( $_GET['m'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$filter = absint( wp_unslash( $_GET['m'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$month  = substr( (string) $filter, 4, 6 );
+			$year   = substr( (string) $filter, 0, 4 ); // This will break at year 10.000 AC :).
 
 			if ( $filter ) {
-
 				$start_date               = strtotime( "{$year}-{$month}-01" );
 				$query_args['start_date'] = $start_date;
 
@@ -530,14 +539,14 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 			$has_filters = true;
 		}
 
-		if ( ! empty( $_GET['bis_product_filter'] ) ) {
-			$filter                   = absint( $_GET['bis_product_filter'] );
+		if ( ! empty( $_GET['bis_product_filter'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$filter                   = absint( wp_unslash( $_GET['bis_product_filter'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$query_args['product_id'] = array( $filter );
 			$has_filters              = true;
 		}
 
-		if ( ! empty( $_GET['bis_customer_filter'] ) ) {
-			$filter                = absint( $_GET['bis_customer_filter'] );
+		if ( ! empty( $_GET['bis_customer_filter'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$filter                = absint( wp_unslash( $_GET['bis_customer_filter'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$query_args['user_id'] = array( $filter );
 			$has_filters           = true;
 		}
@@ -570,9 +579,9 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 		// Configure pagination.
 		$this->set_pagination_args(
 			array(
-				'total_items' => $this->total_items, // total items defined above
-				'per_page'    => $per_page, // per page constant defined at top of method
-				'total_pages' => ceil( $this->total_items / $per_page ), // calculate pages count
+				'total_items' => $this->total_items, // Total items defined above.
+				'per_page'    => $per_page, // Per page constant defined at top of method.
+				'total_pages' => ceil( $this->total_items / $per_page ), // Calculate pages count.
 			)
 		);
 	}
@@ -596,11 +605,10 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	 * @return array
 	 */
 	protected function get_views() {
-
 		$status_links = array();
 
 		// All view.
-		$class          = ! empty( $_REQUEST['status'] ) && 'all_bis_notifications' === $_REQUEST['status'] ? 'current' : '';
+		$class          = ! empty( $_REQUEST['status'] ) && 'all_bis_notifications' === $_REQUEST['status'] ? 'current' : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$all_inner_html = sprintf(
 			/* translators: %s: Notifications count */
 			_nx(
@@ -617,7 +625,7 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 
 		if ( $this->total_queued_items > 0 ) {
 			// Queued view.
-			$class             = ! empty( $_REQUEST['status'] ) && 'queued_bis_notifications' === $_REQUEST['status'] ? 'current' : '';
+			$class             = ! empty( $_REQUEST['status'] ) && 'queued_bis_notifications' === $_REQUEST['status'] ? 'current' : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$active_inner_html = sprintf(
 				/* translators: %s: Notifications count */
 				_nx(
@@ -634,7 +642,7 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 		}
 
 		// Active view.
-		$class             = ! empty( $_REQUEST['status'] ) && 'active_bis_notifications' === $_REQUEST['status'] ? 'current' : '';
+		$class             = ! empty( $_REQUEST['status'] ) && 'active_bis_notifications' === $_REQUEST['status'] ? 'current' : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$active_inner_html = sprintf(
 			/* translators: %s: Notifications count */
 			_nx(
@@ -650,7 +658,7 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 		$status_links['active'] = $this->get_link( array( 'status' => 'active_bis_notifications' ), $active_inner_html, $class );
 
 		// Inactive view.
-		$class               = ! empty( $_REQUEST['status'] ) && 'inactive_bis_notifications' === $_REQUEST['status'] ? 'current' : '';
+		$class               = ! empty( $_REQUEST['status'] ) && 'inactive_bis_notifications' === $_REQUEST['status'] ? 'current' : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$inactive_inner_html = sprintf(
 			/* translators: %s: Notifications count */
 			_nx(
@@ -671,25 +679,24 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	/**
 	 * Construct a link string from args.
 	 *
-	 * @param  array  $args
-	 * @param  string $label
-	 * @param  string $class
+	 * @param array  $args Arguments for the link.
+	 * @param string $label Link label.
+	 * @param string $css_class CSS class.
 	 * @return string
 	 */
-	protected function get_link( $args, $label, $class = '' ) {
-
+	protected function get_link( $args, $label, $css_class = '' ) {
 		$base_url = admin_url( 'admin.php?page=bis_notifications' );
-		$url = add_query_arg( $args, $base_url );
+		$url      = add_query_arg( $args, $base_url );
 
 		$class_html   = '';
 		$aria_current = '';
-		if ( ! empty( $class ) ) {
+		if ( ! empty( $css_class ) ) {
 			$class_html = sprintf(
 				' class="%s"',
-				esc_attr( $class )
+				esc_attr( $css_class )
 			);
 
-			if ( 'current' === $class ) {
+			if ( 'current' === $css_class ) {
 				$aria_current = ' aria-current="page"';
 			}
 		}
@@ -706,7 +713,7 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	/**
 	 * Display table extra nav.
 	 *
-	 * @param  string $which top|bottom
+	 * @param string $which top|bottom.
 	 * @return void
 	 */
 	public function extra_tablenav( $which ) {
@@ -744,13 +751,11 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	protected function display_product_dropdown() {
-
 		$product_string = '';
 		$product_id     = '';
 
-		if ( ! empty( $_GET['bis_product_filter'] ) ) {
-
-			$product_id = wc_clean( $_GET['bis_product_filter'] );
+		if ( ! empty( $_GET['bis_product_filter'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$product_id = wc_clean( wp_unslash( $_GET['bis_product_filter'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$product    = wc_get_product( absint( $product_id ) );
 
 			if ( $product ) {
@@ -777,13 +782,11 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	protected function display_customer_dropdown() {
-
 		$user_string = '';
 		$user_id     = '';
 
-		if ( ! empty( $_GET['bis_customer_filter'] ) ) {
-
-			$user_id = wc_clean( $_GET['bis_customer_filter'] );
+		if ( ! empty( $_GET['bis_customer_filter'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$user_id = wc_clean( wp_unslash( $_GET['bis_customer_filter'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$user    = get_user_by( 'id', absint( $user_id ) );
 
 			if ( $user ) {
@@ -816,18 +819,18 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 		$months      = WC_BIS()->db->notifications->get_distinct_dates();
 		$month_count = count( $months );
 
-		if ( ! $month_count || ( 1 == $month_count && 0 == $months[0]->month ) ) {
+		if ( ! $month_count || ( 1 === $month_count && 0 === (int) $months[0]->month ) ) {
 			return;
 		}
 
-		$m = isset( $_GET['m'] ) ? (int) $_GET['m'] : 0;
+		$m = isset( $_GET['m'] ) ? (int) wp_unslash( $_GET['m'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		?>
 		<label for="filter-by-date" class="screen-reader-text"><?php esc_html_e( 'Filter by date', 'woocommerce' ); ?></label>
 		<select name="m" id="filter-by-date">
 			<option<?php selected( $m, 0 ); ?> value="0"><?php esc_html_e( 'All dates', 'woocommerce' ); ?></option>
 			<?php
 			foreach ( $months as $arc_row ) {
-				if ( 0 == $arc_row->year ) {
+				if ( 0 === (int) $arc_row->year ) {
 					continue;
 				}
 

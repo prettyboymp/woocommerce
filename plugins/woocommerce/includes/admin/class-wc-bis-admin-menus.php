@@ -6,6 +6,8 @@
  * @since    1.0.0
  */
 
+declare( strict_types=1 );
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -22,7 +24,7 @@ class WC_BIS_Admin_Menus {
 	 *
 	 * @var string
 	 */
-	protected static $HIDE_CSS_CLASS = 'hide-if-js';
+	protected static $hide_css_class = 'hide-if-js';
 
 	/**
 	 * Setup.
@@ -56,7 +58,7 @@ class WC_BIS_Admin_Menus {
 	/**
 	 * Configure back in stock tabs.
 	 *
-	 * @param  array $pages
+	 * @param array $pages Array of pages with their tab sections.
 	 * @return array
 	 */
 	public static function wc_admin_navigation_page_tab_sections( $pages ) {
@@ -67,7 +69,7 @@ class WC_BIS_Admin_Menus {
 	/**
 	 * Configure back in stock page sections.
 	 *
-	 * @param  array $pages
+	 * @param array $pages Array of pages with their tab identifiers.
 	 * @return array
 	 */
 	public static function wc_admin_navigation_pages_with_tabs( $pages ) {
@@ -79,7 +81,7 @@ class WC_BIS_Admin_Menus {
 	 * Add screen id to WooCommerce.
 	 *
 	 * @since 1.6.4
-	 * @param  array $screen_ids  List of screen IDs.
+	 * @param array $screen_ids List of screen IDs.
 	 * @return array
 	 */
 	public static function wc_admin_navigation_screen_ids( $screen_ids ) {
@@ -189,6 +191,13 @@ class WC_BIS_Admin_Menus {
 			'url'   => admin_url( 'admin.php?page=bis_notifications' ),
 		);
 
+		/**
+		 * Filter the admin tabs for BIS pages.
+		 *
+		 * @since 9.9.0
+		 * @param array $tabs Array of tab data.
+		 * @return array
+		 */
 		$tabs = apply_filters( 'woocommerce_bis_admin_tabs', $tabs );
 
 		if ( is_array( $tabs ) ) {
@@ -207,7 +216,7 @@ class WC_BIS_Admin_Menus {
 	/**
 	 * Returns the current admin tab.
 	 *
-	 * @param  string $current_tab (Optional)
+	 * @param string $current_tab Optional. The current tab identifier.
 	 * @return string
 	 */
 	public static function get_current_tab( $current_tab = false ) {
@@ -229,14 +238,18 @@ class WC_BIS_Admin_Menus {
 		/**
 		 * Filters the current Admin tab.
 		 *
-		 * @param  string    $current_tab
-		 * @param  WP_Screen $screen
+		 * @since 9.9.0
+		 * @param string    $current_tab The current tab identifier.
+		 * @param WP_Screen $screen      The current screen object.
+		 * @return string
 		 */
 		return (string) apply_filters( 'woocommerce_bis_admin_current_tab', $current_tab, $screen );
 	}
 
 	/**
 	 * Add menu items.
+	 *
+	 * @return bool|void
 	 */
 	public static function add_menu() {
 
@@ -271,7 +284,7 @@ class WC_BIS_Admin_Menus {
 	/**
 	 * Add "Activity" tab to WooCommerce status page.
 	 *
-	 * @param array $tabs
+	 * @param array $tabs Array of status page tabs.
 	 * @return array
 	 */
 	public static function add_bis_activity_page_tab( $tabs ) {
@@ -298,8 +311,10 @@ class WC_BIS_Admin_Menus {
 		// Select section.
 		$section = '';
 
-		if ( isset( $_GET['section'] ) ) {
-			$section = wc_clean( $_GET['section'] );
+		// Nonce is checked in WC_BIS_Admin_Notifications_Page::delete and WC_BIS_Admin_Notifications_Page::create_output,
+		// edit_output and output just displays the page.
+		if ( isset( $_GET['section'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$section = wc_clean( wp_unslash( $_GET['section'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 
 		switch ( $section ) {
@@ -325,6 +340,11 @@ class WC_BIS_Admin_Menus {
 
 		WC_BIS_Admin_Notifications_Page::process();
 
+		/**
+		 * Fires when the notifications page is initialized.
+		 *
+		 * @since 9.9.0
+		 */
 		do_action( 'woocommerce_bis_notifications_page_init' );
 	}
 
@@ -341,9 +361,8 @@ class WC_BIS_Admin_Menus {
 	 * This feature has been deprecated in WooCommerce 9.5, so it can be removed in the future.
 	 * Keeping this here for now.
 	 *
-	 * @since  1.0.9
-	 *
-	 * @param  array $excluded_items
+	 * @since 1.0.9
+	 * @param array $excluded_items Array of excluded menu items.
 	 * @return array
 	 */
 	public static function exclude_navigation_items( $excluded_items ) {
@@ -362,7 +381,7 @@ class WC_BIS_Admin_Menus {
 	 * Instead of actually removing the submenu item, a safer approach is to hide it and filter it in the API response.
 	 * In this manner we'll avoid breaking third-party plugins depending on items that no longer exist.
 	 *
-	 * @param string $menu_slug The parent menu slug.
+	 * @param string $menu_slug    The parent menu slug.
 	 * @param string $submenu_slug The submenu slug that should be hidden.
 	 * @return false|array
 	 */
@@ -390,15 +409,14 @@ class WC_BIS_Admin_Menus {
 	 * Apply the hide-if-js CSS class to a submenu item.
 	 *
 	 * @since 1.6.3
-	 *
-	 * @param int    $index The position of a submenu item in the submenu array.
+	 * @param int    $index       The position of a submenu item in the submenu array.
 	 * @param string $parent_slug The parent slug.
-	 * @param array  $item The submenu item.
+	 * @param array  $item        The submenu item.
 	 */
 	protected static function hide_submenu_element( $index, $parent_slug, $item ) {
 		global $submenu;
 
-		$css_classes = empty( $item[4] ) ? self::$HIDE_CSS_CLASS : $item[4] . ' ' . self::$HIDE_CSS_CLASS;
+		$css_classes = empty( $item[4] ) ? self::$hide_css_class : $item[4] . ' ' . self::$hide_css_class;
 
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$submenu[ $parent_slug ][ $index ][4] = $css_classes;
