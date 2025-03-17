@@ -103,6 +103,10 @@ class ProcessCoreProfilerPluginInstallOptions {
 
 		if ( $options->force_array ) {
 			$install_option->value = json_decode( wp_json_encode( $install_option->value ), true );
+			// In case of JSON error, return early.
+			if ( json_last_error() === JSON_ERROR_NONE ) {
+				return;
+			}
 		}
 
 		update_option( $install_option->name, $install_option->value, $options->autoload ? 'yes' : 'no' );
