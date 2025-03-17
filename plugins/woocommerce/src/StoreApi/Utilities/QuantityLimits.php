@@ -78,11 +78,11 @@ final class QuantityLimits {
 	/**
 	 * Fix a quantity violation by adjusting it to the nearest valid quantity.
 	 *
-	 * @param int   $quantity The quantity to fix.
+	 * @param float   $quantity The quantity to fix.
 	 * @param array $cart_item The cart item.
 	 * @return int
 	 */
-	public function normalize_cart_item_quantity( int $quantity, array $cart_item ) {
+	public function normalize_cart_item_quantity( float $quantity, array $cart_item ) {
 		$product = $cart_item['data'] ?? false;
 
 		if ( ! $product instanceof \WC_Product ) {
