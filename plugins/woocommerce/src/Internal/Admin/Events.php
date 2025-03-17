@@ -42,7 +42,7 @@ use Automattic\WooCommerce\Internal\Admin\Notes\WooCommercePayments;
 use Automattic\WooCommerce\Internal\Admin\Notes\WooCommerceSubscriptions;
 use Automattic\WooCommerce\Internal\Admin\Notes\WooSubscriptionsNotes;
 use Automattic\WooCommerce\Internal\Admin\RemoteFreeExtensions\Init;
-use Automattic\WooCommerce\Internal\Admin\RemoteFreeExtensions\ProcessInstallOptions;
+use Automattic\WooCommerce\Internal\Admin\RemoteFreeExtensions\ProcessCoreProfilerPluginInstallOptions;
 use Automattic\WooCommerce\Internal\Admin\Schedulers\MailchimpScheduler;
 use Automattic\WooCommerce\Admin\Notes\Note;
 use Automattic\WooCommerce\Admin\Features\PaymentGatewaySuggestions\PaymentGatewaySuggestionsDataSourcePoller;
@@ -129,7 +129,23 @@ class Events {
 	public function init() {
 		add_action( 'wc_admin_daily', array( $this, 'do_wc_admin_daily' ) );
 		add_filter( 'woocommerce_get_note_from_db', array( $this, 'get_note_from_db' ), 10, 1 );
-		add_filter( 'woocommerce_rest_api_plugins_install_logger', array( $this, 'filter_plugin_install_logger_for_core_profiler' ), 10, 2 );
+		add_action(
+			'woocommerce_plugins_install_before',
+			function ( $slug, $source ) {
+				$this->install_options_for_core_profiler_plugin_install( $slug, $source, 'before' );
+			},
+			10,
+			2
+		);
+
+		add_action(
+			'woocommerce_plugins_install_after',
+			function ( $slug, $source ) {
+				$this->install_options_for_core_profiler_plugin_install( $slug, $source, 'after' );
+			},
+			10,
+			2
+		);
 
 		// Initialize the WC_Notes_Refund_Returns Note to attach hook.
 		\WC_Notes_Refund_Returns::init();
@@ -277,20 +293,24 @@ class Events {
 		}
 	}
 
+
 	/**
-	 * Set ProcessInstallOptions for core profiler plugin install process.
+	 * Install options for core profiler plugin install.
 	 *
-	 * ProcessInstallOptions will process 'install_options' property.
+	 * When a plugin is installed from the core profiler, this method is called to process the install options.
 	 *
-	 * @param PluginsInstallLogger|null $logger The logger instance.
-	 * @param null                      $source The source of the plugin install.
+	 * Install options are a list of options that are set for the plugin being installed. The options can be installed before or after the plugin is installed.
 	 *
-	 * @return ProcessInstallOptions|null
+	 * @param $slug string Plugin slug.
+	 * @param $source string Source of the plugin install.
+	 * @param $priority string Priority of the plugin install. Can be 'before' or 'after'.
+	 *
+	 * @return void|null
 	 */
-	public function filter_plugin_install_logger_for_core_profiler( PluginsInstallLogger $logger = null, $source = null ) {
+	public function install_options_for_core_profiler_plugin_install( $slug, $source, $priority ) {
 		// Only proceed if the plugin install was initiated from the core profiler.
 		if ( 'core-profiler' !== $source ) {
-			return $logger;
+			return;
 		}
 
 		// Retrieve the core profiler spec.
@@ -300,6 +320,12 @@ class Events {
 			return null;
 		}
 
-		return new ProcessInstallOptions( current( $specs )->plugins, $logger instanceof AsyncPluginsInstallLogger ? $logger : null );
+		$install_options = new ProcessCoreProfilerPluginInstallOptions( current( $specs )->plugins, $slug );
+
+		if ( $priority === 'before' ) {
+			$install_options->process_before();
+		} else {
+			$install_options->process_after();
+		}
 	}
 }

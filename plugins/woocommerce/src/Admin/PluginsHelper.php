@@ -245,13 +245,6 @@ class PluginsHelper {
 			);
 		}
 
-		/**
-		 * Get a PluginsInstallLogger instance.
-		 *
-		 * @since 9.9
-		 */
-		$logger = apply_filters( 'woocommerce_rest_api_plugins_install_logger', $logger, $source );
-
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		include_once ABSPATH . '/wp-admin/includes/admin.php';
 		include_once ABSPATH . '/wp-admin/includes/plugin-install.php';
@@ -325,6 +318,13 @@ class PluginsHelper {
 				continue;
 			}
 
+			/**
+			 * Action triggered before a plugin is installed.
+			 *
+			 * @since 9.9
+			 */
+			do_action( 'woocommerce_plugins_install_after', $slug, $source );
+
 			$upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
 			$result   = $upgrader->install( $api->download_link );
 			// result can be false or WP_Error.
@@ -377,6 +377,13 @@ class PluginsHelper {
 
 			$installed_plugins[] = $plugin;
 			$logger && $logger->installed( $plugin, $time[ $plugin ] );
+
+			/**
+			 * Action triggered after a plugin is installed.
+			 *
+			 * @since 9.9
+			 */
+			do_action( 'woocommerce_plugins_install_after', $slug, $source );
 		}
 
 		$data = array(
