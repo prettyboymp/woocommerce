@@ -1,0 +1,156 @@
+<?php
+/**
+ * Class WC_Email_POS_Base file.
+ *
+ * @package WooCommerce\POS\Emails
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+if ( ! class_exists( 'WC_Email_POS_Base', false ) ) :
+
+	/**
+	 * Base class for all POS emails.
+	 *
+	 * This abstract class provides common functionality for all POS email types.
+	 *
+	 * @class       WC_Email_POS_Base
+	 * @version     1.0.0
+	 * @package     WooCommerce\POS\Emails
+	 * @extends     WC_Email
+	 */
+	abstract class WC_Email_POS_Base extends WC_Email {
+
+		/**
+		 * Constructor.
+		 */
+		public function __construct() {
+			// Set template base to POS plugin directory
+			$this->template_base = WC_POS_PLUGIN_DIR . 'templates/';
+			
+			// Call parent constructor
+			parent::__construct();
+			
+			// Default to manual sending
+			$this->manual = true;
+		}
+		
+		/**
+		 * Add unit price in quantity column in order items.
+		 *
+		 * @param array $args Order items arguments.
+		 * @return array Modified arguments.
+		 */
+		public function add_unit_price_in_quantity_arg( $args ) {
+			$args['includes_unit_price_with_quantity'] = true;
+			return $args;
+		}
+		
+		/**
+		 * Placeholder of the refund & returns policy content.
+		 *
+		 * @since 1.0.0
+		 * @return string
+		 */
+		public function get_refund_returns_policy_placeholder() {
+			return __( 'Brief statement about the refund & returns policy', 'woocommerce-pos' );
+		}
+
+		/**
+		 * Get the refund and returns policy text.
+		 *
+		 * @return string
+		 */
+		public function get_refund_returns_policy() {
+			$policy_text = $this->get_option( 'refund_returns_policy', '' );
+			return $this->format_string( $policy_text );
+		}
+		
+		/**
+		 * Show the order details table with payment auth code.
+		 *
+		 * @param WC_Order $order         Order instance.
+		 * @param bool     $sent_to_admin If should sent to admin.
+		 * @param bool     $plain_text    If is plain text email.
+		 * @param string   $email         Email address.
+		 */
+		public function order_details( $order, $sent_to_admin = false, $plain_text = false, $email = '' ) {
+			if ( $plain_text ) {
+				wc_get_template(
+					'emails/plain/email-order-details.php',
+					array(
+						'order'                      => $order,
+						'sent_to_admin'              => $sent_to_admin,
+						'plain_text'                 => $plain_text,
+						'email'                      => $email,
+						'includes_payment_auth_code' => true,
+					)
+				);
+			} else {
+				wc_get_template(
+					'emails/email-order-details.php',
+					array(
+						'order'                      => $order,
+						'sent_to_admin'              => $sent_to_admin,
+						'plain_text'                 => $plain_text,
+						'email'                      => $email,
+						'includes_payment_auth_code' => true,
+					)
+				);
+			}
+		}
+		
+		/**
+		 * Get content html with payment auth code included.
+		 *
+		 * @return string
+		 */
+		public function get_content_html() {
+			// Add filter to include unit price in the quantity column for order items table.
+			add_filter( 'woocommerce_email_order_items_args', array( $this, 'add_unit_price_in_quantity_arg' ), 10, 1 );
+			// Custom action to show the order details table with payment auth code.
+			add_action( 'woocommerce_pos_email_order_details', array( $this, 'order_details' ), 10, 4 );
+			
+			$content = wc_get_template_html(
+				$this->template_html,
+				array(
+					'order'                 => $this->object,
+					'email_heading'         => $this->get_heading(),
+					'additional_content'    => $this->get_additional_content(),
+					'refund_returns_policy' => $this->get_refund_returns_policy(),
+					'sent_to_admin'         => false,
+					'plain_text'            => false,
+					'email'                 => $this,
+				)
+			);
+
+			// Remove action and filter after generating content to avoid affecting other emails.
+			remove_action( 'woocommerce_pos_email_order_details', array( $this, 'order_details' ), 10 );
+			remove_filter( 'woocommerce_email_order_items_args', array( $this, 'add_unit_price_in_quantity_arg' ), 10 );
+
+			return $content;
+		}
+		
+		/**
+		 * Get content plain.
+		 *
+		 * @return string
+		 */
+		public function get_content_plain() {
+			return wc_get_template_html(
+				$this->template_plain,
+				array(
+					'order'              => $this->object,
+					'email_heading'      => $this->get_heading(),
+					'additional_content' => $this->get_additional_content(),
+					'sent_to_admin'      => false,
+					'plain_text'         => true,
+					'email'              => $this,
+				)
+			);
+		}
+	}
+
+endif; 

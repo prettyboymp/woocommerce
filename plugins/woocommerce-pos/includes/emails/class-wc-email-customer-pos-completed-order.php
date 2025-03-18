@@ -12,7 +12,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
+// Include the base class
+if ( ! class_exists( 'WC_Email_POS_Base', false ) ) {
+	$base_file = WC_POS_PLUGIN_DIR . 'includes/emails/class-wc-email-pos-base.php';
+	if ( file_exists( $base_file ) ) {
+		require_once $base_file;
+	} else {
+		error_log( 'WooCommerce POS: Base email class file not found at: ' . $base_file );
+	}
+}
+
+// Only define this class if the base class exists and we haven't defined it yet
+if ( class_exists( 'WC_Email_POS_Base', false ) && ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 
 	/**
 	 * POS Order completed email.
@@ -22,9 +33,9 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 	 * @class       WC_Email_Customer_POS_Completed_Order
 	 * @version     1.0.0
 	 * @package     WooCommerce\POS\Emails
-	 * @extends     WC_Email
+	 * @extends     WC_Email_POS_Base
 	 */
-	class WC_Email_Customer_POS_Completed_Order extends WC_Email {
+	class WC_Email_Customer_POS_Completed_Order extends WC_Email_POS_Base {
 
 		/**
 		 * Constructor.
@@ -69,48 +80,45 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 		}
 
 		/**
-		 * Add unit price in quantity column in order items.
+		 * Trigger the sending of this email when requested via the REST API.
 		 *
-		 * @param array $args Order items arguments.
-		 * @return array Modified arguments.
+		 * @param int    $order_id    The order ID.
+		 * @param string $template_id The email template ID.
 		 */
-		public function add_unit_price_in_quantity_arg( $args ) {
-			$args['includes_unit_price_with_quantity'] = true;
-			return $args;
+		public function maybe_trigger_from_api( $order_id, $template_id ) {
+			if ( $this->id === $template_id ) {
+				$order = wc_get_order( $order_id );
+				if ( $order ) {
+					$this->trigger( $order_id, $order );
+				}
+			}
 		}
 
 		/**
-		 * Show the order details table
+		 * Trigger the sending of this email.
 		 *
-		 * @param WC_Order $order         Order instance.
-		 * @param bool     $sent_to_admin If should sent to admin.
-		 * @param bool     $plain_text    If is plain text email.
-		 * @param string   $email         Email address.
+		 * @param int            $order_id The order ID.
+		 * @param WC_Order|false $order Order object.
 		 */
-		public function order_details( $order, $sent_to_admin = false, $plain_text = false, $email = '' ) {
-			if ( $plain_text ) {
-				wc_get_template(
-					'emails/plain/email-order-details.php',
-					array(
-						'order'                      => $order,
-						'sent_to_admin'              => $sent_to_admin,
-						'plain_text'                 => $plain_text,
-						'email'                      => $email,
-						'includes_payment_auth_code' => true,
-					)
-				);
-			} else {
-				wc_get_template(
-					'emails/email-order-details.php',
-					array(
-						'order'                      => $order,
-						'sent_to_admin'              => $sent_to_admin,
-						'plain_text'                 => $plain_text,
-						'email'                      => $email,
-						'includes_payment_auth_code' => true,
-					)
-				);
+		public function trigger( $order_id, $order = false ) {
+			$this->setup_locale();
+
+			if ( $order_id && ! is_a( $order, 'WC_Order' ) ) {
+				$order = wc_get_order( $order_id );
 			}
+
+			if ( is_a( $order, 'WC_Order' ) ) {
+				$this->object                         = $order;
+				$this->recipient                      = $this->object->get_billing_email();
+				$this->placeholders['{order_date}']   = wc_format_datetime( $this->object->get_date_created() );
+				$this->placeholders['{order_number}'] = $this->object->get_order_number();
+			}
+
+			if ( $this->get_recipient() ) {
+				$this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
+			}
+
+			$this->restore_locale();
 		}
 
 		/**
@@ -167,21 +175,6 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 		}
 
 		/**
-		 * Placeholder of the refund & returns policy content.
-		 *
-		 * @since 1.0.0
-		 * @return string
-		 */
-		public function get_refund_returns_policy_placeholder() {
-			return __( 'Brief statement about the refund & returns policy', 'woocommerce-pos' );
-		}
-
-		public function get_refund_returns_policy() {
-			$policy_text = $this->get_option( 'refund_returns_policy', '' );
-			return $this->format_string( $policy_text );
-		}
-
-		/**
 		 * Default content to show below main email content.
 		 *
 		 * @since 1.0.0
@@ -191,97 +184,6 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 			return $this->email_improvements_enabled
 				? __( 'Thanks for shopping with us in-store! If you need any help with your purchase, please contact us at {store_email}.', 'woocommerce-pos' )
 				: __( 'Thanks for shopping with us in-store!', 'woocommerce-pos' );
-		}
-
-		/**
-		 * Trigger the sending of this email when requested via the REST API.
-		 *
-		 * @param int    $order_id    The order ID.
-		 * @param string $template_id The email template ID.
-		 */
-		public function maybe_trigger_from_api( $order_id, $template_id ) {
-			if ( $this->id === $template_id ) {
-				$order = wc_get_order( $order_id );
-				if ( $order ) {
-					$this->trigger( $order_id, $order );
-				}
-			}
-		}
-
-		/**
-		 * Trigger the sending of this email.
-		 *
-		 * @param int            $order_id The order ID.
-		 * @param WC_Order|false $order Order object.
-		 */
-		public function trigger( $order_id, $order = false ) {
-			$this->setup_locale();
-
-			if ( $order_id && ! is_a( $order, 'WC_Order' ) ) {
-				$order = wc_get_order( $order_id );
-			}
-
-			if ( is_a( $order, 'WC_Order' ) ) {
-				$this->object                         = $order;
-				$this->recipient                      = $this->object->get_billing_email();
-				$this->placeholders['{order_date}']   = wc_format_datetime( $this->object->get_date_created() );
-				$this->placeholders['{order_number}'] = $this->object->get_order_number();
-			}
-
-			if ( $this->get_recipient() ) {
-				$this->send( $this->get_recipient(), $this->get_subject(), $this->get_content(), $this->get_headers(), $this->get_attachments() );
-			}
-
-			$this->restore_locale();
-		}
-
-		/**
-		 * Get content html.
-		 *
-		 * @return string
-		 */
-		public function get_content_html() {
-			// Add filter to include unit price in the quantity column for order items table.
-			add_filter( 'woocommerce_email_order_items_args', array( $this, 'add_unit_price_in_quantity_arg' ), 10, 1 );
-			// Custom action to show the order details table with payment auth code.
-			add_action( 'woocommerce_pos_email_order_details', array( $this, 'order_details' ), 10, 4 );
-			$content = wc_get_template_html(
-				$this->template_html,
-				array(
-					'order'                 => $this->object,
-					'email_heading'         => $this->get_heading(),
-					'additional_content'    => $this->get_additional_content(),
-					'refund_returns_policy' => $this->get_refund_returns_policy(),
-					'sent_to_admin'         => false,
-					'plain_text'            => false,
-					'email'                 => $this,
-				)
-			);
-
-			// Remove action and filter after generating content to avoid affecting other emails.
-			remove_action( 'woocommerce_email_order_details', array( $this, 'order_details' ), 10 );
-			remove_filter( 'woocommerce_email_order_items_args', array( $this, 'add_unit_price_in_quantity_arg' ), 10 );
-
-			return $content;
-		}
-
-		/**
-		 * Get content plain.
-		 *
-		 * @return string
-		 */
-		public function get_content_plain() {
-			return wc_get_template_html(
-				$this->template_plain,
-				array(
-					'order'              => $this->object,
-					'email_heading'      => $this->get_heading(),
-					'additional_content' => $this->get_additional_content(),
-					'sent_to_admin'      => false,
-					'plain_text'         => true,
-					'email'              => $this,
-				)
-			);
 		}
 
 		/**

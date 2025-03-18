@@ -42,51 +42,27 @@ if ( ! empty( $order->get_billing_first_name() ) ) {
 }
 ?>
 </p>
-<?php if ( $order->needs_payment() ) { ?>
+<?php if ( $order->has_status( array( OrderStatus::COMPLETED, OrderStatus::PROCESSING ) ) ) { ?>
 	<p>
 	<?php
-	if ( $order->has_status( OrderStatus::FAILED ) ) {
-		printf(
-			wp_kses(
-			/* translators: %1$s Site title, %2$s Order pay link */
-				__( 'Sorry, your order on %1$s was unsuccessful. Your order details are below, with a link to try your payment again: %2$s', 'woocommerce-pos' ),
-				array(
-					'a' => array(
-						'href' => array(),
-					),
-				)
-			),
-			esc_html( get_bloginfo( 'name', 'display' ) ),
-			'<a href="' . esc_url( $order->get_checkout_payment_url() ) . '">' . esc_html__( 'Pay for this order', 'woocommerce-pos' ) . '</a>'
-		);
-	} else {
-		printf(
-			wp_kses(
-			/* translators: %1$s Site title, %2$s Order pay link */
-				__( 'An order has been created for you on %1$s. Your order details are below, with a link to make payment when you're ready: %2$s', 'woocommerce-pos' ),
-				array(
-					'a' => array(
-						'href' => array(),
-					),
-				)
-			),
-			esc_html( get_bloginfo( 'name', 'display' ) ),
-			'<a href="' . esc_url( $order->get_checkout_payment_url() ) . '">' . esc_html__( 'Pay for this order', 'woocommerce-pos' ) . '</a>'
-		);
-	}
+	printf(
+		/* translators: %s: Site title */
+		esc_html__( 'Your in-store purchase from %s has been completed.', 'woocommerce-pos' ),
+		wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES )
+	);
 	?>
 	</p>
-
 <?php } else { ?>
 	<p>
 	<?php
-	/* translators: %s Order date */
-	printf( esc_html__( 'Here are the details of your order placed on %s:', 'woocommerce-pos' ), esc_html( wc_format_datetime( $order->get_date_created() ) ) );
+	printf(
+		/* translators: %s: Site title */
+		esc_html__( 'Thank you for your in-store purchase from %s.', 'woocommerce-pos' ),
+		wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES )
+	);
 	?>
 	</p>
-	<?php
-}
-?>
+<?php } ?>
 <?php echo $email_improvements_enabled ? '</div>' : ''; ?>
 
 <?php

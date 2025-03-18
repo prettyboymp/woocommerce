@@ -1,8 +1,8 @@
 <?php
 /**
- * Customer invoice email (plain text)
+ * Customer POS completed order email (plain text)
  *
- * This template can be overridden by copying it to yourtheme/woocommerce/emails/plain/customer-invoice.php.
+ * This template can be overridden by copying it to yourtheme/woocommerce/emails/plain/customer-pos-completed-order.php.
  *
  * HOWEVER, on occasion WooCommerce will need to update template files and you
  * (the theme developer) will need to copy the new files to your theme to
@@ -11,8 +11,8 @@
  * the readme will list any important changes.
  *
  * @see https://woocommerce.com/document/template-structure/
- * @package WooCommerce\Templates\Emails\Plain
- * @version 9.7.0
+ * @package WooCommerce\POS\Templates\Emails\Plain
+ * @version 1.0.0
  */
 
 // phpcs:disable Universal.WhiteSpace.PrecisionAlignment.Found, Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed -- Plain text output needs specific spacing without tabs
@@ -26,32 +26,9 @@ echo esc_html( wp_strip_all_tags( $email_heading ) );
 echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 
 /* translators: %s: Customer first name */
-echo sprintf( esc_html__( 'Hi %s,', 'woocommerce' ), esc_html( $order->get_billing_first_name() ) ) . "\n\n";
+echo sprintf( esc_html__( 'Hi %s,', 'woocommerce-pos' ), esc_html( $order->get_billing_first_name() ) ) . "\n\n";
 
-if ( $order->needs_payment() ) {
-	if ( $order->has_status( OrderStatus::FAILED ) ) {
-		echo wp_kses_post(
-			sprintf(
-				/* translators: %1$s: Site title, %2$s: Order pay link */
-				__( 'Sorry, your order on %1$s was unsuccessful. Your order details are below, with a link to try your payment again: %2$s', 'woocommerce' ),
-				esc_html( get_bloginfo( 'name', 'display' ) ),
-				esc_url( $order->get_checkout_payment_url() )
-			)
-	    ) . "\n\n";
-	} else {
-		echo wp_kses_post(
-			sprintf(
-				/* translators: %1$s: Site title, %2$s: Order pay link */
-				__( 'An order has been created for you on %1$s. Your order details are below, with a link to make payment when you’re ready: %2$s', 'woocommerce' ),
-				esc_html( get_bloginfo( 'name', 'display' ) ),
-				esc_url( $order->get_checkout_payment_url() )
-			)
-	    ) . "\n\n";
-	}
-} else {
-	/* translators: %s: Order date */
-	echo sprintf( esc_html__( 'Here are the details of your order placed on %s:', 'woocommerce' ), esc_html( wc_format_datetime( $order->get_date_created() ) ) ) . "\n\n";
-}
+echo sprintf( esc_html__( 'Thank you for your in-store purchase from %s.', 'woocommerce-pos' ), wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES ) ) . "\n\n";
 
 /**
  * Hook for the woocommerce_email_order_details.
@@ -87,6 +64,15 @@ echo "\n\n----------------------------------------\n\n";
  */
 if ( $additional_content ) {
 	echo esc_html( wp_strip_all_tags( wptexturize( $additional_content ) ) );
+	echo "\n\n----------------------------------------\n\n";
+}
+
+/**
+ * Show refund and returns policy if set
+ */
+if ( isset( $refund_returns_policy ) && ! empty( $refund_returns_policy ) ) {
+	echo esc_html__( 'REFUND & RETURNS POLICY', 'woocommerce-pos' ) . "\n\n";
+	echo esc_html( wp_strip_all_tags( wptexturize( $refund_returns_policy ) ) );
 	echo "\n\n----------------------------------------\n\n";
 }
 

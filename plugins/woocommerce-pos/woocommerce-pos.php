@@ -93,11 +93,14 @@ class WC_POS {
 			return;
 		}
 
-		// Load plugin text domain
+		// Load plugin text domain.
 		load_plugin_textdomain( 'woocommerce-pos', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 		
 		// Include POS email classes.
 		add_filter( 'woocommerce_email_classes', array( $this, 'register_emails' ) );
+		
+		// Add template locator for POS email templates.
+		add_filter( 'woocommerce_locate_template', array( $this, 'locate_template' ), 10, 3 );
 	}
 
 	/**
@@ -107,14 +110,163 @@ class WC_POS {
 	 * @return array
 	 */
 	public function register_emails( $email_classes ) {
-		// Include the email class file directly here
-		// This ensures WooCommerce is fully loaded when we try to extend WC_Email
-		require_once WC_POS_PLUGIN_DIR . 'includes/emails/class-wc-email-customer-pos-completed-order.php';
-
-		// Register the email class
-		$email_classes['WC_Email_Customer_POS_Completed_Order'] = new WC_Email_Customer_POS_Completed_Order();
-
+		error_log('WooCommerce POS: Starting email registration process...');
+		
+		// Check if our template directory exists
+		if (!file_exists(WC_POS_PLUGIN_DIR . 'templates/emails/')) {
+			error_log('WooCommerce POS: Email templates directory not found at ' . WC_POS_PLUGIN_DIR . 'templates/emails/');
+			return $email_classes;
+		}
+		
+		// Get all email class files from our plugin
+		$email_files = glob(WC_POS_PLUGIN_DIR . 'includes/emails/class-wc-email-*.php');
+		error_log('WooCommerce POS: Found ' . count($email_files) . ' email class files.');
+		
+		if (empty($email_files)) {
+			error_log('WooCommerce POS: No email class files found in ' . WC_POS_PLUGIN_DIR . 'includes/emails/');
+			return $email_classes;
+		}
+		
+		// Include and instantiate each email class
+		foreach ($email_files as $file) {
+			error_log('WooCommerce POS: Processing file - ' . basename($file));
+			
+			// Skip the base abstract class
+			if (strpos($file, 'class-wc-email-pos-base.php') !== false) {
+				error_log('WooCommerce POS: Skipping base abstract class file - ' . basename($file));
+				continue;
+			}
+			
+			// Extract class name from filename (e.g., class-wc-email-customer-pos-completed-order.php => WC_Email_Customer_POS_Completed_Order)
+			$basename = basename($file, '.php');
+			$class_name = str_replace('-', '_', $basename);
+			$class_name = str_replace('class_', '', $class_name);
+			$class_name = str_replace('_', ' ', $class_name);
+			$class_name = ucwords($class_name);
+			$class_name = str_replace(' ', '_', $class_name);
+			
+			// Include the file if it hasn't been included yet
+			if (!class_exists($class_name, false)) {
+				require_once $file;
+			}
+			
+			// Check if class exists after including and is not abstract
+			if (class_exists($class_name, false)) {
+				$reflection = new ReflectionClass($class_name);
+				
+				// Skip abstract classes
+				if ($reflection->isAbstract()) {
+					error_log("WooCommerce POS: Skipping abstract class {$class_name}");
+					continue;
+				}
+				
+				// Validate that the template files exist for this email class
+				$email_instance = new $class_name();
+				
+				if (isset($email_instance->template_html)) {
+					$html_template = WC_POS_PLUGIN_DIR . 'templates/' . $email_instance->template_html;
+					if (!file_exists($html_template)) {
+						error_log("WooCommerce POS: HTML email template not found for {$class_name} at {$html_template}");
+					}
+				}
+				
+				if (isset($email_instance->template_plain)) {
+					$plain_template = WC_POS_PLUGIN_DIR . 'templates/' . $email_instance->template_plain;
+					if (!file_exists($plain_template)) {
+						error_log("WooCommerce POS: Plain email template not found for {$class_name} at {$plain_template}");
+					}
+				}
+				
+				// Register the email class
+				$email_classes[$class_name] = $email_instance;
+				error_log("WooCommerce POS: Registered email class {$class_name}");
+			} else {
+				error_log("WooCommerce POS: Failed to load email class from {$file}");
+			}
+		}
+		
+		error_log('WooCommerce POS: Email registration process completed.');
 		return $email_classes;
+	}
+
+	/**
+	 * Locate template files from this plugin.
+	 *
+	 * @param string $template      Template.
+	 * @param string $template_name Template name.
+	 * @param string $template_path Template path.
+	 * @return string
+	 */
+	public function locate_template( $template, $template_name, $template_path ) {
+		// Debug logging
+		error_log("WC POS locate_template: Looking for {$template_name}");
+		error_log("WC POS locate_template: Original template path: {$template}");
+		
+		// Instead of an explicit list, check for POS-specific templates by their prefix/naming convention
+		// This is more scalable for adding future templates
+		$pos_template_patterns = array(
+			'emails/customer-pos-',     // For HTML email templates
+			'emails/plain/customer-pos-', // For plain text email templates
+			'pos-',                     // For general POS templates
+		);
+		
+		// Check if the template matches any of our POS template patterns
+		$is_pos_template = false;
+		foreach ($pos_template_patterns as $pattern) {
+			if (strpos($template_name, $pattern) !== false) {
+				$is_pos_template = true;
+				break;
+			}
+		}
+		
+		if ($is_pos_template) {
+			// Check theme first (theme folder or theme/woocommerce/)
+			$theme_template = locate_template(
+				array(
+					trailingslashit( $template_path ) . $template_name,
+					$template_name,
+				)
+			);
+			
+			if ($theme_template) {
+				error_log("WC POS locate_template: Using theme template at {$theme_template}");
+				return $theme_template;
+			}
+			
+			// Try to get the template from our plugin
+			$plugin_template = WC_POS_PLUGIN_DIR . 'templates/' . $template_name;
+			
+			if (file_exists($plugin_template)) {
+				error_log("WC POS locate_template: Found template at {$plugin_template}");
+				return $plugin_template;
+			}
+			
+			error_log("WC POS locate_template: Template NOT found at {$plugin_template}");
+			
+			// If we reach here, the template is not found in theme or plugin
+			// Let's check if it's a POS email template, and if so, try to use the corresponding WooCommerce template
+			if (strpos($template_name, 'emails/customer-pos-') !== false) {
+				// Try to fallback to regular WooCommerce customer-completed-order.php
+				$fallback_name = str_replace('customer-pos-', 'customer-', $template_name);
+				$fallback_template = WC()->plugin_path() . '/templates/' . $fallback_name;
+				
+				if (file_exists($fallback_template)) {
+					error_log("WC POS locate_template: Using fallback WooCommerce template at {$fallback_template}");
+					return $fallback_template;
+				}
+			} elseif (strpos($template_name, 'emails/plain/customer-pos-') !== false) {
+				// Try to fallback to regular WooCommerce plain customer-completed-order.php
+				$fallback_name = str_replace('customer-pos-', 'customer-', $template_name);
+				$fallback_template = WC()->plugin_path() . '/templates/' . $fallback_name;
+				
+				if (file_exists($fallback_template)) {
+					error_log("WC POS locate_template: Using fallback WooCommerce plain template at {$fallback_template}");
+					return $fallback_template;
+				}
+			}
+		}
+		
+		return $template;
 	}
 
 	/**
