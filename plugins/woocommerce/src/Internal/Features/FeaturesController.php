@@ -10,6 +10,7 @@ use WC_Site_Tracking;
 use Automattic\Jetpack\Constants;
 use Automattic\WooCommerce\Internal\Admin\Analytics;
 use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+use Automattic\WooCommerce\Internal\CostOfGoodsSold\CostOfGoodsSoldController;
 use Automattic\WooCommerce\Proxies\LegacyProxy;
 use Automattic\WooCommerce\Utilities\ArrayUtil;
 use Automattic\WooCommerce\Utilities\PluginUtil;
@@ -21,10 +22,11 @@ defined( 'ABSPATH' ) || exit;
  * provides also a mechanism for WooCommerce plugins to declare that they are compatible
  * (or incompatible) with a given feature.
  *
- * Important: some of the features are defined from inside the 'woocommerce_register_feature_definitions' hook.
- * This hook is fired from inside 'init'; therefore, features that need to be
- * queried, enabled, or disabled before 'init' (e.g. during WP CLI initialization)
- * must be hardcoded in the $legacy_features array defined inside get_feature_definitions.
+ * Note: the 'woocommerce_register_feature_definitions' hook allows registering new features
+ * externally. This hook is deprecated, features should be registered from within get_feature_definitions.
+ * However, in case you use it for testing purposes, keep in mind that the hook is fired from inside 'init';
+ * therefore, features that need to be queried, enabled, or disabled before 'init' (e.g. during WP CLI initialization)
+ * can't be registered using the hook.
  */
 class FeaturesController {
 
@@ -140,7 +142,8 @@ class FeaturesController {
 	/**
 	 * Register a feature.
 	 *
-	 * This should be called during the `woocommerce_register_feature_definitions` action hook.
+	 * This used to be called during the `woocommerce_register_feature_definitions` action hook,
+	 * now it's called directly from get_feature_definitions as needed.
 	 *
 	 * @param string $slug The ID slug of the feature.
 	 * @param string $name The name of the feature that will appear on the Features screen and elsewhere.
@@ -433,6 +436,12 @@ class FeaturesController {
 				$this->add_feature_definition( $slug, $definition['name'], $definition );
 			}
 
+			// Additional feature definitions.
+			// These used to be tied to the now deprecated woocommerce_register_feature_definitions action.
+			$container = wc_get_container();
+			$container->get( CustomOrdersTableController::class )->add_feature_definition( $this );
+			$container->get( CostOfGoodsSoldController::class )->add_feature_definition( $this );
+
 			$this->init_compatibility_info_by_feature();
 		}
 
@@ -454,7 +463,7 @@ class FeaturesController {
 	}
 
 	/**
-	 * Function to trigger the 'woocommerce_register_feature_definitions' hook.
+	 * Function to trigger the (now deprecated) 'woocommerce_register_feature_definitions' hook.
 	 *
 	 * This function must execute immediately before the 'before_woocommerce_init'
 	 * action is fired, so that feature compatibility declarations happening
@@ -475,6 +484,8 @@ class FeaturesController {
 		 * @since 8.3.0
 		 *
 		 * @param FeaturesController $features_controller The instance of FeaturesController.
+		 *
+		 * @deprecated 9.9.0 Features should be defined directly in get_feature_definitions.
 		 */
 		do_action( 'woocommerce_register_feature_definitions', $this );
 
