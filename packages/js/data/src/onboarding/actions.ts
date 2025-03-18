@@ -528,6 +528,8 @@ export function* actionTask( id: string ) {
 
 export function* installAndActivatePluginsAsync(
 	plugins: Partial< PluginNames >[],
+	// Indicate the origin of the installation request (e.g., core-profiler, marketplace)
+	// this can be used in the backend to track or do some specific actions based on the source.
 	source?: string
 ) {
 	yield setIsRequesting( 'installAndActivatePluginsAsync', true );
