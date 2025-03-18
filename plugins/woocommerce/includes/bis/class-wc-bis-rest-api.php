@@ -3,7 +3,7 @@
  * WC_BIS_REST_API class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.7.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Similar to Automattic\WooCommerce\RestApi\Server.php.
  *
  * @class    WC_BIS_REST_API
- * @version  1.7.0
+ * @version  9.9.0
  */
 class WC_BIS_REST_API {
 

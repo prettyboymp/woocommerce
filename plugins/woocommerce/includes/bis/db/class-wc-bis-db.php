@@ -3,7 +3,7 @@
  * WC_BIS_DB class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );

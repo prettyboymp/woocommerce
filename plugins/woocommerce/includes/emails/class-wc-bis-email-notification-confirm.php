@@ -51,7 +51,7 @@ if ( ! class_exists( 'WC_BIS_Email_Notification_Confirm', false ) ) :
 		/**
 		 * Prepares the email based on the notification data.
 		 *
-		 * @since x.x.x
+		 * @since 9.9.0
 		 * @param WC_BIS_Notification_Data $notification Notification.
 		 *
 		 * @return void
@@ -208,7 +208,7 @@ if ( ! class_exists( 'WC_BIS_Email_Notification_Confirm', false ) ) :
 		/**
 		 * Setup placeholders.
 		 *
-		 * @since  1.3.0
+		 * @since  9.9.0
 		 */
 		protected function setup_placeholders() {
 
@@ -238,7 +238,7 @@ if ( ! class_exists( 'WC_BIS_Email_Notification_Confirm', false ) ) :
 		/**
 		 * Set placeholders.
 		 *
-		 * @since  1.3.0
+		 * @since  9.9.0
 		 */
 		public function set_placeholders_value() {
 			$product = $this->object->get_product();
@@ -300,7 +300,7 @@ if ( ! class_exists( 'WC_BIS_Email_Notification_Confirm', false ) ) :
 		/**
 		 * Setup action hooks.
 		 *
-		 * @since 1.2.0
+		 * @since 9.9.0
 		 *
 		 * @return void
 		 */

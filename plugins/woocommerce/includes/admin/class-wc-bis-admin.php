@@ -3,7 +3,7 @@
  * WC_BIS_Admin class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare(strict_types=1);
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Loads admin scripts, includes admin classes and adds admin hooks.
  *
  * @class    WC_BIS_Admin
- * @version  2.0.2
+ * @version  9.9.0
  */
 class WC_BIS_Admin {
 
@@ -243,7 +243,7 @@ class WC_BIS_Admin {
 	/**
 	 * Setting to allow admins disabling bis on product level.
 	 *
-	 * @since  1.2.0
+	 * @since  9.9.0
 	 *
 	 * @return void
 	 */
@@ -301,7 +301,7 @@ class WC_BIS_Admin {
 	/**
 	 * Save product settings meta.
 	 *
-	 * @since  1.2.0
+	 * @since  9.9.0
 	 *
 	 * @param WC_Product $product The product object.
 	 * @return void
@@ -331,7 +331,7 @@ class WC_BIS_Admin {
 	/**
 	 * Add a notice if there are active notifications and the registration form is disabled or the product is unpublished.
 	 *
-	 * @since  1.2.0
+	 * @since  9.9.0
 	 *
 	 * @return void
 	 */
@@ -443,7 +443,7 @@ class WC_BIS_Admin {
 	/**
 	 * Handle bulk deactivation in admin context and refresh the page to reveal notice.
 	 *
-	 * @since  1.2.0
+	 * @since  9.9.0
 	 *
 	 * @return void
 	 */
@@ -510,7 +510,7 @@ class WC_BIS_Admin {
 	/**
 	 * Bulk deactivate notifications.
 	 *
-	 * @since  1.7.0
+	 * @since  9.9.0
 	 *
 	 * @param int $product_id The product ID.
 	 * @return int Number of notifications deactivated.

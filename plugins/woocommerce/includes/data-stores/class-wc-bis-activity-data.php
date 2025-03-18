@@ -3,7 +3,7 @@
  * WC_BIS_Activity_Data class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Activity Data model class.
  *
  * @class    WC_BIS_Activity_Data
- * @version  1.0.1
+ * @version  9.9.0
  */
 class WC_BIS_Activity_Data {
 

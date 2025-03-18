@@ -3,7 +3,7 @@
  * WC_BIS_Helpers class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.2.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Helper Functions.
  *
  * @class    WC_BIS_Helpers
- * @version  1.2.0
+ * @version  9.9.0
  */
 class WC_BIS_Helpers {
 
@@ -100,7 +100,7 @@ class WC_BIS_Helpers {
 	/**
 	 * Simple runtime group cache invalidator.
 	 *
-	 * @since  5.7.4
+	 * @since  9.9.0
 	 *
 	 * @param string $group_key Optional. The cache group key to invalidate. If empty, invalidates all cache.
 	 * @return void

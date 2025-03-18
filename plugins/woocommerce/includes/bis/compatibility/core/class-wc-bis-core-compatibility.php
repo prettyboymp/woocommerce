@@ -3,7 +3,7 @@
  * WC_BIS_Core_Compatibility class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Functions related to core back-compatibility.
  *
  * @class    WC_BIS_Core_Compatibility
- * @version  2.0.0
+ * @version  9.9.0
  */
 class WC_BIS_Core_Compatibility {
 
@@ -181,7 +181,7 @@ class WC_BIS_Core_Compatibility {
 	/**
 	 * Returns true if site is using block theme.
 	 *
-	 * @since  1.6.0
+	 * @since  9.9.0
 	 *
 	 * @return boolean
 	 */

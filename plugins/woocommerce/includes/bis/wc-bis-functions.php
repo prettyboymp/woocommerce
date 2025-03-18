@@ -3,7 +3,7 @@
  * Back In Stock Functions
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -112,7 +112,7 @@ function wc_bis_create_account_on_registration() {
 /**
  * Returns verification codes expiration time threshold (in seconds).
  *
- * @since 1.2.0
+ * @since 9.9.0
  *
  * @return int
  */
@@ -120,7 +120,7 @@ function wc_bis_get_verification_expiration_time_threshold() {
 	/**
 	 * Filter: woocommerce_bis_verification_expiration_time_threshold
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 * @param int $threshold The verification expiration time threshold in seconds.
 	 */
 	return (int) apply_filters( 'woocommerce_bis_verification_expiration_time_threshold', HOUR_IN_SECONDS );
@@ -129,7 +129,7 @@ function wc_bis_get_verification_expiration_time_threshold() {
 /**
  * Time period required to keep unverified notifications in the system (in seconds). @see WC_BIS_Sync_Tasks::do_wc_bis_daily()
  *
- * @since 1.2.0
+ * @since 9.9.0
  *
  * @return int
  */
@@ -146,7 +146,7 @@ function wc_bis_get_delete_unverified_time_threshold() {
 /**
  * Is signup prompt enabled?
  *
- * @since 1.2.0
+ * @since 9.9.0
  *
  * @return bool
  */
@@ -345,8 +345,8 @@ function wc_bis_get_minimum_time_between_notifications() {
 	/**
 	 * Filter: woocommerce_bis_last_sent_throttle
 	 *
-	 * @since 1.0.0
-	 * @since x.x.x Removed the $query_args parameter.
+	 * @since 9.9.0
+	 * @since 9.9.0 Removed the $query_args parameter.
 	 *
 	 * @param int   $throttle Throttle time in seconds should pass from the last notification delivery time.
 	 * @param array $query_args
@@ -375,7 +375,7 @@ function wc_bis_debug_enabled() {
 /**
  * Get double opt-in status.
  *
- * @since 1.2.0
+ * @since 9.9.0
  *
  * @return bool
  */
@@ -416,7 +416,7 @@ function wc_bis_notification_hash( $input, $action ) {
 /**
  * Get formatted screen id.
  *
- * @since 1.0.1
+ * @since 9.9.0
  * @deprecated 9.9.0 No longer needed when merged into WC core.
  *
  * @param  string $screen_id The screen ID.
@@ -430,7 +430,7 @@ function wc_bis_get_formatted_screen_id( $screen_id ) {
 /**
  * Whether or not the store is using HTML caching for logged-in users.
  *
- * @since 1.0.7
+ * @since 9.9.0
  *
  * @return bool
  */
@@ -439,7 +439,7 @@ function wc_bis_is_using_html_caching_for_users() {
 	/**
 	 * 'woocommerce_bis_is_using_html_caching_for_users' filter.
 	 *
-	 * @since 1.0.7
+	 * @since 9.9.0
 	 *
 	 * @return bool
 	 */

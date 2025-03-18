@@ -3,7 +3,7 @@
  * WC_BIS_Account class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -17,14 +17,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Account class.
  *
  * @class    WC_BIS_Account
- * @version  1.6.0
+ * @version  9.9.0
  */
 class WC_BIS_Account {
 
 	/**
 	 * Cache query vars locally to avoid multiple get_option calls.
 	 *
-	 * @since 1.4.0
+	 * @since 9.9.0
 	 * @var array
 	 */
 	protected $query_vars = array();
@@ -64,7 +64,7 @@ class WC_BIS_Account {
 	/**
 	 * Init query vars by loading options.
 	 *
-	 * @since 1.4.0
+	 * @since 9.9.0
 	 */
 	public function init_query_vars() {
 		$this->query_vars['backinstock'] = get_option( 'woocommerce_myaccount_backinstock_endpoint', 'backinstock' );
@@ -88,7 +88,7 @@ class WC_BIS_Account {
 		 * `woocommerce_bis_account_notifications_per_page` filter.
 		 * How many notifications to show per page.
 		 *
-		 * @since 1.1.2
+		 * @since 9.9.0
 		 *
 		 * @param  int  $per_page
 		 * @return int
@@ -138,7 +138,7 @@ class WC_BIS_Account {
 		 *
 		 * Whether or not to show the Activities table in My Account page.
 		 *
-		 * @since 1.1.3
+		 * @since 9.9.0
 		 *
 		 * @param  bool  $show
 		 * @return bool
@@ -151,7 +151,7 @@ class WC_BIS_Account {
 			 *
 			 * How many notifications to show per page.
 			 *
-			 * @since 1.1.2
+			 * @since 9.9.0
 			 *
 			 * @param  bool  $show
 			 * @return bool
@@ -180,7 +180,7 @@ class WC_BIS_Account {
 		 *
 		 * Whether or not to show the Activities table in My Account page.
 		 *
-		 * @since 1.2.0
+		 * @since 9.9.0
 		 *
 		 * @param  bool  $show
 		 * @return bool
@@ -299,7 +299,7 @@ class WC_BIS_Account {
 				 *
 				 * `woocommerce_bis_sign_up_account_args` filter.
 				 *
-				 * @since 1.2.0
+				 * @since 9.9.0
 				 * @param  array  $args
 				 * @return array
 				 */
@@ -337,7 +337,7 @@ class WC_BIS_Account {
 	 * Handles the signing up session based on the arguments specified.
 	 * Creates a new notification or reactivates an existing one, based on the "user + product" unique footprint.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @throws Exception If the notification cannot be created or updated.
 	 *
@@ -621,7 +621,7 @@ class WC_BIS_Account {
 	/**
 	 * Process data when verifying.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return void
 	 */
@@ -639,7 +639,7 @@ class WC_BIS_Account {
 		/**
 		 * `woocommerce_bis_verify_url` filter.
 		 *
-		 * @since 1.2.0
+		 * @since 9.9.0
 		 *
 		 * @param  string  $url
 		 * @return string
@@ -736,7 +736,7 @@ class WC_BIS_Account {
 		/**
 		 * `woocommerce_bis_unsubscribe_url` filter.
 		 *
-		 * @since 1.1.2
+		 * @since 9.9.0
 		 *
 		 * @param  string  $url
 		 * @return string
@@ -794,7 +794,7 @@ class WC_BIS_Account {
 		 *
 		 * Enable this filter to allow registered customers to force unsubscribe from specific product directly from the email link.
 		 *
-		 * @since 1.1.3
+		 * @since 9.9.0
 		 *
 		 * @param  bool  $enable
 		 * @return bool
@@ -876,7 +876,7 @@ class WC_BIS_Account {
 	/**
 	 * Process resend verification email.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return void
 	 */
@@ -935,7 +935,7 @@ class WC_BIS_Account {
 	/**
 	 * Process canceling a pending verification request.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return void
 	 */

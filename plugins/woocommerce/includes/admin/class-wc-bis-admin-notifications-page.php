@@ -3,7 +3,7 @@
  * WC_BIS_Admin_Notifications_Page class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * WC_BIS_Admin_Notifications_Page Class.
  *
- * @version 1.6.5
+ * @version 9.9.0
  */
 class WC_BIS_Admin_Notifications_Page {
 
@@ -227,7 +227,7 @@ class WC_BIS_Admin_Notifications_Page {
 							 *
 							 * Fires when a verification email is sent to a customer.
 							 *
-							 * @since 1.0.0
+							 * @since 9.9.0
 							 *
 							 * @param WC_BIS_Notification_Data $notification The notification object.
 							 */

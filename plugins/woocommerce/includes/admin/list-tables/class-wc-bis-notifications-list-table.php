@@ -3,7 +3,7 @@
  * WC_BIS_Notifications_List_Table class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -21,7 +21,7 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
  * Adds a custom Notifications list table.
  *
  * @class    WC_BIS_Notifications_List_Table
- * @version  1.6.5
+ * @version  9.9.0
  */
 class WC_BIS_Notifications_List_Table extends WP_List_Table {
 
@@ -428,7 +428,7 @@ class WC_BIS_Notifications_List_Table extends WP_List_Table {
 	/**
 	 * Process bulk actions.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return void
 	 */

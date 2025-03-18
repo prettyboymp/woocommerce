@@ -3,7 +3,7 @@
  * WC_BIS_Admin_Notices class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Admin notices handling.
  *
  * @class    WC_BIS_Admin_Notices
- * @version  1.7.2
+ * @version  9.9.0
  */
 class WC_BIS_Admin_Notices {
 
@@ -59,7 +59,7 @@ class WC_BIS_Admin_Notices {
 	/**
 	 * Add a notice/error.
 	 *
-	 * @since 1.7.0 Added the args.actions parameter.
+	 * @since 9.9.0 Added the args.actions parameter.
 	 *
 	 * @param string  $text       The notice text.
 	 * @param mixed   $args       Additional arguments for the notice.

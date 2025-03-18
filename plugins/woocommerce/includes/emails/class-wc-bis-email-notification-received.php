@@ -155,7 +155,7 @@ if ( ! class_exists( 'WC_BIS_Email_Notification_Received', false ) ) :
 		/**
 		 * Switch locale if necessary based on notification meta.
 		 *
-		 * @since 3.0.1
+		 * @since 9.9.0
 		 *
 		 * @param WC_BIS_Notification_Data $notification Notification object.
 		 */
@@ -169,7 +169,7 @@ if ( ! class_exists( 'WC_BIS_Email_Notification_Received', false ) ) :
 		/**
 		 * Restore locale if previously switched.
 		 *
-		 * @since 3.0.1
+		 * @since 9.9.0
 		 *
 		 * @param WC_BIS_Notification_Data $notification Notification object.
 		 */
@@ -347,7 +347,7 @@ if ( ! class_exists( 'WC_BIS_Email_Notification_Received', false ) ) :
 		/**
 		 * Setup placeholders.
 		 *
-		 * @since  1.3.0
+		 * @since  9.9.0
 		 */
 		protected function setup_placeholders() {
 
@@ -377,7 +377,7 @@ if ( ! class_exists( 'WC_BIS_Email_Notification_Received', false ) ) :
 		/**
 		 * Set placeholders.
 		 *
-		 * @since  1.3.0
+		 * @since  9.9.0
 		 */
 		public function set_placeholders_value() {
 			$product = $this->object->get_product();
@@ -433,7 +433,7 @@ if ( ! class_exists( 'WC_BIS_Email_Notification_Received', false ) ) :
 		/**
 		 * Setup action hooks.
 		 *
-		 * @since 1.2.0
+		 * @since 9.9.0
 		 *
 		 * @return void
 		 */

@@ -3,7 +3,7 @@
  * WC_BIS_Notices class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Notice handling.
  *
  * @class    WC_BIS_Notices
- * @version  2.0.0
+ * @version  9.9.0
  */
 class WC_BIS_Notices {
 
@@ -115,7 +115,7 @@ class WC_BIS_Notices {
 	/**
 	 * Searches for overdue delivery tasks and returns true if any are found.
 	 *
-	 * @since  1.0.1
+	 * @since  9.9.0
 	 *
 	 * @param int $time_overdue Time in seconds to consider a delivery overdue.
 	 * @return boolean Whether there are overdue deliveries.

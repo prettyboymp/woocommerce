@@ -3,7 +3,7 @@
  * WC_BIS_Compatibility class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Handles compatibility with other WC extensions.
  *
  * @class    WC_BIS_Compatibility
- * @version  x.x.x
+ * @version  9.9.0
  */
 class WC_BIS_Compatibility {
 
@@ -107,7 +107,7 @@ class WC_BIS_Compatibility {
 		 *
 		 * Use this to filter the required compatibility modules.
 		 *
-		 * @since  1.0.0
+		 * @since  9.9.0
 		 * @param  array $module_paths
 		 */
 		$module_paths = apply_filters( 'woocommerce_bis_compatibility_modules', $module_paths );

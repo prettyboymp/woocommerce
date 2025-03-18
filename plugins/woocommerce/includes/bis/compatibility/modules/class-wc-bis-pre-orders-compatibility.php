@@ -3,7 +3,7 @@
  * WC_BIS_Pre_Orders_Compatibility class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.4
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * WooCommerce Pre-Orders compatibility.
  *
- * @version  1.0.4
+ * @version  9.9.0
  */
 class WC_BIS_Pre_Orders_Compatibility {
 

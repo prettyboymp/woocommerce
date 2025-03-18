@@ -3,7 +3,7 @@
  * WC_BIS_Settings class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -19,7 +19,7 @@ if ( ! class_exists( 'WC_BIS_Settings' ) ) :
 	 * WooCommerce Back In Stock Notifications Settings.
 	 *
 	 * @class    WC_BIS_Settings
-	 * @version  1.3.0
+	 * @version  9.9.0
 	 */
 	class WC_BIS_Settings extends WC_Settings_Page {
 

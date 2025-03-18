@@ -3,7 +3,7 @@
  * WC_BIS_Product class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Back In Stock Product Controller.
  *
  * @class    WC_BIS_Product
- * @version  2.0.0
+ * @version  9.9.0
  */
 class WC_BIS_Product {
 
@@ -51,7 +51,7 @@ class WC_BIS_Product {
 			 *
 			 * Utilizing full page cache could prevent this handler from working properly. The system will cache HTML along with the security nonce. In order to have caching and enable this check you must handle the nonce part in the HTML.
 			 *
-			 * @since  1.0.6
+			 * @since  9.9.0
 			 *
 			 * @param  bool
 			 * @return bool
@@ -138,7 +138,7 @@ class WC_BIS_Product {
 					/**
 					 * `woocommerce_bis_sign_up_resume_args` filter.
 					 *
-					 * @since 1.2.0
+					 * @since 9.9.0
 					 * @param  array $args
 					 * @return array
 					 */
@@ -217,7 +217,7 @@ class WC_BIS_Product {
 				 *
 				 * `woocommerce_bis_sign_up_args` filter.
 				 *
-				 * @since 1.2.0
+				 * @since 9.9.0
 				 * @param  array  $args
 				 * @return array
 				 */
@@ -236,7 +236,7 @@ class WC_BIS_Product {
 			/**
 			 * `woocommerce_bis_prevent_sign_up_redirect` filter.
 			 *
-			 * @since  1.0.5
+			 * @since  9.9.0
 			 *
 			 * @param  bool
 			 * @return bool
@@ -247,7 +247,7 @@ class WC_BIS_Product {
 				/**
 				 * `woocommerce_bis_sign_up_redirect_url` filter.
 				 *
-				 * @since  1.0.9
+				 * @since  9.9.0
 				 *
 				 * @param  string                   $redirect_url
 				 * @param  WC_BIS_Notification_Data $notification
@@ -442,7 +442,7 @@ class WC_BIS_Product {
 	/**
 	 * Whether a product is eligible for stock notification sign-ups.
 	 *
-	 * @since  1.2.0
+	 * @since  9.9.0
 	 *
 	 * @param  mixed  $product The product.
 	 * @param  string $context single or catalog.
@@ -498,7 +498,7 @@ class WC_BIS_Product {
 	/**
 	 * Check if notification sign-ups are disabled for this product.
 	 *
-	 * @since  1.2.0
+	 * @since  9.9.0
 	 *
 	 * @param  WC_Product $product The product.
 	 * @return bool
@@ -530,7 +530,7 @@ class WC_BIS_Product {
 	/**
 	 * If product is available for back in stock notifications, display a link during the loop to inform users they can sign-up to BIS.
 	 *
-	 * @since  1.2.0
+	 * @since  9.9.0
 	 *
 	 * @param  string     $link    The link HTML.
 	 * @param  WC_Product $product The product.
@@ -630,7 +630,7 @@ class WC_BIS_Product {
 			 * If the user hasn't singed up, the product is simple, and we don't have required opt in
 			 * Then sign-up the user directly to that product.
 			 *
-			 * @since 1.2.0
+			 * @since 9.9.0
 			 *
 			 * @param  bool
 			 * @param  WC_Product  $product
@@ -678,7 +678,7 @@ class WC_BIS_Product {
 	/**
 	 * Display a notice after clicking on the loop link, informing users that they can signup for bis notifications.
 	 *
-	 * @since  1.2.0
+	 * @since  9.9.0
 	 *
 	 * @return void
 	 */

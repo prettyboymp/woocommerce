@@ -3,7 +3,7 @@
  * WC_BIS_Emails class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Emails manager.
  *
  * @class    WC_BIS_Emails
- * @version  x.x.x
+ * @version  9.9.0
  */
 class WC_BIS_Emails {
 
@@ -77,7 +77,7 @@ class WC_BIS_Emails {
 	/**
 	 * Restore customer data from notification's metadata, if applicable.
 	 *
-	 * @since 1.3.2
+	 * @since 9.9.0
 	 *
 	 * @param  WC_Notification_Data $notification Notification data.
 	 * @return void
@@ -266,7 +266,7 @@ class WC_BIS_Emails {
 	/**
 	 * Prints in the email.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @param  WC_BIS_Notification_Data $notification Notification data.
 	 * @param  WC_Email                 $email (Optional).
@@ -349,7 +349,7 @@ class WC_BIS_Emails {
 		/**
 		 * `woocommerce_bis_emails_to_style` filter.
 		 *
-		 * @since  1.3.0
+		 * @since  9.9.0
 		 *
 		 * @return array
 		 */

@@ -216,7 +216,7 @@ if ( ! class_exists( 'WC_BIS_Email_Notification_Verify', false ) ) :
 		/**
 		 * Setup placeholders.
 		 *
-		 * @since  1.3.0
+		 * @since  9.9.0
 		 */
 		protected function setup_placeholders() {
 
@@ -246,7 +246,7 @@ if ( ! class_exists( 'WC_BIS_Email_Notification_Verify', false ) ) :
 		/**
 		 * Set placeholders.
 		 *
-		 * @since  1.3.0
+		 * @since  9.9.0
 		 */
 		public function set_placeholders_value() {
 			$product = $this->object->get_product();

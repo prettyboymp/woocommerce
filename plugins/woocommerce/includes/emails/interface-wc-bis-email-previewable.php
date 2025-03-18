@@ -3,7 +3,7 @@
  * WC_BIS_Email_Previewable interface.
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    x.x.x
+ * @since    9.9.0
  */
 
 // Exit if accessed directly.
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Interface used to signal that an email class has the necessary methods to build a custom preview.
  *
  * @interface WC_BIS_Email_Previewable
- * @version  x.x.x
+ * @version  9.9.0
  */
 interface WC_BIS_Email_Previewable {
 	/**

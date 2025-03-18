@@ -3,7 +3,7 @@
  * WC_BIS_Admin_Menus class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Setup BIS menus in WP admin.
  *
- * @version 2.0.2
+ * @version 9.9.0
  */
 class WC_BIS_Admin_Menus {
 
@@ -80,7 +80,7 @@ class WC_BIS_Admin_Menus {
 	/**
 	 * Add screen id to WooCommerce.
 	 *
-	 * @since 1.6.4
+	 * @since 9.9.0
 	 * @param array $screen_ids List of screen IDs.
 	 * @return array
 	 */
@@ -361,7 +361,7 @@ class WC_BIS_Admin_Menus {
 	 * This feature has been deprecated in WooCommerce 9.5, so it can be removed in the future.
 	 * Keeping this here for now.
 	 *
-	 * @since 1.0.9
+	 * @since 9.9.0
 	 * @param array $excluded_items Array of excluded menu items.
 	 * @return array
 	 */
@@ -376,7 +376,7 @@ class WC_BIS_Admin_Menus {
 	/**
 	 * Hide the submenu page based on slug and return the item that was hidden.
 	 *
-	 * @since 1.6.3
+	 * @since 9.9.0
 	 *
 	 * Instead of actually removing the submenu item, a safer approach is to hide it and filter it in the API response.
 	 * In this manner we'll avoid breaking third-party plugins depending on items that no longer exist.
@@ -408,7 +408,7 @@ class WC_BIS_Admin_Menus {
 	/**
 	 * Apply the hide-if-js CSS class to a submenu item.
 	 *
-	 * @since 1.6.3
+	 * @since 9.9.0
 	 * @param int    $index       The position of a submenu item in the submenu array.
 	 * @param string $parent_slug The parent slug.
 	 * @param array  $item        The submenu item.

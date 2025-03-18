@@ -3,7 +3,7 @@
  * WC_BIS_Admin_Exporters class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * WC_BIS_Admin_Exporters Class.
  *
- * @version 1.0.0
+ * @version 9.9.0
  */
 class WC_BIS_Admin_Exporters {
 

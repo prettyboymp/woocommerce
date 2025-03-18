@@ -3,7 +3,7 @@
  * WC_BIS_Admin_Ajax class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Admin AJAX meta-box handlers.
  *
  * @class    WC_BIS_Admin_Ajax
- * @version  1.4.0
+ * @version  9.9.0
  */
 class WC_BIS_Admin_Ajax {
 

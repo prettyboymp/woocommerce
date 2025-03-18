@@ -3,7 +3,7 @@
  * WC_BIS_Notification_CSV_Exporter class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -23,7 +23,7 @@ if ( ! class_exists( 'WC_CSV_Batch_Exporter', false ) ) {
 /**
  * WC_BIS_Notification_CSV_Exporter Class.
  *
- * @version 1.7.1
+ * @version 9.9.0
  */
 class WC_BIS_Notification_CSV_Exporter extends WC_CSV_Batch_Exporter {
 

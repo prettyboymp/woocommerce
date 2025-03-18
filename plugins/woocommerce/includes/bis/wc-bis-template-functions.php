@@ -3,7 +3,7 @@
  * Template Functions
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -21,7 +21,7 @@ if ( ! function_exists( 'wc_bis_email_notification_product_image' ) ) {
 	/**
 	 * Display product image.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @param  object $product     The product.
 	 * @param  object $notification The notification.
@@ -47,7 +47,7 @@ if ( ! function_exists( 'wc_bis_email_notification_product_title' ) ) {
 	/**
 	 * Display product title.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @param  object $product     The product.
 	 * @param  object $notification The notification.
@@ -66,7 +66,7 @@ if ( ! function_exists( 'wc_bis_email_notification_product_attributes' ) ) {
 	/**
 	 * Display product attributes.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @param  object $product     The product.
 	 * @param  object $notification The notification.
@@ -85,7 +85,7 @@ if ( ! function_exists( 'wc_bis_email_notification_product_price' ) ) {
 	/**
 	 * Display product price.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @param  object $product     The product.
 	 * @param  object $notification The notification.
@@ -105,7 +105,7 @@ if ( ! function_exists( 'wc_bis_get_activity_description' ) ) {
 	/**
 	 * Get activity description.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @param  object $activity_data The activity data.
 	 * @return string
@@ -168,7 +168,7 @@ if ( ! function_exists( 'wc_bis_get_form_header_default_text' ) ) {
 	/**
 	 * Default form header text.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return string
 	 */
@@ -182,7 +182,7 @@ if ( ! function_exists( 'wc_bis_get_form_header_signed_up_default_text' ) ) {
 	/**
 	 * Default form header text when user already subscribed to the waitlist.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return string
 	 */
@@ -196,7 +196,7 @@ if ( ! function_exists( 'wc_bis_get_form_button_default_text' ) ) {
 	/**
 	 * Default form button text.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return string
 	 */
@@ -210,7 +210,7 @@ if ( ! function_exists( 'wc_bis_get_form_header_signed_up_link_default_text' ) )
 	/**
 	 * Default form header link text when user already signed up to the waitlist.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return string
 	 */
@@ -224,7 +224,7 @@ if ( ! function_exists( 'wc_bis_get_form_privacy_default_text' ) ) {
 	/**
 	 * Default form privacy text.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return string
 	 */
@@ -238,7 +238,7 @@ if ( ! function_exists( 'wc_bis_get_form_signups_count_plural_default_text' ) ) 
 	/**
 	 * Default form count sign-ups text for plural customers.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return string
 	 */
@@ -252,7 +252,7 @@ if ( ! function_exists( 'wc_bis_get_form_signups_count_default_text' ) ) {
 	/**
 	 * Default form count sign-ups text for single customer.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return string
 	 */
@@ -266,7 +266,7 @@ if ( ! function_exists( 'wc_bis_get_loop_signup_prompt_default_text' ) ) {
 	/**
 	 * Default signup prompt text.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return string
 	 */
@@ -280,7 +280,7 @@ if ( ! function_exists( 'wc_bis_get_loop_signup_prompt_link_default_text' ) ) {
 	/**
 	 * Default signup prompt link text.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return string
 	 */
@@ -294,7 +294,7 @@ if ( ! function_exists( 'wc_bis_get_loop_signup_prompt_subscribed_default_text' 
 	/**
 	 * Default text for signup prompt when user already signed up.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return string
 	 */
@@ -308,7 +308,7 @@ if ( ! function_exists( 'wc_bis_get_loop_signup_prompt_subscribed_link_default_t
 	/**
 	 * Default link text for signup prompt when user already signed up.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return string
 	 */
@@ -324,7 +324,7 @@ if ( ! function_exists( 'wc_bis_fetch_and_build_string' ) ) {
 	 *
 	 * Build a string with option values and default values. If placeholder is set, this function will replace it depending on the placeholder_data argument. This function only works for one placeholder.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @param  string $key The key.
 	 * @param  string $placeholder (Optional) The placeholder.
@@ -429,7 +429,7 @@ if ( ! function_exists( 'wc_bis_wp_theme_get_element_class_name' ) ) {
 	/**
 	 * Compatibility wrapper for getting the element-based block class.
 	 *
-	 * @since 1.6.0
+	 * @since 9.9.0
 	 *
 	 * @param  string $element The element.
 	 * @return string

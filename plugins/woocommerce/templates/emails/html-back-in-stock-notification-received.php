@@ -73,7 +73,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				* @param WC_BIS_Notification_Data $notification The notification data.
 				* @param WC_Product $product The product object.
 				*
-				* @since 3.0.1
+				* @since 9.9.0
 				*/
 				apply_filters(
 					'woocommerce_bis_email_received_button_href',
@@ -89,7 +89,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		/**
 		 * Customize the button text.
 		 *
-		 * @since 3.0.1
+		 * @since 9.9.0
 		 */
 		echo esc_html( apply_filters( 'woocommerce_bis_email_received_button_text', _x( 'Shop Now', 'Email notification', 'woocommerce' ), $notification ) );
 		?>

@@ -3,7 +3,7 @@
  * WC_BIS_Activity_DB class
  *
  * @package  WooCommerce Νotifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * DB API class.
  *
- * @version  1.1.0
+ * @version  9.9.0
  */
 class WC_BIS_Activity_DB {
 
@@ -400,7 +400,7 @@ class WC_BIS_Activity_DB {
 	/**
 	 * Get activity data for given user.
 	 *
-	 * @since  1.0.10
+	 * @since  9.9.00
 	 *
 	 * @param  int $user_id User ID.
 	 * @param  int $limit (Optional).
@@ -441,7 +441,7 @@ class WC_BIS_Activity_DB {
 	/**
 	 * Get total activity records for given user.
 	 *
-	 * @since  1.0.10
+	 * @since  9.9.00
 	 *
 	 * @param  int $user_id User ID.
 	 * @return int

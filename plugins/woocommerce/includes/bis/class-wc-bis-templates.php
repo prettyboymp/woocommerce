@@ -3,7 +3,7 @@
  * WC_BIS_Templates class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Display functions and filters.
  *
  * @class    WC_BIS_Templates
- * @version  1.6.7
+ * @version  9.9.0
  */
 class WC_BIS_Templates {
 

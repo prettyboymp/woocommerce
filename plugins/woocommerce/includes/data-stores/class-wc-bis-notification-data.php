@@ -3,7 +3,7 @@
  * WC_BIS_Notification_Data class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Notification Data model class.
  *
  * @class    WC_BIS_Notification_Data
- * @version  x.x.x
+ * @version  9.9.0
  */
 class WC_BIS_Notification_Data {
 
@@ -344,7 +344,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Get a verification hash.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @param  string $code (Optional) If not specified, the code saved in metadata will be used.
 	 * @return string  SHA-256 Hashed string
@@ -445,7 +445,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Set locale.
 	 *
-	 * @since x.x.x
+	 * @since 9.9.0
 	 *
 	 * @param  string $value Locale code.
 	 * @return void
@@ -457,7 +457,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Set verified status.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @param  string $value The verified status.
 	 * @return void
@@ -554,7 +554,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Set Notification Product.
 	 *
-	 * @since x.x.x
+	 * @since 9.9.0
 	 * @param WC_Product $product Product object.
 	 * @return void
 	 */
@@ -605,7 +605,7 @@ class WC_BIS_Notification_Data {
 			/**
 			 * `woocommerce_bis_create_notification` filter.
 			 *
-			 * @since 1.2.0
+			 * @since 9.9.0
 			 */
 			do_action( 'woocommerce_bis_create_notification', $this );
 
@@ -693,7 +693,7 @@ class WC_BIS_Notification_Data {
 		/**
 		 * `woocommerce_bis_after_save_notification` filter.
 		 *
-		 * @since 1.2.0
+		 * @since 9.9.0
 		 */
 		do_action( 'woocommerce_bis_before_save_notification', $this );
 
@@ -709,7 +709,7 @@ class WC_BIS_Notification_Data {
 		/**
 		 * `woocommerce_bis_after_save_notification` filter.
 		 *
-		 * @since 1.2.0
+		 * @since 9.9.0
 		 */
 		do_action( 'woocommerce_bis_after_save_notification', $this );
 
@@ -771,7 +771,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Validates before saving for sanity.
 	 *
-	 * @since 1.3.2
+	 * @since 9.9.0
 	 */
 	protected function update_customer_data() {
 
@@ -904,7 +904,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Setup hash data for handling notification specific secure requests (e.g. Unsubscribe).
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return void
 	 */
@@ -918,7 +918,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Setup verification code and hash data used for double opt-in registration.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return void
 	 */
@@ -929,7 +929,7 @@ class WC_BIS_Notification_Data {
 		/**
 		 * This filter handles the way plugin is generating verification codes.
 		 *
-		 * @since 1.2.0
+		 * @since 9.9.0
 		 *
 		 * @param  string  $code
 		 * @return string
@@ -950,7 +950,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Validates a notification's specific hash. (e.g. Unsubscribe).
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @param  string $hash_to_check The hash to check.
 	 * @return bool
@@ -962,7 +962,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Validates a given double opt-in verification code and hash.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @param  string $code           Code string to check.
 	 * @param  string $hash_to_check  Acts as a public key.
@@ -975,7 +975,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Generate verification code and data if needed.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return bool
 	 */
@@ -991,7 +991,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Invalidates double opt-in verification code.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return void
 	 */
@@ -1037,7 +1037,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Is verified.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return bool
 	 */
@@ -1048,7 +1048,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Is pending verification.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return bool
 	 */
@@ -1059,7 +1059,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Validate verification code.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return bool
 	 */
@@ -1079,7 +1079,7 @@ class WC_BIS_Notification_Data {
 	/**
 	 * Validates verification expiration.
 	 *
-	 * @since 1.2.0
+	 * @since 9.9.0
 	 *
 	 * @return bool
 	 */

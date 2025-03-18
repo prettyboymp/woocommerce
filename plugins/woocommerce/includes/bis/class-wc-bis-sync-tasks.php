@@ -3,7 +3,7 @@
  * WC_BIS_Sync_Tasks class
  *
  * @package  WooCommerce Back In Stock Notifications
- * @since    1.0.0
+ * @since    9.9.0
  */
 
 declare( strict_types=1 );
@@ -286,7 +286,7 @@ class WC_BIS_Sync_Tasks {
 				 *
 				 * Fires to email notification to customer. See WC_BIS_Emails::setup_hooks().
 				 *
-				 * @since 1.0.0
+				 * @since 9.9.0
 				 *
 				 * @param WC_BIS_Notification_Data $notification
 				 * @return void

@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Migrated from the BIS main plugin class.
  *
  * @class    WC_Back_In_Stock
- * @version  x.x.x
+ * @version  9.9.0
  */
 class WC_Back_In_Stock {
 
