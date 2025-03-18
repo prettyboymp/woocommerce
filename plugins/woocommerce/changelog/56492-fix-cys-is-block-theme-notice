@@ -1,0 +1,4 @@
+Significance: minor
+Type: fix
+
+CYS: fix 'This function should not be called before the theme directory is registered' notice.
