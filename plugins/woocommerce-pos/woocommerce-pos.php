@@ -178,6 +178,7 @@ class WC_POS {
 				}
 				
 				// Register the email class
+				$class_name = get_class( $email_instance );
 				$email_classes[$class_name] = $email_instance;
 				error_log("WooCommerce POS: Registered email class {$class_name}");
 			} else {
