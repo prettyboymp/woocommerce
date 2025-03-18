@@ -22,6 +22,8 @@ import { SETTINGS_SLOT_FILL_CONSTANT } from '../../settings/settings-slots';
 import { BlueprintUploadDropzone } from '../components/BlueprintUploadDropzone';
 import './style.scss';
 
+
+
 const { Fill } = createSlotFill( SETTINGS_SLOT_FILL_CONSTANT );
 
 const icons = {
