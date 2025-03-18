@@ -1113,7 +1113,11 @@ jQuery( function ( $ ) {
 					if ( 0 < unit_total_tax ) {
 
 						$refund_line_total_tax.val(
-							parseFloat( accounting.formatNumber( unit_total_tax * refund_qty, woocommerce_admin_meta_boxes.rounding_precision, '' ) )
+							parseFloat( accounting.formatNumber(
+								unit_total_tax * refund_qty,
+								woocommerce_admin_meta_boxes.rounding_precision,
+								''
+							) )
 								.toString()
 								.replace( '.', woocommerce_admin.mon_decimal_point )
 						).trigger( 'change' );
