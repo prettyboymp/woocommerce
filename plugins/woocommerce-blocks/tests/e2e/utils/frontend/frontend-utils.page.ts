@@ -45,7 +45,6 @@ export class FrontendUtils {
 
 	async goToCheckout() {
 		await this.page.goto( '/checkout' );
-		await this.page.locator( '#email' ).waitFor();
 	}
 
 	async goToCart() {
