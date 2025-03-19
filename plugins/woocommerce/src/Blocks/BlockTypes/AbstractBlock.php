@@ -72,9 +72,9 @@ abstract class AbstractBlock {
 	}
 
 	/**
-	 * Get the interactivity namespace. Only used when utilizing the interactivity API.
-
-	 * @return string The interactivity namespace, used to namespace interactivity API actions and state.
+	 * Get the fully qualified block name. e.g. woocommerce/cart
+	 *
+	 * @return string The block namespace
 	 */
 	protected function get_full_block_name() {
 		return $this->namespace . '/' . $this->block_name;

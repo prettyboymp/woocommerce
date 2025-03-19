@@ -8,9 +8,9 @@ use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
 use Automattic\WooCommerce\Admin\Features\Features;
 
 /**
- * AbstractScriptModuleBlock class.
+ * AbstractInteractivityBlock class. Use this for blocks using the interactivity API.
  */
-abstract class AbstractScriptModuleBlock {
+abstract class AbstractInteractivityAPIBlock {
 
 	/**
 	 * Block namespace.
@@ -27,53 +27,21 @@ abstract class AbstractScriptModuleBlock {
 	protected $block_name = '';
 
 	/**
-	 * Tracks if assets have been enqueued.
-	 *
-	 * @var boolean
-	 */
-	protected $enqueued_assets = false;
-
-	/**
-	 * Instance of the asset API.
-	 *
-	 * @var AssetApi
-	 */
-	protected $asset_api;
-
-	/**
-	 * Instance of the asset data registry.
-	 *
-	 * @var AssetDataRegistry
-	 */
-	protected $asset_data_registry;
-
-	/**
-	 * Instance of the integration registry.
-	 *
-	 * @var IntegrationRegistry
-	 */
-	protected $integration_registry;
-
-	/**
 	 * Constructor.
-	 *
-	 * @param AssetApi            $asset_api Instance of the asset API.
-	 * @param AssetDataRegistry   $asset_data_registry Instance of the asset data registry.
-	 * @param IntegrationRegistry $integration_registry Instance of the integration registry.
-	 * @param string              $block_name Optionally set block name during construct.
 	 */
-	public function __construct( AssetApi $asset_api, AssetDataRegistry $asset_data_registry, IntegrationRegistry $integration_registry, $block_name = '' ) {
-		$this->asset_api            = $asset_api;
-		$this->asset_data_registry  = $asset_data_registry;
-		$this->integration_registry = $integration_registry;
-		$this->block_name           = $block_name ? $block_name : $this->block_name;
-		$this->initialize();
+	public function __construct() {
+		if ( empty( $this->block_name ) ) {
+			wc_doing_it_wrong( __METHOD__, 'Block name is required.', '9.9.0' );
+		} else {
+			$this->register_block_type();
+		}
+		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_assets' ] );
 	}
 
 	/**
-	 * Get the interactivity namespace. Only used when utilizing the interactivity API.
-
-	 * @return string The interactivity namespace, used to namespace interactivity API actions and state.
+	 * Get the fully qualified block name. e.g. woocommerce/cart
+	 *
+	 * @return string The block namespace
 	 */
 	protected function get_full_block_name() {
 		return $this->namespace . '/' . $this->block_name;
@@ -100,56 +68,13 @@ abstract class AbstractScriptModuleBlock {
 	}
 
 	/**
-	 * Enqueue assets used for rendering the block in editor context.
-	 *
-	 * This is needed if a block is not yet within the post content--`render` and `enqueue_assets` may not have ran.
-	 */
-	public function enqueue_editor_assets() {
-		if ( $this->enqueued_assets ) {
-			return;
-		}
-		$this->register_block_type_assets();
-		$this->enqueue_data();
-	}
-
-	/**
-	 * Are we currently on the admin block editor screen?
-	 */
-	protected function is_block_editor() {
-		if ( ! is_admin() || ! function_exists( 'get_current_screen' ) ) {
-			return false;
-		}
-		$screen = get_current_screen();
-
-		return $screen && $screen->is_block_editor();
-	}
-
-	/**
-	 * Initialize this block type.
-	 *
-	 * - Hook into WP lifecycle.
-	 * - Register the block with WordPress.
-	 */
-	protected function initialize() {
-		if ( empty( $this->block_name ) ) {
-			_doing_it_wrong( __METHOD__, esc_html__( 'Block name is required.', 'woocommerce' ), '4.5.0' );
-			return false;
-		}
-		$this->integration_registry->initialize( $this->block_name . '_block' );
-		$this->register_block_type();
-		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_assets' ] );
-	}
-
-	/**
 	 * Registers the block type with WordPress.
 	 *
 	 * @return string[] Chunks paths.
 	 */
 	protected function register_block_type() {
 		$block_settings = [
-			'render_callback' => $this->get_block_type_render_callback(),
-			'editor_script'   => $this->get_block_type_editor_script( 'handle' ),
-			'editor_style'    => $this->get_block_type_editor_style(),
+			'render_callback' => [ $this, 'render_callback' ],
 			'style'           => $this->get_block_type_style(),
 		];
 
@@ -220,60 +145,6 @@ abstract class AbstractScriptModuleBlock {
 	 */
 	protected function get_block_type() {
 		return $this->namespace . '/' . $this->block_name;
-	}
-
-	/**
-	 * Get the render callback for this block type.
-	 *
-	 * Dynamic blocks should return a callback, for example, `return [ $this, 'render' ];`
-	 *
-	 * @see $this->register_block_type()
-	 * @return callable|null;
-	 */
-	protected function get_block_type_render_callback() {
-		return [ $this, 'render_callback' ];
-	}
-
-	/**
-	 * Get the editor script data for this block type.
-	 *
-	 * @see $this->register_block_type()
-	 * @param string $key Data to get, or default to everything.
-	 * @return array|string
-	 */
-	protected function get_block_type_editor_script( $key = null ) {
-		$script = [
-			'handle'       => 'wc-' . $this->block_name . '-block',
-			'path'         => $this->asset_api->get_block_asset_build_path( $this->block_name ),
-			'dependencies' => [ 'wc-blocks' ],
-		];
-		return $key ? $script[ $key ] : $script;
-	}
-
-	/**
-	 * Get the editor style handle for this block type.
-	 *
-	 * @see $this->register_block_type()
-	 * @return string|null
-	 */
-	protected function get_block_type_editor_style() {
-		return 'wc-blocks-editor-style';
-	}
-
-	/**
-	 * Get the frontend script handle for this block type.
-	 *
-	 * @see $this->register_block_type()
-	 * @param string $key Data to get, or default to everything.
-	 * @return array|string|null
-	 */
-	protected function get_block_type_script( $key = null ) {
-		$script = [
-			'handle'       => 'wc-' . $this->block_name . '-block-frontend',
-			'path'         => $this->asset_api->get_block_asset_build_path( $this->block_name . '-frontend' ),
-			'dependencies' => [],
-		];
-		return $key ? $script[ $key ] : $script;
 	}
 
 	/**
