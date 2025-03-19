@@ -100,12 +100,20 @@ if ( $additional_content ) {
 }
 
 /**
- * Show store address - this is set in each email's settings.
+ * Show store information - this is set in each email's settings.
  */
-if ( ! empty( $pos_store_address ) ) {
-	echo '<div class="pos-store-address">';
-	echo '<h2>' . esc_html__( 'Store Address', 'woocommerce-pos' ) . '</h2>';
-	echo wp_kses_post( wpautop( wptexturize( $pos_store_address ) ) );
+if ( ! empty( $pos_store_email ) || ! empty( $pos_store_phone_number ) || ! empty( $pos_store_address ) ) {
+	echo '<div class="pos-store-information">';
+	echo '<h2>' . wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES ) . '</h2>';
+	if ( ! empty( $pos_store_email ) ) {
+		echo '<p>' . esc_html( $pos_store_email ) . '</p>';
+	}
+	if ( ! empty( $pos_store_phone_number ) ) {
+		echo '<p>' . esc_html( $pos_store_phone_number ) . '</p>';
+	}
+	if ( ! empty( $pos_store_address ) ) {
+		echo wp_kses_post( wpautop( wptexturize( $pos_store_address ) ) );
+	}
 	echo '</div>';
 }
 

@@ -34,6 +34,27 @@ if ( ! class_exists( 'WC_Email_POS_Base', false ) ) :
 			
 			// Call parent constructor
 			parent::__construct();
+
+		}
+
+		/**
+		 * Get the store email text.
+		 *
+		 * @return string
+		 */
+		private function get_pos_store_email() {
+			$email_text = $this->get_option( 'pos_store_email', '' );
+			return $this->format_string( $email_text );
+		}
+
+		/**
+		 * Get the store email text.
+		 *
+		 * @return string
+		 */
+		private function get_pos_store_phone_number() {
+			$phone_number_text = $this->get_option( 'pos_store_phone_number', '' );
+			return $this->format_string( $phone_number_text );
 		}
 
 		/**
@@ -121,6 +142,8 @@ if ( ! class_exists( 'WC_Email_POS_Base', false ) ) :
 					'order'                 => $this->object,
 					'email_heading'         => $this->get_heading(),
 					'additional_content'    => $this->get_additional_content(),
+					'pos_store_email'       => $this->get_pos_store_email(),
+					'pos_store_phone_number' => $this->get_pos_store_phone_number(),
 					'pos_store_address'     => $this->get_pos_store_address(),
 					'refund_returns_policy' => $this->get_refund_returns_policy(),
 					'sent_to_admin'         => false,
@@ -152,6 +175,15 @@ if ( ! class_exists( 'WC_Email_POS_Base', false ) ) :
 					'email'              => $this,
 				)
 			);
+		}
+
+		/**
+		 * Get the store email address.
+		 *
+		 * @return string
+		 */
+		protected function get_store_email() {
+			return get_option( 'woocommerce_email_from_address', get_option( 'admin_email' ) );
 		}
 
 		/**
