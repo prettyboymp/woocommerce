@@ -116,6 +116,15 @@ if ( ! class_exists( 'WC_Email_POS_Base', false ) ) :
 					'value' => $auth_code,
 				);
 			}
+
+			if ( $order->get_date_paid() !== null ) {
+				$total_rows['date_paid'] = array(
+					'type'  => 'date_paid',
+					'label' => __( 'Time of payment:', 'woocommerce' ),
+					'value' => wc_format_datetime( $order->get_date_paid(), get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) ),
+				);
+			}
+
 			return $total_rows;
 		}
 
