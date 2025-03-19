@@ -12,7 +12,50 @@ import {
 /**
  * Internal dependencies
  */
-import type { ProductGalleryContext } from './types';
+import type { ProductGalleryContext, ImageDataItem } from './types';
+
+interface StoreState {
+	imageData: ImageDataItem[] | undefined;
+	selectedImageId: number;
+	isDialogOpen: boolean;
+	productId: string;
+	disableLeft: boolean;
+	disableRight: boolean;
+	touchStartX: number;
+	touchCurrentX: number;
+	isDragging: boolean;
+	readonly allImageIds: number[];
+	readonly selectedImageNumber: number;
+	thumbnails: () => ImageDataItem[] | undefined;
+}
+
+interface StoreActions {
+	selectImage: ( newImageNumber: number ) => void;
+	selectCurrentImage: ( event?: MouseEvent ) => void;
+	selectNextImage: ( event?: MouseEvent ) => void;
+	selectPreviousImage: ( event?: MouseEvent ) => void;
+	onSelectedLargeImageKeyDown: ( event: KeyboardEvent ) => void;
+	onViewAllImagesKeyDown: ( event: KeyboardEvent ) => void;
+	onThumbnailKeyDown: ( event: KeyboardEvent ) => void;
+	onDialogKeyDown: ( event: KeyboardEvent ) => void;
+	openDialog: () => void;
+	closeDialog: () => void;
+	onTouchStart: ( event: TouchEvent ) => void;
+	onTouchMove: ( event: TouchEvent ) => void;
+	onTouchEnd: () => void;
+	displayViewAll: () => boolean;
+}
+
+interface StoreCallbacks {
+	watchForChangesOnAddToCartForm: () => void;
+	dialogStateChange: () => void;
+}
+
+interface ProductGalleryStore {
+	state: StoreState;
+	actions: StoreActions;
+	callbacks: StoreCallbacks;
+}
 
 const getContext = ( ns?: string ) =>
 	getContextFn< ProductGalleryContext >( ns );
@@ -56,10 +99,14 @@ const getSelectedImageNumber = (
 	selectedImageId: number
 ) => imageIds.indexOf( selectedImageId ) + 1;
 
-const productGallery = {
+const productGallery: ProductGalleryStore = {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore - State properties are initialized via PHP's wp_interactivity_state
 	state: {
 		get allImageIds(): number[] {
-			return ( state.imageData || [] ).map( ( image ) => image.id );
+			return ( state.imageData || [] ).map(
+				( image: ImageDataItem ) => image.id
+			);
 		},
 		/**
 		 * The number of the active image. Not to be confused with the index of the active image in the imageIds array.
@@ -77,9 +124,9 @@ const productGallery = {
 		 *
 		 * @return Array The subset of processed image data.
 		 */
-		thumbnails: () => {
+		thumbnails: (): ImageDataItem[] | undefined => {
 			const { numberOfThumbnails } = getConfig();
-			return state.imageData?.slice( 0, numberOfThumbnails ); // Get only the visible thumbnails
+			return state.imageData?.slice( 0, numberOfThumbnails );
 		},
 	},
 	actions: {
@@ -249,12 +296,12 @@ const productGallery = {
 		// Will eventually be replaced by a slider.
 		displayViewAll: () => {
 			const { numberOfThumbnails } = getConfig();
-			const context = getContext();
 			const allImages = state.imageData;
 			if ( ! allImages || allImages.length <= numberOfThumbnails ) {
 				return false;
 			}
 			const lastThumbnail = allImages[ numberOfThumbnails - 1 ];
+			const context = getContext();
 			return context.image.id === lastThumbnail.id;
 		},
 	},
@@ -344,4 +391,4 @@ const { state, actions } = store(
 	{ lock: true }
 );
 
-export type Store = typeof productGallery;
+export type Store = ProductGalleryStore;
