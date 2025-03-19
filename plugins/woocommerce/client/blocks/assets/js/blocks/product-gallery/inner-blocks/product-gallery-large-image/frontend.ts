@@ -1,27 +1,25 @@
 /**
  * External dependencies
  */
-import { store, getContext as getContextFn } from '@wordpress/interactivity';
+import { store } from '@wordpress/interactivity';
 
 /**
  * Internal dependencies
  */
-import type { ProductGalleryContext } from '../../types';
 import type { Store as ProductGallery } from '../../frontend';
 
-type Context = {
-	styles: {
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'transform-origin': string;
-		transform: string;
-	};
-} & ProductGalleryContext;
+interface LargeImageActions {
+	startZoom: ( event: MouseEvent ) => void;
+	resetZoom: ( event: MouseEvent ) => void;
+}
 
-const getContext = ( ns?: string ) => getContextFn< Context >( ns );
+interface ProductGalleryLargeImageStore {
+	actions: LargeImageActions;
+}
 
-type Store = typeof productGalleryLargeImage & ProductGallery;
+type Store = ProductGallery & ProductGalleryLargeImageStore;
 
-const productGalleryLargeImage = {
+const productGalleryLargeImage: ProductGalleryLargeImageStore = {
 	actions: {
 		startZoom: ( event: MouseEvent ) => {
 			const target = event.target as HTMLElement;
@@ -55,7 +53,7 @@ const productGalleryLargeImage = {
 
 			const selectedImage = target.querySelector(
 				`[data-image-id="${ state.selectedImageId }"]`
-			);
+			) as HTMLElement | null;
 
 			if ( ! selectedImage ) {
 				return;
