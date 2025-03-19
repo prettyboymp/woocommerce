@@ -134,6 +134,18 @@ class Api {
 	}
 
 	/**
+	 * Construct the path to the block metadata file. Don't check if the file exists.
+	 *
+	 * @param string $block_name The block name.
+	 * @param string $path Optional. The path to the metadata file inside the 'assets/client/blocks' folder.
+	 *
+	 * @return string The path to the block metadata file.
+	 */
+	public function construct_block_metadata_path( $block_name, $path = '' ) {
+		return $this->package->get_path( 'assets/client/blocks/' . $path . $block_name . '/block.json' );
+	}
+
+	/**
 	 * Generates a hash containing the site url, plugin version and package path.
 	 *
 	 * Moving the plugin, changing the version, or changing the site url will result in a new hash and the cache will be invalidated.

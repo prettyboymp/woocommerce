@@ -45,6 +45,7 @@
 	],
 	"scripts": {
 		"analyze-bundles": "cross-env WP_BUNDLE_ANALYZER=1 pnpm run build",
+		"build-script-modules": "wp-scripts build --experimental-modules --source-path=./assets/js/ --config=./bin/webpack-config-interactivity-blocks-frontend.js",
 		"build": "pnpm --if-present --workspace-concurrency=Infinity --stream --filter=\"$npm_package_name...\" '/^build:project:.*$/'",
 		"build:project": "pnpm --if-present '/^build:project:.*$/'",
 		"build:project:bundle": "wireit",
@@ -193,7 +194,7 @@
 		"@wordpress/prettier-config": "1.4.0",
 		"@wordpress/private-apis": "1.16.0",
 		"@wordpress/rich-text": "wp-6.6",
-		"@wordpress/scripts": "30.6.0",
+		"@wordpress/scripts": "30.13.0",
 		"@wordpress/stylelint-config": "^21.36.0",
 		"ajv-cli": "3.3.x",
 		"allure-playwright": "^2.9.2",

@@ -10,6 +10,7 @@ use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
 use Automattic\WooCommerce\Blocks\BlockTypes\Cart;
 use Automattic\WooCommerce\Blocks\BlockTypes\Checkout;
 use Automattic\WooCommerce\Blocks\BlockTypes\MiniCartContents;
+use Automattic\WooCommerce\Blocks\BlockTypes\AbstractInteractivityAPIBlock;
 
 /**
  * BlockTypesController class.
@@ -114,7 +115,11 @@ final class BlockTypesController {
 		foreach ( $block_types as $block_type ) {
 			$block_type_class = __NAMESPACE__ . '\\BlockTypes\\' . $block_type;
 
-			new $block_type_class( $this->asset_api, $this->asset_data_registry, new IntegrationRegistry() );
+			if ( is_subclass_of( $block_type_class, AbstractInteractivityAPIBlock::class ) ) {
+				new $block_type_class( $this->asset_api );
+			} else {
+				new $block_type_class( $this->asset_api, $this->asset_data_registry, new IntegrationRegistry() );
+			}
 		}
 	}
 

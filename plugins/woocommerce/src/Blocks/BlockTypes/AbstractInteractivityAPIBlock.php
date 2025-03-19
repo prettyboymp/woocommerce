@@ -1,11 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
 use WP_Block;
-use Automattic\WooCommerce\Blocks\Assets\AssetDataRegistry;
-use Automattic\WooCommerce\Blocks\Assets\Api as AssetApi;
-use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
-use Automattic\WooCommerce\Admin\Features\Features;
 
 /**
  * AbstractInteractivityBlock class. Use this for blocks using the interactivity API.
@@ -27,15 +26,25 @@ abstract class AbstractInteractivityAPIBlock {
 	protected $block_name = '';
 
 	/**
-	 * Constructor.
+	 * Asset API instance.
+	 *
+	 * @var AssetApi
 	 */
-	public function __construct() {
+	protected $asset_api;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param AssetApi $asset_api Instance of the asset API.
+	 */
+	public function __construct( $asset_api ) {
+		$this->asset_api = $asset_api;
+
 		if ( empty( $this->block_name ) ) {
 			wc_doing_it_wrong( __METHOD__, 'Block name is required.', '9.9.0' );
 		} else {
 			$this->register_block_type();
 		}
-		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_assets' ] );
 	}
 
 	/**
@@ -70,120 +79,23 @@ abstract class AbstractInteractivityAPIBlock {
 	/**
 	 * Registers the block type with WordPress.
 	 *
-	 * @return string[] Chunks paths.
+	 * @throws \Exception When block metadata path is not set.
 	 */
 	protected function register_block_type() {
 		$block_settings = [
 			'render_callback' => [ $this, 'render_callback' ],
-			'style'           => $this->get_block_type_style(),
 		];
-
-		if ( isset( $this->api_version ) ) {
-			$block_settings['api_version'] = intval( $this->api_version );
-		}
 
 		$metadata_path = $this->asset_api->get_block_metadata_path( $this->block_name );
 
-		/**
-		 * We always want to load block styles separately, for every theme.
-		 * When the core assets are loaded separately, other blocks' styles get
-		 * enqueued separately too. Thus we only need to handle the remaining
-		 * case.
-		 */
-		if (
-			! is_admin() &&
-			! wc_current_theme_is_fse_theme() &&
-			$block_settings['style'] &&
-			(
-				! function_exists( 'wp_should_load_separate_core_block_assets' ) ||
-				! wp_should_load_separate_core_block_assets()
-			)
-		) {
-			$style_handles           = $block_settings['style'];
-			$block_settings['style'] = null;
-			add_filter(
-				'render_block',
-				function ( $html, $block ) use ( $style_handles ) {
-					if ( $block['blockName'] === $this->get_block_type() ) {
-						array_map( 'wp_enqueue_style', $style_handles );
-					}
-					return $html;
-				},
-				10,
-				2
-			);
-		}
-
-		// Prefer to register with metadata if the path is set in the block's class.
 		if ( ! empty( $metadata_path ) ) {
 			register_block_type_from_metadata(
 				$metadata_path,
 				$block_settings
 			);
-			return;
+		} else {
+			throw new \Exception( 'Block metadata path is required for Interactivity API blocks.' );
 		}
-
-		/*
-		 * Insert attributes and supports if we're not registering the block using metadata.
-		 * These are left unset until now and only added here because if they were set when registering with metadata,
-		 * the attributes and supports from $block_settings would override the values from metadata.
-		 */
-		$block_settings['attributes']   = $this->get_block_type_attributes();
-		$block_settings['supports']     = $this->get_block_type_supports();
-		$block_settings['uses_context'] = $this->get_block_type_uses_context();
-
-		register_block_type(
-			$this->get_block_type(),
-			$block_settings
-		);
-	}
-
-	/**
-	 * Get the block type.
-	 *
-	 * @return string
-	 */
-	protected function get_block_type() {
-		return $this->namespace . '/' . $this->block_name;
-	}
-
-	/**
-	 * Get the frontend style handle for this block type.
-	 *
-	 * @return string[]|null
-	 */
-	protected function get_block_type_style() {
-		$this->asset_api->register_style( 'wc-blocks-style-' . $this->block_name, $this->asset_api->get_block_asset_build_path( $this->block_name, 'css' ), [], 'all', true );
-
-		return [ 'wc-blocks-style', 'wc-blocks-style-' . $this->block_name ];
-	}
-
-	/**
-	 * Get the supports array for this block type.
-	 *
-	 * @see $this->register_block_type()
-	 * @return string;
-	 */
-	protected function get_block_type_supports() {
-		return [];
-	}
-
-	/**
-	 * Get block attributes.
-	 *
-	 * @return array;
-	 */
-	protected function get_block_type_attributes() {
-		return [];
-	}
-
-	/**
-	 * Get block usesContext.
-	 *
-	 * @return array;
-	 */
-	protected function get_block_type_uses_context() {
-		return [];
 	}
 
 	/**
@@ -206,130 +118,5 @@ abstract class AbstractInteractivityAPIBlock {
 	 */
 	protected function render( $attributes, $content, $block ) {
 		return $content;
-	}
-
-	/**
-	 * Enqueue frontend assets for this block, just in time for rendering.
-	 *
-	 * @internal This prevents the block script being enqueued on all pages. It is only enqueued as needed. Note that
-	 * we intentionally do not pass 'script' to register_block_type.
-	 *
-	 * @param array    $attributes  Any attributes that currently are available from the block.
-	 * @param string   $content    The block content.
-	 * @param WP_Block $block    The block object.
-	 */
-	protected function enqueue_assets( array $attributes, $content, $block ) {
-		if ( $this->enqueued_assets ) {
-			return;
-		}
-		$this->enqueue_data( $attributes );
-		$this->enqueue_scripts( $attributes );
-		$this->enqueued_assets = true;
-	}
-
-	/**
-	 * Data passed through from server to client for block.
-	 *
-	 * @param array $attributes  Any attributes that currently are available from the block.
-	 *                           Note, this will be empty in the editor context when the block is
-	 *                           not in the post content on editor load.
-	 */
-	protected function enqueue_data( array $attributes = [] ) {
-		$registered_script_data = $this->integration_registry->get_all_registered_script_data();
-
-		foreach ( $registered_script_data as $asset_data_key => $asset_data_value ) {
-			if ( ! $this->asset_data_registry->exists( $asset_data_key ) ) {
-				$this->asset_data_registry->add( $asset_data_key, $asset_data_value );
-			}
-		}
-
-		if ( ! $this->asset_data_registry->exists( 'wcBlocksConfig' ) ) {
-			$wc_blocks_config = [
-				'pluginUrl'     => plugins_url( '/', dirname( __DIR__, 2 ) ),
-				'restApiRoutes' => [
-					'/wc/store/v1' => array_keys( $this->get_routes_from_namespace( 'wc/store/v1' ) ),
-				],
-				'defaultAvatar' => get_avatar_url( 0, [ 'force_default' => true ] ),
-
-				/*
-				 * translators: If your word count is based on single characters (e.g. East Asian characters),
-				 * enter 'characters_excluding_spaces' or 'characters_including_spaces'. Otherwise, enter 'words'.
-				 * Do not translate into your own language.
-				 */
-				'wordCountType' => _x( 'words', 'Word count type. Do not translate!', 'woocommerce' ),
-			];
-			if ( is_admin() && ! WC()->is_rest_api_request() ) {
-				$product_counts     = wp_count_posts( 'product' );
-				$published_products = isset( $product_counts->publish ) ? $product_counts->publish : 0;
-				$wc_blocks_config   = array_merge(
-					$wc_blocks_config,
-					[
-						// Note that while we don't have a consolidated way of doing feature-flagging
-						// we are borrowing from the WC Admin Features implementation. Also note we cannot
-						// use the wcAdminFeatures global because it's not always enqueued in the context of blocks.
-						'experimentalBlocksEnabled' => Features::is_enabled( 'experimental-blocks' ),
-						'productCount'              => $published_products,
-					]
-				);
-			}
-			$this->asset_data_registry->add(
-				'wcBlocksConfig',
-				$wc_blocks_config
-			);
-		}
-	}
-
-	/**
-	 * Get routes from a REST API namespace.
-	 *
-	 * @param string $namespace Namespace to retrieve.
-	 * @return array
-	 */
-	protected function get_routes_from_namespace( $namespace ) {
-		/**
-		 * Gives opportunity to return routes without invoking the compute intensive REST API.
-		 *
-		 * @since 8.7.0
-		 * @param array  $routes    Array of routes.
-		 * @param string $namespace Namespace for routes.
-		 * @param string $context   Context, can be edit or view.
-		 */
-		$routes = apply_filters(
-			'woocommerce_blocks_pre_get_routes_from_namespace',
-			array(),
-			$namespace,
-			'view'
-		);
-
-		if ( ! empty( $routes ) ) {
-			return $routes;
-		}
-
-		$rest_server     = rest_get_server();
-		$namespace_index = $rest_server->get_namespace_index(
-			[
-				'namespace' => $namespace,
-				'context'   => 'view',
-			]
-		);
-
-		if ( is_wp_error( $namespace_index ) ) {
-			return [];
-		}
-
-		$response_data = $namespace_index->get_data();
-
-		return $response_data['routes'] ?? [];
-	}
-
-	/**
-	 * Register/enqueue scripts used for this block on the frontend, during render.
-	 *
-	 * @param array $attributes Any attributes that currently are available from the block.
-	 */
-	protected function enqueue_scripts( array $attributes = [] ) {
-		if ( null !== $this->get_block_type_script() ) {
-			wp_enqueue_script( $this->get_block_type_script( 'handle' ) );
-		}
 	}
 }
