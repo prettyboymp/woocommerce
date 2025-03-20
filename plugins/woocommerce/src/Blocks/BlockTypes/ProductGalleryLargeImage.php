@@ -140,6 +140,7 @@ class ProductGalleryLargeImage extends AbstractBlock {
 							data-wp-on--touchmove="actions.onTouchMove"
 							data-wp-on--touchend="actions.onTouchEnd"
 							data-wp-watch="callbacks.toggleImageActiveClass"
+							loading="lazy"
 							alt=""
 						/>
 					</li>
