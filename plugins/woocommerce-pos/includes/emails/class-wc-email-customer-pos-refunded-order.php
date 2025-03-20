@@ -71,6 +71,10 @@ if ( class_exists( 'WC_Email_POS_Base', false ) && ! class_exists( 'WC_Email_Cus
 			// Add this email template to the list of valid templates for orders
 			add_filter( 'woocommerce_rest_order_actions_email_valid_template_classes', array( $this, 'add_to_valid_template_classes' ), 10, 2 );
 
+			// Triggers for this email.
+			add_action( 'woocommerce_order_fully_refunded_notification', array( $this, 'trigger_full' ), 10, 2 );
+			add_action( 'woocommerce_order_partially_refunded_notification', array( $this, 'trigger_partial' ), 10, 2 );
+			
 			// Call parent constructor.
 			parent::__construct();
 
