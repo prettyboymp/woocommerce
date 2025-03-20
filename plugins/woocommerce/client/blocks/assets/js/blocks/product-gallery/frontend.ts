@@ -124,11 +124,10 @@ const productGallery: ProductGalleryStore = {
 			return getSelectedImageNumber( state.allImageIds, selectedImageId );
 		},
 		// TODO: This is a temporary solution to display the view all thumbnail.
-		// Will eventually be replaced by a slider where processedImageData can be used directly.
 		/**
-		 * The subset of processedImageData that is displayed in the thumbnails block.
+		 * The subset of numberOfThumbnails that are displayed in the thumbnails block.
 		 *
-		 * @return Array The subset of processed image data.
+		 * @return {ImageDataItem[]} The subset of thumbnails.
 		 */
 		thumbnails: (): ImageDataItem[] | undefined => {
 			const { numberOfThumbnails } = getConfig();
