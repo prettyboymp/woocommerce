@@ -278,7 +278,7 @@ const getBlockEntries = ( relativePath, blockEntries = blocks ) => {
 // frontend JS of these blocks we use a script modules build so
 // we skip building their JS files in the old build.
 // The script modules build handles them in
-// webpack-config-interactivity-blocks-frontend.js.
+// webpack-script-modules.config.js.
 const frontendScriptModuleBlocksToSkip = [
 	'product-gallery',
 	'product-gallery-large-image',

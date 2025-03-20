@@ -33,6 +33,7 @@
 			"default": true
 		}
 	},
-	"viewScript": "wc-product-gallery-frontend",
+	"viewScriptModule": "file:./frontend.ts",
+	"style": "file:./style.scss",
 	"example": {}
 }
