@@ -285,7 +285,6 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 		$request->set_param( 'attachment_id', $this->attachment_id );
 		$request->set_param( 'size', $size );
 
-		// First use should succeed
 		$this->assertTrue( $this->preview->get_preview_permissions_check( $request ) );
 
 		// Second request with the same signature should fail with signature already used error
@@ -295,7 +294,6 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 		$second_request->set_param( 'attachment_id', $this->attachment_id );
 		$second_request->set_param( 'size', $size );
 
-		// Second attempt should fail because signature is now in the used signatures list
 		$second_response = $this->preview->get_preview_permissions_check( $second_request );
 		$this->assertInstanceOf( 'WP_Error', $second_response );
 		$this->assertEquals( 'woocommerce_rest_signature_already_used', $second_response->get_error_code() );
