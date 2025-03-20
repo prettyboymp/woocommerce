@@ -37,21 +37,11 @@ class OnboardingSetupWizard {
 	 * Add onboarding actions.
 	 */
 	public function init() {
-		// woocommerce_plugins_install_before and woocommerce_plugins_install_after
-		// should be placed before is_admin() check as these two hooks are triggered in AJAX calls.
+		// should be placed before is_admin() check as this hook is triggered in AJAX calls.
 		add_action(
 			'woocommerce_plugins_install_before',
 			function ( $slug, $source ) {
-				$this->install_options_for_core_profiler_plugin_install( $slug, $source, 'before' );
-			},
-			10,
-			2
-		);
-
-		add_action(
-			'woocommerce_plugins_install_after',
-			function ( $slug, $source ) {
-				$this->install_options_for_core_profiler_plugin_install( $slug, $source, 'after' );
+				$this->install_options_for_core_profiler_plugin_install( $slug, $source );
 			},
 			10,
 			2
@@ -332,15 +322,14 @@ class OnboardingSetupWizard {
 	 *
 	 * When a plugin is installed from the core profiler, this method is called to process the install options.
 	 *
-	 * Install options are a list of options that are set for the plugin being installed. The options can be installed before or after the plugin is installed.
+	 * Install options are a list of options that are set for the plugin being installed.
 	 *
 	 * @param string $slug Plugin slug.
 	 * @param string $source Source of the plugin install.
-	 * @param string $priority Priority of the plugin install. Can be 'before' or 'after'.
 	 *
 	 * @return void|null
 	 */
-	public function install_options_for_core_profiler_plugin_install( $slug, $source, $priority ) {
+	public function install_options_for_core_profiler_plugin_install( $slug, $source ) {
 		// Only proceed if the plugin install was initiated from the core profiler.
 		if ( 'core-profiler' !== $source ) {
 			return;
@@ -354,11 +343,6 @@ class OnboardingSetupWizard {
 		}
 
 		$install_options = new ProcessCoreProfilerPluginInstallOptions( current( $specs )->plugins, $slug );
-
-		if ( 'before' === $priority ) {
-			$install_options->process_before();
-		} else {
-			$install_options->process_after();
-		}
+		$install_options->process_install_options();
 	}
 }
