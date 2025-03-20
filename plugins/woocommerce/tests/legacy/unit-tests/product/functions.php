@@ -1149,8 +1149,8 @@ class WC_Tests_Product_Functions extends WC_Unit_Test_Case {
 		// Test blank src image attr, this is used in lazy loading.
 		$this->assertEquals( $image_attr, wc_get_attachment_image_attributes( $image_attr, null, 'thumbnail' ) );
 
-		// Test woocommerce_uploads file for non-admin user
-		$image_attr = array(
+		// Test woocommerce_uploads file for non-admin user.
+		$image_attr    = array(
 			'src'    => 'https://wc.local/wp-content/woocommerce_uploads/my-image.jpg',
 			'class'  => 'attachment-woocommerce_thumbnail size-woocommerce_thumbnail',
 			'alt'    => '',
@@ -1165,29 +1165,29 @@ class WC_Tests_Product_Functions extends WC_Unit_Test_Case {
 			'sizes'  => '(max-width: 250px) 100vw, 250px',
 		);
 
-		// Create a mock attachment
+		// Create a mock attachment.
 		$attachment = (object) array(
-			'ID' => 123,
+			'ID'          => 123,
 			'post_parent' => 456,
-			'post_type' => 'attachment'
+			'post_type'   => 'attachment',
 		);
 
 		// Test image hosted in woocommerce_uploads which is not allowed for regular users.
 		$this->assertEquals( $expected_attr, wc_get_attachment_image_attributes( $image_attr, $attachment, 'thumbnail' ) );
 
-		// Test for admin user who can see the image
+		// Test for admin user who can see the image.
 		$original_user_id = get_current_user_id();
 
-		// Create mock admin user and grant the correct privileges
+		// Create mock admin user and grant the correct privileges.
 		$admin_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
 		$user = get_userdata( $admin_id );
 		$user->add_cap( 'manage_woocommerce' );
 
-		// Mock the URL that well compare the ouput with
+		// Mock the URL that well compare the ouput with.
 		$mock_preview_url = 'https://wc.local/admin-secure-url/my-image.jpg';
 
-		// Mock the ProductDownloadsPreview class
+		// Mock the ProductDownloadsPreview class.
 		$mock_preview = $this->getMockBuilder( 'Automattic\WooCommerce\Internal\Admin\ProductDownloadsPreview' )
 			->disableOriginalConstructor()
 			->getMock();
@@ -1196,12 +1196,12 @@ class WC_Tests_Product_Functions extends WC_Unit_Test_Case {
 			->with( $attachment->post_parent, $attachment->ID, 'thumbnail' )
 			->willReturn( $mock_preview_url );
 
-		// Add our mocks to the wc container
+		// Add our mocks to the wc container.
 		$container = wc_get_container();
 		$container->reset_all_resolved();
-		$container->replace( 'Automattic\WooCommerce\Internal\Admin\ProductDownloadsPreview', $mock_preview);
+		$container->replace( 'Automattic\WooCommerce\Internal\Admin\ProductDownloadsPreview', $mock_preview );
 
-		// Expected result for admin user
+		// Expected result for admin user.
 		$expected_admin_attr = array(
 			'src'    => $mock_preview_url,
 			'class'  => 'attachment-woocommerce_thumbnail size-woocommerce_thumbnail',
@@ -1210,11 +1210,11 @@ class WC_Tests_Product_Functions extends WC_Unit_Test_Case {
 			'sizes'  => '(max-width: 250px) 100vw, 250px',
 		);
 
-		// Now test with admin user
+		// Now test with admin user.
 		$admin_result = wc_get_attachment_image_attributes( $image_attr, $attachment, 'thumbnail' );
 		$this->assertEquals( $expected_admin_attr['src'], $admin_result['src'], 'We expect to see the secure url for non admin users trying to access an image inside woocommerce_uploads.' );
 
-		// cleanup
+		// cleanup.
 		wp_set_current_user( $original_user_id );
 		unset( $image_attr, $expected_attr, $expected_admin_attr );
 	}

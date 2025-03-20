@@ -607,14 +607,14 @@ add_action( 'woocommerce_scheduled_sales', 'wc_scheduled_sales' );
 /**
  * Get attachment image attributes.
  *
- * @param array             $attr Image attributes.
- * @param WP_Post           $attachment
- * @param string|int[] size
+ * @param array        $attr Image attributes.
+ * @param WP_Post      $attachment post the attachment belongs to.
+ * @param string|int[] $size attachment dimensions.
  *
  * @return array
  */
 function wc_get_attachment_image_attributes( $attr, $attachment, $size ) {
-	// Early return if src isn't set or isn't in woocommerce_uploads
+	// Early return if src isn't set or isn't in woocommerce_uploads.
 	if ( ! isset( $attr['src'] ) || ! strstr( $attr['src'], 'woocommerce_uploads/' ) ) {
 		return $attr;
 	}
@@ -623,13 +623,13 @@ function wc_get_attachment_image_attributes( $attr, $attachment, $size ) {
 		$attr['srcset'] = '';
 	}
 
-	// If not a WooCommerce manager, return placeholder
+	// If not a WooCommerce manager, return placeholder.
 	if ( ! current_user_can( 'manage_woocommerce' ) ) {
 		$attr['src'] = wc_placeholder_img_src( $size );
 		return $attr;
 	}
 
-	// Generate secure admin URL for image src
+	// Generate secure admin URL for image src.
 	$admin_preview = wc_get_container()->get( ProductDownloadsPreview::class );
 	$attr['src']   = $admin_preview->get_admin_image_src_url( $attachment->post_parent, $attachment->ID, $size );
 
@@ -663,7 +663,7 @@ function wc_prepare_attachment_for_js( $response ) {
 	$product_id    = $response['uploadedTo'];
 	$attachment_id = $response['id'];
 
-	// Generate secure admin URL for image src
+	// Generate secure admin URL for image src.
 	$admin_preview = wc_get_container()->get( ProductDownloadsPreview::class );
 
 	if ( isset( $response['sizes'] ) ) {
