@@ -239,7 +239,7 @@ if ( class_exists( 'WC_Email_POS_Base', false ) && ! class_exists( 'WC_Email_Cus
 					'description' => __( 'Email address to appear in the contact details section below the main email content.', 'woocommerce-pos' ) . ' ' . $placeholder_text,
 					'placeholder' => '',
 					'type'        => 'text',
-					'default'     => $this->get_pos_store_email(),
+					'default'     => $this->get_default_pos_store_email(),
 					'desc_tip'    => true,
 				),
 				'pos_store_phone_number'   => array(
@@ -247,7 +247,7 @@ if ( class_exists( 'WC_Email_POS_Base', false ) && ! class_exists( 'WC_Email_Cus
 					'description' => __( 'Phone number to appear in the contact details section below the main email content.', 'woocommerce-pos' ) . ' ' . $placeholder_text,
 					'placeholder' => '',
 					'type'        => 'text',
-					'default'     => $this->get_pos_store_phone_number(),
+					'default'     => '',
 					'desc_tip'    => true,
 				),
 				'pos_store_address'   => array(
@@ -256,7 +256,7 @@ if ( class_exists( 'WC_Email_POS_Base', false ) && ! class_exists( 'WC_Email_Cus
 					'css'         => 'width:400px; height: 75px;',
 					'placeholder' => '',
 					'type'        => 'textarea',
-					'default'     => $this->get_pos_store_address(),
+					'default'     => $this->get_default_pos_store_address(),
 					'desc_tip'    => true,
 				),
 				'refund_returns_policy' => array(

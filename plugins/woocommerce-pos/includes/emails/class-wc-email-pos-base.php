@@ -52,6 +52,15 @@ if ( ! class_exists( 'WC_Email_POS_Base', false ) ) :
 		 *
 		 * @return string
 		 */
+		protected function get_default_pos_store_email() {
+			return $this->get_store_email();
+		}
+
+		/**
+		 * Get the store email text.
+		 *
+		 * @return string
+		 */
 		protected function get_pos_store_phone_number() {
 			$phone_number_text = $this->get_option( 'pos_store_phone_number', '' );
 			return $this->format_string( $phone_number_text );
@@ -65,6 +74,15 @@ if ( ! class_exists( 'WC_Email_POS_Base', false ) ) :
 		protected function get_pos_store_address() {
 			$address_text = $this->get_option( 'pos_store_address', '' );
 			return $this->format_string( $address_text );
+		}
+
+		/**
+		 * Get the store address text.
+		 *
+		 * @return string
+		 */
+		protected function get_default_pos_store_address() {
+			return $this->get_store_address();
 		}
 		
 		/**
