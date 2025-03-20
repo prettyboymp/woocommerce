@@ -42,10 +42,10 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 		parent::setUp();
 		$this->preview = new ProductDownloadsPreview();
 
-		// Create a test attachment
+		// Create a test attachment.
 		$this->attachment_id = $this->create_test_image();
 
-		// Create a test product
+		// Create a test product.
 		$product          = WC_Helper_Product::create_simple_product();
 		$this->product_id = $product->get_id();
 	}
@@ -54,10 +54,10 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 	 * Tear down test environment
 	 */
 	public function tearDown(): void {
-		// Clean up created product
+		// Clean up created product.
 		WC_Helper_Product::delete_product( $this->product_id );
 
-		// Clean up attachment
+		// Clean up attachment.
 		if ( $this->attachment_id ) {
 			wp_delete_attachment( $this->attachment_id, true );
 		}
@@ -71,15 +71,15 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 	 * @return int Attachment ID
 	 */
 	private function create_test_image() {
-		// Create test image file
+		// Create test image file.
 		$upload_dir = wp_upload_dir();
 		$filename   = $upload_dir['path'] . '/test-image.jpg';
 
-		// Create a simple JPG image
+		// Create a simple JPG image.
 		$image = imagecreatetruecolor( 100, 100 );
 		imagejpeg( $image, $filename );
 
-		// Create attachment
+		// Create attachment.
 		$attachment = array(
 			'post_mime_type' => 'image/jpeg',
 			'post_title'     => 'Test Image',
@@ -90,7 +90,7 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 
 		$attachment_id = wp_insert_attachment( $attachment, $filename );
 
-		// Update attachment metadata
+		// Update attachment metadata.
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 		$attach_data = wp_generate_attachment_metadata( $attachment_id, $filename );
 		wp_update_attachment_metadata( $attachment_id, $attach_data );
@@ -165,12 +165,12 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 		$size                 = 'thumbnail';
 		$cache_key            = "wc_preview_{$this->product_id}_{$this->attachment_id}_{$size}";
 
-		// Create a cache entry with mismatched data
+		// Create a cache entry with mismatched data.
 		wp_cache_add(
 			$cache_key,
 			array(
 				'attachment_id'  => $this->attachment_id,
-				'product_id'     => $different_product_id, // Mismatch here
+				'product_id'     => $different_product_id, // Mismatch here.
 				'size'           => $size,
 				'admin_verified' => true,
 			),
@@ -178,7 +178,7 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 			60
 		);
 
-		// Create a valid signature for this product and attachment
+		// Create a valid signature for this product and attachment.
 		$data_to_sign = $this->attachment_id . '|' . $this->product_id;
 		$signature    = hash_hmac( 'sha256', $data_to_sign, AUTH_KEY . SECURE_AUTH_SALT );
 
@@ -230,7 +230,7 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 				'attachment_id' => $this->attachment_id,
 				'product_id'    => $this->product_id,
 				'size'          => $size,
-				// Note: admin_verified flag is deliberately missing
+				// Note: admin_verified flag is deliberately missing.
 			),
 			'wc_preview_tokens',
 			60
@@ -254,7 +254,7 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 	public function test_get_preview_returns_error_for_invalid_file() {
 		$request = new WP_REST_Request( 'GET', '/wc/v3/admin/product-downloads-preview/' . $this->product_id . '/99999' );
 		$request->set_param( 'product_id', $this->product_id );
-		$request->set_param( 'attachment_id', 99999 ); // Non-existent attachment ID
+		$request->set_param( 'attachment_id', 99999 ); // Non-existent attachment ID.
 		$request->set_param( 'size', 'thumbnail' );
 
 		$response = $this->preview->get_preview( $request );
@@ -270,16 +270,16 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		// Generate a valid URL with signature
-		$url = $this->preview->get_admin_image_src_url( $this->product_id, $this->attachment_id, 'thumbnail' );
+		// Generate a valid URL with signature.
+		$url        = $this->preview->get_admin_image_src_url( $this->product_id, $this->attachment_id, 'thumbnail' );
 		$parsed_url = wp_parse_url( $url );
 		parse_str( $parsed_url['query'], $query_args );
 
-		// Extract the signature from the URL
+		// Extract the signature from the URL.
 		$signature = $query_args['signature'];
-		$size = $query_args['size'];
+		$size      = $query_args['size'];
 
-		// First request should succeed
+		// First request should succeed.
 		$request = new WP_REST_Request( 'GET', '/wc/v3/admin/product-downloads-preview/' . $this->product_id . '/' . $this->attachment_id );
 		$request->set_param( 'signature', $signature );
 		$request->set_param( 'product_id', $this->product_id );
@@ -288,7 +288,7 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 
 		$this->assertTrue( $this->preview->get_preview_permissions_check( $request ) );
 
-		// Second request with the same signature should fail with signature already used error
+		// Second request with the same signature should fail with signature already used error.
 		$second_request = new WP_REST_Request( 'GET', '/wc/v3/admin/product-downloads-preview/' . $this->product_id . '/' . $this->attachment_id );
 		$second_request->set_param( 'signature', $signature );
 		$second_request->set_param( 'product_id', $this->product_id );

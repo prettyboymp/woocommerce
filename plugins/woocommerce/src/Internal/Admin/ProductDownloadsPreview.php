@@ -99,9 +99,9 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 		$product_id    = $request->get_param( 'product_id' );
 		$size          = $request->get_param( 'size' ) ?? 'large';
 
-		// Check if this signature has been used before
+		// Check if this signature has been used before.
 		$used_signatures_key = 'wc_preview_used_signatures';
-		$used_signatures     = wp_cache_get( $used_signatures_key, 'wc_preview_tokens' ) ?: array();
+		$used_signatures     = wp_cache_get( $used_signatures_key, 'wc_preview_tokens' ) ? wp_cache_get( $used_signatures_key, 'wc_preview_tokens' ) : array();
 
 		if ( in_array( $signature, $used_signatures, true ) ) {
 			return new WP_Error(
@@ -111,7 +111,7 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 			);
 		}
 
-		// Verify signature
+		// Verify signature.
 		$data_to_verify     = $attachment_id . '|' . $product_id;
 		$expected_signature = hash_hmac( 'sha256', $data_to_verify, AUTH_KEY . SECURE_AUTH_SALT );
 
@@ -123,12 +123,12 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 			);
 		}
 
-		// Check for cached entry
+		// Check for cached entry.
 		$cache_key = "wc_preview_{$product_id}_{$attachment_id}_{$size}";
 		$stored    = wp_cache_get( $cache_key, 'wc_preview_tokens' );
 
 		if ( ! $stored ) {
-			// Create cache entry if not exists
+			// Create cache entry if not exists.
 			$token_data = array(
 				'attachment_id'  => $attachment_id,
 				'product_id'     => $product_id,
@@ -138,9 +138,9 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 
 			wp_cache_add( $cache_key, $token_data, 'wc_preview_tokens', 5 * MINUTE_IN_SECONDS );
 		} else {
-			// Verify stored data matches request
-			if ( $stored['attachment_id'] != $request->get_param( 'attachment_id' ) ||
-				$stored['product_id'] != $request->get_param( 'product_id' ) ) {
+			// Verify stored data matches request.
+			if ( $stored['attachment_id'] !== $request->get_param( 'attachment_id' ) ||
+				$stored['product_id'] !== $request->get_param( 'product_id' ) ) {
 				return new WP_Error(
 					'woocommerce_rest_resource_mismatch',
 					__( 'Request does not match resource.', 'woocommerce' ),
@@ -157,7 +157,7 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 			}
 		}
 
-		// Mark this signature as used - store it for a day to prevent reuse
+		// Mark this signature as used - store it for a day to prevent reuse.
 		$used_signatures[] = $signature;
 		wp_cache_set( $used_signatures_key, $used_signatures, 'wc_preview_tokens', DAY_IN_SECONDS );
 
@@ -168,7 +168,7 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 	 * Serve the preview image
 	 *
 	 * @since 9.9.0
-	 * @param \WP_REST_Request $request Request details
+	 * @param \WP_REST_Request $request Request details.
 	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function get_preview( $request ) {
@@ -202,7 +202,7 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 			);
 		}
 
-		$size = $requested_size === 'full' ? 'large' : $requested_size;
+		$size = 'full' === $requested_size ? 'large' : $requested_size;
 
 		$resized = image_get_intermediate_size( $attachment_id, $size );
 		if ( $resized && isset( $resized['path'] ) ) {
@@ -213,7 +213,7 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 			}
 		}
 
-		// Clean any existing output
+		// Clean any existing output.
 		ob_clean();
 
 		nocache_headers();
@@ -221,6 +221,8 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 		header( 'Content-Length: ' . filesize( $file_path ) );
 		header( 'Content-Disposition: inline; filename="' . basename( $file_path ) . '"' );
 
+		// We need to use readfile here for binary file output.
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
 		readfile( $file_path );
 		exit;
 	}
@@ -239,11 +241,11 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 			return '';
 		}
 
-		// Generate signature based on product and attachment IDs
+		// Generate signature based on product and attachment IDs.
 		$data_to_sign = $attachment_id . '|' . $product_id;
 		$signature    = hash_hmac( 'sha256', $data_to_sign, AUTH_KEY . SECURE_AUTH_SALT );
 
-		// Store metadata in cache with simple key (no signature in key)
+		// Store metadata in cache with simple key (no signature in key).
 		$cache_key  = "wc_preview_{$product_id}_{$attachment_id}_{$size}";
 		$token_data = array(
 			'attachment_id'  => $attachment_id,
@@ -254,7 +256,7 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 
 		wp_cache_add( $cache_key, $token_data, 'wc_preview_tokens', 5 * MINUTE_IN_SECONDS );
 
-		// Use signature as query parameter for verification
+		// Use signature as query parameter for verification.
 		$url = rest_url( "wc/v3/admin/product-downloads-preview/{$product_id}/{$attachment_id}" );
 		$url = add_query_arg(
 			array(
