@@ -17,10 +17,9 @@ import { checkOverflow } from './utils';
 const getContext = ( ns?: string ) =>
 	getContextFn< ProductGalleryContext >( ns );
 
-const getArrowsState = ( imageNumber: number, totalImages: number ) => ( {
-	// One-based index so it ranges from 1 to imagesIds.length.
-	disableLeft: imageNumber === 1,
-	disableRight: imageNumber === totalImages,
+const getArrowsState = ( imageId: number ) => ( {
+	disableLeft: imageId === state.allImageIds[ 0 ],
+	disableRight: imageId === state.allImageIds[ state.allImageIds.length - 1 ],
 } );
 
 /**
@@ -44,18 +43,6 @@ const scrollImageIntoView = ( imageId: number ) => {
 	}
 };
 
-/**
- * Gets the number of the active image.
- *
- * @param {number[]} imageIds        - The IDs of the images.
- * @param {number}   selectedImageId - The ID of the selected image.
- * @return {number} The number of the active image.
- */
-const getSelectedImageNumber = (
-	imageIds: number[],
-	selectedImageId: number
-) => imageIds.indexOf( selectedImageId ) + 1;
-
 const productGallery: ProductGalleryStore = {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore - State properties are initialized via PHP's wp_interactivity_state
@@ -70,34 +57,17 @@ const productGallery: ProductGalleryStore = {
 				( image: ImageDataItem ) => image.id
 			);
 		},
-		/**
-		 * The number of the active image. Not to be confused with the index of the active image in the imageIds array.
-		 *
-		 * @return {number} The number of the active image.
-		 */
-		get selectedImageNumber(): number {
-			const { selectedImageId } = getContext();
-			return getSelectedImageNumber( state.allImageIds, selectedImageId );
-		},
 	},
 	actions: {
-		selectImage: ( newImageNumber: number ) => {
-			const { disableLeft, disableRight } = getArrowsState(
-				newImageNumber,
-				state.allImageIds.length
-			);
+		selectImage: ( newImageId: number ) => {
+			const { disableLeft, disableRight } = getArrowsState( newImageId );
 
 			state.disableLeft = disableLeft;
 			state.disableRight = disableRight;
 
-			const imageIndex = newImageNumber - 1;
-			const imageId = state.allImageIds[ imageIndex ];
+			state.selectedImageId = newImageId;
 
-			state.selectedImageId = imageId;
-
-			if ( imageIndex !== -1 ) {
-				scrollImageIntoView( imageId );
-			}
+			scrollImageIntoView( newImageId );
 		},
 		selectCurrentImage: ( event?: MouseEvent ) => {
 			if ( event ) {
@@ -112,37 +82,36 @@ const productGallery: ProductGalleryStore = {
 				return;
 			}
 			const imageId = parseInt( imageIdValue, 10 );
-			const newImageNumber = state.allImageIds.indexOf( imageId ) + 1;
-			actions.selectImage( newImageNumber );
+			actions.selectImage( imageId );
 		},
 		selectNextImage: ( event?: MouseEvent ) => {
 			if ( event ) {
 				event.stopPropagation();
 			}
 
-			const selectedImageNumber = getSelectedImageNumber(
-				state.allImageIds,
+			const currentIndex = state.allImageIds.indexOf(
 				state.selectedImageId
 			);
-			const newImageNumber = Math.min(
-				state.allImageIds.length,
-				selectedImageNumber + 1
+			const nextIndex = Math.min(
+				currentIndex + 1,
+				state.allImageIds.length - 1
 			);
+			const nextImageId = state.allImageIds[ nextIndex ];
 
-			actions.selectImage( newImageNumber );
+			actions.selectImage( nextImageId );
 		},
 		selectPreviousImage: ( event?: MouseEvent ) => {
 			if ( event ) {
 				event.stopPropagation();
 			}
 
-			const selectedImageNumber = getSelectedImageNumber(
-				state.allImageIds,
+			const currentIndex = state.allImageIds.indexOf(
 				state.selectedImageId
 			);
-			const newImageNumber = Math.max( 1, selectedImageNumber - 1 );
+			const previousIndex = Math.max( 0, currentIndex - 1 );
+			const previousImageId = state.allImageIds[ previousIndex ];
 
-			actions.selectImage( newImageNumber );
+			actions.selectImage( previousImageId );
 		},
 		onSelectedLargeImageKeyDown: ( event: KeyboardEvent ) => {
 			if (
@@ -253,7 +222,9 @@ const productGallery: ProductGalleryStore = {
 			}
 
 			const selectFirstImage = () =>
-				withScope( () => actions.selectImage( 1 ) );
+				withScope( () =>
+					actions.selectImage( state.allImageIds[ 0 ] )
+				);
 
 			const observer = new MutationObserver(
 				withScope( function ( mutations ) {
@@ -269,12 +240,9 @@ const productGallery: ProductGalleryStore = {
 							currentImageId &&
 							state.allImageIds.includes( currentImageId )
 						) {
-							const nextImageNumber =
-								state.allImageIds.indexOf( currentImageId ) + 1;
-
-							actions.selectImage( nextImageNumber );
+							actions.selectImage( currentImageId );
 						} else {
-							actions.selectImage( 1 );
+							actions.selectImage( state.allImageIds[ 0 ] );
 						}
 					}
 				} )
