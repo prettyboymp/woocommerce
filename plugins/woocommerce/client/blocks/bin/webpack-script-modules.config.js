@@ -22,9 +22,20 @@ const entries = getScriptModuleEntryPoints(
 	path.resolve( __dirname, '../assets/js' )
 );
 
+// These are modules that are not tied to a specific block, but are still needed to be built.
+const manuallyDefinedModules = {
+	'@woocommerce/stores/woocommerce/cart':
+		'./assets/js/base/stores/woocommerce/cart.ts',
+	'@woocommerce/stores/store-notices':
+		'./assets/js/base/stores/store-notices.ts',
+};
+
 module.exports = {
 	...moduleConfig,
-	entry: entries,
+	entry: {
+		...entries,
+		...manuallyDefinedModules,
+	},
 	optimization: sharedOptimizationConfig,
 	name: 'interactivity-blocks-modules',
 	output: {

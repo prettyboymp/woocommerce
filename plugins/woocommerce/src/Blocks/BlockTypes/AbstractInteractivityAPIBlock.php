@@ -85,7 +85,7 @@ abstract class AbstractInteractivityAPIBlock {
 	 * @return string|null
 	 */
 	protected function get_frontend_style_handle() {
-		return $this->block_name . '-style';
+		return $this->get_full_block_name() . '-style';
 	}
 
 	/**
@@ -96,7 +96,7 @@ abstract class AbstractInteractivityAPIBlock {
 	 * @return string|null
 	 */
 	protected function get_editor_style_handle() {
-		return $this->block_name . '-editor-style';
+		return $this->get_full_block_name() . '-editor-style';
 	}
 
 	/**
@@ -108,8 +108,8 @@ abstract class AbstractInteractivityAPIBlock {
 		$frontend_style_handle = $this->get_frontend_style_handle();
 		$editor_style_handle   = $this->get_editor_style_handle();
 
-		$this->asset_api->register_style( $frontend_style_handle, $this->asset_api->get_script_module_asset_build_path( $this->get_full_block_name(), $frontend_style_handle, 'css' ), [], 'all', true );
-		$this->asset_api->register_style( $editor_style_handle, $this->asset_api->get_script_module_asset_build_path( $this->get_full_block_name(), $editor_style_handle, 'css' ), [], 'all', true );
+		$this->asset_api->register_style( $frontend_style_handle, $this->asset_api->get_block_asset_build_path( $frontend_style_handle, 'css' ), [], 'all', true );
+		$this->asset_api->register_style( $editor_style_handle, $this->asset_api->get_block_asset_build_path( $editor_style_handle, 'css' ), [], 'all', true );
 
 		$block_settings = [
 			'render_callback' => [ $this, 'render_callback' ],
