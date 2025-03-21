@@ -20,7 +20,7 @@ WooCommerce POS extends WooCommerce with Point of Sale functionality, allowing y
 
 ## Installation
 
-1. Upload the `woocommerce-pos` folder to the `/wp-content/plugins/` directory
+1. Upload the `woocommerce-pos` zip to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Configure the plugin settings through WooCommerce > Settings > Emails
 
@@ -28,4 +28,4 @@ WooCommerce POS extends WooCommerce with Point of Sale functionality, allowing y
 
 ### 1.0.0
 - Initial release
-- Added POS completed order email template 
+- Added POS completed & refunded order email templates

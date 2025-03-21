@@ -190,12 +190,6 @@ class WC_POS {
 				// Remove the default triggers
 				remove_action( 'woocommerce_order_fully_refunded_notification', array( $email, 'trigger_full' ), 10 );
 				remove_action( 'woocommerce_order_partially_refunded_notification', array( $email, 'trigger_partial' ), 10 );
-
-				error_log('POS: Removing default refund emails');
-				
-				// Add our filtered triggers
-				// add_action( 'woocommerce_order_fully_refunded_notification', array( $this, 'filter_default_refund_email' ), 9, 2 );
-				// add_action( 'woocommerce_order_partially_refunded_notification', array( $this, 'filter_default_refund_email' ), 9, 2 );
 				break;
 			}
 		}
