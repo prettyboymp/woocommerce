@@ -27,6 +27,44 @@ class ProductGallery extends AbstractBlock {
 	}
 
 	/**
+	 * Initialize this block type.
+	 */
+	protected function initialize() {
+		parent::initialize();
+
+		add_filter( 'render_block_core/group', array( $this, 'add_gallery_area_class' ), 10, 2 );
+	}
+
+	/**
+	 * Add the gallery area class to the group block.
+	 *
+	 * @param string $content The content of the block.
+	 * @param array  $block   The block.
+	 * @return string
+	 */
+	public function add_gallery_area_class( $content, $block ) {
+		if ( 'core/group' !== $block['blockName'] ) {
+			return $content;
+		}
+
+		if ( ! isset( $block['attrs'] ) ) {
+			return $content;
+		}
+
+		if ( ! isset( $block['attrs']['metadata']['name'] ) || 'Gallery Area' !== $block['attrs']['metadata']['name'] ) {
+			return $content;
+		}
+
+		$p = new \WP_HTML_Tag_Processor( $content );
+
+		if ( $p->next_tag() ) {
+			$p->add_class( 'wc-block-product-gallery__gallery-area' );
+		}
+
+		return $p->get_updated_html();
+	}
+
+	/**
 	 * Return the dialog content.
 	 *
 	 * @param array $images An array of all images of the product.
@@ -147,14 +185,6 @@ class ProductGallery extends AbstractBlock {
 
 			$p->add_class( $classname );
 			$html = $p->get_updated_html();
-		}
-
-		// Force the gallery area class to be added to the group block.
-		if ( $p->next_tag( array( 'class_name' => 'wp-block-group' ) ) ) {
-			$class_list = explode( ' ', $p->get_attribute( 'class' ) ?? '' );
-			if ( ! in_array( 'wc-block-product-gallery__gallery-area', $class_list, true ) ) {
-				$p->add_class( 'wc-block-product-gallery__gallery-area' );
-			}
 		}
 
 		return $html;
