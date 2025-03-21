@@ -2,14 +2,17 @@
  * External dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
+import {
+	InnerBlocks,
+	InspectorControls,
+	useBlockProps,
+} from '@wordpress/block-editor';
 import { createInterpolateElement, useEffect } from '@wordpress/element';
 import { getAdminLink, getSettingWithCoercion } from '@woocommerce/settings';
 import { isBoolean } from '@woocommerce/types';
 import type { BlockEditProps } from '@wordpress/blocks';
 import { ProductQueryContext as Context } from '@woocommerce/blocks/product-query/types';
 import {
-	Disabled,
 	PanelBody,
 	ToggleControl,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -164,9 +167,9 @@ const Edit = ( {
 					</ToggleGroupControl>
 				</PanelBody>
 			</InspectorControls>
-			<Disabled>
-				<Block { ...{ ...attributes, ...context } } />
-			</Disabled>
+			<Block { ...{ isEditor: true, ...attributes, ...context } }>
+				<InnerBlocks />
+			</Block>
 		</div>
 	);
 };

@@ -2,6 +2,7 @@
  * External dependencies
  */
 import { registerBlockType } from '@wordpress/blocks';
+import { InnerBlocks } from '@wordpress/block-editor';
 
 /**
  * Internal dependencies
@@ -17,4 +18,7 @@ registerBlockType( metadata, {
 	icon,
 	supports,
 	edit,
+	save: () => {
+		return <InnerBlocks.Content />;
+	},
 } );

@@ -9,6 +9,7 @@ import {
 	useInnerBlockLayoutContext,
 	useProductDataContext,
 } from '@woocommerce/shared-context';
+import { Disabled } from '@wordpress/components';
 import { useStyleProps } from '@woocommerce/base-hooks';
 import { withProductDataContext } from '@woocommerce/shared-hocs';
 import { useStoreEvents } from '@woocommerce/base-context/hooks';
@@ -98,10 +99,12 @@ const Image = ( {
 	);
 };
 
-type Props = BlockAttributes & HTMLAttributes< HTMLDivElement >;
+type Props = { isEditor: boolean } & BlockAttributes &
+	HTMLAttributes< HTMLDivElement >;
 
 export const Block = ( props: Props ): JSX.Element | null => {
 	const {
+		isEditor = false,
 		className,
 		imageSizing = ImageSizing.SINGLE,
 		showProductLink = true,
@@ -111,6 +114,7 @@ export const Block = ( props: Props ): JSX.Element | null => {
 		width,
 		scale,
 		aspectRatio,
+		children,
 		...restProps
 	} = props;
 	const styleProps = useStyleProps( props );
@@ -120,20 +124,23 @@ export const Block = ( props: Props ): JSX.Element | null => {
 
 	if ( ! product.id ) {
 		return (
-			<div
-				className={ clsx(
-					className,
-					'wc-block-components-product-image',
-					{
-						[ `${ parentClassName }__product-image` ]:
-							parentClassName,
-					},
-					styleProps.className
-				) }
-				style={ styleProps.style }
-			>
-				<ImagePlaceholder />
-			</div>
+			<>
+				<div
+					className={ clsx(
+						className,
+						'wc-block-components-product-image',
+						{
+							[ `${ parentClassName }__product-image` ]:
+								parentClassName,
+						},
+						styleProps.className
+					) }
+					style={ styleProps.style }
+				>
+					<ImagePlaceholder />
+				</div>
+				{ children }
+			</>
 		);
 	}
 	const hasProductImages = !! product.images.length;
@@ -153,41 +160,50 @@ export const Block = ( props: Props ): JSX.Element | null => {
 			} );
 		},
 	};
+	const EditorWrapper = isEditor ? Disabled : Fragment;
 
 	// Remove parent block custom styles from sale badge.
 	delete restProps.style;
 
 	return (
-		<div
-			className={ clsx(
-				className,
-				'wc-block-components-product-image',
-				{
-					[ `${ parentClassName }__product-image` ]: parentClassName,
-				},
-				styleProps.className
-			) }
-			style={ styleProps.style }
-		>
-			<ParentComponent { ...( showProductLink && anchorProps ) }>
-				{ !! showSaleBadge && (
-					<ProductSaleBadge
-						align={ saleBadgeAlign }
-						{ ...restProps }
-					/>
+		<>
+			<div
+				className={ clsx(
+					className,
+					'wc-block-components-product-image',
+					{
+						[ `${ parentClassName }__product-image` ]:
+							parentClassName,
+					},
+					styleProps.className
 				) }
-				<Image
-					fallbackAlt={ decodeEntities( product.name ) }
-					image={ image }
-					loaded={ ! isLoading }
-					showFullSize={ imageSizing !== ImageSizing.THUMBNAIL }
-					width={ width }
-					height={ height }
-					scale={ scale }
-					aspectRatio={ aspectRatio }
-				/>
-			</ParentComponent>
-		</div>
+				style={ styleProps.style }
+			>
+				<EditorWrapper>
+					<ParentComponent { ...( showProductLink && anchorProps ) }>
+						{ !! showSaleBadge && (
+							<ProductSaleBadge
+								align={ saleBadgeAlign }
+								{ ...restProps }
+							/>
+						) }
+						<Image
+							fallbackAlt={ decodeEntities( product.name ) }
+							image={ image }
+							loaded={ ! isLoading }
+							showFullSize={
+								imageSizing !== ImageSizing.THUMBNAIL
+							}
+							width={ width }
+							height={ height }
+							scale={ scale }
+							aspectRatio={ aspectRatio }
+						/>
+					</ParentComponent>
+				</EditorWrapper>
+			</div>
+			{ children }
+		</>
 	);
 };
 
