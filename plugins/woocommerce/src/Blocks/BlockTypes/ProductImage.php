@@ -234,6 +234,9 @@ class ProductImage extends AbstractBlock {
 			return sprintf(
 				'<div %1$s>
 					%2$s
+					<div class="wc-block-components-product-image-inner-blocks">
+						%3$s
+					</div>
 				</div>',
 				$wrapper_attributes,
 				$this->render_anchor(
@@ -241,7 +244,8 @@ class ProductImage extends AbstractBlock {
 					$this->render_on_sale_badge( $product, $parsed_attributes ),
 					$this->render_image( $product, $parsed_attributes ),
 					$parsed_attributes
-				)
+				),
+				$content
 			);
 
 		}

@@ -53,6 +53,12 @@
 	}
 }
 
+.wc-block-components-product-image-inner-blocks {
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
 .is-loading .wc-block-components-product-image {
 	@include placeholder($include-border-radius: false);
 	width: auto;

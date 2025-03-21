@@ -168,7 +168,9 @@ const Edit = ( {
 				</PanelBody>
 			</InspectorControls>
 			<Block { ...{ isEditor: true, ...attributes, ...context } }>
-				<InnerBlocks />
+				<div className="wc-block-components-product-image-inner-blocks">
+					<InnerBlocks />
+				</div>
 			</Block>
 		</div>
 	);
