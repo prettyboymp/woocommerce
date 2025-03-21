@@ -188,7 +188,7 @@ if ( ! class_exists( 'WC_Email_POS_Base', false ) ) :
 			$unit_price = '';
 			
 			if ($order && is_a($item, 'WC_Order_Item_Product')) {
-				$unit_price = $order->get_formatted_item_subtotal($item) . ' ';
+				$unit_price = $this->get_formatted_item_subtotal($order, $item) . ' ';
 
 				$email_improvements_enabled = FeaturesUtil::feature_is_enabled( 'email_improvements' );
 				if (!$email_improvements_enabled) {
@@ -337,6 +337,21 @@ if ( ! class_exists( 'WC_Email_POS_Base', false ) ) :
 		public function get_store_address_force_country_display() {
 			return true;
 		}
+
+		/**
+		* Gets item subtotal for unit price - formatted for display.
+		*
+		* @param object $order Order object.
+		* @param object $item Item to get subtotal from.
+		* @return string
+		*/
+		private function get_formatted_item_subtotal( $order, $item ) {
+			$subtotal = wc_price( 
+				$order->get_item_subtotal( $item, true ), 
+				array( 'currency' => $order->get_currency() ) 
+			);
+			return apply_filters( 'woocommerce_order_formatted_item_subtotal', $subtotal, $item, $this );
+	   	}
 	}
 
 endif; 
