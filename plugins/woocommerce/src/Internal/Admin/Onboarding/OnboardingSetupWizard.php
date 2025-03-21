@@ -342,7 +342,7 @@ class OnboardingSetupWizard {
 			return null;
 		}
 
-		$install_options = new ProcessCoreProfilerPluginInstallOptions( current( $specs )->plugins, $slug );
+		$install_options = new ProcessCoreProfilerPluginInstallOptions( current( $specs )->plugins, $slug, wc_get_logger() );
 		$install_options->process_install_options();
 	}
 }

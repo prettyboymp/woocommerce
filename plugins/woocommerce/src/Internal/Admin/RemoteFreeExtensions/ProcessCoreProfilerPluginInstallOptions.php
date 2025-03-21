@@ -4,6 +4,8 @@ declare( strict_types = 1);
 
 namespace Automattic\WooCommerce\Internal\Admin\RemoteFreeExtensions;
 
+use WC_Logger_Interface;
+
 /**
  * Process install options for plugins.
  */
@@ -23,14 +25,23 @@ class ProcessCoreProfilerPluginInstallOptions {
 	private string $slug;
 
 	/**
+	 * Logger instance.
+	 *
+	 * @var WC_Logger_Interface Logger instance
+	 */
+	private WC_Logger_Interface $logger;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param array  $plugins List of plugins.
-	 * @param string $slug Plugin slug.
+	 * @param array               $plugins List of plugins.
+	 * @param string              $slug Plugin slug.
+	 * @param WC_Logger_Interface $logger Logger instance.
 	 */
-	public function __construct( array $plugins, string $slug ) {
+	public function __construct( array $plugins, string $slug, WC_Logger_Interface $logger ) {
 		$this->plugins = $plugins;
 		$this->slug    = $slug;
+		$this->logger  = $logger;
 	}
 
 	/**
@@ -83,7 +94,8 @@ class ProcessCoreProfilerPluginInstallOptions {
 		if ( $options->force_array ) {
 			$install_option->value = json_decode( wp_json_encode( $install_option->value ), true );
 			// In case of JSON error, return early.
-			if ( json_last_error() === JSON_ERROR_NONE ) {
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				$this->logger && $this->logger->error( 'Failed to decode JSON for install option value for ' . $install_option->name . ': ' . json_last_error_msg() );
 				return;
 			}
 		}
