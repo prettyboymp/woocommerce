@@ -32,6 +32,16 @@ if ( ! class_exists( 'WC_Email_POS_Base', false ) ) :
 			// Set template base to POS plugin directory
 			$this->template_base = WC_POS_PLUGIN_DIR . 'templates/';
 			
+			$refund_page_id = get_option( 'woocommerce_refund_returns_page_id' );
+			$refund_page    = $refund_page_id ? get_post( $refund_page_id ) : null;
+
+			if ( $refund_page && 'publish' === $refund_page->post_status ) {
+				$refund_page_url = get_permalink( $refund_page_id );
+				if ( $refund_page_url ) {
+					$this->placeholders['{refund_returns_policy_url}'] = $refund_page_url;
+				}
+			}
+			
 			parent::__construct();
 
 			// Add POS-specific settings to form fields
@@ -45,6 +55,7 @@ if ( ! class_exists( 'WC_Email_POS_Base', false ) ) :
 		 * @return array Modified form fields
 		 */
 		public function init_pos_form_fields($form_fields) {
+			$placeholder_text = sprintf( __( 'Available placeholders: %s', 'woocommerce-pos' ), '<code>' . esc_html( implode( '</code>, <code>', array_keys( $this->placeholders ) ) ) . '</code>' );
 			$pos_fields = array(
 				'pos_section_start' => array(
 					'title'       => __('POS Store Details', 'woocommerce-pos'),
@@ -78,7 +89,7 @@ if ( ! class_exists( 'WC_Email_POS_Base', false ) ) :
 				'refund_returns_policy' => array(
 					'title'       => __('Refund & Returns Policy', 'woocommerce-pos'),
 					'type'        => 'textarea',
-					'description' => __('Policy that will appear on POS receipts.', 'woocommerce-pos'),
+					'description' => __('Policy that will appear on POS receipts.', 'woocommerce-pos'). ' ' . $placeholder_text,
 					'placeholder' => $this->get_refund_returns_policy_placeholder(),
 					'default'     => '',
 					'desc_tip'    => true,

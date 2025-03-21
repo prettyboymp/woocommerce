@@ -52,15 +52,6 @@ if ( class_exists( 'WC_Email_POS_Base', false ) && ! class_exists( 'WC_Email_Cus
 				'{order_number}' => '',
 			);
 
-			$refund_page_id = get_option( 'woocommerce_refund_returns_page_id' );
-			$refund_page    = $refund_page_id ? get_post( $refund_page_id ) : null;
-
-			if ( $refund_page && 'publish' === $refund_page->post_status ) {
-				$refund_page_url = get_permalink( $refund_page_id );
-				if ( $refund_page_url ) {
-					$this->placeholders['{refund_returns_policy_url}'] = $refund_page_url;
-				}
-			}
 
 			// Hook into the REST API action to send this email when requested.
 			add_action( 'woocommerce_rest_order_actions_email_send', array( $this, 'maybe_trigger_from_api' ), 10, 2 );
