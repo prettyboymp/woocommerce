@@ -1,0 +1,4 @@
+Significance: patch
+Type: fix
+Comment: Fixes a bug where HTTP requests on multi-sites with WooCommerce network-activated and which set the constant WP_INSTALLING to true before loading WordPress do trigger a flush of the rewrite rules.
+
