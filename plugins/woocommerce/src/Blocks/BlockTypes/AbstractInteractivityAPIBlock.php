@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
 use Automattic\WooCommerce\Blocks\Assets\BlocksInteractivityConfig;
+use Automattic\WooCommerce\Blocks\Assets\Api as AssetApi;
 use WP_Block;
 
 /**
@@ -46,6 +47,8 @@ abstract class AbstractInteractivityAPIBlock {
 		} else {
 			$this->register_block_type();
 		}
+
+		add_action( 'enqueue_block_editor_assets', [ $this, 'register_editor_script' ] );
 	}
 
 	/**
@@ -118,6 +121,7 @@ abstract class AbstractInteractivityAPIBlock {
 		$block_settings = [
 			'render_callback' => [ $this, 'render_callback' ],
 			'editor_style'    => $editor_style_handle,
+			'editor_script'   => $this->get_block_type_editor_script( 'handle' ),
 			'style'           => $frontend_style_handle,
 		];
 
@@ -132,6 +136,41 @@ abstract class AbstractInteractivityAPIBlock {
 			throw new \Exception( 'Block metadata path is required for Interactivity API blocks.' );
 		}
 	}
+
+	/**
+	 * Register the editor script for this block type.
+	 */
+	public function register_editor_script() {
+		if ( null !== $this->get_editor_script() ) {
+			$data     = $this->asset_api->get_script_data( $this->get_editor_script( 'path' ) );
+			$has_i18n = in_array( 'wp-i18n', $data['dependencies'], true );
+
+			$this->asset_api->register_script(
+				$this->get_editor_script( 'handle' ),
+				$this->get_editor_script( 'path' ),
+				array_merge(
+					$this->get_editor_script( 'dependencies' ),
+				),
+				$has_i18n
+			);
+		}
+	}
+
+	/**
+	 * Get the editor script data for this block.
+	 *
+	 * @param string $key Data to get, or default to everything.
+	 * @return array|string
+	 */
+	protected function get_editor_script( $key = null ) {
+		$script = [
+			'handle'       => 'wc-' . $this->block_name . '-block',
+			'path'         => $this->asset_api->get_block_asset_build_path( $this->block_name ),
+			'dependencies' => [ 'wc-blocks' ],
+		];
+		return $key ? $script[ $key ] : $script;
+	}
+
 
 	/**
 	 * Parses block attributes from the render_callback.
@@ -153,5 +192,21 @@ abstract class AbstractInteractivityAPIBlock {
 	 */
 	protected function render( $attributes, $content, $block ) {
 		return $content;
+	}
+
+	/**
+	 * Get the editor script data for this block type.
+	 *
+	 * @see $this->register_block_type()
+	 * @param string $key Data to get, or default to everything.
+	 * @return array|string
+	 */
+	protected function get_block_type_editor_script( $key = null ) {
+		$script = [
+			'handle'       => 'wc-' . $this->block_name . '-block',
+			'path'         => $this->asset_api->get_block_asset_build_path( $this->block_name ),
+			'dependencies' => [ 'wc-blocks' ],
+		];
+		return $key ? $script[ $key ] : $script;
 	}
 }

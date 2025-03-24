@@ -126,8 +126,6 @@ final class ProductFilterPrice extends AbstractInteractivityAPIBlock {
 			return '';
 		}
 
-		wp_enqueue_script_module( $this->get_full_block_name() );
-
 		$price_range   = $this->get_filtered_price( $block );
 		$min_range     = $price_range['min_price'] ?? 0;
 		$max_range     = $price_range['max_price'] ?? 0;
@@ -222,8 +220,8 @@ final class ProductFilterPrice extends AbstractInteractivityAPIBlock {
 		$price_results = $filters->get_filtered_price( $query_vars );
 
 		return array(
-			'min_price' => intval( floor( $price_results->min_price ?? 0 ) ),
-			'max_price' => intval( ceil( $price_results->max_price ?? 0 ) ),
+			'min_price' => floor( intval( $price_results->min_price ?? 0 ) ),
+			'max_price' => ceil( intval( $price_results->max_price ?? 0 ) ),
 		);
 	}
 }
