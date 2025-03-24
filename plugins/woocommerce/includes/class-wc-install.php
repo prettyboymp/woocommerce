@@ -283,9 +283,9 @@ class WC_Install {
 			'wc_update_990_remove_wc_count_comments_transient',
 			'wc_update_990_remove_email_notes',
 		),
-			'10.0.0' => array(
-				'wc_update_1000_add_sales_channel_to_orders',
-			),
+		'10.0.0' => array(
+			'wc_update_1000_add_sales_channel_to_orders',
+		),
 	);
 
 	/**
