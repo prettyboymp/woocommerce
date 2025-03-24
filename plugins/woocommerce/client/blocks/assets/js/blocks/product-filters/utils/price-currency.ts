@@ -5,11 +5,47 @@ import {
 	type Currency,
 	type CurrencyResponse,
 	type CartShippingPackageShippingRate,
+	SymbolPosition,
 } from '@woocommerce/types';
 import { getConfig } from '@wordpress/interactivity';
 
-const siteCurrency = getConfig( 'woocommerce/settings' ).currency as Currency;
+export const getCurrencyPrefix = (
+	symbol: string,
+	symbolPosition: SymbolPosition
+): string => {
+	const prefixes = {
+		left: symbol,
+		left_space: symbol + ' ',
+		right: '',
+		right_space: '',
+	};
+	return prefixes[ symbolPosition ] || '';
+};
 
+export const getCurrencySuffix = (
+	symbol: string,
+	symbolPosition: SymbolPosition
+): string => {
+	const suffixes = {
+		left: '',
+		left_space: '',
+		right: symbol,
+		right_space: ' ' + symbol,
+	};
+	return suffixes[ symbolPosition ] || '';
+};
+
+type CurrencyConfig = Omit< Currency, 'prefix' | 'suffix' > & {
+	symbolPosition: SymbolPosition;
+};
+
+const config = getConfig( 'woocommerce/settings' ).currency as CurrencyConfig;
+
+const siteCurrency: Currency = {
+	...config,
+	suffix: getCurrencySuffix( config.symbol, config.symbolPosition ),
+	prefix: getCurrencyPrefix( config.symbol, config.symbolPosition ),
+};
 /**
  * Gets currency information in normalized format from an API response or the server.
  *
@@ -129,8 +165,6 @@ export const formatPrice = (
 	}
 
 	const currency: Currency = getCurrency( currencyData );
-
-	console.log( 'currency', currency );
 
 	const { minorUnit, prefix, suffix, decimalSeparator, thousandSeparator } =
 		currency;

@@ -49,7 +49,6 @@ const { state, actions } = store( 'woocommerce/product-filter-price', {
 				: context.maxRange;
 		},
 		get formattedMinPrice(): string {
-			console.log( getCurrency( { minorUnit: 0 } ) );
 			return formatPrice(
 				state.minPrice,
 				getCurrency( { minorUnit: 0 } )
