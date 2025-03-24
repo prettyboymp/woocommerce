@@ -6,7 +6,7 @@ import { getContext, getElement, store } from '@wordpress/interactivity';
 /**
  * Internal dependencies
  */
-import { ProductFiltersStore } from '../../frontend';
+import type { ProductFiltersStore } from '../../frontend';
 
 type ProductFilterStatusContext = {
 	hasFilterOptions: boolean;

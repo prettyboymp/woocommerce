@@ -1,18 +1,23 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Automattic\WooCommerce\Blocks\Assets;
 
 use Automattic\WooCommerce\Blocks\Package;
 use Automattic\WooCommerce\Blocks\Domain\Services\Hydration;
 use Automattic\WooCommerce\Internal\Logging\RemoteLogger;
-use Exception;
 use InvalidArgumentException;
 
 /**
- * Class instance for registering data used on the current view session by
- * assets.
+ * Manages data storage for the current view session that gets exposed when the
+ * wc-settings script is enqueued (either directly or as a dependency).
+ * This data is used by various WooCommerce block assets during rendering.
  *
- * Holds data registered for output on the current view session when
- * `wc-settings` is enqueued( directly or via dependency )
+ * Note that using the wc-settings script is deprecated and should only be used
+ * for non-script-module blocks (ie those not using Interactivity API), this class
+ * also instantiates wp_interactivity_config on the namespace woocommerce/settings, which can
+ * be used to access static configuration in script module frontend assets.
  *
  * @since 2.5.0
  */
@@ -222,23 +227,7 @@ class AssetDataRegistry {
 	 * Note: core data will overwrite any externally registered data via the api.
 	 */
 	protected function initialize_core_data() {
-		/**
-		 * Filters the array of shared settings.
-		 *
-		 * Low level hook for registration of new data late in the cycle. This is deprecated.
-		 * Instead, use the data api:
-		 *
-		 * ```php
-		 * Automattic\WooCommerce\Blocks\Package::container()->get( Automattic\WooCommerce\Blocks\Assets\AssetDataRegistry::class )->add( $key, $value )
-		 * ```
-		 *
-		 * @since 5.0.0
-		 *
-		 * @deprecated
-		 * @param array $data Settings data.
-		 * @return array
-		 */
-		$settings = apply_filters( 'woocommerce_shared_settings', $this->data );
+		$settings = $this->data;
 
 		// Surface a deprecation warning in the error console.
 		if ( has_filter( 'woocommerce_shared_settings' ) ) {
@@ -300,8 +289,7 @@ class AssetDataRegistry {
 	 * @param string  $key              The key used to reference the data being registered. This should use camelCase.
 	 * @param mixed   $data             If not a function, registered to the registry as is. If a function, then the
 	 *                                  callback is invoked right before output to the screen.
-	 * @param boolean $check_key_exists Deprecated. If set to true, duplicate data will be ignored if the key exists.
-	 *                                  If false, duplicate data will cause an exception.
+	 * @param boolean $check_key_exists Deprecated. All duplicate data will be ignored if the key exists by default.
 	 */
 	public function add( $key, $data, $check_key_exists = false ) {
 		if ( $check_key_exists ) {

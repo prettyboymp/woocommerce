@@ -6,7 +6,7 @@ import { store, getContext, getElement } from '@wordpress/interactivity';
 /**
  * Internal dependencies
  */
-import { ProductFiltersStore } from '../../frontend';
+import type { ProductFiltersStore } from '../../frontend';
 
 type ProductFilterAttributeContext = {
 	attributeSlug: string;

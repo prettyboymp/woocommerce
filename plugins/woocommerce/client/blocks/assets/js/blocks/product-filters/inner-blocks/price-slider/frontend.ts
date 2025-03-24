@@ -7,7 +7,7 @@ import type { HTMLElementEvent } from '@woocommerce/types';
 /**
  * Internal dependencies
  */
-import {
+import type {
 	ProductFilterPriceContext,
 	ProductFilterPriceStore,
 } from '../price-filter/frontend';

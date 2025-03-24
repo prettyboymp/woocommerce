@@ -6,7 +6,7 @@ import { store } from '@wordpress/interactivity';
 /**
  * Internal dependencies
  */
-import { ProductFilterActiveStore } from '../active-filters/frontend';
+import type { ProductFilterActiveStore } from '../active-filters/frontend';
 
 store( 'woocommerce/product-filter-removable-chips', {
 	state: {

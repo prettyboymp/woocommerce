@@ -6,7 +6,10 @@ import { store, getContext, getElement } from '@wordpress/interactivity';
 /**
  * Internal dependencies
  */
-import { ProductFiltersContext, ProductFiltersStore } from '../../frontend';
+import type {
+	ProductFiltersContext,
+	ProductFiltersStore,
+} from '../../frontend';
 
 type ProductFilterActiveContext = {
 	removeLabelTemplate: string;

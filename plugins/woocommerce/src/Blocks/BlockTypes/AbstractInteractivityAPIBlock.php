@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
+use Automattic\WooCommerce\Blocks\Assets\BlocksInteractivityConfig;
 use WP_Block;
 
 /**
@@ -70,6 +71,9 @@ abstract class AbstractInteractivityAPIBlock {
 		$result                     = $this->render( $render_callback_attributes, $content, $block );
 
 		if ( ! empty( $result ) ) {
+			// Only initialize settings when we know an interactivity block is being rendered.
+			BlocksInteractivityConfig::init();
+
 			wp_enqueue_script_module( $this->get_full_block_name() );
 			wp_enqueue_style( $this->get_frontend_style_handle() );
 		}

@@ -1,14 +1,17 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
 use Automattic\WooCommerce\Blocks\BlockTypes\ProductCollection\Utils as ProductCollectionUtils;
 use Automattic\WooCommerce\Blocks\QueryFilters;
 use Automattic\WooCommerce\Blocks\Package;
-
+use Automattic\WooCommerce\Blocks\BlockTypes\AbstractInteractivityAPIBlock;
 /**
  * Product Filter: Price Block.
  */
-final class ProductFilterPrice extends AbstractBlock {
+final class ProductFilterPrice extends AbstractInteractivityAPIBlock {
 
 	/**
 	 * Block name.
@@ -21,13 +24,12 @@ final class ProductFilterPrice extends AbstractBlock {
 	const MAX_PRICE_QUERY_VAR = 'max_price';
 
 	/**
-	 * Initialize this block type.
+	 * Constructor.
 	 *
-	 * - Hook into WP lifecycle.
-	 * - Register the block with WordPress.
+	 * @param AssetApi $asset_api Instance of the asset API.
 	 */
-	protected function initialize() {
-		parent::initialize();
+	public function __construct( $asset_api ) {
+		parent::__construct( $asset_api );
 
 		add_filter( 'woocommerce_blocks_product_filters_param_keys', array( $this, 'get_filter_query_param_keys' ), 10, 2 );
 		add_filter( 'woocommerce_blocks_product_filters_selected_items', array( $this, 'prepare_selected_filters' ), 10, 2 );
@@ -223,16 +225,5 @@ final class ProductFilterPrice extends AbstractBlock {
 			'min_price' => intval( floor( $price_results->min_price ?? 0 ) ),
 			'max_price' => intval( ceil( $price_results->max_price ?? 0 ) ),
 		);
-	}
-
-	/**
-	 * Disable the block type script, this uses script modules.
-	 *
-	 * @param string|null $key The key.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_script( $key = null ) {
-		return null;
 	}
 }

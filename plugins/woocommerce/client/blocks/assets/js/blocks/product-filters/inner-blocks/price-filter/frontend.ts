@@ -7,8 +7,8 @@ import type { HTMLElementEvent } from '@woocommerce/types';
 /**
  * Internal dependencies
  */
-import { ActiveFilter, ProductFiltersStore } from '../../frontend';
-import { formatPrice, getCurrency } from '../../utils';
+import type { ActiveFilter, ProductFiltersStore } from '../../frontend';
+import { formatPrice, getCurrency } from '../../utils/price-currency';
 
 export type ProductFilterPriceContext = {
 	minRange: number;
