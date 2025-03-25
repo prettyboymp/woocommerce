@@ -6,7 +6,7 @@
     margin-bottom: 24px;
   }
 
-  @include breakpoint( '>800px' ) {
+  @include breakpoint( '>782px' ) {
     flex-flow: row;
   }
 
@@ -15,7 +15,7 @@
     margin-bottom: 24px;
     max-width: 328px;
 
-    @include breakpoint( '>800px' ) {
+    @include breakpoint( '>782px' ) {
       flex: 0 0 33%;
       margin: 0 24px 0 0;
     }
