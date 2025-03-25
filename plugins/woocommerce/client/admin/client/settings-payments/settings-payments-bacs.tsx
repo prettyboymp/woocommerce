@@ -12,10 +12,7 @@ import {
 import { useState, useEffect } from 'react';
 import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from '@wordpress/data';
-import {
-	PAYMENT_GATEWAYS_STORE_NAME,
-	type PaymentSelectors,
-} from '@woocommerce/data';
+import { paymentGatewaysStore } from '@woocommerce/data';
 
 /**
  * Internal dependencies
@@ -29,16 +26,20 @@ import { PaymentSettingsSection } from '~/settings-payments/components/payment-s
  * Component for managing BACS (Direct Bank Transfer) payment gateway settings.
  */
 export const SettingsPaymentsBacs = () => {
-	const bacsSettings = useSelect(
-		( select ) =>
-			(
-				select( PAYMENT_GATEWAYS_STORE_NAME ) as PaymentSelectors
-			 ).getPaymentGateway( 'bacs' ),
+	const { bacsSettings, isLoading } = useSelect(
+		( select ) => ( {
+			bacsSettings:
+				select( paymentGatewaysStore ).getPaymentGateway( 'bacs' ),
+			isLoading: ! select( paymentGatewaysStore ).hasFinishedResolution(
+				'getPaymentGateway',
+				[ 'bacs' ]
+			),
+		} ),
 		[]
 	);
 	console.log( bacsSettings );
 
-	const { updatePaymentGateway } = useDispatch( PAYMENT_GATEWAYS_STORE_NAME );
+	const { updatePaymentGateway } = useDispatch( paymentGatewaysStore );
 
 	// State for form fields
 	const [ enabled, setEnabled ] = useState( false );
@@ -76,7 +77,7 @@ export const SettingsPaymentsBacs = () => {
 			} );
 	};
 
-	if ( ! bacsSettings ) {
+	if ( isLoading ) {
 		return <p>Loading settings...</p>;
 	}
 

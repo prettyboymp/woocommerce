@@ -12,7 +12,9 @@ import { createRoot } from '@wordpress/element';
  */
 import { isFeatureEnabled } from '~/utils/features';
 import {
-	SettingsPaymentsBacsWrapper, SettingsPaymentsChequeWrapper, SettingsPaymentsCodWrapper,
+	SettingsPaymentsBacsWrapper,
+	SettingsPaymentsChequeWrapper,
+	SettingsPaymentsCodWrapper,
 	SettingsPaymentsMainWrapper,
 	SettingsPaymentsOfflineWrapper,
 	SettingsPaymentsWooCommercePaymentsWrapper,
@@ -28,6 +30,15 @@ import { registerSettingsEmailImageUrlFill } from '~/settings-email/settings-ema
 import { registerSettingsEmailPreviewFill } from '~/settings-email/settings-email-preview-slotfill';
 import { registerSettingsEmailFeedbackFill } from '~/settings-email/settings-email-feedback-slotfill';
 
+const renderPaymentComponent = ( containerId, Component ) => {
+	const container = document.getElementById( containerId );
+	if ( container ) {
+		createRoot(
+			container.insertBefore( document.createElement( 'div' ), null )
+		).render( <Component /> );
+	}
+};
+
 const renderPaymentsSettings = () => {
 	if (
 		! window.wcAdminFeatures ||
@@ -37,78 +48,38 @@ const renderPaymentsSettings = () => {
 		return;
 	}
 
-	const paymentsMainRoot = document.getElementById(
-		'experimental_wc_settings_payments_main'
-	);
-	const paymentsOfflineRoot = document.getElementById(
-		'experimental_wc_settings_payments_offline'
-	);
-	const bacsRoot = document.getElementById(
-		'experimental_wc_settings_payments_bacs'
-	);
-	const chequeRoot = document.getElementById(
-		'experimental_wc_settings_payments_cheque'
-	);
-	const codRoot = document.getElementById(
-		'experimental_wc_settings_payments_cod'
-	);
-	const paymentsWooCommercePaymentsRoot = document.getElementById(
-		'experimental_wc_settings_payments_woocommerce_payments'
-	);
+	// Configuration mapping IDs to components
+	const paymentComponents = [
+		{
+			id: 'experimental_wc_settings_payments_main',
+			component: SettingsPaymentsMainWrapper,
+		},
+		{
+			id: 'experimental_wc_settings_payments_offline',
+			component: SettingsPaymentsOfflineWrapper,
+		},
+		{
+			id: 'experimental_wc_settings_payments_bacs',
+			component: SettingsPaymentsBacsWrapper,
+		},
+		{
+			id: 'experimental_wc_settings_payments_cheque',
+			component: SettingsPaymentsChequeWrapper,
+		},
+		{
+			id: 'experimental_wc_settings_payments_cod',
+			component: SettingsPaymentsCodWrapper,
+		},
+		{
+			id: 'experimental_wc_settings_payments_woocommerce_payments',
+			component: SettingsPaymentsWooCommercePaymentsWrapper,
+		},
+	];
 
-	if ( paymentsMainRoot ) {
-		createRoot(
-			paymentsMainRoot.insertBefore(
-				document.createElement( 'div' ),
-				null
-			)
-		).render( <SettingsPaymentsMainWrapper /> );
-	}
-
-	if ( paymentsOfflineRoot ) {
-		createRoot(
-			paymentsOfflineRoot.insertBefore(
-				document.createElement( 'div' ),
-				null
-			)
-		).render( <SettingsPaymentsOfflineWrapper /> );
-	}
-
-	if ( bacsRoot ) {
-		createRoot(
-			bacsRoot.insertBefore(
-				document.createElement( 'div' ),
-				null
-			)
-		).render( <SettingsPaymentsBacsWrapper />);
-	}
-
-	if ( chequeRoot ) {
-		createRoot(
-			chequeRoot.insertBefore(
-				document.createElement( 'div' ),
-				null
-			)
-		).render( <SettingsPaymentsChequeWrapper />);
-	}
-
-	if ( codRoot ) {
-		createRoot(
-			codRoot.insertBefore(
-				document.createElement( 'div' ),
-				null
-			)
-		).render( <SettingsPaymentsCodWrapper />);
-	}
-
-	if ( paymentsWooCommercePaymentsRoot ) {
-		createRoot(
-			paymentsWooCommercePaymentsRoot.insertBefore(
-				document.createElement( 'div' ),
-				null
-			)
-		).render( <SettingsPaymentsWooCommercePaymentsWrapper /> );
-	}
+	// Render each payment component.
+	paymentComponents.forEach( ( { id, component } ) => {
+		renderPaymentComponent( id, component );
+	} );
 };
 
 const registerSlotFills = () => {
