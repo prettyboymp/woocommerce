@@ -32,6 +32,9 @@ const blockConfig: BlockConfiguration = {
 	save: Save,
 	supports: {
 		...sharedConfig.supports,
+		interactivity: {
+			clientNavigation: true,
+		},
 		typography: {
 			fontSize: true,
 			lineHeight: true,
