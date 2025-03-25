@@ -512,6 +512,13 @@ class FeaturesController {
 			}
 		}
 
+		// We're deprecating the product block editor feature in favor of a v3 coming out.
+		// We want to hide this setting in the UI for users that don't have it enabled.
+		// If users have it enabled, we won't hide it until they explicitly disable it.
+		if ( ! $this->feature_is_enabled( 'product_block_editor' ) ) {
+			unset( $features['product_block_editor'] );
+		}
+
 		return $features;
 	}
 
