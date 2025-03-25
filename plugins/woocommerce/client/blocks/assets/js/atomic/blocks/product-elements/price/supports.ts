@@ -11,6 +11,9 @@ import sharedConfig from '../shared/config';
 
 export const supports = {
 	...sharedConfig.supports,
+	interactivity: {
+		clientNavigation: true,
+	},
 	color: {
 		text: true,
 		background: true,
