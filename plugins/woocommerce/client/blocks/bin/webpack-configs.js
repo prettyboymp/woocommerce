@@ -9,7 +9,6 @@ const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const ProgressBarPlugin = require( 'progress-bar-webpack-plugin' );
 const DependencyExtractionWebpackPlugin = require( '@wordpress/dependency-extraction-webpack-plugin' );
 const WebpackRTLPlugin = require( './webpack-rtl-plugin' );
-const CreateFileWebpack = require( 'create-file-webpack' );
 const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
 const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const CopyWebpackPlugin = require( 'copy-webpack-plugin' );
@@ -107,10 +106,7 @@ const getCoreConfig = ( options = {} ) => {
 						loader: 'babel-loader',
 						options: {
 							presets: [ '@wordpress/babel-preset-default' ],
-							plugins: [
-								'@babel/plugin-transform-optional-chaining',
-								'@babel/plugin-transform-class-properties',
-							],
+							plugins: [],
 							cacheDirectory: BABEL_CACHE_DIR,
 							cacheCompression: false,
 						},
@@ -129,15 +125,6 @@ const getCoreConfig = ( options = {} ) => {
 				bundleAnalyzerReportTitle: 'Core',
 			} ),
 			new ProgressBarPlugin( getProgressBarPluginConfig( 'Core' ) ),
-			new CreateFileWebpack( {
-				path: './',
-				// file name
-				fileName: 'blocks.ini',
-				// content of the file
-				content: `
-woocommerce_blocks_env = ${ NODE_ENV }
-`.trim(),
-			} ),
 		],
 		optimization: {
 			...sharedOptimizationConfig,
@@ -204,8 +191,6 @@ const getMainConfig = ( options = {} ) => {
 											'babel-plugin-transform-react-remove-prop-types'
 									  )
 									: false,
-								'@babel/plugin-transform-optional-chaining',
-								'@babel/plugin-transform-class-properties',
 							].filter( Boolean ),
 							cacheDirectory: BABEL_CACHE_DIR,
 							cacheCompression: false,
@@ -337,8 +322,6 @@ const getFrontConfig = ( options = {} ) => {
 											'babel-plugin-transform-react-remove-prop-types'
 									  )
 									: false,
-								'@babel/plugin-transform-optional-chaining',
-								'@babel/plugin-transform-class-properties',
 							].filter( Boolean ),
 							cacheDirectory: BABEL_CACHE_DIR,
 							cacheCompression: false,
@@ -438,8 +421,6 @@ const getPaymentsConfig = ( options = {} ) => {
 											'babel-plugin-transform-react-remove-prop-types'
 									  )
 									: false,
-								'@babel/plugin-transform-optional-chaining',
-								'@babel/plugin-transform-class-properties',
 							].filter( Boolean ),
 							cacheDirectory: BABEL_CACHE_DIR,
 							cacheCompression: false,
@@ -528,8 +509,6 @@ const getExtensionsConfig = ( options = {} ) => {
 											'babel-plugin-transform-react-remove-prop-types'
 									  )
 									: false,
-								'@babel/plugin-transform-optional-chaining',
-								'@babel/plugin-transform-class-properties',
 							].filter( Boolean ),
 							cacheDirectory: BABEL_CACHE_DIR,
 							cacheCompression: false,
@@ -618,7 +597,6 @@ const getSiteEditorConfig = ( options = {} ) => {
 											'babel-plugin-transform-react-remove-prop-types'
 									  )
 									: false,
-								'@babel/plugin-transform-optional-chaining',
 							].filter( Boolean ),
 							cacheDirectory: BABEL_CACHE_DIR,
 							cacheCompression: false,
@@ -747,8 +725,6 @@ const getStylingConfig = ( options = {} ) => {
 											'babel-plugin-transform-react-remove-prop-types'
 									  )
 									: false,
-								'@babel/plugin-transform-optional-chaining',
-								'@babel/plugin-transform-class-properties',
 							].filter( Boolean ),
 							cacheDirectory: BABEL_CACHE_DIR,
 							cacheCompression: false,
@@ -823,70 +799,6 @@ const getStylingConfig = ( options = {} ) => {
 	};
 };
 
-const getInteractivityAPIConfig = ( options = {} ) => {
-	const { alias, resolvePlugins = [] } = options;
-	return {
-		entry: {
-			'wc-interactivity': './assets/js/interactivity',
-		},
-		output: {
-			filename: '[name].js',
-			path: BUILD_DIR,
-			library: [ 'wc', '__experimentalInteractivity' ],
-			libraryTarget: 'this',
-			chunkLoadingGlobal: 'webpackWcBlocksJsonp',
-		},
-		resolve: {
-			alias,
-			plugins: resolvePlugins,
-			extensions: [ '.js', '.ts', '.tsx' ],
-		},
-		plugins: [
-			...getSharedPlugins( {
-				bundleAnalyzerReportTitle: 'WP directives',
-				checkCircularDeps: false,
-			} ),
-			new ProgressBarPlugin(
-				getProgressBarPluginConfig( 'WP directives' )
-			),
-		],
-		module: {
-			rules: [
-				{
-					test: /\.(j|t)sx?$/,
-					exclude: [ /[\/\\](node_modules|build|docs|vendor)[\/\\]/ ],
-					use: [
-						{
-							loader: require.resolve( 'babel-loader' ),
-							options: {
-								babelrc: false,
-								configFile: false,
-								presets: [
-									'@babel/preset-typescript',
-									[
-										'@babel/preset-react',
-										{
-											runtime: 'automatic',
-											importSource: 'preact',
-										},
-									],
-								],
-								// Required until Webpack is updated to ^5.0.0
-								plugins: [
-									'@babel/plugin-transform-optional-chaining',
-									'@babel/plugin-transform-class-properties',
-								],
-								cacheDirectory: BABEL_CACHE_DIR,
-								cacheCompression: false,
-							},
-						},
-					],
-				},
-			],
-		},
-	};
-};
-
 const getCartAndCheckoutFrontendConfig = ( options = {} ) => {
 	const { alias, resolvePlugins = [] } = options;
 
@@ -956,8 +868,6 @@ const getCartAndCheckoutFrontendConfig = ( options = {} ) => {
 											'babel-plugin-transform-react-remove-prop-types'
 									  )
 									: false,
-								'@babel/plugin-transform-optional-chaining',
-								'@babel/plugin-transform-class-properties',
 							].filter( Boolean ),
 							cacheDirectory: BABEL_CACHE_DIR,
 							cacheCompression: false,
@@ -1019,6 +929,5 @@ module.exports = {
 	getExtensionsConfig,
 	getSiteEditorConfig,
 	getStylingConfig,
-	getInteractivityAPIConfig,
 	getCartAndCheckoutFrontendConfig,
 };
