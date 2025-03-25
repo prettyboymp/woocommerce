@@ -4,10 +4,9 @@
 	"title": "Active Filters Controls",
 	"description": "Display the currently active filters.",
 	"category": "woocommerce",
-	"keywords": [
-		"WooCommerce"
-	],
+	"keywords": [ "WooCommerce" ],
 	"supports": {
+		"interactivity": false,
 		"html": false,
 		"multiple": false,
 		"inserter": false,
