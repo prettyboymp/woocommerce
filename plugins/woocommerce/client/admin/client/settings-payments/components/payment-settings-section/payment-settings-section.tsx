@@ -7,12 +7,17 @@
  */
 import './payment-settings-section.scss';
 
-export const PaymentSettingsSection: React.FunctionComponent< {
-	children?: React.ReactNode;
-	description: string;
+export const PaymentSettingsSection = ( {
+	title,
+	description,
+	children,
+	id,
+}: {
 	title: string;
+	description: string;
+	children?: React.ReactNode;
 	id?: string;
-} > = ( { title, description, children, id } ) => (
+} ) => (
 	<div className={ 'payment-settings-section' } id={ id }>
 		<div className="payment-settings-section__details">
 			<h2>{ title }</h2>
