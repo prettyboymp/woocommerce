@@ -228,7 +228,6 @@ export class BlockRegistrationManager {
 		const { blockName, isVariationBlock, variationName } = config;
 
 		try {
-			throw new Error( 'Testing the remote error logging' );
 			if ( isVariationBlock && variationName ) {
 				unregisterBlockVariation( blockName, variationName );
 				this.attemptedRegisteredBlocks.delete( variationName );
