@@ -8,7 +8,7 @@ import { ToggleControl } from '@wordpress/components';
 /**
  * Internal dependencies
  */
-import { useUnsupportedBlocks } from './utils';
+import { useHasUnsupportedBlocks } from './utils';
 import type { ProductCollectionSetAttributes } from '../../types';
 
 type ForcePageReloadControlProps = {
@@ -33,7 +33,7 @@ const helpTextIncompatibleBlocks = __(
 
 const ForcePageReloadControl = ( props: ForcePageReloadControlProps ) => {
 	const { clientId, forcePageReload, setAttributes } = props;
-	const hasUnsupportedBlocks = useUnsupportedBlocks( clientId );
+	const hasUnsupportedBlocks = useHasUnsupportedBlocks( clientId );
 
 	useEffect( () => {
 		if ( ! forcePageReload && hasUnsupportedBlocks ) {
