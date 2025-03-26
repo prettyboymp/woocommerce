@@ -304,6 +304,9 @@ export class BlockRegistrationManager {
 		} catch ( error ) {
 			// eslint-disable-next-line no-console
 			console.error( `Failed to register block ${ blockName }:`, error );
+
+			// @ts-expect-error - remoteLogging is not typed
+			window?.wc?.remoteLogging?.captureException( error );
 		}
 	}
 
