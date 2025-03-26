@@ -15,6 +15,7 @@ use Automattic\WooCommerce\StoreApi\Utilities\DraftOrderTrait;
 use Automattic\WooCommerce\StoreApi\Utilities\NoticeHandler;
 use Automattic\WooCommerce\StoreApi\Utilities\QuantityLimits;
 use WP_Error;
+use Automattic\WooCommerce\Cart\Utilities\CartItemFactory;
 
 /**
  * Woo Cart Controller class.
@@ -81,135 +82,47 @@ class CartController {
 	}
 
 	/**
-	 * Based on the core cart class but returns errors rather than rendering notices directly.
+	 * Add an item to the cart.
 	 *
-	 * @todo Overriding the core add_to_cart method was necessary because core outputs notices when an item is added to
-	 * the cart. For us this would cause notices to build up and output on the store, out of context. Core would need
-	 * refactoring to split notices out from other cart actions.
-	 *
-	 * @throws RouteException Exception if invalid data is detected.
-	 *
-	 * @param array $request Add to cart request params.
-	 * @return string
+	 * @param array $request Request data.
+	 * @return string Cart item key/ID.
+	 * @throws RouteException If product cannot be added to cart.
 	 */
 	public function add_to_cart( $request ) {
-		$cart    = $this->get_cart_instance();
-		$request = wp_parse_args(
-			$request,
-			[
-				'id'             => 0,
-				'quantity'       => 1,
-				'variation'      => [],
-				'cart_item_data' => [],
-			]
-		);
+		try {
+			$factory   = new CartItemFactory();
+			$cart_item = $factory->create_cart_item(
+				$request['id'],
+				$request['quantity'] ?? 1,
+				$request['variation_id'] ?? 0,
+				$request['variation'] ?? array(),
+				$this->filter_request_data( $request )
+			);
 
-		$request = $this->filter_request_data( $this->parse_variation_data( $request ) );
-		$product = $this->get_product_for_cart( $request );
-		$cart_id = $cart->generate_cart_id(
-			$this->get_product_id( $product ),
-			$this->get_variation_id( $product ),
-			$request['variation'],
-			$request['cart_item_data']
-		);
+			$cart             = $this->get_cart_instance();
+			$existing_cart_id = $cart->find_product_in_cart( $cart_item['key'] );
 
-		$this->validate_add_to_cart( $product, $request );
-
-		$quantity_limits  = new QuantityLimits();
-		$existing_cart_id = $cart->find_product_in_cart( $cart_id );
-
-		if ( $existing_cart_id ) {
-			$cart_item           = $cart->cart_contents[ $existing_cart_id ];
-			$quantity_validation = $quantity_limits->validate_cart_item_quantity( $request['quantity'] + $cart_item['quantity'], $cart_item );
-
-			if ( is_wp_error( $quantity_validation ) ) {
-				throw new RouteException( $quantity_validation->get_error_code(), $quantity_validation->get_error_message(), 400 );
+			if ( $existing_cart_id ) {
+				$cart->set_quantity(
+					$existing_cart_id,
+					$request['quantity'] + $cart->cart_contents[ $existing_cart_id ]['quantity'],
+					true
+				);
+				return $existing_cart_id;
 			}
 
-			$cart->set_quantity( $existing_cart_id, $request['quantity'] + $cart->cart_contents[ $existing_cart_id ]['quantity'], true );
+			$cart->cart_contents[ $cart_item['key'] ] = $cart_item;
+			$cart->calculate_totals();
 
-			return $existing_cart_id;
+			return $cart_item['key'];
+
+		} catch ( Exception $e ) {
+			throw new RouteException(
+				'woocommerce_rest_cannot_add_to_cart',
+				wp_kses_post( $e->getMessage() ),
+				400
+			);
 		}
-
-		// Normalize quantity.
-		$add_to_cart_limits = $quantity_limits->get_add_to_cart_limits( $product );
-		$request_quantity   = (int) $request['quantity'];
-
-		if ( $add_to_cart_limits['maximum'] ) {
-			$request_quantity = min( $request_quantity, $add_to_cart_limits['maximum'] );
-		}
-
-		$request_quantity = max( $request_quantity, $add_to_cart_limits['minimum'] );
-		$request_quantity = $quantity_limits->limit_to_multiple( $request_quantity, $add_to_cart_limits['multiple_of'] );
-
-		/**
-		 * Filters the item being added to the cart.
-		 *
-		 * @since 2.5.0
-		 *
-		 * @internal Matches filter name in WooCommerce core.
-		 *
-		 * @param array $cart_item_data Array of cart item data being added to the cart.
-		 * @param string $cart_id Id of the item in the cart.
-		 * @return array Updated cart item data.
-		 */
-		$cart->cart_contents[ $cart_id ] = apply_filters(
-			'woocommerce_add_cart_item',
-			array_merge(
-				$request['cart_item_data'],
-				array(
-					'key'          => $cart_id,
-					'product_id'   => $this->get_product_id( $product ),
-					'variation_id' => $this->get_variation_id( $product ),
-					'variation'    => $request['variation'],
-					'quantity'     => $request_quantity,
-					'data'         => $product,
-					'data_hash'    => wc_get_cart_item_data_hash( $product ),
-				)
-			),
-			$cart_id
-		);
-
-		/**
-		 * Filters the entire cart contents when the cart changes.
-		 *
-		 * @since 2.5.0
-		 *
-		 * @internal Matches filter name in WooCommerce core.
-		 *
-		 * @param array $cart_contents Array of all cart items.
-		 * @return array Updated array of all cart items.
-		 */
-		$cart->cart_contents = apply_filters( 'woocommerce_cart_contents_changed', $cart->cart_contents );
-
-		/**
-		 * Fires when an item is added to the cart.
-		 *
-		 * This hook fires when an item is added to the cart. This is triggered from the Store API in this context, but
-		 * WooCommerce core add to cart events trigger the same hook.
-		 *
-		 * @since 2.5.0
-		 *
-		 * @internal Matches action name in WooCommerce core.
-		 *
-		 * @param string $cart_id ID of the item in the cart.
-		 * @param integer $product_id ID of the product added to the cart.
-		 * @param integer $request_quantity Quantity of the item added to the cart.
-		 * @param integer $variation_id Variation ID of the product added to the cart.
-		 * @param array $variation Array of variation data.
-		 * @param array $cart_item_data Array of other cart item data.
-		 */
-		do_action(
-			'woocommerce_add_to_cart',
-			$cart_id,
-			$this->get_product_id( $product ),
-			$request_quantity,
-			$this->get_variation_id( $product ),
-			$request['variation'],
-			$request['cart_item_data']
-		);
-
-		return $cart_id;
 	}
 
 	/**
