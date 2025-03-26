@@ -33,7 +33,7 @@ const blockConfig: BlockConfiguration = {
 	supports: {
 		html: false,
 		interactivity: {
-			clientNavigation: true,
+			clientNavigation: false,
 		},
 		typography: {
 			fontSize: true,
