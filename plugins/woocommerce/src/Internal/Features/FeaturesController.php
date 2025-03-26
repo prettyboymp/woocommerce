@@ -5,6 +5,7 @@
 
 namespace Automattic\WooCommerce\Internal\Features;
 
+use Automattic\WooCommerce\Internal\Admin\Settings\PaymentsController;
 use WC_Tracks;
 use WC_Site_Tracking;
 use Automattic\Jetpack\Constants;
@@ -212,14 +213,18 @@ class FeaturesController {
 		}
 
 		if ( ! $this->registered_additional_features_via_class_calls ) {
+			// This needs to be set to true *before* additional feature definition calls are made,
+			// to prevent infinite loops in case one of these calls ends up calling here again.
+			$this->registered_additional_features_via_class_calls = true;
+
 			// Additional feature definitions.
 			// These used to be tied to the now deprecated woocommerce_register_feature_definitions action,
 			// and aren't processed in init_feature_definitions to avoid circular calls in the dependency injection container.
 			$container = wc_get_container();
 			$container->get( CustomOrdersTableController::class )->add_feature_definition( $this );
 			$container->get( CostOfGoodsSoldController::class )->add_feature_definition( $this );
+			$container->get( PaymentsController::class )->adjust_feature_default_enablement_by_experiment( $this );
 
-			$this->registered_additional_features_via_class_calls = true;
 			$this->init_compatibility_info_by_feature();
 		}
 

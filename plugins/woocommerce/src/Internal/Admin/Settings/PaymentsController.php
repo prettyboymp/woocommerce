@@ -27,10 +27,6 @@ class PaymentsController {
 	 * Register hooks.
 	 */
 	public function register() {
-		add_action( 'woocommerce_register_feature_definitions', array( $this,
-			'adjust_feature_default_enablement_by_experiment'
-		) );
-
 		// Because we gate the hooking based on a feature flag,
 		// we need to delay the registration until the 'woocommerce_init' hook.
 		// Otherwise, we end up in an infinite loop.
@@ -39,6 +35,7 @@ class PaymentsController {
 
 	/**
 	 * Adjust the new Payments Settings page feature default enablement based on the experiment.
+	 * This is invoked from within FeaturesController.
 	 *
 	 * @param FeaturesController $features_controller The features controller instance.
 	 *
