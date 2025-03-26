@@ -207,7 +207,8 @@ class WooPaymentsService {
 			'status'         => $this->get_onboarding_step_status( self::ONBOARDING_STEP_BUSINESS_VERIFICATION, $location ),
 			'errors'         => array(),
 			'context'        => array(
-				'fields' => $this->get_onboarding_kyc_fields(),
+				'fields'          => $this->get_onboarding_kyc_fields(),
+				'self_assessment' => $this->get_nox_profile_onboarding_step_data_entry( self::ONBOARDING_STEP_BUSINESS_VERIFICATION, $location, 'self_assessment' ),
 			),
 		);
 
