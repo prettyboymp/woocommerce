@@ -1508,8 +1508,8 @@ class WC_AJAX {
 			wc_save_order_items( $order_id, $items );
 
 			// Return HTML items.
-			$order = wc_get_order( $order_id );
-
+			/* $order = wc_get_order( $order_id ); */
+		$order = wc_get_container()->get( TaxesController::class )->calc_line_taxes( $_POST );
 			// Get HTML to return.
 			ob_start();
 			include __DIR__ . '/admin/meta-boxes/views/html-order-items.php';
