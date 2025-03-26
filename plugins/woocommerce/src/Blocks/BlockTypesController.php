@@ -134,13 +134,13 @@ final class BlockTypesController {
 
 		if ( file_exists( $manifest_dir ) ) {
 			add_filter( 'doing_it_wrong_trigger_error', array( __CLASS__, 'bypass_block_metadata_doing_it_wrong' ), 10, 4 );
-	
+
 			if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
 				wp_register_block_types_from_metadata_collection( $build_dir, $manifest_dir );
-			} else if ( function_exists( 'wp_register_block_metadata_collection' ) ) {
+			} elseif ( function_exists( 'wp_register_block_metadata_collection' ) ) {
 				wp_register_block_metadata_collection( $build_dir, $manifest_dir );
 			}
-	
+
 			remove_filter( 'doing_it_wrong_trigger_error', array( __CLASS__, 'bypass_block_metadata_doing_it_wrong' ), 10 );
 		}
 	}
