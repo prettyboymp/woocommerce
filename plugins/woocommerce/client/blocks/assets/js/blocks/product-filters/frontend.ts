@@ -170,15 +170,20 @@ const productFiltersStore = {
 		},
 		// TODO: Remove the hardcoded type once https://github.com/woocommerce/gutenberg/pull/8 is merged.
 		*navigate(): Generator {
-			const context = getServerContext
-				? getServerContext< ProductFiltersContext >()
-				: getContext< ProductFiltersContext >();
+			// const context = getServerContext
+			// 	? getServerContext< ProductFiltersContext >()
+			// 	: getContext< ProductFiltersContext >();
+			const context = getContext< ProductFiltersContext >();
+			const serverContext = getServerContext< ProductFiltersContext >();
+			console.log( 'context.params', context.params );
+			console.log( 'serverContext.params', serverContext.params );
+			console.log( 'state.params', state.params );
 
 			const canonicalUrl = getSetting( 'canonicalUrl' );
 			const url = new URL( canonicalUrl );
 			const { searchParams } = url;
 
-			for ( const key in context.params ) {
+			for ( const key in serverContext.params ) {
 				searchParams.delete( key );
 			}
 
