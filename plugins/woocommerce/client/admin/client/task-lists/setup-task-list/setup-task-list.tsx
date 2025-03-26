@@ -9,12 +9,11 @@ import { EllipsisMenu } from '@woocommerce/components';
 import { navigateTo, getNewPath } from '@woocommerce/navigation';
 import { WooOnboardingTaskListHeader } from '@woocommerce/onboarding';
 import {
-	ONBOARDING_STORE_NAME,
 	TaskType,
 	useUserPreferences,
 	getVisibleTasks,
 	TaskListType,
-	WCDataSelector,
+	onboardingStore,
 } from '@woocommerce/data';
 import { recordEvent } from '@woocommerce/tracks';
 import { List, useSlot } from '@woocommerce/experimental';
@@ -45,7 +44,7 @@ export type TaskListProps = TaskListType & {
 	cesHeader?: boolean;
 };
 
-export const SetupTaskList: React.FC< TaskListProps > = ( {
+export const SetupTaskList = ( {
 	query,
 	id,
 	eventName,
@@ -55,20 +54,20 @@ export const SetupTaskList: React.FC< TaskListProps > = ( {
 	isComplete,
 	displayProgressHeader,
 	cesHeader = true,
-} ) => {
+}: TaskListProps ) => {
 	const listEventPrefix = eventName ? eventName + '_' : eventPrefix;
-	const { profileItems } = useSelect( ( select: WCDataSelector ) => {
-		const { getProfileItems } = select( ONBOARDING_STORE_NAME );
+	const { profileItems } = useSelect( ( select ) => {
+		const { getProfileItems } = select( onboardingStore );
 		return {
 			profileItems: getProfileItems(),
 		};
-	} );
+	}, [] );
 	const {
 		hideTaskList,
 		visitedTask,
 		keepCompletedTaskList: keepCompletedTasks,
 		invalidateResolutionForStoreSelector,
-	} = useDispatch( ONBOARDING_STORE_NAME );
+	} = useDispatch( onboardingStore );
 	const userPreferences = useUserPreferences();
 	const [ headerData, setHeaderData ] = useState< {
 		task?: TaskType;

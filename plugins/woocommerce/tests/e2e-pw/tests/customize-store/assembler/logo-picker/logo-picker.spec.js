@@ -127,7 +127,9 @@ test.describe(
 				logoPickerPageObject.getLogoPickerLocator( assembler )
 			).toBeVisible();
 			await expect(
-				logoPickerPageObject.getLogoLocator( editor )
+				editor
+					.getByRole( 'document', { name: 'Header' } )
+					.locator( 'img.custom-logo' )
 			).toBeVisible();
 
 			await expect( imageWidth ).toBeVisible();
@@ -180,7 +182,7 @@ test.describe(
 				logoPickerPageObject.getEmptyLogoPickerLocator( assembler );
 			await expect( emptyLogoLocator ).toBeHidden();
 			await assembler.getByLabel( 'Options', { exact: true } ).click();
-			await assembler.getByText( 'Delete' ).click();
+			await assembler.getByRole( 'menuitem', { name: 'Delete' } ).click();
 			await expect( emptyLogoLocator ).toBeVisible();
 		} );
 

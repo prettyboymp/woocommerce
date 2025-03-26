@@ -3,7 +3,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { Plugins as PluginInstaller } from '@woocommerce/components';
-import { OPTIONS_STORE_NAME, InstallPluginsResponse } from '@woocommerce/data';
+import { optionsStore, InstallPluginsResponse } from '@woocommerce/data';
 import { recordEvent, queueRecordEvent } from '@woocommerce/tracks';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useEffect } from '@wordpress/element';
@@ -21,16 +21,15 @@ const isWcConnectOptions = (
 	[ key: string ]: unknown;
 } => typeof wcConnectOptions === 'object' && wcConnectOptions !== null;
 
-export const Plugins: React.FC< SetupStepProps > = ( {
+export const Plugins = ( {
 	nextStep,
 	onDisable,
 	onManual,
 	pluginsToActivate,
-} ) => {
-	const { updateOptions } = useDispatch( OPTIONS_STORE_NAME );
+}: SetupStepProps ) => {
+	const { updateOptions } = useDispatch( optionsStore );
 	const { isResolving, tosAccepted } = useSelect( ( select ) => {
-		const { getOption, hasFinishedResolution } =
-			select( OPTIONS_STORE_NAME );
+		const { getOption, hasFinishedResolution } = select( optionsStore );
 		const wcConnectOptions = getOption( 'wc_connect_options' );
 
 		return {
@@ -46,7 +45,7 @@ export const Plugins: React.FC< SetupStepProps > = ( {
 					wcConnectOptions?.tos_accepted ) ||
 				getOption( 'woocommerce_setup_jetpack_opted_in' ) === '1',
 		};
-	} );
+	}, [] );
 
 	useEffect( () => {
 		if ( ! tosAccepted || pluginsToActivate.length ) {

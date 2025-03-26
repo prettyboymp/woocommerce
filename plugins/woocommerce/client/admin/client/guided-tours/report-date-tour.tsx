@@ -3,7 +3,7 @@
  */
 import { TourKit, TourKitTypes } from '@woocommerce/components';
 import { __ } from '@wordpress/i18n';
-import { OPTIONS_STORE_NAME } from '@woocommerce/data';
+import { optionsStore } from '@woocommerce/data';
 import {
 	createElement,
 	createInterpolateElement,
@@ -19,26 +19,33 @@ import './report-date-tour.scss';
 
 const DATE_TYPE_OPTION = 'woocommerce_date_type';
 
-export const ReportDateTour: React.FC< {
+export const ReportDateTour = ( {
+	optionName,
+	headingText,
+}: {
 	optionName: string;
 	headingText: string;
-} > = ( { optionName, headingText } ) => {
+} ) => {
 	const [ isDismissed, setIsDismissed ] = useState( false );
-	const { updateOptions } = useDispatch( OPTIONS_STORE_NAME );
+	const { updateOptions } = useDispatch( optionsStore );
 
-	const { shouldShowTour, isResolving } = useSelect( ( select ) => {
-		const { getOption, hasFinishedResolution } =
-			select( OPTIONS_STORE_NAME );
-		return {
-			shouldShowTour:
-				getOption( optionName ) !== 'yes' &&
-				getOption( DATE_TYPE_OPTION ) === false,
-			isResolving: ! (
-				hasFinishedResolution( 'getOption', [ optionName ] ) &&
-				hasFinishedResolution( 'getOption', [ DATE_TYPE_OPTION ] )
-			),
-		};
-	} );
+	const { shouldShowTour, isResolving } = useSelect(
+		( select ) => {
+			const { getOption, hasFinishedResolution } = select( optionsStore );
+
+			return {
+				shouldShowTour:
+					getOption( optionName ) !== 'yes' &&
+					getOption( DATE_TYPE_OPTION ) === false,
+				isResolving:
+					! hasFinishedResolution( 'getOption', [ optionName ] ) ||
+					! hasFinishedResolution( 'getOption', [
+						DATE_TYPE_OPTION,
+					] ),
+			};
+		},
+		[ optionName ]
+	);
 
 	if ( isDismissed || ! shouldShowTour || isResolving ) {
 		return null;

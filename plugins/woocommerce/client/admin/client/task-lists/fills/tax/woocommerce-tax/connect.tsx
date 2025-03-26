@@ -10,11 +10,9 @@ import { recordEvent, queueRecordEvent } from '@woocommerce/tracks';
 import { default as ConnectForm } from '~/dashboard/components/connect';
 import { SetupStepProps } from './setup';
 
-export const Connect: React.FC< SetupStepProps > = ( {
-	onDisable,
-	onManual,
-} ) => {
+export const Connect = ( { onDisable, onManual }: SetupStepProps ) => {
 	return (
+		// @ts-expect-error Todo: convert ConnectForm to TypeScript
 		<ConnectForm
 			onConnect={ () => {
 				recordEvent( 'tasklist_tax_connect_store', {
