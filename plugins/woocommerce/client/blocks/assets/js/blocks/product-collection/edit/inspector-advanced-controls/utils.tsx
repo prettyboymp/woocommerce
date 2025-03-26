@@ -28,7 +28,7 @@ const isBlockSupported = ( blockName: string ) => {
 	return false;
 };
 
-export const useHasUnsupportedBlocks = ( clientId: string ): boolean =>
+export const useUnsupportedBlocks = ( clientId: string ): boolean =>
 	useSelect(
 		( select ) => {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
