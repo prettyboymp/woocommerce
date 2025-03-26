@@ -1,0 +1,64 @@
+name: 'Check Rubik team issues without priority labels'
+on:
+    schedule:
+        - cron: '0 0 * * *'  # Run daily at midnight
+    workflow_dispatch:
+
+permissions:
+    issues: write
+
+jobs:
+    check-priority-labels:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Process Rubik team issues without priority labels (over 5 days old)
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                    const fiveDaysAgo = new Date();
+                    fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+
+                    const issues = await github.paginate(github.rest.issues.listForRepo, {
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        state: 'open',
+                        labels: ['team: Rubik'],
+                        per_page: 100
+                    });
+
+                    for (const issue of issues) {
+                        // Skip pull requests
+                        if (issue.pull_request) continue;
+
+                        const issueDate = new Date(issue.created_at);
+                        const labels = issue.labels.map(label => label.name);
+
+                        // Skip if issue has any priority label
+                        if (labels.some(label =>
+                            ['priority: normal', 'priority: critical', 'priority: high'].includes(label)
+                        )) continue;
+
+                        // Check if issue is older than 5 days
+                        if (issueDate < fiveDaysAgo) {
+                            // Check if we already commented
+                            const comments = await github.paginate(github.rest.issues.listComments, {
+                                owner: context.repo.owner,
+                                repo: context.repo.repo,
+                                issue_number: issue.number
+                            });
+
+                            const hasLabelComment = comments.some(comment =>
+                                comment.body.includes('needs a priority label')
+                            );
+
+                            if (!hasLabelComment) {
+                                console.log(`Adding comment to issue #${issue.number}`);
+                                await github.rest.issues.createComment({
+                                    owner: context.repo.owner,
+                                    repo: context.repo.repo,
+                                    issue_number: issue.number,
+                                    body: 'This issue has now been opened for 5 days and needs a priority label'
+                                });
+                            }
+                        }
+                    }
