@@ -1,0 +1,15 @@
+.shipping-methods-select-wrapper {
+	.shipping-methods-select {
+		width: 95%;
+		border: 1px solid #ccc;
+		border-radius: 20px; // Changed to create a pill shape
+		padding: 10px; // Increased padding for better spacing
+		min-height: 42px;
+		background-color: #f9f9f9; // Changed to a light gray for the boxed effect
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // Added shadow for depth
+
+		option {
+			padding: 4px 6px;
+		}
+	}
+}
