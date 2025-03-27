@@ -42,8 +42,6 @@ abstract class AbstractInteractivityAPIBlock {
 
 		if ( empty( $this->block_name ) ) {
 			wc_doing_it_wrong( __METHOD__, 'Block name is required.', '9.9.0' );
-		} else {
-			$this->register_block_type();
 		}
 	}
 
@@ -52,7 +50,7 @@ abstract class AbstractInteractivityAPIBlock {
 	 *
 	 * @return string The block namespace
 	 */
-	protected function get_full_block_name() {
+	public function get_full_block_name() {
 		return $this->namespace . '/' . $this->block_name;
 	}
 
@@ -70,8 +68,10 @@ abstract class AbstractInteractivityAPIBlock {
 		$result                     = $this->render( $render_callback_attributes, $content, $block );
 
 		if ( ! empty( $result ) ) {
-			wp_enqueue_script_module( $this->get_full_block_name() );
-			wp_enqueue_style( $this->get_frontend_style_handle() );
+			// TODO: here enqueue the frontend scripts and styles.
+
+			// wp_enqueue_script_module( $this->get_full_block_name() );
+			// wp_enqueue_style( $this->get_frontend_style_handle() );
 		}
 
 		return $result;
@@ -84,9 +84,9 @@ abstract class AbstractInteractivityAPIBlock {
 	 *
 	 * @return string|null
 	 */
-	protected function get_frontend_style_handle() {
-		return $this->get_full_block_name() . '-style';
-	}
+	// protected function get_frontend_style_handle() {
+	// return $this->get_full_block_name() . '-style';
+	// }
 
 	/**
 	 * Get the editor style handle for this block type.
@@ -95,21 +95,25 @@ abstract class AbstractInteractivityAPIBlock {
 	 *
 	 * @return string|null
 	 */
-	protected function get_editor_style_handle() {
-		return $this->get_full_block_name() . '-editor-style';
-	}
+	// protected function get_editor_style_handle() {
+	// return $this->get_full_block_name() . '-editor-style';
+	// }
 
 	/**
 	 * Registers the block type with WordPress.
 	 *
+	 * @param array|null $metadata Block metadata.
 	 * @throws \Exception When block metadata path is not set.
 	 */
-	protected function register_block_type() {
-		$frontend_style_handle = $this->get_frontend_style_handle();
-		$editor_style_handle   = $this->get_editor_style_handle();
+	public function register( $metadata = null ) {
 
-		$this->asset_api->register_style( $frontend_style_handle, $this->asset_api->get_block_asset_build_path( $frontend_style_handle, 'css' ), [], 'all', true );
-		$this->asset_api->register_style( $editor_style_handle, $this->asset_api->get_block_asset_build_path( $editor_style_handle, 'css' ), [], 'all', true );
+		// Here, instead of what we used to do where there is a default of every script,
+		// we will only register the scripts and styles that are actually used in the block.
+
+		// $frontend_style_handle = $this->get_frontend_style_handle();
+		// $editor_style_handle   = $this->get_editor_style_handle();
+		// $this->asset_api->register_style( $frontend_style_handle, $this->asset_api->get_block_asset_build_path( $frontend_style_handle, 'css' ), [], 'all', true );
+		// $this->asset_api->register_style( $editor_style_handle, $this->asset_api->get_block_asset_build_path( $editor_style_handle, 'css' ), [], 'all', true );
 
 		$block_settings = [
 			'render_callback' => [ $this, 'render_callback' ],

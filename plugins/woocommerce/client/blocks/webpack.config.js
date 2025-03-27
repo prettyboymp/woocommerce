@@ -13,7 +13,7 @@ const {
 	getCartAndCheckoutFrontendConfig,
 } = require( './bin/webpack-configs.js' );
 
-const interactivityBlocksConfig = require( './bin/webpack-script-modules.config.js' );
+// const interactivityBlocksConfig = require( './bin/webpack-script-modules.config.js' );
 
 // Only options shared between all configs should be defined here.
 const sharedConfig = {
@@ -93,10 +93,10 @@ const SiteEditorConfig = {
 	...getSiteEditorConfig( { alias: getAlias() } ),
 };
 
-const InteractivityBlocksConfig = {
-	...sharedConfig,
-	...interactivityBlocksConfig,
-};
+// const InteractivityBlocksConfig = {
+// ...sharedConfig,
+// ...interactivityBlocksConfig,
+// };
 
 module.exports = [
 	CartAndCheckoutFrontendConfig,
@@ -107,5 +107,5 @@ module.exports = [
 	PaymentsConfig,
 	SiteEditorConfig,
 	StylingConfig,
-	InteractivityBlocksConfig,
+	// InteractivityBlocksConfig,
 ];

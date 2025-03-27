@@ -41,6 +41,14 @@ final class BlockTypesController {
 	 */
 	private $registered_blocks_with_woocommerce_parents;
 
+
+	/**
+	 * Holds the processed blocks metadata.
+	 *
+	 * @var array
+	 */
+	private $blocks_metadata;
+
 	/**
 	 * Constructor.
 	 *
@@ -116,7 +124,19 @@ final class BlockTypesController {
 			$block_type_class = __NAMESPACE__ . '\\BlockTypes\\' . $block_type;
 
 			if ( is_subclass_of( $block_type_class, AbstractInteractivityAPIBlock::class ) ) {
-				new $block_type_class( $this->asset_api );
+				$block = new $block_type_class( $this->asset_api );
+				if ( isset( $this->blocks_metadata ) && isset( $this->blocks_metadata[ $block->get_full_block_name() ] ) ) {
+					$block->register( $this->blocks_metadata[ $block->get_full_block_name() ] );
+				} else {
+					// This indicates the block metadata php file was not built, so in development, we need to
+					// load the block metadata from the block.json file.
+					$block_metadata_path = $this->asset_api->get_block_metadata_path( $block->get_full_block_name() );
+
+					if ( $block_metadata_path ) {
+						// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+						$block->register( json_decode( file_get_contents( $block_metadata_path ) ) );
+					}
+				}
 			} else {
 				new $block_type_class( $this->asset_api, $this->asset_data_registry, new IntegrationRegistry() );
 			}
@@ -135,6 +155,13 @@ final class BlockTypesController {
 	 */
 	public function register_block_metadata() {
 		$meta_file_path = WC_ABSPATH . 'assets/client/blocks/blocks-json.php';
+
+		// Check if file exists and is readable. Cache the result.
+		if ( file_exists( $meta_file_path ) && is_readable( $meta_file_path ) ) {
+			// Also cache processed file in class property for later use.
+			$this->blocks_metadata = require $meta_file_path;
+		}
+
 		if ( function_exists( 'wp_register_block_metadata_collection' ) && file_exists( $meta_file_path ) ) {
 			add_filter( 'doing_it_wrong_trigger_error', array( __CLASS__, 'bypass_block_metadata_doing_it_wrong' ), 10, 4 );
 			wp_register_block_metadata_collection(
