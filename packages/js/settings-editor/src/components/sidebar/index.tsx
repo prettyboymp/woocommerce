@@ -24,12 +24,17 @@ export const Sidebar = ( {
 		isCurrent: boolean;
 		withChevron: boolean;
 		icon?: string;
+		backPath?: string;
 	} >;
 } ) => {
+	const currentItem = sidebarItems.find( ( item ) => item.isCurrent );
+	const isRoot = ! currentItem?.backPath;
+
 	return (
 		<SidebarNavigationScreen
 			title={ pageTitle }
-			isRoot
+			isRoot={ isRoot }
+			backPath={ currentItem?.backPath }
 			exitLink={ addQueryArgs( 'admin.php', { page: 'wc-admin' } ) }
 			content={
 				<ItemGroup>

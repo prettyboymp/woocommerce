@@ -128,7 +128,8 @@ const getLegacyRoute = (
 			section: slug,
 		} );
 		const isCurrent = slug === activeSection;
-		return { slug, label, to, withChevron: false, isCurrent };
+		const backPath = addQueryArgs( 'wc-settings', {} );
+		return { slug, label, to, withChevron: false, isCurrent, backPath };
 	} );
 
 	const sidebarItems = isPrimary
