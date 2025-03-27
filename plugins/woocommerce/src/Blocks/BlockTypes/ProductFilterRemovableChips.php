@@ -6,7 +6,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * Product Filter: Removable Chips Block.
  */
-final class ProductFilterRemovableChips extends AbstractBlock {
+final class ProductFilterRemovableChips extends AbstractInteractivityAPIBlock {
 
 	/**
 	 * Block name.
@@ -92,16 +92,5 @@ final class ProductFilterRemovableChips extends AbstractBlock {
 
 		<?php
 		return ob_get_clean();
-	}
-
-	/**
-	 * Disable the block type script, this uses script modules.
-	 *
-	 * @param string|null $key The key.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_script( $key = null ) {
-		return null;
 	}
 }

@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Automattic\WooCommerce\Blocks\BlockTypes\ProductCollection;
 
-use Automattic\WooCommerce\Blocks\BlockTypes\AbstractBlock;
+use Automattic\WooCommerce\Blocks\BlockTypes\AbstractInteractivityAPIBlock;
 use WP_Query;
 
 /**
  * Controller class.
  */
-class Controller extends AbstractBlock {
+class Controller extends AbstractInteractivityAPIBlock {
 
 	/**
 	 * Block name.

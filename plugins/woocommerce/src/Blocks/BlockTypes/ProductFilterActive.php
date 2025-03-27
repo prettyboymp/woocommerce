@@ -81,15 +81,4 @@ final class ProductFilterActive extends AbstractBlock {
 	protected function get_block_type_style() {
 		return null;
 	}
-
-	/**
-	 * Disable the block type script, this uses script modules.
-	 *
-	 * @param string|null $key The key.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_script( $key = null ) {
-		return null;
-	}
 }

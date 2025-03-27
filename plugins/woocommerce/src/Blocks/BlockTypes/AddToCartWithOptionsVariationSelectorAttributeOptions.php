@@ -9,7 +9,7 @@ use Automattic\WooCommerce\Blocks\Utils\StyleAttributesUtils;
  * Block type for variation selector attribute options in add to cart with options.
  * It's responsible to render the attribute options.
  */
-class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractBlock {
+class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractInteractivityAPIBlock {
 	/**
 	 * Block name.
 	 *

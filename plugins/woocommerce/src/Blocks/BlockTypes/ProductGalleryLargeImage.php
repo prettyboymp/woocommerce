@@ -6,7 +6,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * ProductGalleryLargeImage class.
  */
-class ProductGalleryLargeImage extends AbstractBlock {
+class ProductGalleryLargeImage extends AbstractInteractivityAPIBlock {
 	/**
 	 * Block name.
 	 *
@@ -200,16 +200,5 @@ class ProductGalleryLargeImage extends AbstractBlock {
 		return array(
 			'data-wp-on--click' => 'actions.openDialog',
 		);
-	}
-
-	/**
-	 * Disable the block type script, this uses script modules.
-	 *
-	 * @param string|null $key The key.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_script( $key = null ) {
-		return null;
 	}
 }

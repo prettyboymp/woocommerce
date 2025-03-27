@@ -13,7 +13,7 @@ use Automattic\WooCommerce\Internal\ProductFilters\QueryClauses;
  *
  * @package Automattic\WooCommerce\Blocks\BlockTypes
  */
-final class ProductFilterRating extends AbstractBlock {
+final class ProductFilterRating extends AbstractInteractivityAPIBlock {
 	/**
 	 * Block name.
 	 *
@@ -232,16 +232,5 @@ final class ProductFilterRating extends AbstractBlock {
 		}
 
 		return $data;
-	}
-
-	/**
-	 * Disable the block type script, this uses script modules.
-	 *
-	 * @param string|null $key The key.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_script( $key = null ) {
-		return null;
 	}
 }

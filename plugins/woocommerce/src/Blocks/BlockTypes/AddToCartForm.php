@@ -9,7 +9,7 @@ use Automattic\WooCommerce\Blocks\Utils\StyleAttributesUtils;
 /**
  * CatalogSorting class.
  */
-class AddToCartForm extends AbstractBlock {
+class AddToCartForm extends AbstractInteractivityAPIBlock {
 	/**
 	 * Block name.
 	 *
