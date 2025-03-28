@@ -268,6 +268,32 @@ const frontendEntries = getBlockEntries( 'frontend.{t,j}s{,x}', {
 	),
 } );
 
+// Remove frontend styles from style build,
+// that are already included in interactivity
+// script modules build.
+const blockStylingEntries = Object.fromEntries(
+	Object.entries(
+		getBlockEntries( '{index,block,frontend}.{t,j}s{,x}', {
+			...blocks,
+			...genericBlocks,
+			...cartAndCheckoutBlocks,
+		} )
+	).map( ( [ entry, scripts ] ) => {
+		if (
+			frontendScriptModuleBlocksToSkip.includes(
+				`woocommerce/${ entry }`
+			)
+		) {
+			return [
+				entry,
+				scripts.filter( ( script ) => ! script.includes( 'frontend' ) ),
+			];
+		}
+
+		return [ entry, scripts ];
+	} )
+);
+
 const entries = {
 	styling: {
 		// Packages styles
@@ -286,11 +312,7 @@ const entries = {
 		'product-details':
 			'./assets/js/atomic/blocks/product-elements/product-details/index.tsx',
 
-		...getBlockEntries( '{index,block,frontend}.{t,j}s{,x}', {
-			...blocks,
-			...genericBlocks,
-			...cartAndCheckoutBlocks,
-		} ),
+		...blockStylingEntries,
 
 		// Templates
 		'wc-blocks-classic-template-revert-button-style':
