@@ -59,8 +59,6 @@ class ProductFilters extends AbstractInteractivityAPIBlock {
 	protected function render( $attributes, $content, $block ) {
 		wp_enqueue_script( 'wc-settings' );
 
-		echo '<pre>render</pre>';
-
 		$query_id      = $block->context['queryId'] ?? 0;
 		$filter_params = $this->get_filter_params( $query_id );
 		/**
