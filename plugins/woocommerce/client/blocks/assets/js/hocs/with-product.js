@@ -1,14 +1,33 @@
 /**
  * External dependencies
  */
-import { Component } from '@wordpress/element';
 import { createHigherOrderComponent } from '@wordpress/compose';
-import { getProduct } from '@woocommerce/editor-components/utils';
+import { Component } from '@wordpress/element';
+import { productsStore } from '@woocommerce/data';
+import { resolveSelect } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
-import { formatError } from '../base/utils/errors';
+
+const adaptV3ProductToV1 = ( product ) => {
+	const price = product?.price;
+	const images = product?.images.map( ( image ) => {
+		return {
+			...image,
+			thumbnail: image.src,
+			srcset: image.src,
+		};
+	} );
+
+	return {
+		...product,
+		prices: {
+			price,
+		},
+		images,
+	};
+};
 
 /**
  * HOC that queries a product for a component.
@@ -53,14 +72,14 @@ const withProduct = createHigherOrderComponent( ( OriginalComponent ) => {
 
 			this.setState( { loading: true } );
 
-			getProduct( productId )
+			resolveSelect( productsStore )
+				.getProduct( productId )
 				.then( ( product ) => {
-					this.setState( { product, loading: false, error: null } );
-				} )
-				.catch( async ( e ) => {
-					const error = await formatError( e );
-
-					this.setState( { product: null, loading: false, error } );
+					this.setState( {
+						product: adaptV3ProductToV1( product ),
+						loading: false,
+						error: null,
+					} );
 				} );
 		};
 

@@ -1,64 +1,92 @@
 /**
  * External dependencies
  */
-import { ProductResponseItem } from '@woocommerce/types';
+import { Product } from '@woocommerce/data';
 import { createContext, useContext } from '@wordpress/element';
 
 /**
  * Default product shape matching API response.
  */
-const defaultProductData: ProductResponseItem = {
+const defaultProductData: Product = {
 	id: 0,
 	name: '',
-	parent: 0,
 	type: 'simple',
-	variation: '',
 	permalink: '',
 	sku: '',
 	slug: '',
 	short_description: '',
 	description: '',
 	on_sale: false,
-	prices: {
-		currency_code: 'USD',
-		currency_symbol: '$',
-		currency_minor_unit: 2,
-		currency_decimal_separator: '.',
-		currency_thousand_separator: ',',
-		currency_prefix: '$',
-		currency_suffix: '',
-		price: '0',
-		regular_price: '0',
-		sale_price: '0',
-		price_range: null,
-	},
 	price_html: '',
 	average_rating: '0',
-	review_count: 0,
-	images: [],
 	categories: [],
 	tags: [],
 	attributes: [],
 	variations: [],
-	has_options: false,
-	is_purchasable: false,
-	is_in_stock: false,
-	is_on_backorder: false,
-	low_stock_remaining: null,
-	stock_availability: {
-		text: '',
-		class: '',
-	},
-	sold_individually: false,
-	add_to_cart: {
-		text: 'Add to cart',
-		description: 'Add to cart',
-		url: '',
-		minimum: 1,
-		maximum: 99,
-		multiple_of: 1,
-	},
-	grouped_products: [],
+	// Required Post fields
+	date: '',
+	date_gmt: '',
+	guid: { rendered: '', raw: '' },
+	link: '',
+	modified: '',
+	modified_gmt: '',
+	title: { rendered: '', raw: '' },
+	content: { rendered: '', raw: '', is_protected: false, block_version: '0' },
+	excerpt: { rendered: '', raw: '', protected: false },
+	featured_media: 0,
+	comment_status: 'closed',
+	ping_status: 'closed',
+	template: '',
+	meta: {},
+	permalink_template: '',
+	generated_slug: '',
+	password: '',
+	author: 0,
+	format: 'standard',
+	sticky: false,
+	// Additional required Product fields
+	price: '',
+	regular_price: '',
+	sale_price: '',
+	date_created: '',
+	date_created_gmt: '',
+	date_modified: '',
+	date_modified_gmt: '',
+	featured: false,
+	catalog_visibility: 'visible',
+	virtual: false,
+	downloadable: false,
+	menu_order: 0,
+	purchasable: true,
+	total_sales: 0,
+	backorders: 'no',
+	backorders_allowed: false,
+	backordered: false,
+	stock_status: 'instock',
+	stock_quantity: 0,
+	low_stock_amount: 0,
+	weight: '',
+	dimensions: { length: '', width: '', height: '' },
+	shipping_class: '',
+	shipping_class_id: 0,
+	reviews_allowed: true,
+	tax_status: 'taxable',
+	tax_class: 'standard',
+	manage_stock: false,
+	status: 'publish',
+	button_text: '',
+	date_on_sale_from_gmt: null,
+	date_on_sale_to_gmt: null,
+	default_attributes: [],
+	downloads: [],
+	external_url: '',
+	related_ids: [],
+	shipping_required: true,
+	shipping_taxable: true,
+	download_expiry: -1,
+	download_limit: -1,
+	meta_data: [],
+	rating_count: 0,
 };
 
 /**
@@ -75,7 +103,7 @@ const ProductDataContext = createContext( {
 export const useProductDataContext = () => useContext( ProductDataContext );
 
 interface ProductDataContextProviderProps {
-	product: ProductResponseItem | null;
+	product: Product | null;
 	children: JSX.Element | JSX.Element[];
 	isLoading: boolean;
 }

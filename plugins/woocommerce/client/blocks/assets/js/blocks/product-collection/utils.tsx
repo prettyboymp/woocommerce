@@ -3,9 +3,10 @@
  */
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { addFilter } from '@wordpress/hooks';
-import { select, useSelect } from '@wordpress/data';
+import { resolveSelect, select, useSelect } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
 import type { BlockEditProps, Block } from '@wordpress/blocks';
+import { PartialProduct, productsStore } from '@woocommerce/data';
 import {
 	useEffect,
 	useLayoutEffect,
@@ -13,8 +14,6 @@ import {
 	useMemo,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import type { ProductResponseItem } from '@woocommerce/types';
-import { getProduct } from '@woocommerce/editor-components/utils';
 import {
 	createBlock,
 	// @ts-expect-error Type definitions for this function are missing in Guteberg
@@ -456,20 +455,21 @@ export const getDefaultProductCollection = () =>
 	);
 
 export const useGetProduct = ( productId: number | undefined ) => {
-	const [ product, setProduct ] = useState< ProductResponseItem | null >(
-		null
-	);
+	const [ product, setProduct ] = useState< PartialProduct | null >( null );
 	const [ isLoading, setIsLoading ] = useState< boolean >( false );
+
+	const getProduct = ( id: number ) =>
+		resolveSelect( productsStore ).getProduct( id );
 
 	useEffect( () => {
 		const fetchProduct = async () => {
 			if ( productId ) {
 				setIsLoading( true );
 				try {
-					const fetchedProduct = ( await getProduct(
-						productId
-					) ) as ProductResponseItem;
-					setProduct( fetchedProduct );
+					const fetchedProduct = await getProduct( productId );
+					if ( fetchedProduct ) {
+						setProduct( fetchedProduct );
+					}
 				} catch ( error ) {
 					setProduct( null );
 				} finally {
