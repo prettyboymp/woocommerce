@@ -12,18 +12,19 @@
 @import "@automattic/site-admin/src/components/site-icon/style.scss";
 
 .woocommerce-settings-header {
-	&.woocommerce-site-page-header.woocommerce-settings-header--has-tabs {
-		border-bottom: none;
-	}
+	border-bottom: 1px solid #f0f0f0;
+	// &.woocommerce-site-page-header.woocommerce-settings-header--has-tabs {
+	// 	border-bottom: none;
+	// }
 }
 
-.woocommerce-settings-section-tabs {
-	.components-tab-panel__tabs {
-		border-bottom: 1px solid #f0f0f0;
-		padding: 0 32px;
-		z-index: 1;
-	}
-}
+// .woocommerce-settings-section-tabs {
+// 	.components-tab-panel__tabs {
+// 		border-bottom: 1px solid #f0f0f0;
+// 		padding: 0 32px;
+// 		z-index: 1;
+// 	}
+// }
 
 #wc-settings-page .woocommerce-site-layout__area {
 	overflow: scroll;

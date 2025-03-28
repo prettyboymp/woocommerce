@@ -22,7 +22,7 @@ import { SidebarContent } from '@automattic/site-admin';
  * Internal dependencies
  */
 import { Route } from './types';
-import { SectionTabs, Header } from './components';
+import { Header } from './components';
 
 const ANIMATION_DURATION = 0.3;
 
@@ -30,15 +30,9 @@ type LayoutProps = {
 	route: Route;
 	settingsPage?: SettingsPage;
 	activeSection?: string;
-	tabs?: Array< { name: string; title: string } >;
 };
 
-export function Layout( {
-	route,
-	settingsPage,
-	tabs = [],
-	activeSection,
-}: LayoutProps ) {
+export function Layout( { route, settingsPage, activeSection }: LayoutProps ) {
 	const [ fullResizer ] = useResizeObserver();
 	const isMobileViewport = useViewportMatch( 'medium', '<' );
 	const disableMotion = useReducedMotion();
@@ -92,16 +86,8 @@ export function Layout( {
 								maxWidth: widths?.content,
 							} }
 						>
-							<Header
-								hasTabs={ tabs.length > 1 }
-								pageTitle={ settingsPage?.label }
-							/>
-							<SectionTabs
-								tabs={ tabs }
-								activeSection={ activeSection }
-							>
-								{ areas.content }
-							</SectionTabs>
+							<Header pageTitle={ settingsPage?.label } />
+							{ areas.content }
 						</div>
 					) }
 

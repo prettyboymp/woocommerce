@@ -60,26 +60,6 @@ const getNotFoundRoute = (
 } );
 
 /**
- * Get the tabs for a settings page.
- *
- * @param {settingsPage} settingsPage - The settings page.
- * @return {Array<{ name: string; title: string }>} The tabs.
- */
-const getSettingsPageTabs = (
-	settingsPage: SettingsPage
-): Array< {
-	name: string;
-	title: string;
-} > => {
-	const sections = Object.keys( settingsPage.sections );
-
-	return sections.map( ( key ) => ( {
-		name: key,
-		title: settingsPage.sections[ key ].label,
-	} ) );
-};
-
-/**
  * Creates a route configuration for legacy settings.
  *
  * @param {string}       activePage    - The active page.
@@ -231,7 +211,6 @@ export const useActiveRoute = (): {
 	settingsPage?: SettingsPage;
 	activePage?: string;
 	activeSection?: string;
-	tabs?: Array< { name: string; title: string } >;
 } => {
 	const { settingsData } = useContext( SettingsDataContext );
 	const location = useLocation();
@@ -248,8 +227,6 @@ export const useActiveRoute = (): {
 			};
 		}
 
-		const tabs = getSettingsPageTabs( settingsPage );
-
 		// Handle legacy pages.
 		if ( ! settingsPage.is_modern ) {
 			return {
@@ -262,7 +239,6 @@ export const useActiveRoute = (): {
 				settingsPage,
 				activePage,
 				activeSection,
-				tabs,
 			};
 		}
 
@@ -291,7 +267,6 @@ export const useActiveRoute = (): {
 			settingsPage,
 			activePage,
 			activeSection,
-			tabs,
 		};
 	}, [ settingsData, location.query ] );
 };
