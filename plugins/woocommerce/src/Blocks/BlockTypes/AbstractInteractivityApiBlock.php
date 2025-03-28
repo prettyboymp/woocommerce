@@ -22,11 +22,22 @@ abstract class AbstractInteractivityAPIBlock extends AbstractBlock {
 		$render_callback_attributes = $this->parse_render_callback_attributes( $attributes );
 		$result                     = $this->render( $render_callback_attributes, $content, $block );
 
-		if ( ! empty( $result ) ) {
-			wp_enqueue_script_module( $this->get_full_block_name() );
+		if ( ! empty( $result ) && ! is_admin() && ! WC()->is_rest_api_request() ) {
+			$this->enqueue_assets( $render_callback_attributes, $content, $block );
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Enqueue the block assets, just before rendering.
+	 *
+	 * @param array    $attributes  Any attributes that currently are available from the block.
+	 * @param string   $content    The block content.
+	 * @param WP_Block $block    The block object.
+	 */
+	protected function enqueue_assets( array $attributes, $content, $block ) {
+		wp_enqueue_script_module( $this->get_full_block_name() );
 	}
 
 	/**
