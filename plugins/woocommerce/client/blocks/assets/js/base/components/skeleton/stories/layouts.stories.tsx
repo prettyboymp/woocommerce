@@ -7,10 +7,10 @@ import { Meta, StoryObj } from '@storybook/react';
  * Internal dependencies
  */
 import { Skeleton, SkeletonProps } from '../';
-import { CartSkeleton as CartSkeletonComponent } from '../layouts/cart';
-import { CartFullSkeleton as CartFullSkeletonComponent } from '../layouts/cart-full';
-import { CheckoutSkeleton as CheckoutSkeletonComponent } from '../layouts/checkout';
-import { CheckoutFullSkeleton as CheckoutFullSkeletonComponent } from '../layouts/checkout-full';
+import { CartSkeleton } from '../layouts/cart';
+import { CartFullSkeleton } from '../layouts/cart-full';
+import { CheckoutSkeleton } from '../layouts/checkout';
+import { CheckoutFullSkeleton } from '../layouts/checkout-full';
 
 export default {
 	title: 'Base Components/Skeleton/Layouts',
@@ -35,8 +35,8 @@ export default {
 	},
 } as Meta< SkeletonProps >;
 
-export const CartSkeleton: StoryObj = {
-	render: () => <CartSkeletonComponent />,
+export const CartSkeletonStory: StoryObj = {
+	render: () => <CartSkeleton />,
 	storyName: 'Cart skeleton excluding express payments',
 	parameters: {
 		docs: {
@@ -50,8 +50,8 @@ export const CartSkeleton: StoryObj = {
 	},
 };
 
-export const CartFullSkeleton: StoryObj = {
-	render: () => <CartFullSkeletonComponent />,
+export const CartFullSkeletonStory: StoryObj = {
+	render: () => <CartFullSkeleton />,
 	storyName: 'Cart full skeleton including express payments',
 	parameters: {
 		docs: {
@@ -65,8 +65,8 @@ export const CartFullSkeleton: StoryObj = {
 	},
 };
 
-export const CheckoutSkeleton: StoryObj = {
-	render: () => <CheckoutSkeletonComponent />,
+export const CheckoutSkeletonStory: StoryObj = {
+	render: () => <CheckoutSkeleton />,
 	storyName: 'Checkout skeleton excluding express payments',
 	parameters: {
 		docs: {
@@ -80,8 +80,8 @@ export const CheckoutSkeleton: StoryObj = {
 	},
 };
 
-export const CheckoutFullSkeleton: StoryObj = {
-	render: () => <CheckoutFullSkeletonComponent />,
+export const CheckoutFullSkeletonStory: StoryObj = {
+	render: () => <CheckoutFullSkeleton />,
 	storyName: 'Checkout full skeleton including express payments',
 	parameters: {
 		docs: {

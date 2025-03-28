@@ -1,11 +1,11 @@
 /**
  * Internal dependencies
  */
-import { CheckoutOrderSummarySkeleton as CheckoutOrderSummarySkeletonComponent } from '../../patterns/checkout-order-summary';
-import { CheckoutDeliverySkeleton } from '../../patterns/checkout-delivery';
 import { CheckoutContactSkeleton } from '../../patterns/checkout-contact';
+import { CheckoutDeliverySkeleton } from '../../patterns/checkout-delivery';
 import { CheckoutPaymentSkeleton } from '../../patterns/checkout-payment';
 import { CheckoutShippingSkeletonPrimary } from '../../patterns/checkout-shipping-primary';
+import { CheckoutOrderSummarySkeleton } from '../../patterns/checkout-order-summary';
 import '../../../sidebar-layout/style.scss';
 import './style.scss';
 
@@ -19,7 +19,7 @@ export const CheckoutSkeleton = () => {
 				<CheckoutShippingSkeletonPrimary />
 			</div>
 			<div className="wc-block-components-sidebar">
-				<CheckoutOrderSummarySkeletonComponent />
+				<CheckoutOrderSummarySkeleton />
 			</div>
 		</div>
 	);

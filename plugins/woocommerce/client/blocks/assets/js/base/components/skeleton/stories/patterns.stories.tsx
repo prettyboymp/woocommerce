@@ -7,18 +7,18 @@ import { Meta, StoryObj } from '@storybook/react';
  * Internal dependencies
  */
 import { Skeleton, SkeletonProps } from '../';
-import { ProductNoticeSkeleton as ProductNoticeSkeletonComponent } from '../patterns/product-notice';
-import { CartExpressPaymentsSkeleton as CartExpressPaymentsSkeletonComponent } from '../patterns/cart-express-payments';
-import { CartLineItemsSkeleton as CartLineItemsSkeletonComponent } from '../patterns/cart-line-items';
-import { CartOrderSummarySkeleton as CartOrderSummarySkeletonComponent } from '../patterns/cart-order-summary';
-import { CheckoutExpressPaymentsSkeleton as CheckoutExpressPaymentsSkeletonComponent } from '../patterns/checkout-express-payments';
-import { CheckoutContactSkeleton as CheckoutContactSkeletonComponent } from '../patterns/checkout-contact';
-import { CheckoutDeliverySkeleton as CheckoutDeliverySkeletonComponent } from '../patterns/checkout-delivery';
-import { CheckoutShippingSkeletonPrimary as CheckoutShippingSkeletonPrimaryComponent } from '../patterns/checkout-shipping-primary';
-import { CheckoutShippingSkeletonAdditional as CheckoutShippingSkeletonAdditionalComponent } from '../patterns/checkout-shipping-additional';
-import { CheckoutPaymentSkeleton as CheckoutPaymentSkeletonComponent } from '../patterns/checkout-payment';
-import { CheckoutOrderSummarySkeleton as CheckoutOrderSummarySkeletonComponent } from '../patterns/checkout-order-summary';
-import { CheckoutOrderSummaryMobileSkeleton as CheckoutOrderSummaryMobileSkeletonComponent } from '../patterns/checkout-order-summary-mobile';
+import { ProductNoticeSkeleton } from '../patterns/product-notice';
+import { CartExpressPaymentsSkeleton } from '../patterns/cart-express-payments';
+import { CartLineItemsSkeleton } from '../patterns/cart-line-items';
+import { CartOrderSummarySkeleton } from '../patterns/cart-order-summary';
+import { CheckoutExpressPaymentsSkeleton } from '../patterns/checkout-express-payments';
+import { CheckoutContactSkeleton } from '../patterns/checkout-contact';
+import { CheckoutDeliverySkeleton } from '../patterns/checkout-delivery';
+import { CheckoutShippingSkeletonPrimary } from '../patterns/checkout-shipping-primary';
+import { CheckoutShippingSkeletonAdditional } from '../patterns/checkout-shipping-additional';
+import { CheckoutPaymentSkeleton } from '../patterns/checkout-payment';
+import { CheckoutOrderSummarySkeleton } from '../patterns/checkout-order-summary';
+import { CheckoutOrderSummaryMobileSkeleton } from '../patterns/checkout-order-summary-mobile';
 export default {
 	title: 'Base Components/Skeleton/Patterns',
 	component: Skeleton,
@@ -42,8 +42,8 @@ export default {
 	},
 } as Meta< SkeletonProps >;
 
-export const ProductNoticeSkeleton: StoryObj = {
-	render: () => <ProductNoticeSkeletonComponent />,
+export const ProductNoticeSkeletonStory: StoryObj = {
+	render: () => <ProductNoticeSkeleton />,
 	storyName: 'Product Notice skeleton',
 	parameters: {
 		docs: {
@@ -57,8 +57,8 @@ export const ProductNoticeSkeleton: StoryObj = {
 	},
 };
 
-export const CartLineItemsSkeleton: StoryObj = {
-	render: () => <CartLineItemsSkeletonComponent />,
+export const CartLineItemsSkeletonStory: StoryObj = {
+	render: () => <CartLineItemsSkeleton />,
 	storyName: 'Cart Line Items skeleton',
 	parameters: {
 		docs: {
@@ -72,8 +72,8 @@ export const CartLineItemsSkeleton: StoryObj = {
 	},
 };
 
-export const CartOrderSummarySkeleton: StoryObj = {
-	render: () => <CartOrderSummarySkeletonComponent />,
+export const CartOrderSummarySkeletonStory: StoryObj = {
+	render: () => <CartOrderSummarySkeleton />,
 	storyName: 'Cart Order Summary skeleton',
 	parameters: {
 		docs: {
@@ -87,8 +87,8 @@ export const CartOrderSummarySkeleton: StoryObj = {
 	},
 };
 
-export const CartExpressPaymentsSkeleton: StoryObj = {
-	render: () => <CartExpressPaymentsSkeletonComponent />,
+export const CartExpressPaymentsSkeletonStory: StoryObj = {
+	render: () => <CartExpressPaymentsSkeleton />,
 	storyName: 'Cart Express Payments skeleton',
 	parameters: {
 		docs: {
@@ -102,8 +102,8 @@ export const CartExpressPaymentsSkeleton: StoryObj = {
 	},
 };
 
-export const CheckoutExpressPaymentsPrimarySkeleton: StoryObj = {
-	render: () => <CheckoutExpressPaymentsSkeletonComponent />,
+export const CheckoutExpressPaymentsPrimarySkeletonStory: StoryObj = {
+	render: () => <CheckoutExpressPaymentsSkeleton />,
 	storyName: 'Checkout Express Payments skeleton (primary)',
 	parameters: {
 		docs: {
@@ -117,12 +117,10 @@ export const CheckoutExpressPaymentsPrimarySkeleton: StoryObj = {
 	},
 };
 
-export const CheckoutExpressPaymentsSecondarySkeleton: StoryObj< {
+export const CheckoutExpressPaymentsSecondarySkeletonStory: StoryObj< {
 	label: string;
 } > = {
-	render: () => (
-		<CheckoutExpressPaymentsSkeletonComponent showLabels={ true } />
-	),
+	render: () => <CheckoutExpressPaymentsSkeleton showLabels={ true } />,
 	storyName: 'Checkout Express Payments Skeleton (secondary)',
 	parameters: {
 		docs: {
@@ -136,8 +134,8 @@ export const CheckoutExpressPaymentsSecondarySkeleton: StoryObj< {
 	},
 };
 
-export const CheckoutContactSkeleton: StoryObj = {
-	render: () => <CheckoutContactSkeletonComponent />,
+export const CheckoutContactSkeletonStory: StoryObj = {
+	render: () => <CheckoutContactSkeleton />,
 	storyName: 'Checkout Contact skeleton',
 	parameters: {
 		docs: {
@@ -151,8 +149,8 @@ export const CheckoutContactSkeleton: StoryObj = {
 	},
 };
 
-export const CheckoutDeliverySkeleton: StoryObj = {
-	render: () => <CheckoutDeliverySkeletonComponent />,
+export const CheckoutDeliverySkeletonStory: StoryObj = {
+	render: () => <CheckoutDeliverySkeleton />,
 	storyName: 'Checkout Delivery skeleton',
 	parameters: {
 		docs: {
@@ -166,8 +164,8 @@ export const CheckoutDeliverySkeleton: StoryObj = {
 	},
 };
 
-export const CheckoutShippingSkeletonPrimary: StoryObj = {
-	render: () => <CheckoutShippingSkeletonPrimaryComponent />,
+export const CheckoutShippingSkeletonPrimaryStory: StoryObj = {
+	render: () => <CheckoutShippingSkeletonPrimary />,
 	storyName: 'Checkout Shipping skeleton (primary)',
 	parameters: {
 		docs: {
@@ -181,8 +179,8 @@ export const CheckoutShippingSkeletonPrimary: StoryObj = {
 	},
 };
 
-export const CheckoutShippingSkeletonAdditional: StoryObj = {
-	render: () => <CheckoutShippingSkeletonAdditionalComponent />,
+export const CheckoutShippingSkeletonAdditionalStory: StoryObj = {
+	render: () => <CheckoutShippingSkeletonAdditional />,
 	storyName: 'Checkout Shipping skeleton (additional)',
 	parameters: {
 		docs: {
@@ -196,8 +194,8 @@ export const CheckoutShippingSkeletonAdditional: StoryObj = {
 	},
 };
 
-export const CheckoutPaymentSkeleton: StoryObj = {
-	render: () => <CheckoutPaymentSkeletonComponent />,
+export const CheckoutPaymentSkeletonStory: StoryObj = {
+	render: () => <CheckoutPaymentSkeleton />,
 	storyName: 'Checkout Payment skeleton',
 	parameters: {
 		docs: {
@@ -211,8 +209,8 @@ export const CheckoutPaymentSkeleton: StoryObj = {
 	},
 };
 
-export const CheckoutOrderSummarySkeleton: StoryObj = {
-	render: () => <CheckoutOrderSummarySkeletonComponent />,
+export const CheckoutOrderSummarySkeletonStory: StoryObj = {
+	render: () => <CheckoutOrderSummarySkeleton />,
 	storyName: 'Checkout Order Summary skeleton',
 	parameters: {
 		docs: {
@@ -226,8 +224,8 @@ export const CheckoutOrderSummarySkeleton: StoryObj = {
 	},
 };
 
-export const CheckoutOrderSummaryMobileSkeleton: StoryObj = {
-	render: () => <CheckoutOrderSummaryMobileSkeletonComponent />,
+export const CheckoutOrderSummaryMobileSkeletonStory: StoryObj = {
+	render: () => <CheckoutOrderSummaryMobileSkeleton />,
 	storyName: 'Checkout Order Summary Mobile skeleton',
 	parameters: {
 		docs: {

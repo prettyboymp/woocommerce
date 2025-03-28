@@ -45,12 +45,12 @@ export const Default: StoryObj< SkeletonProps > = {
 	},
 };
 
-export const CustomHeight: StoryObj< SkeletonProps > = {
+export const TallerSkeleton: StoryObj< SkeletonProps > = {
 	render: Template,
 	args: {
-		height: '2.5em',
+		height: '48px',
 	},
-	storyName: 'Custom height',
+	storyName: 'Taller',
 	parameters: {
 		docs: {
 			description: {
@@ -60,12 +60,12 @@ export const CustomHeight: StoryObj< SkeletonProps > = {
 	},
 };
 
-export const CustomWidth: StoryObj< SkeletonProps > = {
+export const NarrowerSkeleton: StoryObj< SkeletonProps > = {
 	render: Template,
 	args: {
-		width: '50%',
+		width: '177px',
 	},
-	storyName: 'Custom width',
+	storyName: 'Narrower',
 	parameters: {
 		docs: {
 			description: {
@@ -75,16 +75,17 @@ export const CustomWidth: StoryObj< SkeletonProps > = {
 	},
 };
 
-export const NoBorderRadius: StoryObj< SkeletonProps > = {
+export const Circular: StoryObj< SkeletonProps > = {
 	render: Template,
 	args: {
-		borderRadius: '0',
+		borderRadius: '100%',
+		height: '48px',
+		width: '48px',
 	},
-	storyName: 'No border radius',
 	parameters: {
 		docs: {
 			description: {
-				story: 'The base skeleton component without a border radius.',
+				story: 'The base skeleton component with a circular shape.',
 			},
 		},
 	},
