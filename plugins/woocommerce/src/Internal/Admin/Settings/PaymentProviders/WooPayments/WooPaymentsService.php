@@ -68,13 +68,18 @@ class WooPaymentsService {
 		}
 
 		return array(
-			'state' => array(
+			'state'   => array(
 				'started'   => $this->provider->is_onboarding_started( $this->get_payment_gateway() ),
 				'completed' => $this->provider->is_onboarding_completed( $this->get_payment_gateway() ),
 				'test_mode' => $this->provider->is_in_test_mode_onboarding( $this->get_payment_gateway() ),
 				'dev_mode'  => $this->provider->is_in_dev_mode( $this->get_payment_gateway() ),
 			),
-			'steps' => $this->get_onboarding_steps_details( $location, trailingslashit( $rest_path ) . 'step' ),
+			'steps'   => $this->get_onboarding_steps_details( $location, trailingslashit( $rest_path ) . 'step' ),
+			'context' => array(
+				'urls' => array(
+					'overview_page' => $this->get_overview_page_url(),
+				),
+			),
 		);
 	}
 
@@ -212,7 +217,6 @@ class WooPaymentsService {
 				'fields'            => $this->get_onboarding_kyc_fields(),
 				'sub_steps'         => $this->get_nox_profile_onboarding_step_data_entry( self::ONBOARDING_STEP_BUSINESS_VERIFICATION, $location, 'sub_steps' ),
 				'self_assessment'   => $this->get_nox_profile_onboarding_step_data_entry( self::ONBOARDING_STEP_BUSINESS_VERIFICATION, $location, 'self_assessment' ),
-				'overview_page_url' => $this->get_overview_page_url(),
 			),
 		);
 
