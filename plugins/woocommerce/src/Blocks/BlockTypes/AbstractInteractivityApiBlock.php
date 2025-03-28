@@ -26,6 +26,8 @@ abstract class AbstractInteractivityAPIBlock extends AbstractBlock {
 			$this->enqueue_assets( $render_callback_attributes, $content, $block );
 		}
 
+		$this->enqueue_data( $attributes );
+
 		return $result;
 	}
 
@@ -37,7 +39,13 @@ abstract class AbstractInteractivityAPIBlock extends AbstractBlock {
 	 * @param WP_Block $block    The block object.
 	 */
 	protected function enqueue_assets( array $attributes, $content, $block ) {
+		if ( $this->enqueued_assets ) {
+			return;
+		}
+
 		wp_enqueue_script_module( $this->get_full_block_name() );
+
+		$this->enqueued_assets = true;
 	}
 
 	/**

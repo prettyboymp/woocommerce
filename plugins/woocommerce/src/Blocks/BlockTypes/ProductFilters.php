@@ -44,6 +44,7 @@ class ProductFilters extends AbstractInteractivityAPIBlock {
 		if ( is_singular() ) {
 			$canonical_url_no_pagination = get_permalink();
 		}
+
 		$this->asset_data_registry->add( 'canonicalUrl', html_entity_decode( $canonical_url_no_pagination ) );
 	}
 
@@ -57,7 +58,8 @@ class ProductFilters extends AbstractInteractivityAPIBlock {
 	 */
 	protected function render( $attributes, $content, $block ) {
 		wp_enqueue_script( 'wc-settings' );
-		wp_enqueue_script_module( $this->get_full_block_name() );
+
+		echo '<pre>render</pre>';
 
 		$query_id      = $block->context['queryId'] ?? 0;
 		$filter_params = $this->get_filter_params( $query_id );
