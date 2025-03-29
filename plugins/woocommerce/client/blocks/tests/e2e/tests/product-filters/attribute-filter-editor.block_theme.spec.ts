@@ -78,15 +78,8 @@ test.describe( `${ blockData.name }`, () => {
 
 		await expect( block ).toBeVisible();
 
-		const box = await block.boundingBox();
+		await editor.selectBlocks( block );
 
-		// Click top right of block to avoid clicking through to child block.
-		if ( box ) {
-			await pageObject.page.mouse.click(
-				box.x + box.width - 1, // Right-most pixel
-				box.y + 1 // Top-most pixel
-			);
-		}
 		await editor.openDocumentSettingsSidebar();
 		await editor.page.getByRole( 'tab', { name: 'Settings' } ).click();
 
@@ -111,7 +104,7 @@ test.describe( `${ blockData.name }`, () => {
 		const block = editor.canvas.getByLabel( 'Block: Color' );
 
 		await editor.openDocumentSettingsSidebar();
-		await block.click();
+		await editor.selectBlocks( block );
 
 		await editor.page
 			.getByRole( 'tabpanel' )
