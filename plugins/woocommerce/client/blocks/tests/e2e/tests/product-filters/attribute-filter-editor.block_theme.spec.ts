@@ -78,7 +78,15 @@ test.describe( `${ blockData.name }`, () => {
 
 		await expect( block ).toBeVisible();
 
-		await block.click();
+		const box = await block.boundingBox();
+
+		// Click top right of block to avoid clicking through to child block.
+		if ( box ) {
+			await pageObject.page.mouse.click(
+				box.x + box.width - 1, // Right-most pixel
+				box.y + 1 // Top-most pixel
+			);
+		}
 		await editor.openDocumentSettingsSidebar();
 		await editor.page.getByRole( 'tab', { name: 'Settings' } ).click();
 
