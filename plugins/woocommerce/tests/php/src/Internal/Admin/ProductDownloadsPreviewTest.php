@@ -174,4 +174,5 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 		$this->assertInstanceOf( 'WP_Error', $response );
 		$this->assertEquals( 'woocommerce_rest_file_not_found', $response->get_error_code() );
 	}
+
 }

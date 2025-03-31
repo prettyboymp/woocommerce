@@ -140,8 +140,10 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 			}
 		}
 
-		// Clean any existing output.
-		ob_clean();
+		// Clean all levels of output buffer.
+		while ( ob_get_level() ) {
+			@ob_end_clean(); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		}
 
 		nocache_headers();
 		header( 'Content-Type: ' . $mime_type );
