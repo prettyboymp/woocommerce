@@ -7,7 +7,7 @@
 	"keywords": [ "WooCommerce" ],
 	"supports": {
 		"interactivity": {
-			"clientNavigation": false
+			"clientNavigation": true
 		},
 		"align": [ "wide", "full" ],
 		"ariaLabel": true,
