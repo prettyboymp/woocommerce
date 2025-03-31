@@ -35,16 +35,37 @@
 	},
 	"supports": {
 		"align": [ "wide", "full" ],
-		"color": {
-			"background": false,
-			"link": true
-		},
 		"interactivity": true,
 		"html": false,
+		"color": {
+			"text": true,
+			"background": true,
+			"link": false,
+			"__experimentalSkipSerialization": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"__experimentalSkipSerialization": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"__experimentalSkipSerialization": true
+		},
 		"typography": {
 			"fontSize": true,
-			"lineHeight": true
-		}
+			"lineHeight": true,
+			"__experimentalFontWeight": true,
+			"__experimentalFontFamily": true,
+			"__experimentalFontStyle": true,
+			"__experimentalTextTransform": true,
+			"__experimentalTextDecoration": true,
+			"__experimentalLetterSpacing": true,
+			"__experimentalDefaultControls": {
+				"fontSize": true
+			}
+		},
+		"__experimentalSelector": ".wp-block-button.wc-block-components-product-button .wc-block-components-product-button__button"
 	},
 	"ancestor": [
 		"woocommerce/all-products",
