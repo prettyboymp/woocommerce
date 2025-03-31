@@ -7,8 +7,13 @@ import { store as blockEditorStore } from '@wordpress/block-editor';
 const unsupportedBlocks = [
 	'core/post-content',
 	'woocommerce/mini-cart',
-	'woocommerce/featured-product',
+	'woocommerce/active-filters',
+	'woocommerce/price-filter',
+	'woocommerce/stock-filter',
+	'woocommerce/attribute-filter',
+	'woocommerce/rating-filter',
 ];
+
 const supportedPrefixes = [ 'core/', 'woocommerce/' ];
 
 const isBlockSupported = ( blockName: string ) => {
