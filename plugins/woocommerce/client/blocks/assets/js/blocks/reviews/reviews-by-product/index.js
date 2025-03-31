@@ -32,7 +32,7 @@ registerBlockType( 'woocommerce/reviews-by-product', {
 	description: __( 'Display reviews for your products.', 'woocommerce' ),
 	supports: {
 		interactivity: {
-			clientNavigation: false,
+			clientNavigation: true,
 		},
 		html: false,
 		color: {
