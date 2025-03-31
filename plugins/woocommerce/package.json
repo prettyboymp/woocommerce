@@ -116,6 +116,7 @@
 						"--testsuite=wc-phpunit-legacy",
 						"--testsuite=wc-phpunit-main"
 					],
+					"onlyForDependencies": [],
 					"changes": [
 						"client/admin/config/*.json",
 						"composer.json",
@@ -145,6 +146,7 @@
 						"--testsuite=wc-phpunit-legacy",
 						"--testsuite=wc-phpunit-main"
 					],
+					"onlyForDependencies": [],
 					"changes": [
 						"client/admin/config/*.json",
 						"composer.json",
@@ -173,6 +175,7 @@
 						"--testsuite=wc-phpunit-legacy",
 						"--testsuite=wc-phpunit-main"
 					],
+					"onlyForDependencies": [],
 					"optional": true,
 					"changes": [
 						"client/admin/config/*.json",
@@ -736,8 +739,6 @@
 		"rimraf": "5.0.5",
 		"stylelint": "^14.16.1",
 		"typescript": "5.7.x",
-		"webpack": "5.70.0",
-		"webpack-cli": "3.3.12",
 		"wireit": "0.14.10",
 		"wp-textdomain": "1.0.1"
 	},
