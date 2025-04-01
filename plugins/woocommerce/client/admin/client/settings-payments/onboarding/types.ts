@@ -35,6 +35,7 @@ export interface SidebarItemProps {
 export interface WooPaymentsModalProps {
 	isOpen: boolean;
 	setIsOpen: ( isOpen: boolean ) => void;
+	hasWPComConnection: boolean;
 }
 
 /**
@@ -71,6 +72,10 @@ export interface WooPaymentsProviderOnboardingStep {
 			href?: string;
 		};
 		kyc_session_finish?: {
+			type?: string;
+			href?: string;
+		};
+		auth?: {
 			type?: string;
 			href?: string;
 		};
