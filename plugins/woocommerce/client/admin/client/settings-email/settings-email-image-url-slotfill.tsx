@@ -2,7 +2,7 @@
  * External dependencies
  */
 import { createSlotFill } from '@wordpress/components';
-import { registerPlugin } from '@wordpress/plugins';
+import { registerPlugin, getPlugin } from '@wordpress/plugins';
 import { useState } from '@wordpress/element';
 
 /**
@@ -14,6 +14,7 @@ import { ExistingImage } from './settings-email-image-url-existing-image';
 import { NewImage } from './settings-email-image-url-new-image';
 
 const { Fill } = createSlotFill( SETTINGS_SLOT_FILL_CONSTANT );
+const PLUGIN_ID = 'woocommerce-admin-settings-email-image-url';
 
 type EmailImageUrlFillProps = {
 	inputId: string;
@@ -47,7 +48,11 @@ export const registerSettingsEmailImageUrlFill = () => {
 	const slot_element = document.getElementById( slot_element_id );
 	const image_url = slot_element?.getAttribute( 'data-image-url' ) || '';
 	const input_id = slot_element?.getAttribute( 'data-id' ) || '';
-	registerPlugin( 'woocommerce-admin-settings-email-image-url', {
+	if ( getPlugin( PLUGIN_ID ) ) {
+		return;
+	}
+
+	registerPlugin( PLUGIN_ID, {
 		scope: 'woocommerce-email-image-url-settings',
 		render: () => (
 			<EmailImageUrlFill
