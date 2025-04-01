@@ -22,7 +22,7 @@ class AddressAutocomplete {
 			_doing_it_wrong(
 				'__experimental_woocommerce_register_address_autocomplete_provider',
 				'Unable to register provider. The provider ID is required.',
-				'10.2.0'
+				'10.1.0'
 			);
 			return false;
 		}
@@ -31,7 +31,7 @@ class AddressAutocomplete {
 			_doing_it_wrong(
 				'__experimental_woocommerce_register_address_autocomplete_provider',
 				esc_html( sprintf( 'Unable to register provider with id: "%s". The provider name is required.', $id ) ),
-				'10.2.0'
+				'10.1.0'
 			);
 			return false;
 		}
@@ -40,7 +40,7 @@ class AddressAutocomplete {
 			_doing_it_wrong(
 				'__experimental_woocommerce_register_address_autocomplete_provider',
 				esc_html( sprintf( 'Unable to register provider with id: "%s". The provider is already registered.', $id ) ),
-				'10.2.0'
+				'10.1.0'
 			);
 			return false;
 		}
@@ -83,7 +83,7 @@ class AddressAutocomplete {
 			_doing_it_wrong(
 				'__experimental_woocommerce_deregister_address_autocomplete_provider',
 				esc_html( sprintf( 'Unable to deregister provider with id: "%s". The provider is not registered.', $provider_id ) ),
-				'10.2.0'
+				'10.1.0'
 			);
 			return false;
 		}
