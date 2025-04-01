@@ -6,7 +6,9 @@ namespace Automattic\WooCommerce\Blocks\Domain\Services;
  */
 class AddressAutocomplete {
 	/**
-	 * @var array Registered providers
+	 * Registered providers
+	 *
+	 * @var array
 	 */
 	private $providers = [];
 
