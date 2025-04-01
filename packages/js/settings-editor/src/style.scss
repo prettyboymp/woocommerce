@@ -13,21 +13,16 @@
 
 .woocommerce-settings-header {
 	border-bottom: 1px solid #f0f0f0;
-	// &.woocommerce-site-page-header.woocommerce-settings-header--has-tabs {
-	// 	border-bottom: none;
-	// }
 }
-
-// .woocommerce-settings-section-tabs {
-// 	.components-tab-panel__tabs {
-// 		border-bottom: 1px solid #f0f0f0;
-// 		padding: 0 32px;
-// 		z-index: 1;
-// 	}
-// }
 
 #wc-settings-page .woocommerce-site-layout__area {
 	overflow: scroll;
+}
+
+.a8c-site-admin-sidebar-button.components-button {
+	svg {
+		fill: #949494;
+	}
 }
 
 .components-tab-panel__tabs {
