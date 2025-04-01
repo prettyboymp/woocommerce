@@ -166,10 +166,10 @@ describe( 'route.tsx', () => {
 			( didFilter as jest.Mock ).mockReturnValue( 1 );
 			const hookAddedCallback = ( addAction as jest.Mock ).mock
 				.calls[ 0 ][ 2 ];
-			hookAddedCallback( 'woocommerce_admin_settings_pages' );
+			hookAddedCallback( 'woocommerce_admin_settings_routes' );
 
 			expect( applyFilters ).toHaveBeenCalledWith(
-				'woocommerce_admin_settings_pages',
+				'woocommerce_admin_settings_routes',
 				{}
 			);
 		} );
