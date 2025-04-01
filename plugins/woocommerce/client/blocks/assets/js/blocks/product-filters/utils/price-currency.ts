@@ -44,9 +44,16 @@ import {
 	type CartShippingPackageShippingRate,
 } from '@woocommerce/types';
 import { getConfig } from '@wordpress/interactivity';
+import { getCurrencyPrefix } from '../../../settings/shared/utils';
+import { getCurrencySuffix } from '../../../settings/shared/utils';
 
 const config = getConfig( 'woocommerce' );
-const siteCurrency = config.currency;
+
+const siteCurrency: Currency = {
+	...config.currency,
+	suffix: getCurrencySuffix( config.symbol, config.symbolPosition ),
+	prefix: getCurrencyPrefix( config.symbol, config.symbolPosition ),
+};
 
 /**
  * Gets currency information in normalized format from an API response or the server.
