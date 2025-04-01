@@ -228,21 +228,21 @@ class AddressAutocompleteTest extends MockeryTestCase {
 	public function test_add_address_autocomplete_settings_no_providers() {
 		$initial_settings = [
 			[
-				'id' => 'woocommerce_default_customer_address',
+				'id'   => 'woocommerce_default_customer_address',
 				'type' => 'select',
 			],
 		];
 
 		$settings = $this->sut->add_address_autocomplete_settings( $initial_settings );
 
-		// Verify the original setting is preserved
+		// Verify the original setting is preserved.
 		$this->assertArrayHasKey( 0, $settings );
 		$this->assertEquals( 'woocommerce_default_customer_address', $settings[0]['id'] );
 
-		// Find the autocomplete setting
+		// Find the autocomplete setting.
 		$autocomplete_setting = null;
 		foreach ( $settings as $setting ) {
-			if ( isset( $setting['id'] ) && $setting['id'] === 'woocommerce_address_autocomplete_enabled' ) {
+			if ( isset( $setting['id'] ) && 'woocommerce_address_autocomplete_enabled' === $setting['id'] ) {
 				$autocomplete_setting = $setting;
 				break;
 			}
@@ -262,17 +262,17 @@ class AddressAutocompleteTest extends MockeryTestCase {
 
 		$initial_settings = [
 			[
-				'id' => 'woocommerce_default_customer_address',
+				'id'   => 'woocommerce_default_customer_address',
 				'type' => 'select',
 			],
 		];
 
 		$settings = $this->sut->add_address_autocomplete_settings( $initial_settings );
 
-		// Find the autocomplete setting
+		// Find the autocomplete setting.
 		$autocomplete_setting = null;
 		foreach ( $settings as $setting ) {
-			if ( isset( $setting['id'] ) && $setting['id'] === 'woocommerce_address_autocomplete_enabled' ) {
+			if ( isset( $setting['id'] ) && 'woocommerce_address_autocomplete_enabled' === $setting['id'] ) {
 				$autocomplete_setting = $setting;
 				break;
 			}
@@ -283,10 +283,10 @@ class AddressAutocompleteTest extends MockeryTestCase {
 		$this->assertFalse( $autocomplete_setting['disabled'] );
 		$this->assertStringNotContainsString( 'WooPayments', $autocomplete_setting['desc_tip'] );
 
-		// Verify provider select is not added when only one provider exists
+		// Verify provider select is not added when only one provider exists.
 		$provider_setting = null;
 		foreach ( $settings as $setting ) {
-			if ( isset( $setting['id'] ) && $setting['id'] === 'woocommerce_address_autocomplete_provider' ) {
+			if ( isset( $setting['id'] ) && 'woocommerce_address_autocomplete_provider' === $setting['id'] ) {
 				$provider_setting = $setting;
 				break;
 			}
@@ -304,17 +304,17 @@ class AddressAutocompleteTest extends MockeryTestCase {
 
 		$initial_settings = [
 			[
-				'id' => 'woocommerce_default_customer_address',
+				'id'   => 'woocommerce_default_customer_address',
 				'type' => 'select',
 			],
 		];
 
 		$settings = $this->sut->add_address_autocomplete_settings( $initial_settings );
 
-		// Find the provider select setting
+		// Find the provider select setting.
 		$provider_setting = null;
 		foreach ( $settings as $setting ) {
-			if ( isset( $setting['id'] ) && $setting['id'] === 'woocommerce_address_autocomplete_provider' ) {
+			if ( isset( $setting['id'] ) && 'woocommerce_address_autocomplete_provider' === $setting['id'] ) {
 				$provider_setting = $setting;
 				break;
 			}
@@ -335,29 +335,29 @@ class AddressAutocompleteTest extends MockeryTestCase {
 	public function test_add_address_autocomplete_settings_position() {
 		$initial_settings = [
 			[
-				'id' => 'some_setting_before',
+				'id'   => 'some_setting_before',
 				'type' => 'text',
 			],
 			[
-				'id' => 'woocommerce_default_customer_address',
+				'id'   => 'woocommerce_default_customer_address',
 				'type' => 'select',
 			],
 			[
-				'id' => 'some_setting_after',
+				'id'   => 'some_setting_after',
 				'type' => 'text',
 			],
 		];
 
 		$settings = $this->sut->add_address_autocomplete_settings( $initial_settings );
 
-		// Find the position of the default customer address setting and the autocomplete setting
+		// Find the position of the default customer address setting and the autocomplete setting.
 		$default_address_pos = -1;
-		$autocomplete_pos = -1;
+		$autocomplete_pos    = -1;
 		foreach ( $settings as $index => $setting ) {
 			if ( isset( $setting['id'] ) ) {
-				if ( $setting['id'] === 'woocommerce_default_customer_address' ) {
+				if ( 'woocommerce_default_customer_address' === $setting['id'] ) {
 					$default_address_pos = $index;
-				} elseif ( $setting['id'] === 'woocommerce_address_autocomplete_enabled' ) {
+				} elseif ( 'woocommerce_address_autocomplete_enabled' === $setting['id'] ) {
 					$autocomplete_pos = $index;
 				}
 			}
