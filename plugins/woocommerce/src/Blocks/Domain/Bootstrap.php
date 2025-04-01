@@ -141,8 +141,11 @@ class Bootstrap {
 			$this->container->get( AssetsController::class );
 			$this->container->get( Installer::class )->init();
 			$this->container->get( GoogleAnalytics::class )->init();
-			$this->container->get( AddressAutocomplete::class );
 			$this->container->get( is_admin() ? CheckoutFieldsAdmin::class : CheckoutFieldsFrontend::class )->init();
+
+			if ( defined( 'EXPERIMENTAL_WC_ADDRESS_AUTOCOMPLETE' ) && EXPERIMENTAL_WC_ADDRESS_AUTOCOMPLETE ) {
+				$this->container->get( AddressAutocomplete::class );
+			}
 		}
 
 		// Load assets unless this is a request specifically for the store API.
@@ -405,12 +408,15 @@ class Bootstrap {
 				return new BlockTemplatesController();
 			}
 		);
-		$this->container->register(
-			AddressAutocomplete::class,
-			function () {
-				return new AddressAutocomplete();
-			}
-		);
+
+		if ( defined( 'EXPERIMENTAL_WC_ADDRESS_AUTOCOMPLETE' ) && EXPERIMENTAL_WC_ADDRESS_AUTOCOMPLETE ) {
+			$this->container->register(
+				AddressAutocomplete::class,
+				function () {
+					return new AddressAutocomplete();
+				}
+			);
+		}
 	}
 
 	/**
