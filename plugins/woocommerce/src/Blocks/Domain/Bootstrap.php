@@ -143,7 +143,7 @@ class Bootstrap {
 			$this->container->get( is_admin() ? CheckoutFieldsAdmin::class : CheckoutFieldsFrontend::class )->init();
 
 			// Note that DI is not needed for one-time initialization of shared settings.
-			SharedInteractivityConfig::init();
+			add_action( 'init', [ SharedInteractivityConfig::class, 'init' ] );
 		}
 
 		// Load assets unless this is a request specifically for the store API.

@@ -43,8 +43,10 @@ import {
 	type CurrencyResponse,
 	type CartShippingPackageShippingRate,
 } from '@woocommerce/types';
+import { getConfig } from '@wordpress/interactivity';
 
-const siteCurrency = window.wc.wcSettings.SITE_CURRENCY;
+const config = getConfig( 'woocommerce' );
+const siteCurrency = config.currency;
 
 /**
  * Gets currency information in normalized format from an API response or the server.
