@@ -1,4 +1,6 @@
 <?php
+declare( strict_types=1 );
+
 namespace Automattic\WooCommerce\Tests\Blocks\Domain\Services;
 
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -140,14 +142,15 @@ class AddressAutocompleteTest extends MockeryTestCase {
 	 * Test registration before blocks loaded.
 	 */
 	public function test_register_provider_before_blocks_loaded() {
-		// Reset the blocks loaded state
+		// Reset the blocks loaded state.
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- This is a test case where we need to simulate the action not firing.
 		$GLOBALS['wp_actions']['woocommerce_blocks_loaded'] = 0;
 
 		$result = __experimental_woocommerce_register_address_autocomplete_provider( 'test-provider', 'Test Provider' );
 		$this->assertFalse( $result ); // Should return false initially.
 
 		// Trigger blocks loaded.
-		// phpcs
+		// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment
 		do_action( 'woocommerce_blocks_loaded' );
 
 		// Now check that the provider is registered.
@@ -207,15 +210,15 @@ class AddressAutocompleteTest extends MockeryTestCase {
 			2
 		);
 
-		// Test registration
+		// Test registration.
 		$result = __experimental_woocommerce_register_address_autocomplete_provider( 'test-provider', 'Test Provider' );
 		$this->assertTrue( $result );
 
-		// Verify provider is available
+		// Verify provider is available.
 		$this->assertTrue( $this->sut->is_provider_available( 'test-provider' ) );
 
-		// Test deregistration
-		$result = __experimental_woocommerce_deregister_address_autocomplete_provider( 'test-provider' );
+		// Test deregistration.
+		__experimental_woocommerce_deregister_address_autocomplete_provider( 'test-provider' );
 		$this->assertFalse( $this->sut->is_provider_available( 'test-provider' ) );
 	}
 }
