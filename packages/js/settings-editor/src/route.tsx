@@ -237,7 +237,7 @@ export const useActiveRoute = (): {
 
 		if ( ! settingsPage ) {
 			return {
-				route: getNotFoundRoute( activePage, settingsData.pages ),
+				route: getNotFoundRoute( activePage ),
 			};
 		}
 
@@ -261,18 +261,10 @@ export const useActiveRoute = (): {
 		// Handle modern pages.
 		if ( ! modernRoute ) {
 			return {
-				route: getNotFoundRoute( activePage, settingsData.pages ),
+				route: getNotFoundRoute( activePage ),
 			};
 		}
 
-		// Sidebar is responsibility of WooCommerce, not extensions so add it here.
-		modernRoute.areas.sidebar = (
-			<Sidebar
-				activePage={ activePage }
-				pages={ settingsData.pages }
-				pageTitle={ __( 'Store settings', 'woocommerce' ) }
-			/>
-		);
 		// Make sure we have a key.
 		modernRoute.key = activePage;
 

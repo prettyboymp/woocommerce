@@ -18,7 +18,6 @@ import {
 	__unstableAnimatePresence as AnimatePresence,
 } from '@wordpress/components';
 import { createElement, Fragment } from '@wordpress/element';
-import { SidebarContent, useLocation } from '@automattic/site-admin';
 
 /**
  * Internal dependencies
