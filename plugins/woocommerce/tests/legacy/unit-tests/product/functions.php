@@ -1193,7 +1193,7 @@ class WC_Tests_Product_Functions extends WC_Unit_Test_Case {
 			->getMock();
 		$mock_preview->expects( $this->once() )
 			->method( 'get_admin_image_src_url' )
-			->with( $attachment->post_parent, $attachment->ID, 'thumbnail' )
+			->with( $attachment->ID, 'thumbnail' )
 			->willReturn( $mock_preview_url );
 
 		// Add our mocks to the wc container.

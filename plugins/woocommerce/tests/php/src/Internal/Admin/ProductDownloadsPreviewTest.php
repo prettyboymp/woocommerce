@@ -92,9 +92,8 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 		$user_id = $this->factory->user->create( array( 'role' => 'customer' ) );
 		wp_set_current_user( $user_id );
 
-		$result = $this->preview->get_admin_image_src_url( $this->attachment_id, 'thumbnail' );
-
-		$this->assertEmpty( $result );
+		$result1 = $this->preview->get_admin_image_src_url( $this->attachment_id, 'thumbnail' );
+		$this->assertEmpty( $result1 );
 	}
 
 	/**
@@ -104,13 +103,11 @@ class ProductDownloadsPreviewTest extends WC_Unit_Test_Case {
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$result = $this->preview->get_admin_image_src_url( $this->attachment_id, 'thumbnail' );
-
-		$this->assertNotEmpty( $result );
-		// Test URL contains necessary parts.
-		$this->assertStringContainsString( (string) $this->attachment_id, $result ); // Contains attachment ID.
-		$this->assertStringContainsString( 'thumbnail', $result ); // Contains thumbnail size.
-		$this->assertStringContainsString( '_wpnonce=', $result ); // Contains nonce parameter.
+		$result1 = $this->preview->get_admin_image_src_url( $this->attachment_id, 'thumbnail' );
+		$this->assertNotEmpty( $result1 );
+		$this->assertStringContainsString( (string) $this->attachment_id, $result1 ); // Contains attachment ID.
+		$this->assertStringContainsString( 'thumbnail', $result1 ); // Contains thumbnail size.
+		$this->assertStringContainsString( '_wpnonce=', $result1 ); // Contains nonce parameter.
 	}
 
 	/**
