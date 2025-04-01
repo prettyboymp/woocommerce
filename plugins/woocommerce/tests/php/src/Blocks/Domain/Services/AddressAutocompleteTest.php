@@ -22,6 +22,7 @@ class AddressAutocompleteTest extends MockeryTestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
+		$this->sut = Package::container()->get( AddressAutocomplete::class );
 		add_filter( 'doing_it_wrong_trigger_error', '__return_false' );
 		do_action( 'woocommerce_blocks_loaded' );
 	}
@@ -33,7 +34,6 @@ class AddressAutocompleteTest extends MockeryTestCase {
 		parent::tearDown();
 
 		// Get all registered providers and deregister them.
-		$this->sut = Package::container()->get( AddressAutocomplete::class );
 		$providers = $this->sut->get_registered_providers();
 
 		foreach ( array_keys( $providers ) as $provider_id ) {
