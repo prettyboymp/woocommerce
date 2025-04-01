@@ -1,10 +1,12 @@
 /**
  * External dependencies
  */
+import { useMemo } from '@wordpress/element';
 import {
 	useViewportMatch,
 	useResizeObserver,
 	useReducedMotion,
+	usePrevious,
 } from '@wordpress/compose';
 /* eslint-disable @woocommerce/dependency-group */
 import {
@@ -16,7 +18,7 @@ import {
 	__unstableAnimatePresence as AnimatePresence,
 } from '@wordpress/components';
 import { createElement, Fragment } from '@wordpress/element';
-import { SidebarContent } from '@automattic/site-admin';
+import { SidebarContent, useLocation } from '@automattic/site-admin';
 
 /**
  * Internal dependencies
@@ -30,14 +32,15 @@ type LayoutProps = {
 	route: Route;
 	settingsPage?: SettingsPage;
 	activeSection?: string;
+	activePage?: string;
 };
 
-export function Layout( { route, settingsPage, activeSection }: LayoutProps ) {
+export function Layout( { route, settingsPage }: LayoutProps ) {
 	const [ fullResizer ] = useResizeObserver();
 	const isMobileViewport = useViewportMatch( 'medium', '<' );
 	const disableMotion = useReducedMotion();
 
-	const { key: routeKey, areas, widths } = route;
+	const { areas, widths } = route;
 
 	return (
 		<>
@@ -67,12 +70,7 @@ export function Layout( { route, settingsPage, activeSection }: LayoutProps ) {
 								} }
 								className="woocommerce-site-layout__sidebar a8c-site-admin-sidebar"
 							>
-								<SidebarContent
-									shouldAnimate={ true }
-									routeKey={ routeKey }
-								>
-									{ areas.sidebar }
-								</SidebarContent>
+								{ areas.sidebar }
 							</motion.div>
 						</AnimatePresence>
 					) }

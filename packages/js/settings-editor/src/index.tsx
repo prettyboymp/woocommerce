@@ -77,6 +77,7 @@ const SettingsApp = () => {
 			route={ route }
 			settingsPage={ settingsPage }
 			activeSection={ activeSection }
+			activePage={ activePage }
 		/>
 	);
 };

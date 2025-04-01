@@ -45,8 +45,7 @@ const getNotFoundRoute = (
 	areas: {
 		sidebar: (
 			<Sidebar
-				activePage={ activePage }
-				pages={ settingsPages }
+				sidebarItems={ [] }
 				pageTitle={ __( 'Settings', 'woocommerce' ) }
 			/>
 		),
@@ -116,13 +115,17 @@ const getLegacyRoute = (
 		? primarySidebarItems
 		: secondarySidebarItems;
 
+	const key = activePage + '-' + activeSection;
+
 	return {
-		key: activePage,
+		key,
 		areas: {
 			sidebar: (
 				<Sidebar
+					routeKey={ key }
 					pageTitle={ __( 'Store settings', 'woocommerce' ) }
 					sidebarItems={ sidebarItems }
+					currentNestLevel={ isPrimary ? 1 : 2 }
 				/>
 			),
 			content: (
