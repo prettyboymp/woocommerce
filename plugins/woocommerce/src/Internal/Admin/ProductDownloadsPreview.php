@@ -27,73 +27,29 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 	 * @since 9.9.0
 	 */
 	public function register() {
-		// Register the endpoint
-		add_action( 'init', array( $this, 'add_endpoint' ), 0 );
-
-		// Handle query vars
-		add_filter( 'query_vars', array( $this, 'add_query_vars' ), 0 );
-
-		// Process the request
-		add_action( 'parse_request', array( $this, 'handle_preview_request' ), 0 );
+		// Register AJAX actions for admin file serving
+		add_action( 'wp_ajax_wc_product_download_preview', array( $this, 'ajax_product_download_preview' ) );
 	}
 
 	/**
-	 * Register the download preview endpoint rewrite rules
+	 * AJAX handler for product download preview
 	 *
 	 * @since 9.9.0
 	 */
-	public function add_endpoint() {
-		add_rewrite_rule(
-			'^wc/file/download-preview/([0-9]+)/([0-9]+)(?:/([^/]*))?/?$',
-			'index.php?wc_product_id=$matches[1]&wc_attachment_id=$matches[2]&wc_preview_size=$matches[3]',
-			'top'
-		);
-	}
-
-	/**
-	 * Add our custom query vars
-	 *
-	 * @since 9.9.0
-	 * @param array $vars The original query variables.
-	 * @return array The updated query variables.
-	 */
-	public function add_query_vars( $vars ) {
-		$vars[] = 'wc_product_id';
-		$vars[] = 'wc_attachment_id';
-		$vars[] = 'wc_preview_size';
-		return $vars;
-	}
-
-	/**
-	 * Handle the preview request
-	 *
-	 * @since 9.9.0
-	 */
-	public function handle_preview_request() {
-		global $wp;
-
-		// Check if this is our endpoint
-		if ( ! isset( $wp->query_vars['wc_product_id'] ) || ! isset( $wp->query_vars['wc_attachment_id'] ) ) {
-			return;
-		}
-
+	public function ajax_product_download_preview() {
 		// Verify permissions
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			status_header( 403 );
-			die( esc_html__( 'Unauthorized access.', 'woocommerce' ) );
+			wp_die( esc_html__( 'Unauthorized access.', 'woocommerce' ), 403 );
 		}
 
-		// Verify nonce
-		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
-		if ( ! wp_verify_nonce( $nonce, 'wc_download_preview' ) ) {
-			status_header( 403 );
-			die( esc_html__( 'Invalid security token.', 'woocommerce' ) );
-		}
+		// Verify parameters
+		$product_id = isset( $_GET['product_id'] ) ? (int) $_GET['product_id'] : 0;
+		$attachment_id = isset( $_GET['attachment_id'] ) ? (int) $_GET['attachment_id'] : 0;
+		$size = isset( $_GET['size'] ) ? sanitize_text_field( wp_unslash( $_GET['size'] ) ) : 'large';
 
-		$product_id = (int) $wp->query_vars['wc_product_id'];
-		$attachment_id = (int) $wp->query_vars['wc_attachment_id'];
-		$size = ! empty( $wp->query_vars['wc_preview_size'] ) ?
-			$wp->query_vars['wc_preview_size'] : 'large';
+		if ( ! $product_id || ! $attachment_id ) {
+			wp_die( esc_html__( 'Missing required parameters.', 'woocommerce' ), 400 );
+		}
 
 		$this->serve_preview_file( $product_id, $attachment_id, $size );
 	}
@@ -110,8 +66,7 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 		$file_path = get_attached_file( $attachment_id );
 
 		if ( ! $file_path || ! is_readable( $file_path ) ) {
-			status_header( 404 );
-			die( esc_html__( 'File not found', 'woocommerce' ) );
+			wp_die( esc_html__( 'File not found', 'woocommerce' ), 404 );
 		}
 
 		$mime_type = get_post_mime_type( $attachment_id );
@@ -124,8 +79,7 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 		);
 
 		if ( ! in_array( $mime_type, $allowed_mime_types, true ) ) {
-			status_header( 403 );
-			die( esc_html__( 'Invalid file type', 'woocommerce' ) );
+			wp_die( esc_html__( 'Invalid file type', 'woocommerce' ), 403 );
 		}
 
 		// Handle resized images
@@ -172,17 +126,17 @@ class ProductDownloadsPreview implements RegisterHooksInterface {
 			return '';
 		}
 
-		$url = home_url( "wc/file/download-preview/{$product_id}/{$attachment_id}" );
-
-		if ( $size && 'large' !== $size ) {
-			$url .= "/{$size}";
-		}
-
-		return add_query_arg(
+		$url = admin_url( 'admin-ajax.php' );
+		$url = add_query_arg(
 			array(
-				'_wpnonce' => wp_create_nonce( 'wc_download_preview' ),
+				'action' => 'wc_product_download_preview',
+				'product_id' => $product_id,
+				'attachment_id' => $attachment_id,
+				'size' => $size,
 			),
 			$url
 		);
+
+		return $url;
 	}
 }
