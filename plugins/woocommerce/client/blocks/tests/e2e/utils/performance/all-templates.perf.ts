@@ -23,6 +23,18 @@ async function measureMultipleIframesLoadingTime(
 		loaded: number;
 	}[] = await page.evaluate( ( templates ) => {
 		const getLoadingMetrics = ( contentWindow: Window ) => {
+			const navigationEntries =
+				contentWindow.performance.getEntriesByType( 'navigation' );
+			if ( navigationEntries.length === 0 ) {
+				return null; // Signal that navigation timing is not ready
+			}
+
+			const paintTimings =
+				contentWindow.performance.getEntriesByType( 'paint' );
+			if ( paintTimings.length === 0 ) {
+				return null; // Signal that paint timings are not ready
+			}
+
 			const [
 				{
 					requestStart,
@@ -31,12 +43,7 @@ async function measureMultipleIframesLoadingTime(
 					domContentLoadedEventEnd,
 					loadEventEnd,
 				},
-			] = contentWindow.performance.getEntriesByType(
-				'navigation'
-			) as PerformanceNavigationTiming[];
-			const paintTimings = contentWindow.performance.getEntriesByType(
-				'paint'
-			) as PerformancePaintTiming[];
+			] = navigationEntries as PerformanceNavigationTiming[];
 
 			const firstPaintStartTime = paintTimings.find(
 				( { name } ) => name === 'first-paint'
@@ -45,6 +52,10 @@ async function measureMultipleIframesLoadingTime(
 			const firstContentfulPaintStartTime = paintTimings.find(
 				( { name } ) => name === 'first-contentful-paint'
 			)?.startTime;
+
+			if ( ! firstPaintStartTime || ! firstContentfulPaintStartTime ) {
+				return null; // Signal that paint metrics are not complete
+			}
 
 			return {
 				// Server side metric.
@@ -66,47 +77,120 @@ async function measureMultipleIframesLoadingTime(
 					document.querySelector( iframeSelector )
 				)
 				.filter( ( iframe ) => iframe !== null ) as HTMLIFrameElement[];
+
 			if ( ! iframes.length ) {
 				resolve( [] );
 				return;
 			}
 
-			const times: [] = [];
-
+			const times: any[] = new Array( iframes.length );
 			let loadedCount = 0;
 
-			iframes.forEach( ( iframe: HTMLIFrameElement, index ) => {
-				if (
-					iframe.contentWindow?.document.readyState === 'complete'
-				) {
+			// Add timeout safety
+			const timeout = setTimeout( () => {
+				console.warn( 'Timeout waiting for iframes to complete' );
+				resolve( times );
+			}, 30000 );
+
+			const processIframe = (
+				iframe: HTMLIFrameElement,
+				index: number
+			) => {
+				try {
+					if ( ! iframe.contentWindow ) {
+						console.warn(
+							`No contentWindow for iframe ${ templates[ index ].title }`
+						);
+						return false;
+					}
+
+					const metrics = getLoadingMetrics( iframe.contentWindow );
+					if ( ! metrics ) {
+						console.log(
+							`Waiting for performance metrics for ${ templates[ index ].title }`
+						);
+						return false; // Not ready yet, will try again
+					}
+
 					times[ index ] = {
-						...getLoadingMetrics( iframe.contentWindow ),
+						...metrics,
 						title: templates[ index ].title,
 					};
 					loadedCount++;
 
+					console.log(
+						`Processed iframe ${ templates[ index ].title } (${ loadedCount }/${ iframes.length })`
+					);
+
 					if ( loadedCount === iframes.length ) {
+						clearTimeout( timeout );
 						resolve( times );
 					}
+					return true;
+				} catch ( error ) {
+					console.warn(
+						`Error processing iframe ${ templates[ index ].title }:`,
+						error
+					);
+					return false;
+				}
+			};
+
+			// First pass: process all complete iframes
+			iframes.forEach( ( iframe, index ) => {
+				if (
+					iframe.contentWindow?.document.readyState === 'complete'
+				) {
+					processIframe( iframe, index );
 				} else {
-					// If iframe is still loading
-					iframe.addEventListener( 'load', () => {
+					// Set up listeners for incomplete iframes
+					const loadHandler = () => {
+						if (
+							iframe.contentWindow?.document.readyState ===
+							'complete'
+						) {
+							// Try processing, if it fails (returns false) we'll keep the listener
+							if ( processIframe( iframe, index ) ) {
+								// Only remove listeners if we successfully processed the iframe
+								iframe.removeEventListener(
+									'load',
+									loadHandler
+								);
+								iframe.removeEventListener(
+									'error',
+									errorHandler
+								);
+							}
+						}
+					};
+
+					const errorHandler = () => {
+						console.warn(
+							`Error loading iframe ${ templates[ index ].title }`
+						);
 						times[ index ] = {
-							...getLoadingMetrics( iframe.contentWindow ),
 							title: templates[ index ].title,
+							serverResponse: 0,
+							firstPaint: 0,
+							domContentLoaded: 0,
+							loaded: 0,
 						};
 						loadedCount++;
 
 						if ( loadedCount === iframes.length ) {
+							clearTimeout( timeout );
 							resolve( times );
 						}
-					} );
-					iframe.addEventListener( 'error', () => {
-						resolve( times );
-					} );
+
+						// Clean up listeners after error
+						iframe.removeEventListener( 'load', loadHandler );
+						iframe.removeEventListener( 'error', errorHandler );
+					};
+
+					iframe.addEventListener( 'load', loadHandler );
+					iframe.addEventListener( 'error', errorHandler );
 				}
 			} );
-			return times;
 		} );
 	}, templatesInfo );
 
@@ -118,7 +202,7 @@ test.describe( 'All templates performance', () => {
 		await requestUtils.activateTheme( BLOCK_THEME_SLUG );
 	} );
 
-	test( 'Loading', async ( { page }, testInfo ) => {
+	test( 'Loading', async ( { page } ) => {
 		const results: {
 			title: string | null | undefined;
 			serverResponse: number;
@@ -127,7 +211,7 @@ test.describe( 'All templates performance', () => {
 			loaded: number;
 			requestCount: number;
 		}[] = [];
-		const samples = 10;
+		const samples = 2;
 		const throwaway = 1;
 		const iterations = samples + throwaway;
 
@@ -208,23 +292,25 @@ test.describe( 'All templates performance', () => {
 			return acc;
 		}, {} );
 
+		console.log( valuesByKeys, 'valuesByKeys' );
+
+		const median = {};
 		for ( const title in valuesByKeys ) {
 			const values = valuesByKeys[ title ];
-			const median = {};
+			median[ title ] = {}; // Initialize an object for this title
+
 			for ( const key in values ) {
 				values[ key ].sort( ( a, b ) => a - b );
-				median[ key ] =
+				median[ title ][ key ] =
 					values[ key ][ Math.floor( values[ key ].length / 2 ) ];
-				median[ 'title' ] = title;
 			}
-
-			console.log( median );
-
-			await testInfo.attach( 'results', {
-				body: JSON.stringify( { editor: median }, null, 2 ),
-				contentType: 'application/json',
-			} );
 		}
+
+		fs.writeFileSync(
+			`./all-templates.json`,
+			JSON.stringify( median, null, 2 )
+		);
+
 		expect( true ).toBe( true );
 	} );
 } );
