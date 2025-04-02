@@ -247,7 +247,6 @@ class AddressAutocompleteTest extends MockeryTestCase {
 		// Preferred provider should not be in the settings if no providers are registered.
 		$this->assertNull( $autocomplete_provider_setting );
 
-
 		$this->assertNotNull( $autocomplete_enabled_setting );
 		$this->assertEquals( 'checkbox', $autocomplete_enabled_setting['type'] );
 		$this->assertTrue( $autocomplete_enabled_setting['disabled'] );
