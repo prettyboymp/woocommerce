@@ -404,7 +404,7 @@ class Bootstrap {
 				return new BlockTemplatesController();
 			}
 		);
-		if ( Constants::is_defined( 'EXPERIMENTAL_WC_ADDRESS_AUTOCOMPLETE' ) && Constants::get_constant( 'EXPERIMENTAL_WC_ADDRESS_AUTOCOMPLETE' ) ) {
+		if ( Constants::is_defined( 'WC_EXPERIMENTAL_ADDRESS_AUTOCOMPLETE' ) && Constants::get_constant( 'WC_EXPERIMENTAL_ADDRESS_AUTOCOMPLETE' ) ) {
 			$this->container->register(
 				AddressAutocomplete::class,
 				function () {
