@@ -373,6 +373,40 @@ class WC_Settings_General extends WC_Settings_Page {
 			<input name="' . esc_attr( $id ) . '" id="' . esc_attr( $id ) . '" type="text" value="' . esc_attr( $value ) . '" class="colorpick" /> <div id="colorPickerDiv_' . esc_attr( $id ) . '" class="colorpickdiv"></div>
 		</div>';
 	}
+
+	/**
+	 * Output settings with additional JS to hide preferred provider if autocomplete is disabled.
+	 *
+	 * @return void
+	 */
+	public function output() {
+		parent::output();
+
+		wc_enqueue_js(
+			"
+			var preferredProviderInput = document.querySelector( '#woocommerce_address_autocomplete_provider' );
+			var autocompleteEnabledInput = document.querySelector( '#woocommerce_address_autocomplete_enabled' );
+			var preferredProviderRow = null;
+
+			if ( preferredProviderInput ) {
+				preferredProviderRow = preferredProviderInput.closest( 'tr' );
+			}
+
+			if ( autocompleteEnabledInput && preferredProviderRow ) {
+				if ( ! autocompleteEnabledInput.checked ) {
+					preferredProviderRow.style.display = 'none';
+				}
+				autocompleteEnabledInput.addEventListener( 'change', function( e ) {
+					if ( e.target.checked ) {
+						preferredProviderRow.style.display = 'table-row';
+					} else {
+						preferredProviderRow.style.display = 'none';
+					}
+				} );
+			}
+			"
+		);
+	}
 }
 
 return new WC_Settings_General();
