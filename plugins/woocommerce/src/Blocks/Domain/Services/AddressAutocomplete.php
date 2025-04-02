@@ -21,7 +21,7 @@ class AddressAutocomplete {
 	}
 
 	/**
-	 * Remove the preferred provider option from WooCommerce settings.
+	 * Register the address autocomplete settings with WooCommerce.
 	 *
 	 * @param array $settings The WooCommerce general settings.
 	 * @return array The modified settings.
@@ -29,11 +29,14 @@ class AddressAutocomplete {
 	public function add_address_autocomplete_settings( array $settings ): array {
 		$autocomplete_available = count( $this->providers ) > 0;
 		$autocomplete_desc_tip  = __( 'Suggest full addresses for customer as they type.', 'woocommerce' );
+
+		// Show a message suggesting a provider if no providers are registered.
 		if ( ! $autocomplete_available ) {
 			// translators: %s: WooPayments URL.
 			$autocomplete_desc_tip .= ' ' . sprintf( __( 'To use this feature, you need to install an address provider such as <a href="%s">WooPayments</a>.', 'woocommerce' ), 'https://woocommerce.com/products/woocommerce-payments/' );
 		}
 
+		// Create a new settings array so we can insert our new settings at the desired position.
 		$new_settings = [];
 		foreach ( $settings as $setting ) {
 			$new_settings[] = $setting;
@@ -49,7 +52,7 @@ class AddressAutocomplete {
 					'default'  => 'no',
 				];
 
-				// Add preferred provider select box if multiple providers are registered.
+				// Add preferred provider select box if more than one provider is registered.
 				if ( count( $this->providers ) > 1 ) {
 					$provider_options = [];
 					foreach ( $this->providers as $provider ) {
@@ -125,8 +128,10 @@ class AddressAutocomplete {
 	}
 
 	/**
-	 * Get the preferred provider, this is what was selected in the WooCommerce settings or the first registered
-	 * provider if no preference was set, or if the provider selected is not registered anymore.
+	 * Get the preferred provider, this is what was selected in the WooCommerce "preferred provider" setting *or* the first registered
+	 * provider if no preference was set. If the provider selected in WC Settings is not registered anymore, it will fallback to the first registered provider.
+	 *
+	 * Any other case will return an empty string.
 	 *
 	 * @return string
 	 */
