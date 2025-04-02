@@ -73,7 +73,7 @@ if ( ! function_exists( '__experimental_woocommerce_register_address_autocomplet
 	 * @param string $name        The human-readable name of the provider.
 	 * @return bool True if registration was successful, false otherwise.
 	 */
-	function __experimental_woocommerce_register_address_autocomplete_provider( string $provider_id, string $name ): bool {
+	function __experimental_woocommerce_register_address_autocomplete_provider( string $provider_id, string $name ): bool { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
 		// Check if `woocommerce_blocks_loaded` ran. If not then the AddressAutocomplete class will not be available yet.
 		$woocommerce_blocks_loaded_ran = did_action( 'woocommerce_blocks_loaded' );
 		if ( ! $woocommerce_blocks_loaded_ran ) {
