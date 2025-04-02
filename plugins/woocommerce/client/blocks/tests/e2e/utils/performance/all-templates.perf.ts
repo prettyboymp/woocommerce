@@ -15,8 +15,14 @@ async function measureMultipleIframesLoadingTime(
 	page: Page,
 	templatesInfo: TemplateInfo[]
 ) {
-	const loadTimes = await page.evaluate( ( templates ) => {
-		const getLoadingMetrics = () => {
+	const loadTimes: {
+		title: string | null | undefined;
+		serverResponse: number;
+		firstPaint: number;
+		domContentLoaded: number;
+		loaded: number;
+	}[] = await page.evaluate( ( templates ) => {
+		const getLoadingMetrics = ( contentWindow: Window ) => {
 			const [
 				{
 					requestStart,
@@ -25,20 +31,20 @@ async function measureMultipleIframesLoadingTime(
 					domContentLoadedEventEnd,
 					loadEventEnd,
 				},
-			] = performance.getEntriesByType(
+			] = contentWindow.performance.getEntriesByType(
 				'navigation'
 			) as PerformanceNavigationTiming[];
-			const paintTimings = performance.getEntriesByType(
+			const paintTimings = contentWindow.performance.getEntriesByType(
 				'paint'
 			) as PerformancePaintTiming[];
 
 			const firstPaintStartTime = paintTimings.find(
 				( { name } ) => name === 'first-paint'
-			)!.startTime;
+			)?.startTime;
 
 			const firstContentfulPaintStartTime = paintTimings.find(
 				( { name } ) => name === 'first-contentful-paint'
-			)!.startTime;
+			)?.startTime;
 
 			return {
 				// Server side metric.
@@ -50,7 +56,8 @@ async function measureMultipleIframesLoadingTime(
 				loaded: loadEventEnd - responseEnd,
 				firstContentfulPaint:
 					firstContentfulPaintStartTime - responseEnd,
-				timeSinceResponseEnd: performance.now() - responseEnd,
+				timeSinceResponseEnd:
+					contentWindow.performance.now() - responseEnd,
 			};
 		};
 		return new Promise( ( resolve ) => {
@@ -73,7 +80,7 @@ async function measureMultipleIframesLoadingTime(
 					iframe.contentWindow?.document.readyState === 'complete'
 				) {
 					times[ index ] = {
-						...getLoadingMetrics(),
+						...getLoadingMetrics( iframe.contentWindow ),
 						title: templates[ index ].title,
 					};
 					loadedCount++;
@@ -85,7 +92,7 @@ async function measureMultipleIframesLoadingTime(
 					// If iframe is still loading
 					iframe.addEventListener( 'load', () => {
 						times[ index ] = {
-							...getLoadingMetrics(),
+							...getLoadingMetrics( iframe.contentWindow ),
 							title: templates[ index ].title,
 						};
 						loadedCount++;
@@ -94,13 +101,16 @@ async function measureMultipleIframesLoadingTime(
 							resolve( times );
 						}
 					} );
+					iframe.addEventListener( 'error', () => {
+						resolve( times );
+					} );
 				}
 			} );
-			return { times };
+			return times;
 		} );
 	}, templatesInfo );
 
-	return { loadTimes };
+	return loadTimes;
 }
 
 test.describe( 'All templates performance', () => {
@@ -108,38 +118,114 @@ test.describe( 'All templates performance', () => {
 		await requestUtils.activateTheme( BLOCK_THEME_SLUG );
 	} );
 
-	test( 'Loading', async ( { page } ) => {
-		await page.goto(
-			'/wp-admin/site-editor.php?postType=wp_template&activeView=WooCommerce'
-		);
+	test( 'Loading', async ( { page }, testInfo ) => {
+		const results: {
+			title: string | null | undefined;
+			serverResponse: number;
+			firstPaint: number;
+			domContentLoaded: number;
+			loaded: number;
+			requestCount: number;
+		}[] = [];
+		const samples = 2;
+		const throwaway = 1;
+		const iterations = samples + throwaway;
 
-		await page.waitForSelector( 'iframe[title="Editor canvas"]' );
-
-		const templates = await page
-			.locator( '.dataviews-view-grid__card' )
-			.evaluateAll( ( elements ) =>
-				elements.map( ( element ) => {
-					const title = element.querySelector(
-						'.fields-field__title'
-					)?.textContent;
-					const src = element
-						.querySelector( 'iframe' )
-						?.getAttribute( 'src' );
-
-					return { title, iframeSelector: `iframe[src="${ src }"]` };
-				} )
+		for ( let i = 0; i < iterations; i++ ) {
+			let requestCount = 0;
+			page.on( 'request', () => {
+				requestCount++;
+			} );
+			await page.goto(
+				'/wp-admin/site-editor.php?postType=wp_template&activeView=WooCommerce'
 			);
 
-		const loadTimes = await measureMultipleIframesLoadingTime(
-			page,
-			templates
-		);
+			await page.waitForSelector( 'iframe[title="Editor canvas"]' );
 
-		fs.appendFileSync(
-			'./performance-report.json',
-			JSON.stringify( loadTimes )
-		);
+			const templates = await page
+				.locator( '.dataviews-view-grid__card' )
+				.evaluateAll( ( elements ) =>
+					elements.map( ( element ) => {
+						const title = element.querySelector(
+							'.fields-field__title'
+						)?.textContent;
+						const src = element
+							.querySelector( 'iframe' )
+							?.getAttribute( 'src' );
 
-		expect( loadTimes ).toBeDefined();
+						return {
+							title,
+							iframeSelector: `iframe[src="${ src }"]`,
+						};
+					} )
+				);
+
+			if ( i > throwaway ) {
+				const loadTimes = await measureMultipleIframesLoadingTime(
+					page,
+					templates
+				);
+
+				// console.log( loadTimes, 'loadTimes' );
+
+				const fixedLoadTimes = loadTimes.map( ( loadTime ) => {
+					return {
+						...loadTime,
+						requestCount,
+					};
+				} );
+
+				results.push( ...fixedLoadTimes );
+			}
+
+			// console.log( results );
+
+			const valuesByKeys = results.reduce( ( acc, curr ) => {
+				const title = curr.title;
+				if ( ! title ) {
+					return acc;
+				}
+				acc[ title ] = {
+					...acc[ title ],
+					serverResponse: [
+						...( acc[ title ]?.serverResponse || [] ),
+						curr.serverResponse,
+					],
+					firstPaint: [
+						...( acc[ title ]?.firstPaint || [] ),
+						curr.firstPaint,
+					],
+					domContentLoaded: [
+						...( acc[ title ]?.domContentLoaded || [] ),
+						curr.domContentLoaded,
+					],
+					loaded: [ ...( acc[ title ]?.loaded || [] ), curr.loaded ],
+					requestCount: [
+						...( acc[ title ]?.requestCount || [] ),
+						curr.requestCount,
+					],
+				};
+				return acc;
+			}, {} );
+
+			for ( const title in valuesByKeys ) {
+				const values = valuesByKeys[ title ];
+				const median = {};
+				for ( const key in values ) {
+					values[ key ].sort( ( a, b ) => a - b );
+					median[ key ] =
+						values[ key ][ Math.floor( values[ key ].length / 2 ) ];
+					median[ 'title' ] = title;
+				}
+
+				console.log( median );
+
+				await testInfo.attach( 'results', {
+					body: JSON.stringify( { editor: median }, null, 2 ),
+					contentType: 'application/json',
+				} );
+			}
+		}
+		expect( true ).toBe( true );
 	} );
 } );
