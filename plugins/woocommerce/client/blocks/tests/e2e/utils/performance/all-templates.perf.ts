@@ -15,7 +15,6 @@ async function measureMultipleIframesLoadingTime(
 	templatesInfo: TemplateInfo[]
 ) {
 	const loadTimes = await page.evaluate( ( templates: TemplateInfo[] ) => {
-		const totalRequests = performance.getEntriesByType( 'resource' ).length;
 		return new Promise( ( resolve ) => {
 			const iframes = templates
 				.map( ( { iframeSelector } ) =>
@@ -84,11 +83,15 @@ async function measureMultipleIframesLoadingTime(
 					} );
 				}
 			} );
-			return { times, totalRequests };
+			return { times };
 		} );
 	}, templatesInfo );
 
-	return { loadTimes };
+	const totalRequest = await page.evaluate( () => {
+		return performance.getEntriesByType( 'resource' ).length;
+	} );
+
+	return { loadTimes, totalRequest };
 }
 
 test.describe( 'All templates performance', () => {
