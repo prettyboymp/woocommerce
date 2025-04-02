@@ -339,7 +339,7 @@ class WC_Unit_Tests_Bootstrap {
 	 */
 	public function enable_experimental_blocks_feature_flags() {
 		// Used to enable the address autocomplete functionality for testing.
-		define( 'EXPERIMENTAL_WC_ADDRESS_AUTOCOMPLETE', true );
+		define( 'WC_EXPERIMENTAL_ADDRESS_AUTOCOMPLETE', true );
 	}
 
 	/**
