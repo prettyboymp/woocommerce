@@ -95,7 +95,9 @@ class WC_Settings_General extends WC_Settings_Page {
 					);
 				}
 			} catch ( \Exception $e ) {
-				$autocomplete_available = false;
+				// If the class is not available, we don't show the setting.
+				$enable_autocomplete_setting             = array();
+				$autocomplete_preferred_provider_setting = array();
 			}
 		}
 
@@ -354,6 +356,15 @@ class WC_Settings_General extends WC_Settings_Page {
 					'id'   => 'pricing_options',
 				),
 			);
+
+		// Remove any empty items from settings array.
+		// e.g. The preferred autocomplete provider setting would be empty if <=1 providers are registered.
+		$settings = array_filter(
+			$settings,
+			function ( $setting ) {
+				return ! empty( $setting );
+			}
+		);
 
 		return apply_filters( 'woocommerce_general_settings', $settings );
 	}
