@@ -127,7 +127,7 @@ test.describe( 'All templates performance', () => {
 			loaded: number;
 			requestCount: number;
 		}[] = [];
-		const samples = 2;
+		const samples = 10;
 		const throwaway = 1;
 		const iterations = samples + throwaway;
 
@@ -179,52 +179,51 @@ test.describe( 'All templates performance', () => {
 			}
 
 			// console.log( results );
-
-			const valuesByKeys = results.reduce( ( acc, curr ) => {
-				const title = curr.title;
-				if ( ! title ) {
-					return acc;
-				}
-				acc[ title ] = {
-					...acc[ title ],
-					serverResponse: [
-						...( acc[ title ]?.serverResponse || [] ),
-						curr.serverResponse,
-					],
-					firstPaint: [
-						...( acc[ title ]?.firstPaint || [] ),
-						curr.firstPaint,
-					],
-					domContentLoaded: [
-						...( acc[ title ]?.domContentLoaded || [] ),
-						curr.domContentLoaded,
-					],
-					loaded: [ ...( acc[ title ]?.loaded || [] ), curr.loaded ],
-					requestCount: [
-						...( acc[ title ]?.requestCount || [] ),
-						curr.requestCount,
-					],
-				};
+		}
+		const valuesByKeys = results.reduce( ( acc, curr ) => {
+			const title = curr.title;
+			if ( ! title ) {
 				return acc;
-			}, {} );
-
-			for ( const title in valuesByKeys ) {
-				const values = valuesByKeys[ title ];
-				const median = {};
-				for ( const key in values ) {
-					values[ key ].sort( ( a, b ) => a - b );
-					median[ key ] =
-						values[ key ][ Math.floor( values[ key ].length / 2 ) ];
-					median[ 'title' ] = title;
-				}
-
-				console.log( median );
-
-				await testInfo.attach( 'results', {
-					body: JSON.stringify( { editor: median }, null, 2 ),
-					contentType: 'application/json',
-				} );
 			}
+			acc[ title ] = {
+				...acc[ title ],
+				serverResponse: [
+					...( acc[ title ]?.serverResponse || [] ),
+					curr.serverResponse,
+				],
+				firstPaint: [
+					...( acc[ title ]?.firstPaint || [] ),
+					curr.firstPaint,
+				],
+				domContentLoaded: [
+					...( acc[ title ]?.domContentLoaded || [] ),
+					curr.domContentLoaded,
+				],
+				loaded: [ ...( acc[ title ]?.loaded || [] ), curr.loaded ],
+				requestCount: [
+					...( acc[ title ]?.requestCount || [] ),
+					curr.requestCount,
+				],
+			};
+			return acc;
+		}, {} );
+
+		for ( const title in valuesByKeys ) {
+			const values = valuesByKeys[ title ];
+			const median = {};
+			for ( const key in values ) {
+				values[ key ].sort( ( a, b ) => a - b );
+				median[ key ] =
+					values[ key ][ Math.floor( values[ key ].length / 2 ) ];
+				median[ 'title' ] = title;
+			}
+
+			console.log( median );
+
+			await testInfo.attach( 'results', {
+				body: JSON.stringify( { editor: median }, null, 2 ),
+				contentType: 'application/json',
+			} );
 		}
 		expect( true ).toBe( true );
 	} );
