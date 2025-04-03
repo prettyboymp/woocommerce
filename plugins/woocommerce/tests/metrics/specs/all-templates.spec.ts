@@ -92,11 +92,7 @@ test.describe( 'All templates performance', () => {
 		);
 
 		await testInfo.attach( 'results', {
-			body: JSON.stringify(
-				{ 'all-templates': medians },
-				null,
-				Infinity
-			),
+			body: JSON.stringify( medians, null, Infinity ),
 			contentType: 'application/json',
 		} );
 	} );
