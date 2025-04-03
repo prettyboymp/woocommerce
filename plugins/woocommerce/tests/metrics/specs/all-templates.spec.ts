@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { Frame, Page } from '@playwright/test';
+import { Frame, FrameLocator, Locator, Page } from '@playwright/test';
 
 /**
  * WordPress dependencies
@@ -12,8 +12,24 @@ import { test, expect } from '@wordpress/e2e-test-utils-playwright';
  * Internal dependencies
  */
 import { median } from '../utils';
+import { writeFileSync } from 'fs';
 
-async function getFrameMetrics( frame: Frame ) {
+type FrameMetrics = {
+	serverResponse: number;
+	firstPaint: number;
+	domContentLoaded: number;
+	loaded: number;
+	firstContentfulPaint: number;
+	timeSinceResponseEnd: number;
+};
+
+type FrameMetricsCollection = {
+	[ Property in keyof FrameMetrics ]: FrameMetrics[ Property ][];
+};
+
+type FrameMetricsById = Map< string, FrameMetricsCollection >;
+
+async function getFrameMetrics( frame: Locator ) {
 	return await frame.evaluate( () => {
 		const navigationEntries =
 			window.performance.getEntriesByType( 'navigation' );
@@ -57,21 +73,35 @@ async function getFrameMetrics( frame: Frame ) {
 }
 
 test.describe( 'All templates performance', () => {
+	const results: FrameMetricsById = new Map();
+
 	test.afterAll( async ( {}, testInfo ) => {
 		const medians = {};
-		Object.keys( results ).forEach( ( metric ) => {
-			medians[ metric ] = median( results[ metric ] );
+		results.forEach( ( frameMetrics, frameId ) => {
+			medians[ frameId ] = {};
+			Object.keys( frameMetrics ).forEach( ( metric ) => {
+				medians[ frameId ][ metric ] = median(
+					results.get( frameId )?.[ metric ] || []
+				);
+			} );
 		} );
 
-		console.log( medians, 'medians' );
+		writeFileSync(
+			'results.json',
+			JSON.stringify( { 'all-templates': medians }, null, Infinity )
+		);
+
 		await testInfo.attach( 'results', {
-			body: JSON.stringify( { 'all-templates': medians }, null, 2 ),
+			body: JSON.stringify(
+				{ 'all-templates': medians },
+				null,
+				Infinity
+			),
 			contentType: 'application/json',
 		} );
 	} );
 
-	const results = {};
-	const samples = 3;
+	const samples = 10;
 	const throwaway = 1;
 	const iterations = samples + throwaway;
 
@@ -88,51 +118,73 @@ test.describe( 'All templates performance', () => {
 				'/wp-admin/site-editor.php?postType=wp_template&activeView=WooCommerce'
 			);
 
-			const mainFrame = page.mainFrame();
-			let frames: Frame[] = [];
+			const frames: Record< string, FrameLocator > = {};
 
-			await expect
-				.poll( async () => {
-					frames = mainFrame.childFrames();
-					return frames.length;
-				} )
-				.toBe( 11 );
+			const cards = page.locator( '.dataviews-view-grid__card' );
+			await expect( cards ).toHaveCount( 11 );
 
-			const allFrameMetrics: ( {
-				frameId: string;
-				serverResponse: number;
-				firstPaint: number;
-				domContentLoaded: number;
-				loaded: number;
-				firstContentfulPaint: number;
-				timeSinceResponseEnd: number;
-			} | null )[] = [];
+			for ( const card of await cards.all() ) {
+				const frame = await card.locator( 'iframe' ).contentFrame();
+				const title =
+					( await card
+						.locator( '.dataviews-view-grid__primary-field' )
+						.textContent() ) ?? '';
+
+				frames[ title ] = frame;
+			}
+
+			const frameMetricsById = new Map< string, FrameMetrics[] >();
+			// Create new metrics object with merged arrays
+			const updatedMetrics: FrameMetricsCollection = {
+				serverResponse: [],
+				firstPaint: [],
+				domContentLoaded: [],
+				loaded: [],
+				firstContentfulPaint: [],
+				timeSinceResponseEnd: [],
+			};
 
 			await Promise.all(
-				frames.map( async ( frame ) => {
-					await frame.waitForLoadState( 'domcontentloaded' );
-					const frameMetrics = await getFrameMetrics( frame );
+				Object.entries( frames ).map( async ( [ title, frame ] ) => {
+					frame.locator( 'body' ).evaluate( () => {
+						return document.readyState === 'interactive';
+					} );
+
+					const frameMetrics = await getFrameMetrics(
+						frame.locator( 'body' )
+					);
 					if ( ! frameMetrics ) {
 						throw new Error( 'Could not get frame metrics' );
 					}
-					allFrameMetrics.push( frameMetrics );
+
+					const currentMetrics = frameMetricsById.get( title ) ?? [];
+
+					frameMetricsById.set( title, [
+						...currentMetrics,
+						frameMetrics,
+					] );
 				} )
 			);
 
 			if ( i > throwaway ) {
-				allFrameMetrics.forEach( ( frameMetrics ) => {
+				frameMetricsById.forEach( ( frameMetrics, frameId ) => {
 					if ( ! frameMetrics ) return;
-					Object.entries( frameMetrics ).forEach(
-						( [ metric, value ] ) => {
-							// Skip frameId as it's not a numeric metric
-							if ( metric === 'frameId' ) return;
+					const existingResults: FrameMetricsCollection =
+						results.get( frameId ) ||
+						( {} as FrameMetricsCollection );
 
-							if ( ! results[ metric ] ) {
-								results[ metric ] = [];
+					frameMetrics.forEach( ( metric, metricKey ) => {
+						Object.entries( metric ).forEach(
+							( [ key, value ] ) => {
+								existingResults[ key ] = [
+									...( existingResults[ key ] || [] ),
+									value,
+								];
+
+								results.set( frameId, existingResults );
 							}
-							results[ metric ].push( value );
-						}
-					);
+						);
+					} );
 				} );
 
 				if ( ! results[ 'requestCount' ] ) {
