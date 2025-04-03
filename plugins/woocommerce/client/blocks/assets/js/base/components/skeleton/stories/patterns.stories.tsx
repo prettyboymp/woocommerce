@@ -7,7 +7,7 @@ import { Meta, StoryObj } from '@storybook/react';
  * Internal dependencies
  */
 import { Skeleton, SkeletonProps } from '../';
-import { ProductNoticeSkeleton } from '../patterns/product-notice';
+import { ProductShortDescriptionSkeleton } from '../patterns/product-short-description';
 import { CartExpressPaymentsSkeleton } from '../patterns/cart-express-payments';
 import { CartLineItemsSkeleton } from '../patterns/cart-line-items';
 import { CartOrderSummarySkeleton } from '../patterns/cart-order-summary';
@@ -42,16 +42,16 @@ export default {
 	},
 } as Meta< SkeletonProps >;
 
-export const ProductNoticeSkeletonStory: StoryObj = {
-	render: () => <ProductNoticeSkeleton />,
-	storyName: 'Product Notice skeleton',
+export const ProductShortDescriptionSkeletonStory: StoryObj = {
+	render: () => <ProductShortDescriptionSkeleton />,
+	storyName: 'Product Short Description skeleton',
 	parameters: {
 		docs: {
 			source: {
-				code: '<ProductNoticeSkeleton />',
+				code: '<ProductShortDescriptionSkeleton />',
 			},
 			description: {
-				story: 'The skeleton pattern for the product notices.',
+				story: 'The skeleton pattern for the product short description.',
 			},
 		},
 	},

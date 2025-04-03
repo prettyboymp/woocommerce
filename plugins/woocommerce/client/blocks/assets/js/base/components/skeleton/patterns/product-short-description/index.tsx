@@ -1,9 +1,9 @@
 /**
  * Internal dependencies
  */
-import { Skeleton } from '../../';
+import { Skeleton } from '../..';
 
-export const ProductNoticeSkeleton = () => {
+export const ProductShortDescriptionSkeleton = () => {
 	return (
 		<div className="wc-block-components-skeleton">
 			<Skeleton height="16px" />
