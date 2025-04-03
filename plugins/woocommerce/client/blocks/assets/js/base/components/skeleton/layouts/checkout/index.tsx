@@ -1,6 +1,7 @@
 /**
  * Internal dependencies
  */
+import { CheckoutOrderSummaryMobileSkeleton } from '../../patterns/checkout-order-summary-mobile';
 import { CheckoutContactSkeleton } from '../../patterns/checkout-contact';
 import { CheckoutDeliverySkeleton } from '../../patterns/checkout-delivery';
 import { CheckoutPaymentSkeleton } from '../../patterns/checkout-payment';
@@ -13,6 +14,7 @@ export const CheckoutSkeleton = () => {
 	return (
 		<div className="wc-block-components-sidebar-layout">
 			<div className="wc-block-components-main">
+				<CheckoutOrderSummaryMobileSkeleton />
 				<CheckoutContactSkeleton />
 				<CheckoutDeliverySkeleton />
 				<CheckoutPaymentSkeleton />

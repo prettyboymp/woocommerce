@@ -15,3 +15,9 @@
 .wc-block-components-skeleton {
 	margin-bottom: $gap-largest;
 }
+
+@media (min-width: 834px) {
+	.wc-block-components-skeleton.wc-block-components-skeleton--checkout-order-summary-mobile {
+		display: none;
+	}
+}
