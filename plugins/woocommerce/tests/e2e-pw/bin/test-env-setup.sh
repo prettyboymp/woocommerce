@@ -60,6 +60,7 @@ wp-env run tests-cli wp media import './test-data/images/image-01.png' './test-d
 # Importing WooCommerce sample products"
 wp-env run tests-cli wp plugin install wordpress-importer --activate
 wp-env run tests-cli wp import wp-content/plugins/woocommerce/sample-data/sample_products.xml --authors=skip
+wp-env run tests-cli wp media list --format=ids | xargs -0 wp-env run tests-cli wp media delete
 
 echo -e 'Regenerate product lookup tables \n'
 wp-env run tests-cli wp wc tool run regenerate_product_lookup_tables --user=1
