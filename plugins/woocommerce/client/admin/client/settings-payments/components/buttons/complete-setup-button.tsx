@@ -48,6 +48,14 @@ interface CompleteSetupButtonProps {
 	 * ID of the plugin that is being installed.
 	 */
 	installingPlugin: string | null;
+	/**
+	 * Function to set the onboarding modal open.
+	 */
+	setOnboardingModalOpen: ( isOnboardingModalOpen: boolean ) => void;
+	/**
+	 * The onboarding type for the gateway.
+	 */
+	onboardingType?: string;
 }
 
 /**
@@ -64,6 +72,8 @@ export const CompleteSetupButton = ( {
 	gatewayHasRecommendedPaymentMethods,
 	installingPlugin,
 	buttonText = __( 'Complete setup', 'woocommerce' ),
+	setOnboardingModalOpen,
+	onboardingType,
 }: CompleteSetupButtonProps ) => {
 	const [ isUpdating, setIsUpdating ] = useState( false );
 
@@ -82,7 +92,9 @@ export const CompleteSetupButton = ( {
 
 		setIsUpdating( true );
 
-		if ( ! accountConnected || ! onboardingStarted ) {
+		if ( onboardingType === 'native_in_context' ) {
+			setOnboardingModalOpen( true );
+		} else if ( ! accountConnected || ! onboardingStarted ) {
 			if ( gatewayHasRecommendedPaymentMethods ) {
 				const history = getHistory();
 				history.push( getNewPath( {}, '/payment-methods' ) );
