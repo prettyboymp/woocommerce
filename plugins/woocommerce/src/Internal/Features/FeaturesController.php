@@ -580,7 +580,7 @@ class FeaturesController {
 		// We want to hide this setting in the UI for users that don't have it enabled.
 		// If users have it enabled, we won't hide it until they explicitly disable it.
 		if ( ! $this->feature_is_enabled( 'product_block_editor' ) ) {
-			unset( $features['product_block_editor'] );
+			$features['product_block_editor']['disable_ui'] = true;
 		}
 
 		return $features;
