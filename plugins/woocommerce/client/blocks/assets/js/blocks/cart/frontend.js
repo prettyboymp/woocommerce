@@ -2,10 +2,14 @@
  * External dependencies
  */
 import { getValidBlockAttributes } from '@woocommerce/base-utils';
-import { Children, cloneElement, isValidElement } from '@wordpress/element';
+import {
+	Children,
+	cloneElement,
+	isValidElement,
+	useEffect,
+} from '@wordpress/element';
 import { useStoreCart } from '@woocommerce/base-context';
 import { getRegisteredBlockComponents } from '@woocommerce/blocks-registry';
-
 import { renderParentBlock } from '@woocommerce/atomic-utils';
 
 /**
@@ -14,6 +18,7 @@ import { renderParentBlock } from '@woocommerce/atomic-utils';
 import './inner-blocks/register-components';
 import Block from './block';
 import { blockName, blockAttributes } from './attributes';
+import { renderCartSkeleton } from './cart-skeleton';
 
 const getProps = ( el ) => {
 	return {
@@ -27,7 +32,22 @@ const getProps = ( el ) => {
 const Wrapper = ( { children } ) => {
 	// we need to pluck out receiveCart.
 	// eslint-disable-next-line no-unused-vars
-	const { extensions, receiveCart, ...cart } = useStoreCart();
+	const { extensions, receiveCart, cartIsLoading, ...cart } = useStoreCart();
+
+	useEffect( () => {
+		// Only remove skeleton when cart is done loading and cart block is rendered
+		if ( ! cartIsLoading ) {
+			const cartElement = document.querySelector(
+				'.wp-block-woocommerce-cart'
+			);
+			const skeletonElement = document.getElementById( 'cart-skeleton' );
+
+			if ( cartElement && skeletonElement ) {
+				skeletonElement.remove();
+			}
+		}
+	}, [ cartIsLoading ] );
+
 	return Children.map( children, ( child ) => {
 		if ( isValidElement( child ) ) {
 			const componentProps = {
@@ -39,6 +59,8 @@ const Wrapper = ( { children } ) => {
 		return child;
 	} );
 };
+
+renderCartSkeleton();
 
 renderParentBlock( {
 	Block,

@@ -221,7 +221,7 @@ class Cart extends AbstractBlock {
 			$content = preg_replace( $regex_for_order_summary, $order_summary_with_inner_blocks, $content );
 		}
 
-		return $content;
+		return '<div id="cart-skeleton"></div>' . $content;
 	}
 
 	/**
