@@ -181,3 +181,100 @@
 		display: none;
 	}
 }
+
+.is-large.wc-block-cart.wc-block-components-skeleton--cart-line-items {
+	margin: 0;
+	padding: 0;
+
+	.wc-block-cart-items {
+		border: 0;
+		margin-bottom: 0;
+
+		th {
+			height: 0;
+			padding: 0;
+		}
+
+		td {
+			border: 0;
+		}
+	}
+}
+
+.wc-block-components-skeleton.wc-block-components-skeleton--cart-order-summary {
+	gap: 0;
+	border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+	margin-bottom: $gap-large;
+
+	.wc-block-components-skeleton__row {
+		padding: $gap-small;
+		display: flex;
+		gap: 1rem;
+		justify-content: space-between;
+
+		&:not(:last-child) {
+			position: relative;
+
+			&::after {
+				content: "";
+				position: absolute;
+				bottom: 0;
+				left: $gap-small;
+				right: $gap-small;
+				height: 1px;
+				background: color-mix(in srgb, currentColor 10%, transparent);
+			}
+		}
+	}
+}
+
+.wc-block-components-skeleton {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+// To display .wc-block-components-skeleton__element in Storybook,
+// we cannot nest it within .wc-block-components-skeleton.
+.wc-block-components-skeleton__element {
+	background: color-mix(in srgb, currentColor 5%, transparent);
+	border-radius: $universal-border-radius;
+	position: relative;
+	overflow: hidden;
+
+	&::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		transform: translateX(-100%);
+		/* stylelint-disable declaration-colon-newline-after, function-parentheses-space-inside, function-comma-space-after */
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			color-mix(in srgb, currentColor 5%, transparent) 50%,
+			transparent 100%
+		);
+		/* stylelint-enable */
+		animation: wc-skeleton-shimmer 1.25s infinite;
+	}
+}
+
+@keyframes wc-skeleton-shimmer {
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+@media (max-width: 833px) {
+	.wc-block-components-sidebar-layout {
+		.wc-block-components-main {
+			padding: 0;
+			width: 100%;
+		}
+
+		.wc-block-components-sidebar {
+			width: 100%;
+			padding: 0;
+		}
+	}
+}

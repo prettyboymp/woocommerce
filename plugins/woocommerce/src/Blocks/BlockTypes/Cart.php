@@ -3,7 +3,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
 use Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils;
 use Automattic\WooCommerce\StoreApi\Utilities\LocalPickupUtils;
-
+use Automattic\WooCommerce\Blocks\Skeleton\CartSkeleton;
 /**
  * Cart class.
  *
@@ -145,6 +145,7 @@ class Cart extends AbstractBlock {
 		 */
 		do_action( 'woocommerce_blocks_enqueue_cart_block_scripts_before' );
 		parent::enqueue_assets( $attributes, $content, $block );
+
 		/**
 		 * Fires after cart block scripts are enqueued.
 		 *
@@ -221,7 +222,9 @@ class Cart extends AbstractBlock {
 			$content = preg_replace( $regex_for_order_summary, $order_summary_with_inner_blocks, $content );
 		}
 
-		return '<div id="cart-skeleton"></div>' . $content;
+		$skeleton = CartSkeleton::get_html();
+
+		return $skeleton . $content;
 	}
 
 	/**
