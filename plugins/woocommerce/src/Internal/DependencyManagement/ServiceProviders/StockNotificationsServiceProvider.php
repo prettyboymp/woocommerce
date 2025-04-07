@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore Suin.Classes.PSR4
 /**
  * StockNotificationsServiceProvider class file.
  */
