@@ -1,6 +1,6 @@
 <?php // phpcs:ignore Suin.Classes.PSR4
 /**
- * StockNotificationsTableDataStore class file.
+ * StockNotificationsDataStore class file.
  */
 
 declare( strict_types = 1 );
@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * Hint: Implement \WC_Object_Data_Store_Interface
  */
-class StockNotificationsTableDataStore {
+class StockNotificationsDataStore {
 
 	/**
 	 * The database util object to use.

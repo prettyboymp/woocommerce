@@ -11,7 +11,7 @@ use Automattic\WooCommerce\Admin\Notes\Notes;
 use Automattic\WooCommerce\Enums\ProductType;
 use Automattic\WooCommerce\Internal\TransientFiles\TransientFilesEngine;
 use Automattic\WooCommerce\Internal\DataStores\Orders\{ CustomOrdersTableController, DataSynchronizer, OrdersTableDataStore };
-use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsTableDataStore;
+use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsDataStore;
 use Automattic\WooCommerce\Internal\Features\FeaturesController;
 use Automattic\WooCommerce\Internal\ProductAttributesLookup\DataRegenerator;
 use Automattic\WooCommerce\Internal\ProductDownloads\ApprovedDirectories\Register as Download_Directories;
@@ -1593,7 +1593,7 @@ class WC_Install {
 		$hpos_table_schema  = $hpos_enabled ? wc_get_container()->get( OrdersTableDataStore::class )->get_database_schema() : '';
 
 		// Stock Notifications Table Schema.
-		$stock_notifications_table_schema = wc_get_container()->get( StockNotificationsTableDataStore::class )->get_database_schema();
+		$stock_notifications_table_schema = wc_get_container()->get( StockNotificationsDataStore::class )->get_database_schema();
 
 		$tables = "
 CREATE TABLE {$wpdb->prefix}woocommerce_sessions (
