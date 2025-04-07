@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace Automattic\WooCommerce\Blocks\BlockTypes\Accordion;
 
-use Automattic\WooCommerce\Blocks\BlockTypes\AbstractInteractivityAPIBlock;
+use Automattic\WooCommerce\Blocks\BlockTypes\AbstractInteractiveBlock;
 
 /**
  * AccordionGroup class.
  */
-class AccordionGroup extends AbstractInteractivityAPIBlock {
+class AccordionGroup extends AbstractInteractiveBlock {
 
 	/**
 	 * Block name.

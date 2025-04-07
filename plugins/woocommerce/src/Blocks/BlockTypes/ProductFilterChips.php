@@ -6,7 +6,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * Product Filter: Chips Block.
  */
-final class ProductFilterChips extends AbstractInteractivityAPIBlock {
+final class ProductFilterChips extends AbstractInteractiveBlock {
 
 	/**
 	 * Block name.

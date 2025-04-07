@@ -11,7 +11,7 @@ use Automattic\WooCommerce\Internal\ProductFilters\QueryClauses;
 /**
  * Product Filter: Price Block.
  */
-final class ProductFilterPrice extends AbstractInteractivityAPIBlock {
+final class ProductFilterPrice extends AbstractInteractiveBlock {
 
 	/**
 	 * Block name.

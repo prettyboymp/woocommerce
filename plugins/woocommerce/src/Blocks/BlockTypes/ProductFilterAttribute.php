@@ -10,7 +10,7 @@ use Automattic\WooCommerce\Internal\ProductFilters\QueryClauses;
 /**
  * Product Filter: Attribute Block.
  */
-final class ProductFilterAttribute extends AbstractInteractivityAPIBlock {
+final class ProductFilterAttribute extends AbstractInteractiveBlock {
 
 	/**
 	 * Block name.

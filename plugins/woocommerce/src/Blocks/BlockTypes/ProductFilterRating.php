@@ -13,7 +13,7 @@ use Automattic\WooCommerce\Internal\ProductFilters\QueryClauses;
  *
  * @package Automattic\WooCommerce\Blocks\BlockTypes
  */
-final class ProductFilterRating extends AbstractInteractivityAPIBlock {
+final class ProductFilterRating extends AbstractInteractiveBlock {
 	/**
 	 * Block name.
 	 *

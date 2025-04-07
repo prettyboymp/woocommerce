@@ -6,7 +6,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * Product Filter: Checkbox List Block.
  */
-final class ProductFilterCheckboxList extends AbstractInteractivityAPIBlock {
+final class ProductFilterCheckboxList extends AbstractInteractiveBlock {
 
 	/**
 	 * Block name.

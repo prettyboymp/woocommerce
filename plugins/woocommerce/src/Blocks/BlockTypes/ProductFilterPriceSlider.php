@@ -12,7 +12,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * ProductFilterPriceSlider class.
  */
-class ProductFilterPriceSlider extends AbstractInteractivityAPIBlock {
+class ProductFilterPriceSlider extends AbstractInteractiveBlock {
 
 	/**
 	 * Block name.

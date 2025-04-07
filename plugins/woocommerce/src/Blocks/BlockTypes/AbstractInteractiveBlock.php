@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
 /**
- * AbstractInteractivityAPIBlock class.
+ * AbstractInteractiveBlock class.
  */
-abstract class AbstractInteractivityAPIBlock extends AbstractBlock {
+abstract class AbstractInteractiveBlock extends AbstractBlock {
 
 	/**
 	 * The default render_callback for all blocks. This will ensure assets are enqueued just in time, then render

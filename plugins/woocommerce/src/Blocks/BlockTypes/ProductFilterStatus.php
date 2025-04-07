@@ -9,7 +9,7 @@ use Automattic\WooCommerce\Internal\ProductFilters\QueryClauses;
 /**
  * Product Filter: Status Block.
  */
-final class ProductFilterStatus extends AbstractInteractivityAPIBlock {
+final class ProductFilterStatus extends AbstractInteractiveBlock {
 
 	/**
 	 * Block name.

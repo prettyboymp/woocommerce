@@ -7,7 +7,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * ProductFilters class.
  */
-class ProductFilters extends AbstractInteractivityAPIBlock {
+class ProductFilters extends AbstractInteractiveBlock {
 	/**
 	 * Block name.
 	 *
