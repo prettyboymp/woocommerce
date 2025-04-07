@@ -3,6 +3,8 @@
  * StockNotificationsTableDataStore class file.
  */
 
+declare( strict_types = 1 );
+
 namespace Automattic\WooCommerce\Internal\DataStores\StockNotifications;
 
 use Automattic\WooCommerce\Internal\Utilities\DatabaseUtil;
@@ -11,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * This class is the standard data store to be used when the custom orders table is in use.
  *
- * TODO: Implement \WC_Object_Data_Store_Interface
+ * Hint: Implement \WC_Object_Data_Store_Interface
  */
 class StockNotificationsTableDataStore {
 
