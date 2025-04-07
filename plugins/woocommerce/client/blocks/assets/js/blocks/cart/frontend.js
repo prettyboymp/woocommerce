@@ -18,7 +18,6 @@ import { renderParentBlock } from '@woocommerce/atomic-utils';
 import './inner-blocks/register-components';
 import Block from './block';
 import { blockName, blockAttributes } from './attributes';
-import { renderCartSkeleton } from './cart-skeleton';
 
 const getProps = ( el ) => {
 	return {
@@ -59,8 +58,6 @@ const Wrapper = ( { children } ) => {
 		return child;
 	} );
 };
-
-renderCartSkeleton();
 
 renderParentBlock( {
 	Block,
