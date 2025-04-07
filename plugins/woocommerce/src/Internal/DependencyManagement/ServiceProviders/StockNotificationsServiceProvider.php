@@ -22,7 +22,7 @@ class StockNotificationsServiceProvider extends AbstractServiceProvider {
 	 * @var array
 	 */
 	protected $provides = array(
-		StockNotificationsDataStore::class
+		StockNotificationsDataStore::class,
 	);
 
 	/**
