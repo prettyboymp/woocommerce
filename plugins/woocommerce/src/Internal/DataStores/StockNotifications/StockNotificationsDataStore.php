@@ -36,7 +36,7 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	 * @internal
 	 *
 	 * @param StockNotificationsMetaDataStore $data_store_meta The data store meta instance to use.
-	 * @param DatabaseUtil $database_util                      The database util instance to use.
+	 * @param DatabaseUtil                    $database_util   The database util instance to use.
 	 *
 	 * @return void
 	 */
@@ -147,8 +147,8 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Filter the raw meta data.
 	 *
-	 * @param \WC_Data $notification The data object to filter.
-	 * @param array $raw_meta_data   The raw meta data to filter.
+	 * @param \WC_Data $notification  The data object to filter.
+	 * @param array    $raw_meta_data The raw meta data to filter.
 	 * @return array
 	 */
 	public function filter_raw_meta_data( &$notification, array $raw_meta_data ): array {
@@ -246,7 +246,7 @@ CREATE TABLE $logs_table_name (
 	 * Delete a stock notification.
 	 *
 	 * @param \WC_Data $notification The data object to delete.
-	 * @param array $args            Additional arguments.
+	 * @param array    $args         Additional arguments.
 	 * @return void
 	 */
 	public function delete( &$notification, $args = array() ) {
@@ -262,8 +262,8 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Add meta.
 	 *
-	 * @param \WC_Data $notification The data object to add.
-	 * @param \stdClass $meta        The meta object to add (containing ->key and ->value).
+	 * @param \WC_Data  $notification The data object to add.
+	 * @param \stdClass $meta         The meta object to add (containing ->key and ->value).
 	 * @return int|false meta ID
 	 */
 	public function add_meta( &$notification, $meta ) {
@@ -288,8 +288,8 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Update meta.
 	 *
-	 * @param \WC_Data $notification The data object to update.
-	 * @param \stdClass $meta        The meta object to update.
+	 * @param \WC_Data  $notification The data object to update.
+	 * @param \stdClass $meta         The meta object to update.
 	 * @return bool
 	 */
 	public function update_meta( &$notification, $meta ): bool {
@@ -302,8 +302,8 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Delete meta.
 	 *
-	 * @param \WC_Data $notification The data object to delete.
-	 * @param \stdClass $meta        The meta object to delete.
+	 * @param \WC_Data  $notification The data object to delete.
+	 * @param \stdClass $meta         The meta object to delete.
 	 * @return bool
 	 */
 	public function delete_meta( &$notification, $meta ): bool {
@@ -316,8 +316,8 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Perform after meta change operations.
 	 *
-	 * @param \WC_Data $notification The notification object.
-	 * @param \WC_Meta_Data $meta    Metadata object.
+	 * @param \WC_Data      $notification The notification object.
+	 * @param \WC_Meta_Data $meta         Metadata object.
 	 *
 	 * @return bool True if changes were applied, false otherwise.
 	 */
@@ -355,7 +355,7 @@ CREATE TABLE $logs_table_name (
 		/**
 		 * Allows code to skip a full notification save() when metadata is changed.
 		 *
-		 * @since <x.x.x>
+		 * @since <x.x.x> // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingSinceVersionComment
 		 *
 		 * @param bool $should_save Whether to trigger a full save after metadata is changed.
 		 */
@@ -366,7 +366,7 @@ CREATE TABLE $logs_table_name (
 	 * Create a log.
 	 *
 	 * @param \WC_Data $notification The data object to create the log for.
-	 * @param array $args            Additional arguments.
+	 * @param array    $args         Additional arguments.
 	 * @return int|false The log ID or false if the log was not created.
 	 */
 	public function create_log( &$notification, $args ) {
