@@ -8,6 +8,7 @@ declare( strict_types = 1 );
 namespace Automattic\WooCommerce\Internal\DataStores\StockNotifications;
 
 use Automattic\WooCommerce\Internal\Utilities\DatabaseUtil;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -23,15 +24,25 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	protected $database_util;
 
 	/**
+	 * Handles custom metadata in the wc_stock_notificationmeta table.
+	 *
+	 * @var StockNotificationsMetaDataStore
+	 */
+	protected $data_store_meta;
+
+	/**
 	 * Initialize.
 	 *
 	 * @internal
+	 *
+	 * @param StockNotificationsMetaDataStore $data_store_meta The data store meta instance to use.
 	 * @param DatabaseUtil $database_util The database util instance to use.
 	 *
 	 * @return void
 	 */
-	final public function init( DatabaseUtil $database_util ) {
-		$this->database_util = $database_util;
+	final public function init( StockNotificationsMetaDataStore $data_store_meta, DatabaseUtil $database_util ) {
+		$this->data_store_meta = $data_store_meta;
+		$this->database_util   = $database_util;
 	}
 
 	/**
@@ -39,9 +50,9 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	 *
 	 * @return string
 	 */
-	public static function get_table_name() {
+	public static function get_table_name(): string {
 		global $wpdb;
-		return $wpdb->prefix . 'woocommerce_stock_notifications';
+		return $wpdb->prefix . 'wc_stock_notifications';
 	}
 
 	/**
@@ -49,9 +60,9 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	 *
 	 * @return string
 	 */
-	public static function get_meta_table_name() {
+	public static function get_meta_table_name(): string {
 		global $wpdb;
-		return $wpdb->prefix . 'woocommerce_stock_notificationmeta';
+		return $wpdb->prefix . 'wc_stock_notificationmeta';
 	}
 
 	/**
@@ -59,9 +70,9 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	 *
 	 * @return string
 	 */
-	public static function get_logs_table_name() {
+	public static function get_logs_table_name(): string {
 		global $wpdb;
-		return $wpdb->prefix . 'woocommerce_stock_notifications_logs';
+		return $wpdb->prefix . 'wc_stock_notifications_logs';
 	}
 
 	/**
@@ -69,26 +80,27 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	 *
 	 * @return string
 	 */
-	public function get_database_schema() {
+	public function get_database_schema(): string {
 		global $wpdb;
 
 		$collate = $wpdb->has_cap( 'collation' ) ? $wpdb->get_charset_collate() : '';
 
-		$notifications_table_name = $this->get_table_name();
+		$table_name = $this->get_table_name();
 		$meta_table_name          = $this->get_meta_table_name();
 		$logs_table_name          = $this->get_logs_table_name();
 		$max_index_length         = $this->database_util->get_max_index_length();
 
 		$sql = "
-CREATE TABLE $notifications_table_name (
+CREATE TABLE $table_name (
 	id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	product_id bigint(20) unsigned NOT NULL,
 	user_id bigint(20) unsigned NOT NULL,
 	user_email varchar(100) NOT NULL,
 	status varchar(20) NOT NULL DEFAULT 'pending',
-	date_created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	date_subscribed timestamp NULL,
-	date_last_notified timestamp NULL,
+	date_created_gmt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	date_modified_gmt datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+	date_subscribed_gmt datetime  NOT NULL DEFAULT '0000-00-00 00:00:00',
+	date_notified_gmt datetime  NOT NULL DEFAULT '0000-00-00 00:00:00',
 	is_queued tinyint(1) NOT NULL DEFAULT 0,
 	PRIMARY KEY  (id),
 	KEY product_status_queue (product_id, status, is_queued),
@@ -111,7 +123,7 @@ CREATE TABLE $logs_table_name (
 	user_id bigint(20) unsigned NOT NULL,
 	user_email varchar(100) NOT NULL,
 	ip_address VARCHAR(45) NULL,
-	date_logged timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	date_logged_gmt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	note text NOT NULL,
 	PRIMARY KEY  (id),
 	KEY notification_id (notification_id),
@@ -128,7 +140,7 @@ CREATE TABLE $logs_table_name (
 	 *
 	 * @return array
 	 */
-	public function get_internal_meta_keys() {
+	public function get_internal_meta_keys(): array {
 		return array();
 	}
 
@@ -139,7 +151,7 @@ CREATE TABLE $logs_table_name (
 	 * @param array $raw_meta_data The raw meta data to filter.
 	 * @return array
 	 */
-	public function filter_raw_meta_data( &$notification, $raw_meta_data ) {
+	public function filter_raw_meta_data( &$notification, array $raw_meta_data ): array {
 		return $raw_meta_data;
 	}
 
@@ -156,13 +168,15 @@ CREATE TABLE $logs_table_name (
 
 		$data           = $notification->get_data();
 		$data_to_insert = array(
-			'product_id'         => $data['product_id'],
-			'user_id'            => $data['user_id'],
-			'user_email'         => $data['user_email'],
-			'status'             => $data['status'],
-			'date_created'       => $data['date_created'],
-			'date_subscribed'    => $data['date_subscribed'],
-			'date_last_notified' => $data['date_last_notified'],
+			'product_id'          => $data['product_id'],
+			'user_id'             => $data['user_id'],
+			'user_email'          => $data['user_email'],
+			'status'              => $data['status'],
+			'date_created_gmt'    => $data['date_created_gmt'],
+			'date_modified_gmt'   => $data['date_modified_gmt'],
+			'date_subscribed_gmt' => $data['date_subscribed_gmt'],
+			'date_notified_gmt'   => $data['date_notified_gmt'],
+			'is_queued'           => $data['is_queued'],
 		);
 
 		$wpdb->insert( $this->get_table_name(), $data_to_insert );
@@ -184,15 +198,16 @@ CREATE TABLE $logs_table_name (
 		}
 
 		$notification->set_props( array(
-			'id'                 => $data->id,
-			'product_id'         => $data->product_id,
-			'user_id'            => $data->user_id,
-			'user_email'         => $data->user_email,
-			'status'             => $data->status,
-			'date_created'       => $data->date_created,
-			'date_subscribed'    => $data->date_subscribed,
-			'date_last_notified' => $data->date_last_notified,
-			'is_queued'          => $data->is_queued,
+			'id'                  => $data->id,
+			'product_id'          => $data->product_id,
+			'user_id'             => $data->user_id,
+			'user_email'          => $data->user_email,
+			'status'              => $data->status,
+			'date_created_gmt'    => $data->date_created_gmt,
+			'date_modified_gmt'   => $data->date_modified_gmt,
+			'date_subscribed_gmt' => $data->date_subscribed_gmt,
+			'date_notified_gmt'   => $data->date_notified_gmt,
+			'is_queued'           => $data->is_queued,
 		));
 
 		$notification->set_object_read( true );
@@ -209,13 +224,14 @@ CREATE TABLE $logs_table_name (
 
 		$data           = $notification->get_data();
 		$data_to_update = array(
-			'product_id'         => $data['product_id'],
-			'user_id'            => $data['user_id'],
-			'user_email'         => $data['user_email'],
-			'status'             => $data['status'],
-			'date_subscribed'    => $data['date_subscribed'],
-			'date_last_notified' => $data['date_last_notified'],
-			'is_queued'          => $data['is_queued'],
+			'product_id'          => $data['product_id'],
+			'user_id'             => $data['user_id'],
+			'user_email'          => $data['user_email'],
+			'status'              => $data['status'],
+			'date_modified_gmt'   => current_time( 'mysql' ),
+			'date_subscribed_gmt' => $data['date_subscribed_gmt'],
+			'date_notified_gmt'   => $data['date_notified_gmt'],
+			'is_queued'           => $data['is_queued'],
 		);
 
 		$wpdb->update( $this->get_table_name(), $data_to_update, array( 'id' => $notification->get_id() ) );
@@ -225,6 +241,10 @@ CREATE TABLE $logs_table_name (
 	 * Delete a stock notification.
 	 *
 	 * @param \WC_Data $notification The data object to delete.
+	 * @param array $args {
+	 *     @type bool $delete_meta Whether to delete the meta.
+	 *     @type bool $delete_logs Whether to delete the logs.
+	 * }
 	 * @return void
 	 */
 	public function delete( &$notification, $args = array() ) {
@@ -232,10 +252,8 @@ CREATE TABLE $logs_table_name (
 
 		$wpdb->delete( $this->get_table_name(), array( 'id' => $notification->get_id() ) );
 
-		// Delete the meta.
 		$wpdb->delete( $this->get_meta_table_name(), array( 'notification_id' => $notification->get_id() ) );
 
-		// Delete the logs.
 		$wpdb->delete( $this->get_logs_table_name(), array( 'notification_id' => $notification->get_id() ) );
 	}
 
@@ -243,27 +261,15 @@ CREATE TABLE $logs_table_name (
 	 * Add meta.
 	 *
 	 * @param \WC_Data $notification The data object to add.
-	 * @param \stdClass $meta The meta object to add.
+	 * @param \stdClass $meta The meta object to add (containing ->key and ->value).
 	 * @return int|false meta ID
 	 */
-	public function add_meta( &$notification, $meta ) {
-		global $wpdb;
+	public function add_meta( &$notification, $meta ): int|false {
+		$add_meta        = $this->data_store_meta->add_meta( $notification, $meta );
+		$meta->id        = $add_meta;
+		$changes_applied = $this->after_meta_change( $object, $meta );
 
-		$object_id = $notification->get_id();
-		if ( ! $object_id ) {
-			return false;
-		}
-
-		$meta_key   = wp_unslash( wp_slash( $meta->key ) );
-		$meta_value = maybe_serialize( is_string( $meta->value ) ? wp_unslash( wp_slash( $meta->value ) ) : $meta->value );
-
-		$result = $wpdb->insert( $this->get_meta_table_name(), array(
-			'notification_id' => $object_id,
-			'meta_key'        => $meta_key,
-			'meta_value'      => $meta_value,
-		) );
-
-		return $result ? (int) $wpdb->insert_id : false;
+		return $add_meta && $changes_applied ? $add_meta : false;
 	}
 
 	/**
@@ -272,21 +278,8 @@ CREATE TABLE $logs_table_name (
 	 * @param \WC_Data $notification The data object to read.
 	 * @return array
 	 */
-	public function read_meta( &$notification ) {
-		global $wpdb;
-
-		$meta_rows = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i WHERE notification_id = %d", $this->get_meta_table_name(), $notification->get_id() ) );
-
-		// Format output.
-		$raw_meta_data = array();
-		foreach ( $meta_rows as $meta ) {
-			$raw_meta_data[] = (object) array(
-				'meta_id'    => $meta->meta_id,
-				'meta_key'   => $meta->meta_key,
-				'meta_value' => $meta->meta_value,
-			);
-		}
-
+	public function read_meta( &$notification ): array {
+		$raw_meta_data = $this->data_store_meta->read_meta( $notification );
 		return $this->filter_raw_meta_data( $notification, $raw_meta_data );
 	}
 
@@ -297,31 +290,11 @@ CREATE TABLE $logs_table_name (
 	 * @param \stdClass $meta The meta object to update.
 	 * @return bool
 	 */
-	public function update_meta( &$notification, $meta ) {
-		global $wpdb;
+	public function update_meta( &$notification, $meta ): bool {
+		$update_meta     = $this->data_store_meta->update_meta( $notification, $meta );
+		$changes_applied = $this->after_meta_change( $notification, $meta );
 
-		if ( ! isset( $meta->id ) || empty( $meta->key ) || ! $notification->get_id() ) {
-			return false;
-		}
-
-		$data = array(
-			'meta_key'   => $meta->key,
-			'meta_value' => maybe_serialize( $meta->value ),
-		);
-
-		$meta_id = absint( $meta->id );
-
-		$result = $wpdb->update(
-			$this->get_meta_table_name(),
-			$data,
-			array(
-				'meta_id' => $meta_id,
-			),
-			'%s',
-			'%d'
-		);
-
-		return 1 === $result;
+		return $update_meta && $changes_applied;
 	}
 
 	/**
@@ -331,22 +304,60 @@ CREATE TABLE $logs_table_name (
 	 * @param \stdClass $meta The meta object to delete.
 	 * @return bool
 	 */
-	public function delete_meta( &$notification, $meta ) {
-		global $wpdb;
+	public function delete_meta( &$notification, $meta ): bool {
+		$delete_meta     = $this->data_store_meta->delete_meta( $notification, $meta );
+		$changes_applied = $this->after_meta_change( $notification, $meta );
 
-		if ( ! isset( $meta->id ) ) {
-			return false;
+		return $delete_meta && $changes_applied;
+	}
+
+	/**
+	 * Perform after meta change operations.
+	 *
+	 * @param \WC_Data $notification The notification object.
+	 * @param \WC_Meta_Data $meta Metadata object.
+	 *
+	 * @return bool True if changes were applied, false otherwise.
+	 */
+	private function after_meta_change( &$notification, $meta ): bool {
+		method_exists( $meta, 'apply_changes' ) && $meta->apply_changes();
+
+		// Prevent this happening multiple time in same request.
+		if ( $this->should_save_after_meta_change( $notification, $meta ) ) {
+			// $notification->set_date_modified_gmt( current_time( 'mysql' ) );
+			// $notification->save();
+			return true;
 		}
 
-		$meta_id = absint( $meta->id );
+		return false;
+	}
 
-		return (bool) $wpdb->delete(
-			$this->get_meta_table_name(),
-			array(
-				'meta_id' => $meta_id,
-			),
-			'%d'
-		);
+	/**
+	 * Check if the notification should be saved after meta change.
+	 *
+	 * @param \WC_Data $notification The notification object.
+	 * @param \WC_Meta_Data $meta Metadata object.
+	 *
+	 * @return bool
+	 */
+	private function should_save_after_meta_change( &$notification, $meta ): bool {
+		$current_time      = current_time( 'mysql' );
+		$current_date_time = new \WC_DateTime( $current_time, new \DateTimeZone( 'GMT' ) );
+
+		$should_save =
+			$notification->get_id() > 0
+			// && $notification->get_date_modified_gmt() < $current_date_time
+			&& empty( $notification->get_changes() )
+			&& ( ! is_object( $meta ) );
+
+		/**
+		 * Allows code to skip a full notification save() when metadata is changed.
+		 *
+		 * @since x.x.x
+		 *
+		 * @param bool $should_save Whether to trigger a full save after metadata is changed.
+		 */
+		return apply_filters( 'woocommerce_stock_notifications_datastore_should_save_after_meta_change', $should_save );
 	}
 
 	/**
@@ -362,7 +373,7 @@ CREATE TABLE $logs_table_name (
 	 * }s
 	 * @return int|false The log ID or false if the log was not created.
 	 */
-	public function create_log( &$notification, $args ) {
+	public function create_log( &$notification, $args ): int|false {
 		global $wpdb;
 
 		// TODO: Sanity check the args.
@@ -373,7 +384,7 @@ CREATE TABLE $logs_table_name (
 			'user_id'         => $args['user_id'],
 			'user_email'      => $args['user_email'],
 			'ip_address'      => $args['ip_address'],
-			'date_logged'     => current_time( 'mysql' ),
+			'date_logged_gmt'     => current_time( 'mysql' ),
 			'note'            => $args['note'],
 		);
 
