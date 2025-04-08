@@ -9,6 +9,7 @@ namespace Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders;
 
 use Automattic\WooCommerce\Internal\DependencyManagement\AbstractServiceProvider;
 use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsDataStore;
+use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsMetaDataStore;
 use Automattic\WooCommerce\Internal\Utilities\DatabaseUtil;
 
 /**
@@ -23,12 +24,13 @@ class StockNotificationsServiceProvider extends AbstractServiceProvider {
 	 */
 	protected $provides = array(
 		StockNotificationsDataStore::class,
+		StockNotificationsMetaDataStore::class,
 	);
 
 	/**
 	 * Register the classes.
 	 */
 	public function register() {
-		$this->share( StockNotificationsDataStore::class )->addArguments( array( DatabaseUtil::class ) );
+		$this->share( StockNotificationsDataStore::class )->addArguments( array( StockNotificationsMetaDataStore::class, DatabaseUtil::class ) );
 	}
 }
