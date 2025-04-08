@@ -111,7 +111,7 @@ class Init {
 			2,
 			0,
 			array(
-				array( 'Add new product ( data forms )', 'manage_options', $permalink )
+				array( 'Add new product ( data forms )', 'manage_options', $permalink ),
 			)
 		);
 
