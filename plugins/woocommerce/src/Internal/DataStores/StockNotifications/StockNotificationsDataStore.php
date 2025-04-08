@@ -36,7 +36,7 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	 * @internal
 	 *
 	 * @param StockNotificationsMetaDataStore $data_store_meta The data store meta instance to use.
-	 * @param DatabaseUtil $database_util The database util instance to use.
+	 * @param DatabaseUtil $database_util                      The database util instance to use.
 	 *
 	 * @return void
 	 */
@@ -85,10 +85,10 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 
 		$collate = $wpdb->has_cap( 'collation' ) ? $wpdb->get_charset_collate() : '';
 
-		$table_name = $this->get_table_name();
-		$meta_table_name          = $this->get_meta_table_name();
-		$logs_table_name          = $this->get_logs_table_name();
-		$max_index_length         = $this->database_util->get_max_index_length();
+		$table_name       = $this->get_table_name();
+		$meta_table_name  = $this->get_meta_table_name();
+		$logs_table_name  = $this->get_logs_table_name();
+		$max_index_length = $this->database_util->get_max_index_length();
 
 		$sql = "
 CREATE TABLE $table_name (
@@ -148,7 +148,7 @@ CREATE TABLE $logs_table_name (
 	 * Filter the raw meta data.
 	 *
 	 * @param \WC_Data $notification The data object to filter.
-	 * @param array $raw_meta_data The raw meta data to filter.
+	 * @param array $raw_meta_data   The raw meta data to filter.
 	 * @return array
 	 */
 	public function filter_raw_meta_data( &$notification, array $raw_meta_data ): array {
@@ -186,29 +186,34 @@ CREATE TABLE $logs_table_name (
 	 * Read a stock notification.
 	 *
 	 * @param \WC_Data $notification The data object to read.
+	 *
+	 * @throws \Exception If the stock notification is not found.
+	 *
 	 * @return void
 	 */
 	public function read( &$notification ) {
 		global $wpdb;
 
-		$data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM %i WHERE id = %d", $this->get_table_name(), $notification->get_id() ) );
+		$data = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $this->get_table_name(), $notification->get_id() ) );
 
 		if ( ! $data ) {
 			throw new \Exception( 'Stock notification not found' );
 		}
 
-		$notification->set_props( array(
-			'id'                  => $data->id,
-			'product_id'          => $data->product_id,
-			'user_id'             => $data->user_id,
-			'user_email'          => $data->user_email,
-			'status'              => $data->status,
-			'date_created_gmt'    => $data->date_created_gmt,
-			'date_modified_gmt'   => $data->date_modified_gmt,
-			'date_subscribed_gmt' => $data->date_subscribed_gmt,
-			'date_notified_gmt'   => $data->date_notified_gmt,
-			'is_queued'           => $data->is_queued,
-		));
+		$notification->set_props(
+			array(
+				'id'                  => $data->id,
+				'product_id'          => $data->product_id,
+				'user_id'             => $data->user_id,
+				'user_email'          => $data->user_email,
+				'status'              => $data->status,
+				'date_created_gmt'    => $data->date_created_gmt,
+				'date_modified_gmt'   => $data->date_modified_gmt,
+				'date_subscribed_gmt' => $data->date_subscribed_gmt,
+				'date_notified_gmt'   => $data->date_notified_gmt,
+				'is_queued'           => $data->is_queued,
+			)
+		);
 
 		$notification->set_object_read( true );
 	}
@@ -241,10 +246,7 @@ CREATE TABLE $logs_table_name (
 	 * Delete a stock notification.
 	 *
 	 * @param \WC_Data $notification The data object to delete.
-	 * @param array $args {
-	 *     @type bool $delete_meta Whether to delete the meta.
-	 *     @type bool $delete_logs Whether to delete the logs.
-	 * }
+	 * @param array $args            Additional arguments.
 	 * @return void
 	 */
 	public function delete( &$notification, $args = array() ) {
@@ -261,10 +263,10 @@ CREATE TABLE $logs_table_name (
 	 * Add meta.
 	 *
 	 * @param \WC_Data $notification The data object to add.
-	 * @param \stdClass $meta The meta object to add (containing ->key and ->value).
+	 * @param \stdClass $meta        The meta object to add (containing ->key and ->value).
 	 * @return int|false meta ID
 	 */
-	public function add_meta( &$notification, $meta ): int|false {
+	public function add_meta( &$notification, $meta ) {
 		$add_meta        = $this->data_store_meta->add_meta( $notification, $meta );
 		$meta->id        = $add_meta;
 		$changes_applied = $this->after_meta_change( $object, $meta );
@@ -287,7 +289,7 @@ CREATE TABLE $logs_table_name (
 	 * Update meta.
 	 *
 	 * @param \WC_Data $notification The data object to update.
-	 * @param \stdClass $meta The meta object to update.
+	 * @param \stdClass $meta        The meta object to update.
 	 * @return bool
 	 */
 	public function update_meta( &$notification, $meta ): bool {
@@ -301,7 +303,7 @@ CREATE TABLE $logs_table_name (
 	 * Delete meta.
 	 *
 	 * @param \WC_Data $notification The data object to delete.
-	 * @param \stdClass $meta The meta object to delete.
+	 * @param \stdClass $meta        The meta object to delete.
 	 * @return bool
 	 */
 	public function delete_meta( &$notification, $meta ): bool {
@@ -315,7 +317,7 @@ CREATE TABLE $logs_table_name (
 	 * Perform after meta change operations.
 	 *
 	 * @param \WC_Data $notification The notification object.
-	 * @param \WC_Meta_Data $meta Metadata object.
+	 * @param \WC_Meta_Data $meta    Metadata object.
 	 *
 	 * @return bool True if changes were applied, false otherwise.
 	 */
@@ -336,7 +338,7 @@ CREATE TABLE $logs_table_name (
 	 * Check if the notification should be saved after meta change.
 	 *
 	 * @param \WC_Data $notification The notification object.
-	 * @param \WC_Meta_Data $meta Metadata object.
+	 * @param \WC_Meta_Data $meta    Metadata object.
 	 *
 	 * @return bool
 	 */
@@ -353,7 +355,7 @@ CREATE TABLE $logs_table_name (
 		/**
 		 * Allows code to skip a full notification save() when metadata is changed.
 		 *
-		 * @since x.x.x
+		 * @since <x.x.x>
 		 *
 		 * @param bool $should_save Whether to trigger a full save after metadata is changed.
 		 */
@@ -364,16 +366,10 @@ CREATE TABLE $logs_table_name (
 	 * Create a log.
 	 *
 	 * @param \WC_Data $notification The data object to create the log for.
-	 * @param array $args {
-	 *     @type string  $action      The action to create the log for.
-	 *     @type int     $user_id     The user ID to create the log for.
-	 *     @type string  $user_email  The user email to create the log for.
-	 *     @type string  $ip_address  The IP address to create the log for.
-	 *     @type string  $note        The note to create the log for.
-	 * }s
+	 * @param array $args            Additional arguments.
 	 * @return int|false The log ID or false if the log was not created.
 	 */
-	public function create_log( &$notification, $args ): int|false {
+	public function create_log( &$notification, $args ) {
 		global $wpdb;
 
 		// TODO: Sanity check the args.
