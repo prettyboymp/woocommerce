@@ -337,8 +337,8 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Check if the notification should be saved after meta change.
 	 *
-	 * @param \WC_Data $notification The notification object.
-	 * @param \WC_Meta_Data $meta    Metadata object.
+	 * @param \WC_Data      $notification The notification object.
+	 * @param \WC_Meta_Data $meta         Metadata object.
 	 *
 	 * @return bool
 	 */
@@ -352,13 +352,15 @@ CREATE TABLE $logs_table_name (
 			&& empty( $notification->get_changes() )
 			&& ( ! is_object( $meta ) );
 
+		// phpcs:disable WooCommerce.Commenting.CommentHooks.MissingSinceVersionComment
 		/**
 		 * Allows code to skip a full notification save() when metadata is changed.
 		 *
-		 * @since <x.x.x> // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingSinceVersionComment
+		 * @since x.x.x
 		 *
 		 * @param bool $should_save Whether to trigger a full save after metadata is changed.
 		 */
+		// phpcs:enable WooCommerce.Commenting.CommentHooks.MissingSinceVersionComment
 		return apply_filters( 'woocommerce_stock_notifications_datastore_should_save_after_meta_change', $should_save );
 	}
 
@@ -380,7 +382,7 @@ CREATE TABLE $logs_table_name (
 			'user_id'         => $args['user_id'],
 			'user_email'      => $args['user_email'],
 			'ip_address'      => $args['ip_address'],
-			'date_logged_gmt'     => current_time( 'mysql' ),
+			'date_logged_gmt' => current_time( 'mysql' ),
 			'note'            => $args['note'],
 		);
 
