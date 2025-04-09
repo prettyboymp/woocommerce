@@ -239,7 +239,7 @@ CREATE TABLE $logs_table_name (
 			'is_queued'           => $data['is_queued'],
 		);
 
-		$wpdb->update( $this->get_table_name(), $data_to_update, array( 'id' => $notification->get_id() ) );
+		$wpdb->update( $this->get_table_name(), $data_to_update, array( 'id' => $notification->get_id() ), array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d' ), array( '%d' ) );
 	}
 
 	/**
@@ -252,11 +252,11 @@ CREATE TABLE $logs_table_name (
 	public function delete( &$notification, $args = array() ) {
 		global $wpdb;
 
-		$wpdb->delete( $this->get_table_name(), array( 'id' => $notification->get_id() ) );
+		$wpdb->delete( $this->get_table_name(), array( 'id' => $notification->get_id() ), array( '%d' ) );
 
-		$wpdb->delete( $this->get_meta_table_name(), array( 'notification_id' => $notification->get_id() ) );
+		$wpdb->delete( $this->get_meta_table_name(), array( 'notification_id' => $notification->get_id() ), array( '%d' ) );
 
-		$wpdb->delete( $this->get_logs_table_name(), array( 'notification_id' => $notification->get_id() ) );
+		$wpdb->delete( $this->get_logs_table_name(), array( 'notification_id' => $notification->get_id() ), array( '%d' ) );
 	}
 
 	/**
@@ -269,7 +269,7 @@ CREATE TABLE $logs_table_name (
 	public function add_meta( &$notification, $meta ) {
 		$add_meta        = $this->data_store_meta->add_meta( $notification, $meta );
 		$meta->id        = $add_meta;
-		$changes_applied = $this->after_meta_change( $object, $meta );
+		$changes_applied = $this->after_meta_change( $notification, $meta );
 
 		return $add_meta && $changes_applied ? $add_meta : false;
 	}
