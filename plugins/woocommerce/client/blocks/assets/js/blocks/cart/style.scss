@@ -99,9 +99,10 @@
 	table.wc-block-cart-items {
 		margin: 0;
 	}
-	.wc-block-components-shipping-rates-control
+	.wc-block-components-shipping-rates-control {
 		.wc-block-components-radio-control__option {
-		padding-left: em($gap-huge);
+			padding-left: em($gap-huge);
+		}
 	}
 }
 
