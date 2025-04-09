@@ -317,6 +317,8 @@ const entries = {
 		// Templates
 		'wc-blocks-classic-template-revert-button-style':
 			'./assets/js/templates/revert-button/index.tsx',
+
+		...stylingEntries,
 	},
 	core: {
 		wcBlocksRegistry: './assets/js/blocks-registry/index.js',
