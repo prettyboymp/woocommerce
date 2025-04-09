@@ -309,7 +309,7 @@ CREATE TABLE $logs_table_name (
 	 *
 	 * @param \WC_Data  $notification The data object to add.
 	 * @param \stdClass $meta         The meta object to add (containing ->key and ->value).
-	 * @return int|false meta ID
+	 * @return int|false The meta ID or false if the meta was not added.
 	 */
 	public function add_meta( &$notification, $meta ) {
 		$add_meta        = $this->data_store_meta->add_meta( $notification, $meta );
@@ -334,7 +334,7 @@ CREATE TABLE $logs_table_name (
 	 * Update meta.
 	 *
 	 * @param \WC_Data  $notification The data object to update.
-	 * @param \stdClass $meta         The meta object to update.
+	 * @param \stdClass $meta         The meta object to update (containing ->id, ->key and ->value).
 	 * @return bool
 	 */
 	public function update_meta( &$notification, $meta ): bool {
@@ -348,7 +348,7 @@ CREATE TABLE $logs_table_name (
 	 * Delete meta.
 	 *
 	 * @param \WC_Data  $notification The data object to delete.
-	 * @param \stdClass $meta         The meta object to delete.
+	 * @param \stdClass $meta         The meta object to delete (containing at least ->id).
 	 * @return bool
 	 */
 	public function delete_meta( &$notification, $meta ): bool {
@@ -371,7 +371,7 @@ CREATE TABLE $logs_table_name (
 
 		// Prevent this happening multiple time in same request.
 		if ( $this->should_save_after_meta_change( $notification, $meta ) ) {
-			// $notification->set_date_modified_gmt( current_time( 'mysql' ) );
+			// $notification->set_date_modified( current_time( 'mysql' ) );
 			// $notification->save();
 			return true;
 		}
