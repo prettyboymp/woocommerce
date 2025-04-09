@@ -20,9 +20,13 @@ class CartSkeleton {
 				<table class="wc-block-cart-items wp-block-woocommerce-cart-line-items-block">
 					<thead>
 					<tr class="wc-block-cart-items__header">
-						<th class="wc-block-cart-items__header-image"></th>
+						<th class="wc-block-cart-items__header-image">
+							<div class="wc-block-components-skeleton__element" aria-hidden="true" style="height: 8px; width: 78px;"></div>
+						</th>
 						<th class="wc-block-cart-items__header-product"></th>
-						<th class="wc-block-cart-items__header-total"></th>
+						<th class="wc-block-cart-items__header-total">
+							<div class="wc-block-components-skeleton__element" aria-hidden="true" style="height: 8px; width: 78px; display: inline-block;"></div>
+						</th>
 					</tr>
 					</thead>
 					<tbody>

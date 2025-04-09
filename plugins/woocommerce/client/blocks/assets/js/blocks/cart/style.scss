@@ -28,7 +28,6 @@
 }
 
 // Loading placeholder state.
-.wc-block-cart--is-loading,
 .wc-block-mini-cart__drawer.is-loading {
 	th span,
 	h2 span {
@@ -73,12 +72,6 @@
 		@include force-content();
 		min-height: 460px;
 	}
-}
-.wc-block-components-sidebar-layout.wc-block-cart--skeleton {
-	display: none;
-}
-.is-loading + .wc-block-components-sidebar-layout.wc-block-cart--skeleton {
-	display: flex;
 }
 
 .wc-block-cart-item__total-price-and-sale-badge-wrapper {
@@ -215,21 +208,13 @@
 	}
 }
 
-.is-large.wc-block-cart.wc-block-components-skeleton--cart-line-items {
+.wc-block-components-skeleton--cart-line-items {
 	margin: 0;
 	padding: 0;
 
 	.wc-block-cart-items {
-		border: 0;
-		margin-bottom: 0;
-
-		th {
-			height: 0;
-			padding: 0;
-		}
-
-		td {
-			border: 0;
+		th:first-child {
+			padding-left: $gap-small;
 		}
 	}
 }
