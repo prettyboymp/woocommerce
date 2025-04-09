@@ -26,19 +26,16 @@ import './style.scss';
 const reloadPage = () => void window.location.reload( true );
 
 const Cart = ( { children, attributes = {} } ) => {
-	const { cartIsLoading } = useStoreCart();
 	const { hasDarkControls } = attributes;
 
 	return (
-		<LoadingMask showSpinner={ true } isLoading={ cartIsLoading }>
-			<CartBlockContext.Provider
-				value={ {
-					hasDarkControls,
-				} }
-			>
-				{ children }
-			</CartBlockContext.Provider>
-		</LoadingMask>
+		<CartBlockContext.Provider
+			value={ {
+				hasDarkControls,
+			} }
+		>
+			{ children }
+		</CartBlockContext.Provider>
 	);
 };
 
