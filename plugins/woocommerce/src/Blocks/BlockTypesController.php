@@ -431,6 +431,7 @@ final class BlockTypesController {
 			'HandpickedProducts',
 			'MiniCart',
 			'StoreNotices',
+			'PaymentMethods',
 			'PriceFilter',
 			'ProductBestSellers',
 			'ProductButton',

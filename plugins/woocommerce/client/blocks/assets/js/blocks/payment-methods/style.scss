@@ -1,0 +1,60 @@
+.wp-block-woocommerce-payment-methods {
+	.wc-block-payment-methods__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	.wc-block-payment-methods__list-item {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 24px;
+		padding: 12px;
+		border: 1px solid currentColor;
+		border-radius: 4px;
+		font-size: var(--wp--preset--font-size--small);
+		text-align: center;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	.wc-block-payment-methods__list-item-icon {
+		width: auto;
+		height: 24px;
+		margin-right: 12px;
+	}
+
+	.wc-block-payment-methods__list-item-label {
+		display: block;
+		width: 100%;
+	}
+
+	.wc-block-payment-methods__icons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+
+		&--align-left {
+			justify-content: flex-start;
+		}
+
+		&--align-center {
+			justify-content: center;
+		}
+
+		&--align-right {
+			justify-content: flex-end;
+		}
+	}
+
+	.wc-block-payment-methods__icon {
+		width: auto;
+		height: 24px;
+	}
+}
