@@ -122,7 +122,7 @@ CREATE TABLE $logs_table_name (
 	action varchar(200) NOT NULL,
 	user_id bigint(20) unsigned NOT NULL,
 	user_email varchar(100) NOT NULL,
-	ip_address VARCHAR(45) NULL,
+	ip_address varchar(45) NULL,
 	date_logged_gmt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	note text NOT NULL,
 	PRIMARY KEY  (id),
@@ -359,9 +359,10 @@ CREATE TABLE $logs_table_name (
 		 * @since x.x.x
 		 *
 		 * @param bool $should_save Whether to trigger a full save after metadata is changed.
+		 * @return bool
 		 */
-		// phpcs:enable WooCommerce.Commenting.CommentHooks.MissingSinceVersionComment
 		return apply_filters( 'woocommerce_stock_notifications_datastore_should_save_after_meta_change', $should_save );
+		// phpcs:enable WooCommerce.Commenting.CommentHooks.MissingSinceVersionComment
 	}
 
 	/**
