@@ -159,7 +159,7 @@ CREATE TABLE $logs_table_name (
 	 * Create a new stock notification.
 	 *
 	 * @param \WC_Data $notification The data object to create.
-	 * @return void
+	 * @return int|\WP_Error The notification ID on success. WP_Error on failure.
 	 */
 	public function create( &$notification ) {
 		global $wpdb;
@@ -167,19 +167,29 @@ CREATE TABLE $logs_table_name (
 		$notification->set_defaults();
 
 		$data           = $notification->get_data();
-		$data_to_insert = array(
-			'product_id'          => $data['product_id'],
-			'user_id'             => $data['user_id'],
-			'user_email'          => $data['user_email'],
-			'status'              => $data['status'],
-			'date_created_gmt'    => $data['date_created_gmt'],
-			'date_modified_gmt'   => $data['date_modified_gmt'],
-			'date_subscribed_gmt' => $data['date_subscribed_gmt'],
-			'date_notified_gmt'   => $data['date_notified_gmt'],
-			'is_queued'           => $data['is_queued'],
+		$data_to_insert = array();
+		$format         = array();
+		$field_formats  = $this->get_field_formats();
+
+		foreach ( $data as $key => $value ) {
+			$data_to_insert[$key] = $value;
+			$format[]             = $field_formats[$key] ?? '%s';
+		}
+
+		$insert = $wpdb->insert(
+			$this->get_table_name(),
+			$data_to_insert,
+			$format
 		);
 
-		$wpdb->insert( $this->get_table_name(), $data_to_insert );
+		if ( false === $insert ) {
+			return new \WP_Error( 'db_insert_error', 'Could not insert stock notification into the database.' );
+		}
+
+		$notification_id = (int) $wpdb->insert_id;
+		$notification->set_id( $notification_id );
+
+		return $notification->get_id();
 	}
 
 	/**
@@ -194,7 +204,17 @@ CREATE TABLE $logs_table_name (
 	public function read( &$notification ) {
 		global $wpdb;
 
-		$data = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $this->get_table_name(), $notification->get_id() ) );
+		if ( 0 === $notification->get_id() ) {
+			throw new \Exception( 'Invalid notification ID.' );
+		}
+
+		$data = $wpdb->get_row(
+			$wpdb->prepare(
+				'SELECT * FROM %i WHERE id = %d',
+				$this->get_table_name(),
+				$notification->get_id()
+			)
+		);
 
 		if ( ! $data ) {
 			throw new \Exception( 'Stock notification not found' );
@@ -222,24 +242,49 @@ CREATE TABLE $logs_table_name (
 	 * Update a stock notification.
 	 *
 	 * @param \WC_Data $notification The data object to update.
-	 * @return void
+	 * @return int|\WP_Error The number of rows updated or WP_Error on failure.
 	 */
 	public function update( &$notification ) {
 		global $wpdb;
 
-		$data           = $notification->get_data();
-		$data_to_update = array(
-			'product_id'          => $data['product_id'],
-			'user_id'             => $data['user_id'],
-			'user_email'          => $data['user_email'],
-			'status'              => $data['status'],
-			'date_modified_gmt'   => current_time( 'mysql' ),
-			'date_subscribed_gmt' => $data['date_subscribed_gmt'],
-			'date_notified_gmt'   => $data['date_notified_gmt'],
-			'is_queued'           => $data['is_queued'],
+		if ( 0 === $notification->get_id() ) {
+			return new \WP_Error( 'invalid_stock_notification', 'Invalid notification ID.' );
+		}
+
+		$changes = $notification->get_changes();
+		if ( empty( $changes ) ) {
+			return 0;
+		}
+
+		$data_to_update = array();
+		$format         = array();
+		$field_formats  = $this->get_field_formats();
+
+
+		// Always update the date_modified_gmt field.
+		$data_to_update['date_modified_gmt'] = current_time( 'mysql' );
+		$format[]                            = '%s';
+
+		foreach ( $changes as $key => $value ) {
+			$data_to_update[$key] = $value;
+			$format[]             = $field_formats[$key] ?? '%s';
+		}
+
+		$result = $wpdb->update(
+			$this->get_table_name(),
+			$data_to_update,
+			array( 'id' => $notification->get_id() ),
+			$format,
+			array( '%d' )
 		);
 
-		$wpdb->update( $this->get_table_name(), $data_to_update, array( 'id' => $notification->get_id() ), array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d' ), array( '%d' ) );
+		if ( false === $result ) {
+			return new \WP_Error( 'db_update_error', 'Could not update stock notification in the database.' );
+		}
+
+		$notification->apply_changes();
+
+		return $result;
 	}
 
 	/**
@@ -348,7 +393,7 @@ CREATE TABLE $logs_table_name (
 
 		$should_save =
 			$notification->get_id() > 0
-			// && $notification->get_date_modified_gmt() < $current_date_time
+			// && $notification->get_date_modified() < $current_date_time
 			&& empty( $notification->get_changes() )
 			&& ( ! is_object( $meta ) );
 
@@ -366,6 +411,25 @@ CREATE TABLE $logs_table_name (
 	}
 
 	/**
+	 * Get the field formats.
+	 *
+	 * @return array
+	 */
+	private function get_field_formats(): array {
+		return array(
+			'product_id'          => '%d',
+			'user_id'             => '%d',
+			'user_email'          => '%s',
+			'status'              => '%s',
+			'date_created_gmt'    => '%s',
+			'date_modified_gmt'   => '%s',
+			'date_subscribed_gmt' => '%s',
+			'date_notified_gmt'   => '%s',
+			'is_queued'           => '%d',
+		);
+	}
+
+	/**
 	 * Create a log.
 	 *
 	 * @param \WC_Data $notification The data object to create the log for.
@@ -375,7 +439,11 @@ CREATE TABLE $logs_table_name (
 	public function create_log( &$notification, $args ) {
 		global $wpdb;
 
-		// TODO: Sanity check the args.
+		$args['action']     = sanitize_text_field( $args['action'] );
+		$args['user_id']    = absint( $args['user_id'] );
+		$args['user_email'] = sanitize_email( $args['user_email'] );
+		$args['ip_address'] = sanitize_text_field( $args['ip_address'] );
+		$args['note']       = sanitize_text_field( $args['note'] );
 
 		$data = array(
 			'notification_id' => $notification->get_id(),
