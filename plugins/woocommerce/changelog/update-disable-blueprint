@@ -1,0 +1,5 @@
+Significance: patch
+Type: update
+Comment: Disable blueprint. Revert #56698 changes.
+
+
