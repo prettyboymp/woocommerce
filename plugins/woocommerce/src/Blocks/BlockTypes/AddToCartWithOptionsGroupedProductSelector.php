@@ -56,11 +56,11 @@ class AddToCartWithOptionsGroupedProductSelector extends AbstractInteractiveBloc
 	}
 
 	/**
-	 * Disable the legacy editor style for this block type.
+	 * Disable the editor style handle for this block type.
 	 *
 	 * @return null
 	 */
-	protected function get_legacy_editor_styles() {
+	protected function get_block_type_editor_style() {
 		return null;
 	}
 }

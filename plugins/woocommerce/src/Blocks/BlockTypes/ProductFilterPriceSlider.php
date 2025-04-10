@@ -150,4 +150,13 @@ class ProductFilterPriceSlider extends AbstractInteractiveBlock {
 		<?php
 		return ob_get_clean();
 	}
+
+	/**
+	 * Disable the editor style handle for this block type.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_editor_style() {
+		return null;
+	}
 }

@@ -356,4 +356,13 @@ class ProductButton extends AbstractInteractiveBlock {
 			esc_html__( 'View cart', 'woocommerce' )
 		);
 	}
+
+	/**
+	 * Disable the editor style handle for this block type.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_editor_style() {
+		return null;
+	}
 }

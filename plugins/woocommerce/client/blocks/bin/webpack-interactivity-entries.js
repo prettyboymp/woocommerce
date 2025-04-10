@@ -43,7 +43,7 @@ function findInteractivityBlockAssets( dir, additionalPatterns = [] ) {
 
 const interactivityBlocks = findInteractivityBlockAssets(
 	path.resolve( __dirname, '../assets/js' ),
-	[ 'frontend.*s', 'style.scss' ]
+	[ 'frontend.*s', 'style.scss', 'editor.scss' ]
 );
 
 const scriptModuleEntries = interactivityBlocks.reduce( ( acc, block ) => {
@@ -62,7 +62,16 @@ const styleEntries = interactivityBlocks.reduce( ( acc, block ) => {
 	return acc;
 }, {} );
 
+const editorEntries = interactivityBlocks.reduce( ( acc, block ) => {
+	const editorFile = block.assets.find( ( f ) => f.includes( 'editor' ) );
+	if ( editorFile ) {
+		acc[ `${ block.blockName }-editor` ] = editorFile;
+	}
+	return acc;
+}, {} );
+
 module.exports = {
 	scriptModuleEntries,
 	styleEntries,
+	editorEntries,
 };

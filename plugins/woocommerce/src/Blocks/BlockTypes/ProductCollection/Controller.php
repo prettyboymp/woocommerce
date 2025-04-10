@@ -403,13 +403,11 @@ class Controller extends AbstractInteractiveBlock {
 
 
 	/**
-	 * Disable the block type script, this block uses script modules.
-	 *
-	 * @param string|null $key The key of the script.
+	 * Disable the editor style handle for this block type.
 	 *
 	 * @return null
 	 */
-	protected function get_block_type_script( $key = null ) {
+	protected function get_block_type_editor_style() {
 		return null;
 	}
 }
