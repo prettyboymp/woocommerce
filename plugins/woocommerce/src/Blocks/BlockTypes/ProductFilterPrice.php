@@ -212,6 +212,13 @@ final class ProductFilterPrice extends AbstractBlock {
 	 * @param WP_Block $block Block instance.
 	 */
 	private function get_filtered_price( $block ) {
+		if ( ! isset( $block->context['filterParams'] ) ) {
+			return array(
+				'min_price' => 0,
+				'max_price' => 0,
+			);
+		}
+
 		$query_vars = ProductCollectionUtils::get_query_vars( $block, 1 );
 
 		unset( $query_vars['min_price'], $query_vars['max_price'] );
