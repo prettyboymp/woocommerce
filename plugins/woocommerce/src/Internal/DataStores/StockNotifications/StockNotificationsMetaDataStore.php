@@ -24,6 +24,15 @@ class StockNotificationsMetaDataStore extends CustomMetaDataStore {
 	}
 
 	/**
+	 * Returns the name of the field/column used for identifiying metadata entries.
+	 *
+	 * @return string
+	 */
+	protected function get_meta_id_field() {
+		return 'meta_id';
+	}
+
+	/**
 	 * Returns the name of the field/column used for associating meta with objects.
 	 *
 	 * @return string

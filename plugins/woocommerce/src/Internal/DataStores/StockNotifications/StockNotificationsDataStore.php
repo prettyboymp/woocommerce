@@ -7,6 +7,7 @@ declare( strict_types = 1 );
 
 namespace Automattic\WooCommerce\Internal\DataStores\StockNotifications;
 
+use Automattic\WooCommerce\Internal\StockNotifications\Notification;
 use Automattic\WooCommerce\Internal\Utilities\DatabaseUtil;
 
 defined( 'ABSPATH' ) || exit;
@@ -97,10 +98,10 @@ CREATE TABLE $table_name (
 	user_id bigint(20) unsigned NOT NULL,
 	user_email varchar(100) NOT NULL,
 	status varchar(20) NOT NULL DEFAULT 'pending',
-	date_created_gmt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	date_modified_gmt datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-	date_subscribed_gmt datetime  NOT NULL DEFAULT '0000-00-00 00:00:00',
-	date_notified_gmt datetime  NOT NULL DEFAULT '0000-00-00 00:00:00',
+	date_created_gmt datetime NULL,
+	date_modified_gmt datetime NULL,
+	date_subscribed_gmt datetime NULL,
+	date_notified_gmt datetime NULL,
 	is_queued tinyint(1) NOT NULL DEFAULT 0,
 	PRIMARY KEY  (id),
 	KEY product_status_queue (product_id, status, is_queued),
@@ -108,11 +109,11 @@ CREATE TABLE $table_name (
 	KEY user_email (user_email)
 ) $collate;
 CREATE TABLE $meta_table_name (
-	meta_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+	id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	notification_id bigint(20) unsigned NOT NULL,
 	meta_key varchar(255) NULL,
 	meta_value longtext NULL,
-	PRIMARY KEY  (meta_id),
+	PRIMARY KEY  (id),
 	KEY notification_id (notification_id),
 	KEY meta_key (meta_key($max_index_length))
 ) $collate;
@@ -147,39 +148,55 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Filter the raw meta data.
 	 *
-	 * @param \WC_Data $notification  The data object to filter.
+	 * @param Notification $notification  The data object to filter.
 	 * @param array    $raw_meta_data The raw meta data to filter.
 	 * @return array
 	 */
-	public function filter_raw_meta_data( &$notification, array $raw_meta_data ): array {
+	public function filter_raw_meta_data( &$notification, $raw_meta_data ): array {
 		return $raw_meta_data;
 	}
 
 	/**
 	 * Create a new stock notification.
 	 *
-	 * @param \WC_Data $notification The data object to create.
+	 * @param Notification $notification The data object to create.
 	 * @return int|\WP_Error The notification ID on success. WP_Error on failure.
 	 */
 	public function create( &$notification ) {
 		global $wpdb;
 
-		$notification->set_defaults();
-
-		$data           = $notification->get_data();
-		$data_to_insert = array();
-		$format         = array();
-		$field_formats  = $this->get_field_formats();
-
-		foreach ( $data as $key => $value ) {
-			$data_to_insert[$key] = $value;
-			$format[]             = $field_formats[$key] ?? '%s';
+		// Fill in created and modified dates.
+		if ( ! $notification->get_date_created( 'edit' ) ) {
+			$notification->set_date_created( current_time( 'mysql' ) );
+		}
+		if ( ! $notification->get_date_modified( 'edit' ) ) {
+			$notification->set_date_modified( current_time( 'mysql' ) );
 		}
 
 		$insert = $wpdb->insert(
 			$this->get_table_name(),
-			$data_to_insert,
-			$format
+			array(
+				'product_id'          => $notification->get_product_id( 'edit' ),
+				'user_id'             => $notification->get_user_id( 'edit' ),
+				'user_email'          => $notification->get_user_email( 'edit' ),
+				'status'              => $notification->get_status( 'edit' ),
+				'date_created_gmt'    => gmdate( 'Y-m-d H:i:s', $notification->get_date_created( 'edit' )->getTimestamp() ),
+				'date_modified_gmt'   => gmdate( 'Y-m-d H:i:s', $notification->get_date_modified( 'edit' )->getTimestamp() ),
+				'date_subscribed_gmt' => $notification->get_date_subscribed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_subscribed( 'edit' )->getTimestamp() ) : null,
+				'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
+				'is_queued'           => $notification->is_queued( 'edit' ) ? 1 : 0,
+			),
+			array(
+				'%d',
+				'%d',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%d',
+			)
 		);
 
 		if ( false === $insert ) {
@@ -189,13 +206,16 @@ CREATE TABLE $logs_table_name (
 		$notification_id = (int) $wpdb->insert_id;
 		$notification->set_id( $notification_id );
 
+		// $notification->save_meta_data();
+		$notification->apply_changes();
+
 		return $notification->get_id();
 	}
 
 	/**
 	 * Read a stock notification.
 	 *
-	 * @param \WC_Data $notification The data object to read.
+	 * @param Notification $notification The data object to read.
 	 *
 	 * @throws \Exception If the stock notification is not found.
 	 *
@@ -222,16 +242,16 @@ CREATE TABLE $logs_table_name (
 
 		$notification->set_props(
 			array(
-				'id'                  => $data->id,
-				'product_id'          => $data->product_id,
-				'user_id'             => $data->user_id,
-				'user_email'          => $data->user_email,
-				'status'              => $data->status,
-				'date_created_gmt'    => $data->date_created_gmt,
-				'date_modified_gmt'   => $data->date_modified_gmt,
-				'date_subscribed_gmt' => $data->date_subscribed_gmt,
-				'date_notified_gmt'   => $data->date_notified_gmt,
-				'is_queued'           => $data->is_queued,
+				'id'              => $data->id,
+				'product_id'      => $data->product_id,
+				'user_id'         => $data->user_id,
+				'user_email'      => $data->user_email,
+				'status'          => $data->status,
+				'date_created'    => $data->date_created_gmt,
+				'date_modified'   => $data->date_modified_gmt,
+				'date_subscribed' => $data->date_subscribed_gmt,
+				'date_notified'   => $data->date_notified_gmt,
+				'is_queued'       => $data->is_queued,
 			)
 		);
 
@@ -241,7 +261,7 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Update a stock notification.
 	 *
-	 * @param \WC_Data $notification The data object to update.
+	 * @param Notification $notification The data object to update.
 	 * @return int|\WP_Error The number of rows updated or WP_Error on failure.
 	 */
 	public function update( &$notification ) {
@@ -256,25 +276,23 @@ CREATE TABLE $logs_table_name (
 			return 0;
 		}
 
-		$data_to_update = array();
-		$format         = array();
-		$field_formats  = $this->get_field_formats();
-
-
-		// Always update the date_modified_gmt field.
-		$data_to_update['date_modified_gmt'] = current_time( 'mysql' );
-		$format[]                            = '%s';
-
-		foreach ( $changes as $key => $value ) {
-			$data_to_update[$key] = $value;
-			$format[]             = $field_formats[$key] ?? '%s';
-		}
+		// Fill in modified date.
+		$date_modified = current_time( 'mysql' );
 
 		$result = $wpdb->update(
 			$this->get_table_name(),
-			$data_to_update,
+			array(
+				'product_id'          => $notification->get_product_id( 'edit' ),
+				'user_id'             => $notification->get_user_id( 'edit' ),
+				'user_email'          => $notification->get_user_email( 'edit' ),
+				'status'              => $notification->get_status( 'edit' ),
+				'date_modified_gmt'   => $date_modified,
+				'date_subscribed_gmt' => $notification->get_date_subscribed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_subscribed( 'edit' )->getTimestamp() ) : null,
+				'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
+				'is_queued'           => $notification->is_queued( 'edit' ) ? 1 : 0,
+			),
 			array( 'id' => $notification->get_id() ),
-			$format,
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%d' ),
 			array( '%d' )
 		);
 
@@ -282,6 +300,11 @@ CREATE TABLE $logs_table_name (
 			return new \WP_Error( 'db_update_error', 'Could not update stock notification in the database.' );
 		}
 
+		if ( 0 === $result ) {
+			return new \WP_Error( 'db_update_error', 'Invalid notification ID.' );
+		}
+
+		$notification->set_date_modified( $date_modified );
 		$notification->apply_changes();
 
 		return $result;
@@ -290,7 +313,7 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Delete a stock notification.
 	 *
-	 * @param \WC_Data $notification The data object to delete.
+	 * @param Notification $notification The data object to delete.
 	 * @param array    $args         Additional arguments.
 	 * @return void
 	 */
@@ -307,7 +330,7 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Add meta.
 	 *
-	 * @param \WC_Data  $notification The data object to add.
+	 * @param Notification $notification The data object to add.
 	 * @param \stdClass $meta         The meta object to add (containing ->key and ->value).
 	 * @return int|false The meta ID or false if the meta was not added.
 	 */
@@ -322,7 +345,7 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Read meta.
 	 *
-	 * @param \WC_Data $notification The data object to read.
+	 * @param Notification $notification The data object to read.
 	 * @return array
 	 */
 	public function read_meta( &$notification ): array {
@@ -333,7 +356,7 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Update meta.
 	 *
-	 * @param \WC_Data  $notification The data object to update.
+	 * @param Notification $notification The data object to update.
 	 * @param \stdClass $meta         The meta object to update (containing ->id, ->key and ->value).
 	 * @return bool
 	 */
@@ -347,7 +370,7 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Delete meta.
 	 *
-	 * @param \WC_Data  $notification The data object to delete.
+	 * @param Notification $notification The data object to delete.
 	 * @param \stdClass $meta         The meta object to delete (containing at least ->id).
 	 * @return bool
 	 */
@@ -361,8 +384,8 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Perform after meta change operations.
 	 *
-	 * @param \WC_Data      $notification The notification object.
-	 * @param \WC_Meta_Data $meta         Metadata object.
+	 * @param Notification $notification The notification object.
+	 * @param \stdClass    $meta         Metadata object.
 	 *
 	 * @return bool True if changes were applied, false otherwise.
 	 */
@@ -371,8 +394,8 @@ CREATE TABLE $logs_table_name (
 
 		// Prevent this happening multiple time in same request.
 		if ( $this->should_save_after_meta_change( $notification, $meta ) ) {
-			// $notification->set_date_modified( current_time( 'mysql' ) );
-			// $notification->save();
+			$notification->set_date_modified( current_time( 'mysql' ) );
+			$notification->save();
 			return true;
 		}
 
@@ -382,8 +405,8 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Check if the notification should be saved after meta change.
 	 *
-	 * @param \WC_Data      $notification The notification object.
-	 * @param \WC_Meta_Data $meta         Metadata object.
+	 * @param Notification $notification The notification object.
+	 * @param \stdClass    $meta         Metadata object.
 	 *
 	 * @return bool
 	 */
@@ -393,7 +416,7 @@ CREATE TABLE $logs_table_name (
 
 		$should_save =
 			$notification->get_id() > 0
-			// && $notification->get_date_modified() < $current_date_time
+			&& $notification->get_date_modified() < $current_date_time
 			&& empty( $notification->get_changes() )
 			&& ( ! is_object( $meta ) );
 
@@ -411,32 +434,13 @@ CREATE TABLE $logs_table_name (
 	}
 
 	/**
-	 * Get the field formats.
+	 * Create a event.
 	 *
-	 * @return array
-	 */
-	private function get_field_formats(): array {
-		return array(
-			'product_id'          => '%d',
-			'user_id'             => '%d',
-			'user_email'          => '%s',
-			'status'              => '%s',
-			'date_created_gmt'    => '%s',
-			'date_modified_gmt'   => '%s',
-			'date_subscribed_gmt' => '%s',
-			'date_notified_gmt'   => '%s',
-			'is_queued'           => '%d',
-		);
-	}
-
-	/**
-	 * Create a log.
-	 *
-	 * @param \WC_Data $notification The data object to create the log for.
-	 * @param array    $args         Additional arguments.
+	 * @param Notification $notification The data object to create the log for.
+	 * @param array        $args         Additional arguments.
 	 * @return int|false The log ID or false if the log was not created.
 	 */
-	public function create_log( &$notification, $args ) {
+	public function create_event( &$notification, $args ) {
 		global $wpdb;
 
 		$args['action']     = sanitize_text_field( $args['action'] );
