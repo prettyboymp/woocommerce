@@ -206,7 +206,7 @@ CREATE TABLE $logs_table_name (
 		$notification_id = (int) $wpdb->insert_id;
 		$notification->set_id( $notification_id );
 
-		// $notification->save_meta_data();
+		$notification->save_meta_data();
 		$notification->apply_changes();
 
 		return $notification->get_id();
@@ -255,6 +255,7 @@ CREATE TABLE $logs_table_name (
 			)
 		);
 
+		$notification->read_meta_data();
 		$notification->set_object_read( true );
 	}
 
@@ -271,40 +272,40 @@ CREATE TABLE $logs_table_name (
 			return new \WP_Error( 'invalid_stock_notification', 'Invalid notification ID.' );
 		}
 
-		$changes = $notification->get_changes();
-		if ( empty( $changes ) ) {
-			return 0;
-		}
-
-		// Fill in modified date.
+		$changes       = $notification->get_changes();
 		$date_modified = current_time( 'mysql' );
+		$result        = 0;
 
-		$result = $wpdb->update(
-			$this->get_table_name(),
-			array(
-				'product_id'          => $notification->get_product_id( 'edit' ),
-				'user_id'             => $notification->get_user_id( 'edit' ),
-				'user_email'          => $notification->get_user_email( 'edit' ),
-				'status'              => $notification->get_status( 'edit' ),
-				'date_modified_gmt'   => $date_modified,
-				'date_subscribed_gmt' => $notification->get_date_subscribed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_subscribed( 'edit' )->getTimestamp() ) : null,
-				'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
-				'is_queued'           => $notification->is_queued( 'edit' ) ? 1 : 0,
-			),
-			array( 'id' => $notification->get_id() ),
-			array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%d' ),
-			array( '%d' )
-		);
+		if ( in_array( array( 'product_id', 'user_id', 'user_email', 'status', 'is_queued', 'date_subscribed', 'date_notified' ), array_keys( $changes ) ) ) {
+			$result = $wpdb->update(
+				$this->get_table_name(),
+				array(
+					'product_id'          => $notification->get_product_id( 'edit' ),
+					'user_id'             => $notification->get_user_id( 'edit' ),
+					'user_email'          => $notification->get_user_email( 'edit' ),
+					'status'              => $notification->get_status( 'edit' ),
+					'date_modified_gmt'   => $date_modified,
+					'date_subscribed_gmt' => $notification->get_date_subscribed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_subscribed( 'edit' )->getTimestamp() ) : null,
+					'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
+					'is_queued'           => $notification->is_queued( 'edit' ) ? 1 : 0,
+				),
+				array( 'id' => $notification->get_id() ),
+				array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%d' ),
+				array( '%d' )
+			);
 
-		if ( false === $result ) {
-			return new \WP_Error( 'db_update_error', 'Could not update stock notification in the database.' );
+			if ( false === $result ) {
+				return new \WP_Error( 'db_update_error', 'Could not update stock notification in the database.' );
+			}
+
+			if ( 0 === $result ) {
+				return new \WP_Error( 'db_update_error', 'Invalid notification ID.' );
+			}
+
+			$notification->set_date_modified( $date_modified );
 		}
 
-		if ( 0 === $result ) {
-			return new \WP_Error( 'db_update_error', 'Invalid notification ID.' );
-		}
-
-		$notification->set_date_modified( $date_modified );
+		$notification->save_meta_data();
 		$notification->apply_changes();
 
 		return $result;

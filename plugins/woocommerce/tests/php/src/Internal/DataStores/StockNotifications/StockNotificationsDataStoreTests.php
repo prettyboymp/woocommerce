@@ -175,4 +175,66 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 		$this->expectExceptionMessage( 'Stock notification not found' );
 		new Notification( 999999 );
 	}
+
+	/**
+	 * Test adding a meta to a notification.
+	 */
+	public function test_add_meta_to_notification() {
+		$notification = new Notification();
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->add_meta_data( 'test_meta', 'test_value' );
+		$notification->save();
+
+		$this->assertEquals( 'test_value', $notification->get_meta( 'test_meta' ) );
+
+		// Refresh the notification
+		$notification = new Notification( $notification->get_id() );
+		$this->assertEquals( 'test_value', $notification->get_meta( 'test_meta' ) );
+	}
+
+	/**
+	 * Test updating a meta for a notification.
+	 */
+	public function test_update_meta_for_notification() {
+		$notification = new Notification();
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->save();
+
+		// Refetch the notification
+		$notification = new Notification( $notification->get_id() );
+		$notification->add_meta_data( 'test_meta', 'test_value' );
+		$notification->save();
+
+		$notification = new Notification( $notification->get_id() );
+		$this->assertEquals( 'test_value', $notification->get_meta( 'test_meta' ) );
+		$notification->update_meta_data( 'test_meta', 'updated_value' );
+		$notification->save();
+
+		// Refetch the notification
+		$notification = new Notification( $notification->get_id() );
+
+		$this->assertEquals( 'updated_value', $notification->get_meta( 'test_meta' ) );
+	}
+
+	/**
+	 * Test deleting a meta for a notification.
+	 */
+	public function test_delete_meta_for_notification() {
+		$notification = new Notification();
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->add_meta_data( 'test_meta', 'test_value' );
+		$notification->save();
+
+		$notification = new Notification( $notification->get_id() );
+		$this->assertEquals( 'test_value', $notification->get_meta( 'test_meta' ) );
+		$notification->delete_meta_data( 'test_meta' );
+		$notification->save();
+
+		$notification = new Notification( $notification->get_id() );
+		$this->assertFalse( $notification->meta_exists( 'test_meta' ) );
+		$this->assertEquals( '', $notification->get_meta( 'test_meta' ) );
+	}
 }

@@ -29,7 +29,7 @@ class StockNotificationsMetaDataStore extends CustomMetaDataStore {
 	 * @return string
 	 */
 	protected function get_meta_id_field() {
-		return 'meta_id';
+		return 'id';
 	}
 
 	/**
