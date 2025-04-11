@@ -271,17 +271,22 @@ const frontendEntries = getBlockEntries( 'frontend.{t,j}s{,x}', {
 // Remove styles from style build,
 // that are already included in interactivity
 // script modules build.
-const blockStylingEntries = getBlockEntries( 'style.scss', {
-	...Object.fromEntries(
-		Object.entries( { ...blocks, ...genericBlocks } ).filter(
-			( [ blockName ] ) => {
+const blockStylingEntries = getBlockEntries(
+	'{index,block,frontend}.{t,j}s{,x}',
+	{
+		...Object.fromEntries(
+			Object.entries( {
+				...blocks,
+				...genericBlocks,
+				...cartAndCheckoutBlocks,
+			} ).filter( ( [ blockName ] ) => {
 				return ! frontendScriptModuleBlocksToSkip.includes(
 					`woocommerce/${ blockName }`
 				);
-			}
-		)
-	),
-} );
+			} )
+		),
+	}
+);
 
 const entries = {
 	styling: {
