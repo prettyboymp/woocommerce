@@ -7,9 +7,9 @@ use Automattic\WooCommerce\Internal\StockNotifications\Notification;
 use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsDataStore;
 
 /**
- * Class StockNotificationDataStoreTests.
+ * Class StockNotificationsDataStoreTests.
  */
-class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
+class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 
 	/**
 	 * Tear down the test.
@@ -38,7 +38,7 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 	public function test_create_notification_with_all_properties() {
 		$notification = new Notification();
 
-		// Set all properties
+		// Set all properties.
 		$notification->set_product_id( 1 );
 		$notification->set_user_id( 1 );
 		$notification->set_user_email( 'test@test.com' );
@@ -51,7 +51,7 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 
 		$notification->save();
 
-		// Verify all properties were saved correctly
+		// Verify all properties were saved correctly.
 		$this->assertEquals( 1, $notification->get_id() );
 		$this->assertEquals( 1, $notification->get_product_id() );
 		$this->assertEquals( 1, $notification->get_user_id() );
@@ -70,13 +70,13 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 	public function test_create_notification_validation() {
 		$notification = new Notification();
 
-		// Test missing product_id
+		// Test missing product_id.
 		$result = $notification->save();
 		$this->assertInstanceOf( \WP_Error::class, $result );
 		$this->assertEquals( 'stock_notification_validation_error', $result->get_error_code() );
 		$this->assertEquals( 'Product ID is required', $result->get_error_message() );
 
-		// Test missing user_id and user_email
+		// Test missing user_id and user_email.
 		$notification->set_product_id( 1 );
 		$result = $notification->save();
 		$this->assertInstanceOf( \WP_Error::class, $result );
@@ -85,7 +85,7 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 	}
 
 	/**
-	 * Test default queue status is false.
+	 * Test default data.
 	 */
 	public function test_default_notification_data() {
 
@@ -121,7 +121,7 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 	 * Test updating a notification with all properties.
 	 */
 	public function test_update_notification() {
-		// Create initial notification
+		// Create initial notification.
 		$notification = new Notification();
 		$notification->set_product_id( 1 );
 		$notification->set_user_id( 1 );
@@ -133,7 +133,7 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_created()->format( 'Y-m-d H:i:s' ) );
 		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
 
-		// Update all properties
+		// Update all properties.
 		$notification->set_product_id( 2 );
 		$notification->set_user_id( 2 );
 		$notification->set_user_email( 'test2@test.com' );
@@ -143,7 +143,7 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->set_is_queued( true );
 		$notification->save();
 
-		// Verify all properties were updated correctly
+		// Verify all properties were updated correctly.
 		$this->assertEquals( 2, $notification->get_product_id() );
 		$this->assertEquals( 2, $notification->get_user_id() );
 		$this->assertEquals( 'test2@test.com', $notification->get_user_email() );
@@ -161,7 +161,7 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 	 * Test deleting a notification.
 	 */
 	public function test_delete_notification() {
-		// Create a notification
+		// Create a notification.
 		$notification = new Notification();
 		$notification->set_product_id( 1 );
 		$notification->set_user_id( 1 );
@@ -170,13 +170,13 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_id = $notification->get_id();
 		$this->assertGreaterThan( 0, $notification_id );
 
-		// Delete the notification
+		// Delete the notification.
 		$notification->delete();
 
-		// Verify the notification was deleted
+		// Verify the notification was deleted.
 		$this->assertEquals( 0, $notification->get_id() );
 
-		// Try to read the deleted notification
+		// Try to read the deleted notification.
 		$this->expectException( \Exception::class );
 		$this->expectExceptionMessage( 'Stock notification not found' );
 		new Notification( $notification_id );
@@ -203,7 +203,7 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 
 		$this->assertEquals( 'test_value', $notification->get_meta( 'test_meta' ) );
 
-		// Refresh the notification
+		// Refresh the notification.
 		$notification = new Notification( $notification->get_id() );
 		$this->assertEquals( 'test_value', $notification->get_meta( 'test_meta' ) );
 	}
@@ -217,7 +217,7 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->set_user_id( 1 );
 		$notification->save();
 
-		// Refetch the notification
+		// Refetch the notification.
 		$notification = new Notification( $notification->get_id() );
 		$notification->add_meta_data( 'test_meta', 'test_value' );
 		$notification->save();
@@ -227,7 +227,7 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->update_meta_data( 'test_meta', 'updated_value' );
 		$notification->save();
 
-		// Refetch the notification
+		// Refetch the notification.
 		$notification = new Notification( $notification->get_id() );
 
 		$this->assertEquals( 'updated_value', $notification->get_meta( 'test_meta' ) );

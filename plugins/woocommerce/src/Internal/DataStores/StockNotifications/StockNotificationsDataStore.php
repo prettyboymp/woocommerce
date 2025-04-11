@@ -149,7 +149,7 @@ CREATE TABLE $logs_table_name (
 	 * Filter the raw meta data.
 	 *
 	 * @param Notification $notification  The data object to filter.
-	 * @param array    $raw_meta_data The raw meta data to filter.
+	 * @param array        $raw_meta_data The raw meta data to filter.
 	 * @return array
 	 */
 	public function filter_raw_meta_data( &$notification, $raw_meta_data ): array {
@@ -315,7 +315,7 @@ CREATE TABLE $logs_table_name (
 	 * Delete a stock notification.
 	 *
 	 * @param Notification $notification The data object to delete.
-	 * @param array    $args         Additional arguments.
+	 * @param array        $args         Additional arguments.
 	 * @return void
 	 */
 	public function delete( &$notification, $args = array() ) {
@@ -332,7 +332,7 @@ CREATE TABLE $logs_table_name (
 	 * Add meta.
 	 *
 	 * @param Notification $notification The data object to add.
-	 * @param \stdClass $meta         The meta object to add (containing ->key and ->value).
+	 * @param \stdClass    $meta         The meta object to add (containing ->key and ->value).
 	 * @return int|false The meta ID or false if the meta was not added.
 	 */
 	public function add_meta( &$notification, $meta ) {
@@ -358,7 +358,7 @@ CREATE TABLE $logs_table_name (
 	 * Update meta.
 	 *
 	 * @param Notification $notification The data object to update.
-	 * @param \stdClass $meta         The meta object to update (containing ->id, ->key and ->value).
+	 * @param \stdClass    $meta         The meta object to update (containing ->id, ->key and ->value).
 	 * @return bool
 	 */
 	public function update_meta( &$notification, $meta ): bool {
@@ -372,7 +372,7 @@ CREATE TABLE $logs_table_name (
 	 * Delete meta.
 	 *
 	 * @param Notification $notification The data object to delete.
-	 * @param \stdClass $meta         The meta object to delete (containing at least ->id).
+	 * @param \stdClass    $meta         The meta object to delete (containing at least ->id).
 	 * @return bool
 	 */
 	public function delete_meta( &$notification, $meta ): bool {

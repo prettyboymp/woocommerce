@@ -72,6 +72,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Get the product ID.
 	 *
+	 * @param string $context Context.
 	 * @return int
 	 */
 	public function get_product_id( $context = 'view' ) {
@@ -81,6 +82,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Get the user ID.
 	 *
+	 * @param string $context Context.
 	 * @return int
 	 */
 	public function get_user_id( $context = 'view' ) {
@@ -90,6 +92,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Get the user email.
 	 *
+	 * @param string $context Context.
 	 * @return string
 	 */
 	public function get_user_email( $context = 'view' ) {
@@ -99,6 +102,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Get the status.
 	 *
+	 * @param string $context Context.
 	 * @return string
 	 */
 	public function get_status( $context = 'view' ) {
@@ -108,6 +112,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Get the date created.
 	 *
+	 * @param string $context Context.
 	 * @return \WC_DateTime|null Datetime object if the date is set or null if there is no date.
 	 */
 	public function get_date_created( $context = 'view' ) {
@@ -117,6 +122,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Get the date modified.
 	 *
+	 * @param string $context Context.
 	 * @return \WC_DateTime|null Datetime object if the date is set or null if there is no date.
 	 */
 	public function get_date_modified( $context = 'view' ) {
@@ -126,6 +132,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Get the date subscribed.
 	 *
+	 * @param string $context Context.
 	 * @return \WC_DateTime|null Datetime object if the date is set or null if there is no date.
 	 */
 	public function get_date_subscribed( $context = 'view' ) {
@@ -135,6 +142,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Get the date notified.
 	 *
+	 * @param string $context Context.
 	 * @return \WC_DateTime|null Datetime object if the date is set or null if there is no date.
 	 */
 	public function get_date_notified( $context = 'view' ) {
@@ -169,9 +177,11 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the product ID.
 	 *
-	 * @param int $product_id
+	 * @param int $product_id Product ID.
 	 */
 	public function set_product_id( $product_id ) {
+
+		// Reset runtime cache if the product ID has changed.
 		if ( is_a( $this->product, 'WC_Product' ) && $product_id !== $this->product->get_id() ) {
 			$this->product = null;
 		}
@@ -181,7 +191,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the user ID.
 	 *
-	 * @param int $user_id
+	 * @param int $user_id User ID.
 	 */
 	public function set_user_id( $user_id ) {
 		$this->set_prop( 'user_id', $user_id );
@@ -190,7 +200,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the user email.
 	 *
-	 * @param string $user_email
+	 * @param string $user_email User email.
 	 */
 	public function set_user_email( $user_email ) {
 		$this->set_prop( 'user_email', $user_email );
@@ -199,7 +209,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the status.
 	 *
-	 * @param string $status
+	 * @param string $status Status.
 	 */
 	public function set_status( $status ) {
 		$this->set_prop( 'status', $status );
@@ -208,7 +218,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the date created.
 	 *
-	 * @param string $date_created
+	 * @param string $date_created Date created.
 	 */
 	public function set_date_created( $date_created ) {
 		$this->set_date_prop( 'date_created', $date_created );
@@ -217,7 +227,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the date modified.
 	 *
-	 * @param string $date_modified
+	 * @param string $date_modified Date modified.
 	 */
 	public function set_date_modified( $date_modified ) {
 		$this->set_date_prop( 'date_modified', $date_modified );
@@ -226,7 +236,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the date subscribed.
 	 *
-	 * @param string $date_subscribed
+	 * @param string $date_subscribed Date subscribed.
 	 */
 	public function set_date_subscribed( $date_subscribed ) {
 		$this->set_date_prop( 'date_subscribed', $date_subscribed );
@@ -235,7 +245,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the date notified.
 	 *
-	 * @param string $date_notified
+	 * @param string $date_notified Date notified.
 	 */
 	public function set_date_notified( $date_notified ) {
 		$this->set_date_prop( 'date_notified', $date_notified );
@@ -244,7 +254,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the is queued.
 	 *
-	 * @param bool $is_queued
+	 * @param bool $is_queued Is queued.
 	 */
 	public function set_is_queued( $is_queued ) {
 		$this->set_prop( 'is_queued', $is_queued ? 1 : 0 );
@@ -274,7 +284,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Validate the data.
 	 *
-	 * @throws \WC_Data_Exception
+	 * @throws \WC_Data_Exception If the data is invalid.
 	 */
 	protected function validate_props() {
 		if ( empty( $this->get_prop( 'product_id' ) ) ) {
@@ -289,7 +299,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Save the notification.
 	 *
-	 * @return int|\WP_Error
+	 * @return int|\WP_Error The notification ID or a WP_Error if the save failed.
 	 */
 	public function save() {
 		if ( ! $this->data_store ) {
@@ -314,18 +324,20 @@ class Notification extends \WC_Data {
 	/**
 	 * Add an event.
 	 *
-	 * @param array $args
+	 * @param array $args Activity log arguments.
 	 * @return int|false The log ID or false if the log was not created.
 	 */
 	public function add_event( $args ) {
 
-		$args = wp_parse_args( $args, array(
-			'action'     => '',
-			'user_id'    => 0,
-			'user_email' => '',
-			'ip_address' => '',
-			'note'       => '',
-		) );
+		$args = wp_parse_args(
+			$args, array(
+				'action'     => '',
+				'user_id'    => 0,
+				'user_email' => '',
+				'ip_address' => '',
+				'note'       => '',
+			)
+		);
 
 		return $this->data_store->create_event( $this, $args );
 	}
