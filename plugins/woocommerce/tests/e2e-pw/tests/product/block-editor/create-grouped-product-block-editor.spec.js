@@ -1,4 +1,9 @@
 /**
+ * External dependencies
+ */
+import { wpCLI } from '@woocommerce/e2e-utils-playwright';
+
+/**
  * Internal dependencies
  */
 import { test } from '../../../fixtures/block-editor-fixtures';
@@ -22,6 +27,10 @@ const groupedProducts = [];
 test.describe( 'General tab', { tag: tags.GUTENBERG }, () => {
 	test.describe( 'Grouped product', () => {
 		test.beforeAll( async ( { restApi } ) => {
+			await wpCLI(
+				'option update woocommerce_feature_product_block_editor_enabled yes'
+			);
+
 			for ( let i = 0; i < 2; i++ ) {
 				await restApi
 					.post( `${ WC_API_PATH }/products`, getFakeProduct() )
