@@ -14,8 +14,8 @@ import './style.scss';
 
 registerBlockType( metadata.name, {
 	...( metadata as BlockConfiguration< {
-		showIcons: boolean;
-		showLabels: boolean;
+		showAsIcons: boolean;
+		formattedPaymentMethods: Record< string, PaymentMethodConfigInstance >;
 	} > ),
 	icon: {
 		src: (
