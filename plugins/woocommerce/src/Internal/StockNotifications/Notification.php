@@ -330,7 +330,8 @@ class Notification extends \WC_Data {
 	public function add_event( $args ) {
 
 		$args = wp_parse_args(
-			$args, array(
+			$args,
+			array(
 				'action'     => '',
 				'user_id'    => 0,
 				'user_email' => '',
