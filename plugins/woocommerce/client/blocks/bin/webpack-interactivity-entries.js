@@ -62,7 +62,7 @@ const styleEntries = interactivityBlocks.reduce( ( acc, block ) => {
 	return acc;
 }, {} );
 
-const editorEntries = interactivityBlocks.reduce( ( acc, block ) => {
+const editorStyleEntries = interactivityBlocks.reduce( ( acc, block ) => {
 	const editorFile = block.assets.find( ( f ) => f.includes( 'editor' ) );
 	if ( editorFile ) {
 		acc[ `${ block.blockName }-editor` ] = editorFile;
@@ -73,5 +73,5 @@ const editorEntries = interactivityBlocks.reduce( ( acc, block ) => {
 module.exports = {
 	scriptModuleEntries,
 	styleEntries,
-	editorEntries,
+	editorStyleEntries,
 };

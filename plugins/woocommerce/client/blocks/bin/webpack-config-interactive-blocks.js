@@ -18,14 +18,14 @@ const { sharedOptimizationConfig } = require( './webpack-shared-config' );
 const {
 	scriptModuleEntries,
 	styleEntries,
-	editorEntries,
+	editorStyleEntries,
 } = require( './webpack-interactivity-entries' );
 
 const entries = {
 	// Blocks
 	...scriptModuleEntries,
 	...styleEntries,
-	...editorEntries,
+	...editorStyleEntries,
 
 	// Other
 	'@woocommerce/stores/woocommerce/cart':
