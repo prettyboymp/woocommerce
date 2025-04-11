@@ -170,7 +170,7 @@ CREATE TABLE $logs_table_name (
 			$notification->set_date_created( current_time( 'mysql' ) );
 		}
 		if ( ! $notification->get_date_modified( 'edit' ) ) {
-			$notification->set_date_modified( current_time( 'mysql' ) );
+			$notification->set_date_modified( $notification->get_date_created( 'edit' )->format( 'Y-m-d H:i:s' ) );
 		}
 
 		$insert = $wpdb->insert(
@@ -180,10 +180,10 @@ CREATE TABLE $logs_table_name (
 				'user_id'             => $notification->get_user_id( 'edit' ),
 				'user_email'          => $notification->get_user_email( 'edit' ),
 				'status'              => $notification->get_status( 'edit' ),
-				'date_created_gmt'    => gmdate( 'Y-m-d H:i:s', $notification->get_date_created( 'edit' )->getTimestamp() ),
-				'date_modified_gmt'   => gmdate( 'Y-m-d H:i:s', $notification->get_date_modified( 'edit' )->getTimestamp() ),
-				'date_subscribed_gmt' => $notification->get_date_subscribed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_subscribed( 'edit' )->getTimestamp() ) : null,
-				'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
+				'date_created_gmt'    => $notification->get_date_created( 'edit' )->format( 'Y-m-d H:i:s' ),
+				'date_modified_gmt'   => $notification->get_date_modified( 'edit' )->format( 'Y-m-d H:i:s' ),
+				'date_subscribed_gmt' => $notification->get_date_subscribed( 'edit' ) ? $notification->get_date_subscribed( 'edit' )->format( 'Y-m-d H:i:s' ) : null,
+				'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? $notification->get_date_notified( 'edit' )->format( 'Y-m-d H:i:s' ) : null,
 				'is_queued'           => $notification->is_queued( 'edit' ) ? 1 : 0,
 			),
 			array(
@@ -276,7 +276,8 @@ CREATE TABLE $logs_table_name (
 		$date_modified = current_time( 'mysql' );
 		$result        = 0;
 
-		if ( in_array( array( 'product_id', 'user_id', 'user_email', 'status', 'is_queued', 'date_subscribed', 'date_notified' ), array_keys( $changes ) ) ) {
+		if ( array_intersect( array( 'product_id', 'user_id', 'user_email', 'status', 'is_queued', 'date_subscribed', 'date_notified' ), array_keys( $changes ) ) ) {
+			$notification->set_date_modified( $date_modified );
 			$result = $wpdb->update(
 				$this->get_table_name(),
 				array(
@@ -284,9 +285,9 @@ CREATE TABLE $logs_table_name (
 					'user_id'             => $notification->get_user_id( 'edit' ),
 					'user_email'          => $notification->get_user_email( 'edit' ),
 					'status'              => $notification->get_status( 'edit' ),
-					'date_modified_gmt'   => $date_modified,
-					'date_subscribed_gmt' => $notification->get_date_subscribed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_subscribed( 'edit' )->getTimestamp() ) : null,
-					'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
+					'date_modified_gmt'   => $notification->get_date_modified( 'edit' )->format( 'Y-m-d H:i:s' ),
+					'date_subscribed_gmt' => $notification->get_date_subscribed( 'edit' ) ? $notification->get_date_subscribed( 'edit' )->format( 'Y-m-d H:i:s' ) : null,
+					'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? $notification->get_date_notified( 'edit' )->format( 'Y-m-d H:i:s' ) : null,
 					'is_queued'           => $notification->is_queued( 'edit' ) ? 1 : 0,
 				),
 				array( 'id' => $notification->get_id() ),
@@ -302,11 +303,10 @@ CREATE TABLE $logs_table_name (
 				return new \WP_Error( 'db_update_error', 'Invalid notification ID.' );
 			}
 
-			$notification->set_date_modified( $date_modified );
+			$notification->apply_changes();
 		}
 
 		$notification->save_meta_data();
-		$notification->apply_changes();
 
 		return $result;
 	}

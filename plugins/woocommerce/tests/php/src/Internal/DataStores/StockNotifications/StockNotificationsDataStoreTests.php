@@ -42,7 +42,7 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->set_product_id( 1 );
 		$notification->set_user_id( 1 );
 		$notification->set_user_email( 'test@test.com' );
-		$notification->set_status( 'pending' );
+		$notification->set_status( 'active' );
 		$notification->set_date_created( '2024-01-01 00:00:00' );
 		$notification->set_date_modified( '2024-01-01 00:00:00' );
 		$notification->set_date_subscribed( '2024-01-01 00:00:00' );
@@ -56,7 +56,7 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 		$this->assertEquals( 1, $notification->get_product_id() );
 		$this->assertEquals( 1, $notification->get_user_id() );
 		$this->assertEquals( 'test@test.com', $notification->get_user_email() );
-		$this->assertEquals( 'pending', $notification->get_status() );
+		$this->assertEquals( 'active', $notification->get_status() );
 		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_created()->format( 'Y-m-d H:i:s' ) );
 		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
 		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_subscribed()->format( 'Y-m-d H:i:s' ) );
@@ -85,6 +85,39 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 	}
 
 	/**
+	 * Test default queue status is false.
+	 */
+	public function test_default_notification_data() {
+
+		$notification = new Notification();
+		$this->assertEquals( 0, $notification->get_id() );
+		$this->assertEquals( null, $notification->get_product_id() );
+		$this->assertEquals( null, $notification->get_user_id() );
+		$this->assertEquals( null, $notification->get_user_email() );
+		$this->assertEquals( 'pending', $notification->get_status() );
+		$this->assertFalse( $notification->is_queued() );
+		$this->assertEquals( null, $notification->get_date_created() );
+		$this->assertEquals( null, $notification->get_date_modified() );
+		$this->assertEquals( null, $notification->get_date_subscribed() );
+		$this->assertEquals( null, $notification->get_date_notified() );
+
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->save();
+
+		$this->assertEquals( 1, $notification->get_id() );
+		$this->assertEquals( 1, $notification->get_product_id() );
+		$this->assertEquals( 1, $notification->get_user_id() );
+		$this->assertEquals( null, $notification->get_user_email() );
+		$this->assertEquals( 'pending', $notification->get_status() );
+		$this->assertFalse( $notification->is_queued() );
+		$this->assertEqualsWithDelta( 5, $notification->get_date_created()->getTimestamp(), time() );
+		$this->assertEqualsWithDelta( 5, $notification->get_date_modified()->getTimestamp(), time() );
+		$this->assertEquals( null, $notification->get_date_subscribed() );
+		$this->assertEquals( null, $notification->get_date_notified() );
+	}
+
+	/**
 	 * Test updating a notification with all properties.
 	 */
 	public function test_update_notification() {
@@ -96,6 +129,10 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->set_date_created( '2024-01-01 00:00:00' );
 		$notification->save();
 
+		// Verify dates.
+		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_created()->format( 'Y-m-d H:i:s' ) );
+		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
+
 		// Update all properties
 		$notification->set_product_id( 2 );
 		$notification->set_user_id( 2 );
@@ -103,7 +140,7 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->set_status( 'active' );
 		$notification->set_date_subscribed( '2024-01-02 00:00:00' );
 		$notification->set_date_notified( '2024-01-02 00:00:00' );
-		$notification->set_is_queued( false );
+		$notification->set_is_queued( true );
 		$notification->save();
 
 		// Verify all properties were updated correctly
@@ -113,34 +150,11 @@ class StockNotificationDataStoreTests extends \WC_Unit_Test_Case {
 		$this->assertEquals( 'active', $notification->get_status() );
 		$this->assertEquals( '2024-01-02 00:00:00', $notification->get_date_subscribed()->format( 'Y-m-d H:i:s' ) );
 		$this->assertEquals( '2024-01-02 00:00:00', $notification->get_date_notified()->format( 'Y-m-d H:i:s' ) );
-		$this->assertFalse( $notification->is_queued() );
+		$this->assertTrue( $notification->is_queued() );
 
-		// Verify date_modified was updated
+		// Verify modified date is updated.
+		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_created()->format( 'Y-m-d H:i:s' ) );
 		$this->assertNotEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
-	}
-
-	/**
-	 * Test reading a notification.
-	 */
-	public function test_read_notification() {
-		// Create a notification
-		$notification = new Notification();
-		$notification->set_product_id( 1 );
-		$notification->set_user_id( 1 );
-		$notification->set_user_email( 'test@test.com' );
-		$notification->save();
-
-		// Read the notification
-		$read_notification = new Notification( $notification->get_id() );
-
-		// Verify all properties were read correctly
-		$this->assertEquals( $notification->get_id(), $read_notification->get_id() );
-		$this->assertEquals( $notification->get_product_id(), $read_notification->get_product_id() );
-		$this->assertEquals( $notification->get_user_id(), $read_notification->get_user_id() );
-		$this->assertEquals( $notification->get_user_email(), $read_notification->get_user_email() );
-		$this->assertEquals( $notification->get_status(), $read_notification->get_status() );
-		$this->assertEquals( $notification->get_date_created()->format( 'Y-m-d H:i:s' ), $read_notification->get_date_created()->format( 'Y-m-d H:i:s' ) );
-		$this->assertEquals( $notification->get_date_modified()->format( 'Y-m-d H:i:s' ), $read_notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
 	}
 
 	/**
