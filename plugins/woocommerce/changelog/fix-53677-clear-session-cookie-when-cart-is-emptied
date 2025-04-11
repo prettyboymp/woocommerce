@@ -1,0 +1,4 @@
+Significance: major
+Type: performance
+
+Unset WooCommerce Session cookie when the cart is emptied and the user is not logged in.
