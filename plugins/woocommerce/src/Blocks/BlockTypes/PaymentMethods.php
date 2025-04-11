@@ -7,8 +7,6 @@ use WP_Block;
 
 /**
  * PaymentMethods class.
- *
- * @internal
  */
 class PaymentMethods extends AbstractBlock {
 	/**
