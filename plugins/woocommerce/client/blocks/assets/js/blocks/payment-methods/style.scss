@@ -34,27 +34,4 @@
 		display: block;
 		width: 100%;
 	}
-
-	.wc-block-payment-methods__icons {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 12px;
-
-		&--align-left {
-			justify-content: flex-start;
-		}
-
-		&--align-center {
-			justify-content: center;
-		}
-
-		&--align-right {
-			justify-content: flex-end;
-		}
-	}
-
-	.wc-block-payment-methods__icon {
-		width: auto;
-		height: 24px;
-	}
 }
