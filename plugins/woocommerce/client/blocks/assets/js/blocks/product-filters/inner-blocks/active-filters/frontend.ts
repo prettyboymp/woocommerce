@@ -16,6 +16,10 @@ type ActiveFiltersContext = {
 	item: ActiveFilterItem;
 };
 
+// Stores are locked to prevent 3PD usage until the API is stable.
+const universalLock =
+	'I acknowledge that using a private store means my plugin will inevitably break on the next store release.';
+
 const activeFiltersStore = {
 	state: {
 		get removeActiveFilterLabel() {
@@ -47,5 +51,8 @@ const activeFiltersStore = {
 
 const { actions } = store< ProductFiltersStore & typeof activeFiltersStore >(
 	'woocommerce/product-filters',
-	activeFiltersStore
+	activeFiltersStore,
+	{
+		lock: universalLock,
+	}
 );

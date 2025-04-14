@@ -31,6 +31,10 @@ function debounceWithScope< Args extends unknown[] >(
 	};
 }
 
+// Stores are locked to prevent 3PD usage until the API is stable.
+const universalLock =
+	'I acknowledge that using a private store means my plugin will inevitably break on the next store release.';
+
 const productFilterPriceSliderStore = {
 	state: {
 		rangeStyle: () => {
@@ -73,4 +77,6 @@ const { state, actions } = store<
 	ProductFiltersStore &
 		ProductFilterPriceStore &
 		typeof productFilterPriceSliderStore
->( 'woocommerce/product-filters', productFilterPriceSliderStore );
+>( 'woocommerce/product-filters', productFilterPriceSliderStore, {
+	lock: universalLock,
+} );
