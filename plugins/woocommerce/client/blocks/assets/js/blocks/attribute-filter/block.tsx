@@ -112,7 +112,6 @@ const AttributeFilterBlock = ( {
 		More info: https://github.com/woocommerce/woocommerce-blocks/pull/6920#issuecomment-1222402482
 	 */
 	const [ remountKey, setRemountKey ] = useState( generateUniqueId() );
-	console.log( 'AttributeFilterBlock called, Line 115', remountKey );
 
 	const [ displayedOptions, setDisplayedOptions ] = useState<
 		DisplayOption[]
