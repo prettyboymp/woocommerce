@@ -41,7 +41,7 @@ function Pills( {
 				<li
 					key={ option.value }
 					className={ clsx(
-						'wc-block-add-to-cart-with-options-variation-selector-attribute-options__pill',
+						'wp-element-button wc-block-add-to-cart-with-options-variation-selector-attribute-options__pill',
 						{
 							'wc-block-add-to-cart-with-options-variation-selector-attribute-options__pill--selected':
 								index === 0,
@@ -68,7 +68,7 @@ export default function AttributeOptionsEdit(
 	} );
 
 	// Apply selected variation pill styles based on Site Editor's background and text colors.
-	useThemeColors(
+	/*useThemeColors(
 		'add-to-cart-with-options-variation-selector-attribute-options',
 		( { editorBackgroundColor, editorColor } ) => `
 			:where(.wc-block-add-to-cart-with-options-variation-selector-attribute-options__pill--selected) {
@@ -77,7 +77,7 @@ export default function AttributeOptionsEdit(
 				border-color: ${ editorColor };
 			}
 		`
-	);
+	);*/
 
 	const { data: attribute } =
 		useCustomDataContext< ProductResponseAttributeItem >( 'attribute' );
