@@ -35,6 +35,7 @@ import {
 import FormTokenField from '@woocommerce/base-components/form-token-field';
 import FilterTitlePlaceholder from '@woocommerce/base-components/filter-placeholder';
 import clsx from 'clsx';
+import { generateUniqueId } from '@woocommerce/utils';
 
 /**
  * Internal dependencies
@@ -50,7 +51,6 @@ import {
 	isQueryArgsEqual,
 	parseTaxonomyToGenerateURL,
 	formatSlug,
-	generateUniqueId,
 } from './utils';
 import { BlockAttributes, DisplayOption, GetNotice } from './types';
 import CheckboxFilter from './checkbox-filter';
@@ -112,6 +112,7 @@ const AttributeFilterBlock = ( {
 		More info: https://github.com/woocommerce/woocommerce-blocks/pull/6920#issuecomment-1222402482
 	 */
 	const [ remountKey, setRemountKey ] = useState( generateUniqueId() );
+	console.log( 'AttributeFilterBlock called, Line 115', remountKey );
 
 	const [ displayedOptions, setDisplayedOptions ] = useState<
 		DisplayOption[]
