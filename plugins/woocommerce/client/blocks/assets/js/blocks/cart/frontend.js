@@ -42,11 +42,7 @@ const Wrapper = ( { children } ) => {
 			const skeletonElement = document.getElementById( 'cart-skeleton' );
 
 			if ( cartElement && skeletonElement ) {
-				cartElement.classList.add( 'is-loading' );
-				setTimeout( () => {
-					skeletonElement.remove();
-					cartElement.classList.remove( 'is-loading' );
-				}, 1000 );
+				skeletonElement.remove();
 			}
 		}
 	}, [ cartIsLoading ] );
