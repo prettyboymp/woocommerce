@@ -57,42 +57,54 @@ const dispatchChangeEvent = ( inputElement: HTMLInputElement ) => {
 	inputElement.dispatchEvent( event );
 };
 
-const { actions: wooAddToCartWithOptionsActions } =
-	store< AddToCartWithOptionsStore >(
-		'woocommerce/add-to-cart-with-options',
-		{},
-		{ lock: universalLock }
-	);
+const { actions: wooAddToCartWithOptionsActions } = store<
+	AddToCartWithOptionsStore & {
+		actions: {
+			addQuantity: (
+				event: HTMLElementEvent< HTMLButtonElement >
+			) => void;
+			removeQuantity: (
+				event: HTMLElementEvent< HTMLButtonElement >
+			) => void;
+		};
+	}
+>(
+	'woocommerce/add-to-cart-with-options',
+	{
+		actions: {
+			addQuantity: ( event: HTMLElementEvent< HTMLButtonElement > ) => {
+				const inputData = getInputData( event );
+				if ( ! inputData ) {
+					return;
+				}
+				const { currentValue, maxValue, step, inputElement } =
+					inputData;
+				const newValue = currentValue + step;
 
-store( 'woocommerce/add-to-cart-with-options', {
-	actions: {
-		addQuantity: ( event: HTMLElementEvent< HTMLButtonElement > ) => {
-			const inputData = getInputData( event );
-			if ( ! inputData ) {
-				return;
-			}
-			const { currentValue, maxValue, step, inputElement } = inputData;
-			const newValue = currentValue + step;
+				if ( maxValue === undefined || newValue <= maxValue ) {
+					wooAddToCartWithOptionsActions?.setQuantity( newValue );
+					inputElement.value = newValue.toString();
+					dispatchChangeEvent( inputElement );
+				}
+			},
+			removeQuantity: (
+				event: HTMLElementEvent< HTMLButtonElement >
+			) => {
+				const inputData = getInputData( event );
+				if ( ! inputData ) {
+					return;
+				}
+				const { currentValue, minValue, step, inputElement } =
+					inputData;
+				const newValue = currentValue - step;
 
-			if ( maxValue === undefined || newValue <= maxValue ) {
-				wooAddToCartWithOptionsActions?.setQuantity( newValue );
-				inputElement.value = newValue.toString();
-				dispatchChangeEvent( inputElement );
-			}
-		},
-		removeQuantity: ( event: HTMLElementEvent< HTMLButtonElement > ) => {
-			const inputData = getInputData( event );
-			if ( ! inputData ) {
-				return;
-			}
-			const { currentValue, minValue, step, inputElement } = inputData;
-			const newValue = currentValue - step;
-
-			if ( newValue >= minValue ) {
-				wooAddToCartWithOptionsActions?.setQuantity( newValue );
-				inputElement.value = newValue.toString();
-				dispatchChangeEvent( inputElement );
-			}
+				if ( newValue >= minValue ) {
+					wooAddToCartWithOptionsActions?.setQuantity( newValue );
+					inputElement.value = newValue.toString();
+					dispatchChangeEvent( inputElement );
+				}
+			},
 		},
 	},
-} );
+	{ lock: universalLock }
+);
