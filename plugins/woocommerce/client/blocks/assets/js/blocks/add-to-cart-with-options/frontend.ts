@@ -72,7 +72,8 @@ const addToCartWithOptionsStore = store(
 				yield actions.addCartItem( { id, quantity, variation } );
 			},
 		},
-	}
+	},
+	{ lock: true }
 );
 
 export type AddToCartWithOptionsStore = typeof addToCartWithOptionsStore;
