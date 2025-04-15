@@ -334,10 +334,12 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->set_user_id( 1 );
 		$notification->save();
 
-		$notifications = $this->data_store->query( array(
-			'product_id' => 1,
-			'user_id'    => 1,
-		) );
+		$notifications = $this->data_store->query(
+			array(
+				'product_id' => 1,
+				'user_id'    => 1,
+			)
+		);
 		$this->assertEquals( 1, count( $notifications ) );
 	}
 
@@ -357,9 +359,11 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_2->set_user_id( 2 );
 		$notification_2->save();
 
-		$notifications = $this->data_store->query( array(
-			'status' => 'active',
-		) );
+		$notifications = $this->data_store->query(
+			array(
+				'status' => 'active',
+			)
+		);
 		$this->assertEquals( 1, count( $notifications ) );
 	}
 
@@ -378,9 +382,11 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_2->set_user_id( 2 );
 		$notification_2->save();
 
-		$notifications = $this->data_store->query( array(
-			'product_id' => 1,
-		) );
+		$notifications = $this->data_store->query(
+			array(
+				'product_id' => 1,
+			)
+		);
 		$this->assertEquals( 1, count( $notifications ) );
 	}
 
@@ -399,9 +405,11 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_2->set_user_id( 2 );
 		$notification_2->save();
 
-		$notifications = $this->data_store->query( array(
-			'user_id' => 1,
-		) );
+		$notifications = $this->data_store->query(
+			array(
+				'user_id' => 1,
+			)
+		);
 		$this->assertEquals( 1, count( $notifications ) );
 	}
 
@@ -422,9 +430,11 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_2->set_user_email( 'test2@test.com' );
 		$notification_2->save();
 
-		$notifications = $this->data_store->query( array(
-			'user_email' => 'test@test.com',
-		) );
+		$notifications = $this->data_store->query(
+			array(
+				'user_email' => 'test@test.com',
+			)
+		);
 		$this->assertEquals( 1, count( $notifications ) );
 	}
 
@@ -444,9 +454,11 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_2->set_user_id( 2 );
 		$notification_2->save();
 
-		$notifications = $this->data_store->query( array(
-			'is_queued' => true,
-		) );
+		$notifications = $this->data_store->query(
+			array(
+				'is_queued' => true,
+			)
+		);
 		$this->assertEquals( 1, count( $notifications ) );
 	}
 
@@ -475,10 +487,12 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_4->set_user_id( 4 );
 		$notification_4->save();
 
-		$notifications = $this->data_store->query( array(
-			'limit'      => 2,
-			'offset'     => 1,
-		) );
+		$notifications = $this->data_store->query(
+			array(
+				'limit'  => 2,
+				'offset' => 1,
+			)
+		);
 		$this->assertEquals( 2, count( $notifications ) );
 
 		$this->assertEquals( 2, $notifications[0]->get_id() );
@@ -500,9 +514,11 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_2->set_user_id( 2 );
 		$notification_2->save();
 
-		$count = $this->data_store->query( array(
-			'return' => 'count',
-		) );
+		$count = $this->data_store->query(
+			array(
+				'return' => 'count',
+			)
+		);
 		$this->assertEquals( 2, $count );
 	}
 }

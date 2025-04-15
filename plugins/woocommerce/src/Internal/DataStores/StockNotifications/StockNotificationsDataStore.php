@@ -43,16 +43,16 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	 *
 	 * @internal
 	 *
-	 * @param StockNotificationsMetaDataStore $data_store_meta The data store meta instance to use.
-	 * @param DatabaseUtil                    $database_util   The database util instance to use.
+	 * @param StockNotificationsMetaDataStore         $data_store_meta The data store meta instance to use.
 	 * @param StockNotificationsActivityLogsDataStore $data_store_logs The activity logs data store instance to use.
+	 * @param DatabaseUtil                            $database_util   The database util instance to use.
 	 *
 	 * @return void
 	 */
 	final public function init( StockNotificationsMetaDataStore $data_store_meta, StockNotificationsActivityLogsDataStore $data_store_logs, DatabaseUtil $database_util ) {
 		$this->data_store_meta = $data_store_meta;
-		$this->database_util   = $database_util;
 		$this->data_store_logs = $data_store_logs;
+		$this->database_util   = $database_util;
 	}
 
 	/**
@@ -432,14 +432,14 @@ CREATE TABLE $logs_table_name (
 		$args = wp_parse_args(
 			$args,
 			array(
-				'status'         => '',
-				'product_id'     => array(),
-				'user_id'        => 0,
-				'user_email'     => '',
-				'is_queued'      => '',
-				'limit'          => -1,
-				'offset'         => 0,
-				'return'         => 'objects',
+				'status'     => '',
+				'product_id' => array(),
+				'user_id'    => 0,
+				'user_email' => '',
+				'is_queued'  => '',
+				'limit'      => -1,
+				'offset'     => 0,
+				'return'     => 'objects',
 			)
 		);
 
@@ -453,28 +453,28 @@ CREATE TABLE $logs_table_name (
 		$where        = array();
 		$where_values = array();
 		if ( $args['status'] ) {
-			$where[]        = "status = %s";
+			$where[]        = 'status = %s';
 			$where_values[] = esc_sql( $args['status'] );
 		}
 
 		if ( ! empty( $args['product_id'] ) ) {
 			$product_ids  = array_map( 'absint', is_array( $args['product_id'] ) ? $args['product_id'] : array( $args['product_id'] ) );
-			$where[]      = "product_id IN (" . implode( ',', array_fill( 0, count( $product_ids ), '%d' ) ) . ")";
+			$where[]      = 'product_id IN (' . implode( ',', array_fill( 0, count( $product_ids ), '%d' ) ) . ')';
 			$where_values = array_merge( $where_values, $product_ids );
 		}
 
 		if ( $args['user_id'] ) {
-			$where[]        = "user_id = %d";
+			$where[]        = 'user_id = %d';
 			$where_values[] = absint( $args['user_id'] );
 		}
 
 		if ( $args['user_email'] ) {
-			$where[]        = "user_email = %s";
+			$where[]        = 'user_email = %s';
 			$where_values[] = esc_sql( $args['user_email'] );
 		}
 
 		if ( '' !== $args['is_queued'] ) {
-			$where[]        = "is_queued = %d";
+			$where[]        = 'is_queued = %d';
 			$where_values[] = true === $args['is_queued'] ? 1 : 0;
 		}
 
@@ -486,14 +486,14 @@ CREATE TABLE $logs_table_name (
 		$sql    = "SELECT $select FROM $table $where $limit $offset";
 
 		// Prepare the query.
-		$prepared_sql = empty( $where_values ) ? $sql : $wpdb->prepare( $sql, $where_values );
+		$prepared_sql = empty( $where_values ) ? $sql : $wpdb->prepare( $sql, $where_values ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		// Execute the query.
 		if ( 'count' === $args['return'] ) {
-			return (int) $wpdb->get_var( $prepared_sql );
+			return (int) $wpdb->get_var( $prepared_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		$results = $wpdb->get_results( $prepared_sql, ARRAY_A );
+		$results = $wpdb->get_results( $prepared_sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		if ( empty( $results ) ) {
 			return array();
 		}

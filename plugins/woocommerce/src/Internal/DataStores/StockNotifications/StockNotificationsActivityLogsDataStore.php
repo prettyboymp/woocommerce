@@ -7,8 +7,6 @@ declare( strict_types = 1 );
 
 namespace Automattic\WooCommerce\Internal\DataStores\StockNotifications;
 
-use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsDataStore;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -63,7 +61,7 @@ class StockNotificationsActivityLogsDataStore {
 			ARRAY_A
 		);
 
-		return $log ?: false;
+		return $log ? $log : false;
 	}
 
 	/**
@@ -115,22 +113,22 @@ class StockNotificationsActivityLogsDataStore {
 		$where_values = array();
 
 		if ( $args['notification_id'] ) {
-			$where[]        = "notification_id = %d";
+			$where[]        = 'notification_id = %d';
 			$where_values[] = absint( $args['notification_id'] );
 		}
 
 		if ( $args['action'] ) {
-			$where[]        = "action = %s";
+			$where[]        = 'action = %s';
 			$where_values[] = esc_sql( $args['action'] );
 		}
 
 		if ( $args['user_id'] ) {
-			$where[]        = "user_id = %d";
+			$where[]        = 'user_id = %d';
 			$where_values[] = absint( $args['user_id'] );
 		}
 
 		if ( $args['user_email'] ) {
-			$where[]        = "user_email = %s";
+			$where[]        = 'user_email = %s';
 			$where_values[] = esc_sql( $args['user_email'] );
 		}
 
@@ -142,14 +140,14 @@ class StockNotificationsActivityLogsDataStore {
 		$sql    = "SELECT $select FROM $table $where $limit $offset";
 
 		// Prepare the query.
-		$prepared_sql = empty( $where_values ) ? $sql : $wpdb->prepare( $sql, $where_values );
+		$prepared_sql = empty( $where_values ) ? $sql : $wpdb->prepare( $sql, $where_values ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		// Execute the query.
 		if ( 'count' === $args['return'] ) {
-			return (int) $wpdb->get_var( $prepared_sql );
+			return (int) $wpdb->get_var( $prepared_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
-		$results = $wpdb->get_results( $prepared_sql, ARRAY_A );
+		$results = $wpdb->get_results( $prepared_sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		if ( empty( $results ) ) {
 			return array();
 		}
