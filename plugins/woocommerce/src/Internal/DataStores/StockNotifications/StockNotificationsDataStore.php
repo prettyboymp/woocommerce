@@ -515,4 +515,14 @@ CREATE TABLE $logs_table_name (
 	public function create_activity_log( $args ) {
 		return $this->data_store_logs->create( $args );
 	}
+
+	/**
+	 * Query the activity logs.
+	 *
+	 * @param array $args The query arguments.
+	 * @return array|int An array of logs or the number of logs.
+	 */
+	public function query_activity_logs( $args ) {
+		return $this->data_store_logs->query( $args );
+	}
 }

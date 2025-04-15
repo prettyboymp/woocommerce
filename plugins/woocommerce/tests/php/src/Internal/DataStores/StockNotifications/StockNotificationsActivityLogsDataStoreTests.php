@@ -3,7 +3,7 @@
 declare( strict_types = 1 );
 namespace Automattic\WooCommerce\Tests\Internal\DataStores\StockNotifications;
 
-use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsActivityLogsDataStore;
+use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsDataStore;
 
 /**
  * Class StockNotificationsActivityLogsDataStoreTests.
@@ -22,7 +22,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		$this->data_store = new StockNotificationsActivityLogsDataStore();
+		$this->data_store = wc_get_container()->get( StockNotificationsDataStore::class );
 	}
 
 	/**
@@ -48,48 +48,22 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'note'            => 'Test log',
 		);
 
-		$log_id = $this->data_store->create( $args );
+		$log_id = $this->data_store->create_activity_log( $args );
 		$this->assertGreaterThan( 0, $log_id );
 
-		$log = $this->data_store->read( $log_id );
-		$this->assertIsArray( $log );
-		$this->assertEquals( $args['notification_id'], $log['notification_id'] );
-		$this->assertEquals( $args['action'], $log['action'] );
-		$this->assertEquals( $args['user_id'], $log['user_id'] );
-		$this->assertEquals( $args['user_email'], $log['user_email'] );
-		$this->assertEquals( $args['ip_address'], $log['ip_address'] );
-		$this->assertEquals( $args['note'], $log['note'] );
-	}
-
-	/**
-	 * Test reading a non-existent log.
-	 */
-	public function test_read_nonexistent_log() {
-		$log = $this->data_store->read( 999999 );
-		$this->assertFalse( $log );
-	}
-
-	/**
-	 * Test deleting a log.
-	 */
-	public function test_delete_log() {
-		$args = array(
-			'notification_id' => 1,
-			'action'          => 'created',
-			'user_id'         => 1,
-			'user_email'      => 'test@test.com',
-			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log',
+		$log = $this->data_store->query_activity_logs(
+			array(
+				'notification_id' => $args['notification_id'],
+			)
 		);
-
-		$log_id = $this->data_store->create( $args );
-		$this->assertGreaterThan( 0, $log_id );
-
-		$result = $this->data_store->delete( $log_id );
-		$this->assertTrue( $result );
-
-		$log = $this->data_store->read( $log_id );
-		$this->assertFalse( $log );
+		$this->assertIsArray( $log );
+		$this->assertEquals( $log_id, $log[0]['id'] );
+		$this->assertEquals( $args['notification_id'], $log[0]['notification_id'] );
+		$this->assertEquals( $args['action'], $log[0]['action'] );
+		$this->assertEquals( $args['user_id'], $log[0]['user_id'] );
+		$this->assertEquals( $args['user_email'], $log[0]['user_email'] );
+		$this->assertEquals( $args['ip_address'], $log[0]['ip_address'] );
+		$this->assertEquals( $args['note'], $log[0]['note'] );
 	}
 
 	/**
@@ -115,10 +89,10 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'note'            => 'Test log 2',
 		);
 
-		$this->data_store->create( $args1 );
-		$this->data_store->create( $args2 );
+		$this->data_store->create_activity_log( $args1 );
+		$this->data_store->create_activity_log( $args2 );
 
-		$logs = $this->data_store->query(
+		$logs = $this->data_store->query_activity_logs(
 			array(
 				'notification_id' => 1,
 			)
@@ -151,10 +125,10 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'note'            => 'Test log 2',
 		);
 
-		$this->data_store->create( $args1 );
-		$this->data_store->create( $args2 );
+		$this->data_store->create_activity_log( $args1 );
+		$this->data_store->create_activity_log( $args2 );
 
-		$logs = $this->data_store->query(
+		$logs = $this->data_store->query_activity_logs(
 			array(
 				'action' => 'created',
 			)
@@ -187,10 +161,10 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'note'            => 'Test log 2',
 		);
 
-		$this->data_store->create( $args1 );
-		$this->data_store->create( $args2 );
+		$this->data_store->create_activity_log( $args1 );
+		$this->data_store->create_activity_log( $args2 );
 
-		$logs = $this->data_store->query(
+		$logs = $this->data_store->query_activity_logs(
 			array(
 				'user_id' => 1,
 			)
@@ -223,10 +197,10 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'note'            => 'Test log 2',
 		);
 
-		$this->data_store->create( $args1 );
-		$this->data_store->create( $args2 );
+		$this->data_store->create_activity_log( $args1 );
+		$this->data_store->create_activity_log( $args2 );
 
-		$logs = $this->data_store->query(
+		$logs = $this->data_store->query_activity_logs(
 			array(
 				'user_email' => 'test1@test.com',
 			)
@@ -268,11 +242,11 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'note'            => 'Test log 3',
 		);
 
-		$this->data_store->create( $args1 );
-		$this->data_store->create( $args2 );
-		$this->data_store->create( $args3 );
+		$this->data_store->create_activity_log( $args1 );
+		$this->data_store->create_activity_log( $args2 );
+		$this->data_store->create_activity_log( $args3 );
 
-		$logs = $this->data_store->query(
+		$logs = $this->data_store->query_activity_logs(
 			array(
 				'limit'  => 1,
 				'offset' => 1,
@@ -306,10 +280,10 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'note'            => 'Test log 2',
 		);
 
-		$this->data_store->create( $args1 );
-		$this->data_store->create( $args2 );
+		$this->data_store->create_activity_log( $args1 );
+		$this->data_store->create_activity_log( $args2 );
 
-		$count = $this->data_store->query(
+		$count = $this->data_store->query_activity_logs(
 			array(
 				'return' => 'count',
 			)

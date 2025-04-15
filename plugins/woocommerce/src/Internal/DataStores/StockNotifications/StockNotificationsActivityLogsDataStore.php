@@ -44,43 +44,6 @@ class StockNotificationsActivityLogsDataStore {
 	}
 
 	/**
-	 * Read a log.
-	 *
-	 * @param int $log_id The log ID.
-	 * @return array|false The log data or false if not found.
-	 */
-	public function read( $log_id ) {
-		global $wpdb;
-
-		$log = $wpdb->get_row(
-			$wpdb->prepare(
-				'SELECT * FROM %i WHERE id = %d',
-				StockNotificationsDataStore::get_logs_table_name(),
-				$log_id
-			),
-			ARRAY_A
-		);
-
-		return $log ? $log : false;
-	}
-
-	/**
-	 * Delete a log.
-	 *
-	 * @param int $log_id The log ID.
-	 * @return bool True if deleted, false otherwise.
-	 */
-	public function delete( $log_id ) {
-		global $wpdb;
-
-		return (bool) $wpdb->delete(
-			StockNotificationsDataStore::get_logs_table_name(),
-			array( 'id' => $log_id ),
-			array( '%d' )
-		);
-	}
-
-	/**
 	 * Query activity logs.
 	 *
 	 * @param array $args The arguments.
