@@ -252,4 +252,60 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$this->assertFalse( $notification->meta_exists( 'test_meta' ) );
 		$this->assertEquals( '', $notification->get_meta( 'test_meta' ) );
 	}
+
+	/**
+	 * Test the modified date is updated when meta is changed.
+	 */
+	public function test_modified_date_is_updated_when_meta_is_added() {
+		$notification = new Notification();
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->set_date_created( '2024-01-01 00:00:00' );
+		$notification->save();
+
+		$notification = new Notification( $notification->get_id() );
+		$notification->add_meta_data( 'test_meta', 'test_value' );
+		$notification->save();
+
+		$notification = new Notification( $notification->get_id() );
+		$this->assertNotEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
+	}
+
+	/**
+	 * Test the modified date is updated when meta is changed.
+	 */
+	public function test_modified_date_is_updated_when_meta_is_changed() {
+		$notification = new Notification();
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->set_date_created( '2024-01-01 00:00:00' );
+		$notification->add_meta_data( 'test_meta', 'test_value' );
+		$notification->save();
+
+		$notification = new Notification( $notification->get_id() );
+		$notification->update_meta_data( 'test_meta', 'updated_value' );
+		$notification->save();
+
+		$notification = new Notification( $notification->get_id() );
+		$this->assertNotEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
+	}
+
+	/**
+	 * Test the modified date is updated when meta is deleted.
+	 */
+	public function test_modified_date_is_updated_when_meta_is_deleted() {
+		$notification = new Notification();
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->set_date_created( '2024-01-01 00:00:00' );
+		$notification->add_meta_data( 'test_meta', 'test_value' );
+		$notification->save();
+
+		$notification = new Notification( $notification->get_id() );
+		$notification->delete_meta_data( 'test_meta' );
+		$notification->save();
+
+		$notification = new Notification( $notification->get_id() );
+		$this->assertNotEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
+	}
 }

@@ -9,6 +9,8 @@ namespace Automattic\WooCommerce\Internal\DataStores\StockNotifications;
 
 use Automattic\WooCommerce\Internal\DataStores\CustomMetaDataStore;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Mimics a WP metadata (i.e. add_metadata(), get_metadata() and friends) implementation using a custom table.
  */
