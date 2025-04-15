@@ -12,6 +12,21 @@ use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificat
 class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 
 	/**
+	 * The data store instance.
+	 *
+	 * @var StockNotificationsDataStore
+	 */
+	private $data_store;
+
+	/**
+	 * Set up the test.
+	 */
+	public function setUp(): void {
+		parent::setUp();
+		$this->data_store = wc_get_container()->get( StockNotificationsDataStore::class );
+	}
+
+	/**
 	 * Tear down the test.
 	 */
 	public function tearDown(): void {
@@ -314,14 +329,12 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 	 */
 	public function test_query_notifications() {
 
-		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
-
 		$notification = new Notification();
 		$notification->set_product_id( 1 );
 		$notification->set_user_id( 1 );
 		$notification->save();
 
-		$notifications = $datastore->query( array(
+		$notifications = $this->data_store->query( array(
 			'product_id' => 1,
 			'user_id'    => 1,
 		) );
@@ -332,7 +345,6 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 	 * Test querying notifications with a status.
 	 */
 	public function test_query_notifications_with_status() {
-		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
 
 		$notification = new Notification();
 		$notification->set_product_id( 1 );
@@ -345,7 +357,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_2->set_user_id( 2 );
 		$notification_2->save();
 
-		$notifications = $datastore->query( array(
+		$notifications = $this->data_store->query( array(
 			'status' => 'active',
 		) );
 		$this->assertEquals( 1, count( $notifications ) );
@@ -355,7 +367,6 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 	 * Test querying notifications with a product ID.
 	 */
 	public function test_query_notifications_with_product_id() {
-		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
 
 		$notification = new Notification();
 		$notification->set_product_id( 1 );
@@ -367,7 +378,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_2->set_user_id( 2 );
 		$notification_2->save();
 
-		$notifications = $datastore->query( array(
+		$notifications = $this->data_store->query( array(
 			'product_id' => 1,
 		) );
 		$this->assertEquals( 1, count( $notifications ) );
@@ -377,7 +388,6 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 	 * Test querying notifications with a user ID.
 	 */
 	public function test_query_notifications_with_user_id() {
-		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
 
 		$notification = new Notification();
 		$notification->set_product_id( 1 );
@@ -389,7 +399,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_2->set_user_id( 2 );
 		$notification_2->save();
 
-		$notifications = $datastore->query( array(
+		$notifications = $this->data_store->query( array(
 			'user_id' => 1,
 		) );
 		$this->assertEquals( 1, count( $notifications ) );
@@ -399,7 +409,6 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 	 * Test querying notifications with a user email.
 	 */
 	public function test_query_notifications_with_user_email() {
-		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
 
 		$notification = new Notification();
 		$notification->set_product_id( 1 );
@@ -413,7 +422,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_2->set_user_email( 'test2@test.com' );
 		$notification_2->save();
 
-		$notifications = $datastore->query( array(
+		$notifications = $this->data_store->query( array(
 			'user_email' => 'test@test.com',
 		) );
 		$this->assertEquals( 1, count( $notifications ) );
@@ -423,7 +432,6 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 	 * Test querying notifications with a is_queued.
 	 */
 	public function test_query_notifications_with_is_queued() {
-		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
 
 		$notification = new Notification();
 		$notification->set_product_id( 1 );
@@ -436,7 +444,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_2->set_user_id( 2 );
 		$notification_2->save();
 
-		$notifications = $datastore->query( array(
+		$notifications = $this->data_store->query( array(
 			'is_queued' => true,
 		) );
 		$this->assertEquals( 1, count( $notifications ) );
@@ -446,7 +454,6 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 	 * Test querying notifications with a limit and offset.
 	 */
 	public function test_query_notifications_with_limit_and_offset() {
-		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
 
 		$notification = new Notification();
 		$notification->set_product_id( 1 );
@@ -468,7 +475,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_4->set_user_id( 4 );
 		$notification_4->save();
 
-		$notifications = $datastore->query( array(
+		$notifications = $this->data_store->query( array(
 			'limit'      => 2,
 			'offset'     => 1,
 		) );
@@ -483,8 +490,6 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 	 */
 	public function test_query_notifications_with_return_type_count() {
 
-		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
-
 		$notification = new Notification();
 		$notification->set_product_id( 1 );
 		$notification->set_user_id( 1 );
@@ -495,7 +500,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification_2->set_user_id( 2 );
 		$notification_2->save();
 
-		$count = $datastore->query( array(
+		$count = $this->data_store->query( array(
 			'return' => 'count',
 		) );
 		$this->assertEquals( 2, $count );

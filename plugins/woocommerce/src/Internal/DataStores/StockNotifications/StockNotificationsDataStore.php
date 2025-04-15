@@ -32,18 +32,27 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	protected $data_store_meta;
 
 	/**
+	 * The activity logs data store.
+	 *
+	 * @var StockNotificationsActivityLogsDataStore
+	 */
+	protected $data_store_logs;
+
+	/**
 	 * Initialize.
 	 *
 	 * @internal
 	 *
 	 * @param StockNotificationsMetaDataStore $data_store_meta The data store meta instance to use.
 	 * @param DatabaseUtil                    $database_util   The database util instance to use.
+	 * @param StockNotificationsActivityLogsDataStore $data_store_logs The activity logs data store instance to use.
 	 *
 	 * @return void
 	 */
-	final public function init( StockNotificationsMetaDataStore $data_store_meta, DatabaseUtil $database_util ) {
+	final public function init( StockNotificationsMetaDataStore $data_store_meta, StockNotificationsActivityLogsDataStore $data_store_logs, DatabaseUtil $database_util ) {
 		$this->data_store_meta = $data_store_meta;
 		$this->database_util   = $database_util;
+		$this->data_store_logs = $data_store_logs;
 	}
 
 	/**
@@ -505,24 +514,6 @@ CREATE TABLE $logs_table_name (
 	 * @return int|false The log ID or false if the log was not created.
 	 */
 	public function create_activity_log( &$notification, $args ) {
-		global $wpdb;
-
-		$data = array(
-			'notification_id' => $notification->get_id(),
-			'action'          => sanitize_text_field( $args['action'] ),
-			'user_id'         => absint( $args['user_id'] ),
-			'user_email'      => sanitize_email( $args['user_email'] ),
-			'ip_address'      => sanitize_text_field( $args['ip_address'] ),
-			'date_logged_gmt' => current_time( 'mysql' ),
-			'note'            => sanitize_text_field( $args['note'] ),
-		);
-
-		$result = $wpdb->insert(
-			$this->get_logs_table_name(),
-			$data,
-			array( '%d', '%s', '%d', '%s', '%s', '%s', '%s' )
-		);
-
-		return $result ? (int) $wpdb->insert_id : false;
+		return $this->data_store_logs->create( $notification, $args );
 	}
 }
