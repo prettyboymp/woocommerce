@@ -265,9 +265,8 @@ test.describe( `${ blockData.name }`, () => {
 			const swipeEndX = swipeStartX - 200; // swipe left by 200px
 			const swipeEndY = swipeStartY;
 
-			const initialImageSrc = await largeImageElement.getAttribute(
-				'src'
-			);
+			const initialImageSrc =
+				await largeImageElement.getAttribute( 'src' );
 
 			// Dispatch touch events to simulate swipe
 			await largeImageElement.evaluate(

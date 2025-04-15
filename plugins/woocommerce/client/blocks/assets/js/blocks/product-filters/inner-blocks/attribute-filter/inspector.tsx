@@ -63,10 +63,11 @@ export const Inspector = ( {
 	);
 
 	if ( displayStyleOptions.length === 0 ) {
-		displayStyleOptions = getBlockTypes().filter( ( blockType ) =>
-			blockType.ancestor?.includes(
-				'woocommerce/product-filter-attribute'
-			)
+		displayStyleOptions = getBlockTypes().filter(
+			( blockType ) =>
+				blockType.ancestor?.includes(
+					'woocommerce/product-filter-attribute'
+				)
 		);
 	}
 

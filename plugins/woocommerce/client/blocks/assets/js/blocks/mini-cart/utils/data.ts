@@ -143,5 +143,5 @@ export function migrateAttributesToColorPanel(
 		delete attrs.productCountColorValue;
 	}
 
-	return <Attributes>attrs;
+	return < Attributes >attrs;
 }
