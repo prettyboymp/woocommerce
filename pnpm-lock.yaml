@@ -3291,6 +3291,12 @@ importers:
         specifier: 0.14.10
         version: 0.14.10
 
+  packages/php/blueprint:
+    devDependencies:
+      '@wordpress/env':
+        specifier: 10.17.0
+        version: 10.17.0(patch_hash=ovltjfwrjswkqlvmxt7r5kywn4)(@types/node@22.9.1)
+
   packages/php/email-editor:
     devDependencies:
       '@wordpress/env':
