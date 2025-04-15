@@ -7,20 +7,28 @@
 	flex-wrap: wrap;
 }
 
-.wc-block-add-to-cart-with-options-variation-selector-attribute-options__pill {
+.wp-element-button.wc-block-add-to-cart-with-options-variation-selector-attribute-options__pill {
 	cursor: pointer;
 	user-select: none;
 
-	&:focus {
-		outline-color: var(--wp--preset--color--accent-4);
-		outline-offset: 2px;
+	// Store the original colors as custom properties
+	--pill-original-text: inherit;
+	--pill-original-background: inherit;
+
+	&.is-style-outline {
+		// Default state (button 2) - inverted colors
+		color: var(--pill-original-background);
+		background: var(--pill-original-text);
+		border-color: var(--pill-original-text);
 	}
 
 	&[aria-checked="false"] {
 		border-color: currentColor;
 	}
 
-	&[aria-disabled="true"] {
+	&[aria-disabled="true"],
+	// Disabled state (button 3)
+	&--disabled.is-style-outline {
 		border-color: var(--wc-subtext);
 		color: var(--wc-subtext);
 		text-decoration: line-through;

@@ -45,6 +45,7 @@ function Pills( {
 						{
 							'wc-block-add-to-cart-with-options-variation-selector-attribute-options__pill--selected':
 								index === 0,
+							'is-style-outline': index !== 0,
 							'wc-block-add-to-cart-with-options-variation-selector-attribute-options__pill--disabled':
 								option.disabled,
 						}
