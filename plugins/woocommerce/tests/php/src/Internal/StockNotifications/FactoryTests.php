@@ -12,7 +12,7 @@ use Automattic\WooCommerce\Internal\StockNotifications\Factory;
 class FactoryTests extends \WC_Unit_Test_Case {
 
 	/**
-	* Test the factory.
+	 * Test the factory.
 	 */
 	public function test_factory() {
 
