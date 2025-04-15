@@ -322,12 +322,12 @@ class Notification extends \WC_Data {
 	}
 
 	/**
-	 * Add an event.
+	 * Log an activity.
 	 *
 	 * @param array $args Activity log arguments.
 	 * @return int|false The log ID or false if the log was not created.
 	 */
-	public function add_event( $args ) {
+	public function log( $args ) {
 
 		$args = wp_parse_args(
 			$args,
@@ -340,6 +340,6 @@ class Notification extends \WC_Data {
 			)
 		);
 
-		return $this->data_store->create_event( $this, $args );
+		return $this->data_store->create_activity_log( $this, $args );
 	}
 }
