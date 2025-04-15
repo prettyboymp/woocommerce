@@ -308,4 +308,196 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification = new Notification( $notification->get_id() );
 		$this->assertNotEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
 	}
+
+	/**
+	 * Test querying notifications.
+	 */
+	public function test_query_notifications() {
+
+		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
+
+		$notification = new Notification();
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->save();
+
+		$notifications = $datastore->query( array(
+			'product_id' => 1,
+			'user_id'    => 1,
+		) );
+		$this->assertEquals( 1, count( $notifications ) );
+	}
+
+	/**
+	 * Test querying notifications with a status.
+	 */
+	public function test_query_notifications_with_status() {
+		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
+
+		$notification = new Notification();
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->set_status( 'active' );
+		$notification->save();
+
+		$notification_2 = new Notification();
+		$notification_2->set_product_id( 1 );
+		$notification_2->set_user_id( 2 );
+		$notification_2->save();
+
+		$notifications = $datastore->query( array(
+			'status' => 'active',
+		) );
+		$this->assertEquals( 1, count( $notifications ) );
+	}
+
+	/**
+	 * Test querying notifications with a product ID.
+	 */
+	public function test_query_notifications_with_product_id() {
+		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
+
+		$notification = new Notification();
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->save();
+
+		$notification_2 = new Notification();
+		$notification_2->set_product_id( 2 );
+		$notification_2->set_user_id( 2 );
+		$notification_2->save();
+
+		$notifications = $datastore->query( array(
+			'product_id' => 1,
+		) );
+		$this->assertEquals( 1, count( $notifications ) );
+	}
+
+	/**
+	 * Test querying notifications with a user ID.
+	 */
+	public function test_query_notifications_with_user_id() {
+		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
+
+		$notification = new Notification();
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->save();
+
+		$notification_2 = new Notification();
+		$notification_2->set_product_id( 1 );
+		$notification_2->set_user_id( 2 );
+		$notification_2->save();
+
+		$notifications = $datastore->query( array(
+			'user_id' => 1,
+		) );
+		$this->assertEquals( 1, count( $notifications ) );
+	}
+
+	/**
+	 * Test querying notifications with a user email.
+	 */
+	public function test_query_notifications_with_user_email() {
+		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
+
+		$notification = new Notification();
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->set_user_email( 'test@test.com' );
+		$notification->save();
+
+		$notification_2 = new Notification();
+		$notification_2->set_product_id( 1 );
+		$notification_2->set_user_id( 2 );
+		$notification_2->set_user_email( 'test2@test.com' );
+		$notification_2->save();
+
+		$notifications = $datastore->query( array(
+			'user_email' => 'test@test.com',
+		) );
+		$this->assertEquals( 1, count( $notifications ) );
+	}
+
+	/**
+	 * Test querying notifications with a is_queued.
+	 */
+	public function test_query_notifications_with_is_queued() {
+		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
+
+		$notification = new Notification();
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->set_is_queued( true );
+		$notification->save();
+
+		$notification_2 = new Notification();
+		$notification_2->set_product_id( 1 );
+		$notification_2->set_user_id( 2 );
+		$notification_2->save();
+
+		$notifications = $datastore->query( array(
+			'is_queued' => true,
+		) );
+		$this->assertEquals( 1, count( $notifications ) );
+	}
+
+	/**
+	 * Test querying notifications with a limit and offset.
+	 */
+	public function test_query_notifications_with_limit_and_offset() {
+		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
+
+		$notification = new Notification();
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->save();
+
+		$notification_2 = new Notification();
+		$notification_2->set_product_id( 1 );
+		$notification_2->set_user_id( 2 );
+		$notification_2->save();
+
+		$notification_3 = new Notification();
+		$notification_3->set_product_id( 1 );
+		$notification_3->set_user_id( 3 );
+		$notification_3->save();
+
+		$notification_4 = new Notification();
+		$notification_4->set_product_id( 1 );
+		$notification_4->set_user_id( 4 );
+		$notification_4->save();
+
+		$notifications = $datastore->query( array(
+			'limit'      => 2,
+			'offset'     => 1,
+		) );
+		$this->assertEquals( 2, count( $notifications ) );
+
+		$this->assertEquals( 2, $notifications[0]->get_id() );
+		$this->assertEquals( 3, $notifications[1]->get_id() );
+	}
+
+	/**
+	 * Test querying notifications with a return type of count.
+	 */
+	public function test_query_notifications_with_return_type_count() {
+
+		$datastore = wc_get_container()->get( StockNotificationsDataStore::class );
+
+		$notification = new Notification();
+		$notification->set_product_id( 1 );
+		$notification->set_user_id( 1 );
+		$notification->save();
+
+		$notification_2 = new Notification();
+		$notification_2->set_product_id( 1 );
+		$notification_2->set_user_id( 2 );
+		$notification_2->save();
+
+		$count = $datastore->query( array(
+			'return' => 'count',
+		) );
+		$this->assertEquals( 2, $count );
+	}
 }

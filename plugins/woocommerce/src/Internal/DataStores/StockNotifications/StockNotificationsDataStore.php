@@ -412,6 +412,92 @@ CREATE TABLE $logs_table_name (
 	}
 
 	/**
+	 * Query the stock notifications.
+	 *
+	 * @param array $args The arguments.
+	 * @return array|int An array of notifications or the number of notifications.
+	 */
+	public function query( $args ) {
+		global $wpdb;
+
+		$args = wp_parse_args(
+			$args,
+			array(
+				'status'         => '',
+				'product_id'     => array(),
+				'user_id'        => 0,
+				'user_email'     => '',
+				'is_queued'      => '',
+				'limit'          => -1,
+				'offset'         => 0,
+				'return'         => 'objects',
+			)
+		);
+
+		$table  = $this->get_table_name();
+		$select = 'id';
+		if ( 'count' === $args['return'] ) {
+			$select = 'COUNT(*)';
+		}
+
+		// WHERE clauses.
+		$where        = array();
+		$where_values = array();
+		if ( $args['status'] ) {
+			$where[]        = "status = %s";
+			$where_values[] = esc_sql( $args['status'] );
+		}
+
+		if ( ! empty( $args['product_id'] ) ) {
+			$product_ids  = array_map( 'absint', is_array( $args['product_id'] ) ? $args['product_id'] : array( $args['product_id'] ) );
+			$where[]      = "product_id IN (" . implode( ',', array_fill( 0, count( $product_ids ), '%d' ) ) . ")";
+			$where_values = array_merge( $where_values, $product_ids );
+		}
+
+		if ( $args['user_id'] ) {
+			$where[]        = "user_id = %d";
+			$where_values[] = absint( $args['user_id'] );
+		}
+
+		if ( $args['user_email'] ) {
+			$where[]        = "user_email = %s";
+			$where_values[] = esc_sql( $args['user_email'] );
+		}
+
+		if ( '' !== $args['is_queued'] ) {
+			$where[]        = "is_queued = %d";
+			$where_values[] = true === $args['is_queued'] ? 1 : 0;
+		}
+
+		// Assemble the query.
+		$where  = implode( ' AND ', $where );
+		$where  = $where ? ' WHERE ' . $where : '';
+		$limit  = $args['limit'] > 0 ? ' LIMIT ' . absint( $args['limit'] ) : '';
+		$offset = $args['offset'] > 0 ? ' OFFSET ' . absint( $args['offset'] ) : '';
+		$sql    = "SELECT $select FROM $table $where $limit $offset";
+
+		// Prepare the query.
+		$prepared_sql = empty( $where_values ) ? $sql : $wpdb->prepare( $sql, $where_values );
+
+		// Execute the query.
+		if ( 'count' === $args['return'] ) {
+			return (int) $wpdb->get_var( $prepared_sql );
+		}
+
+		$results = $wpdb->get_results( $prepared_sql, ARRAY_A );
+		if ( empty( $results ) ) {
+			return array();
+		}
+
+		$notifications = array();
+		foreach ( $results as $result ) {
+			$notifications[] = new Notification( absint( $result['id'] ) );
+		}
+
+		return $notifications;
+	}
+
+	/**
 	 * Create an activity log.
 	 *
 	 * @param Notification $notification The data object to create the log for.
