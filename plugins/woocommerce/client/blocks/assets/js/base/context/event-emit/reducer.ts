@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { generateUniqueIdAsString } from '@woocommerce/utils';
+import { generateUniqueId } from '@woocommerce/utils';
 
 /**
  * Internal dependencies
@@ -20,7 +20,7 @@ export const actions = {
 		priority = 10
 	): ActionType => {
 		return {
-			id: generateUniqueIdAsString(),
+			id: generateUniqueId().toString(),
 			type: ACTION.ADD_EVENT_CALLBACK,
 			eventType,
 			callback,
