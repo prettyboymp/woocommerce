@@ -11,15 +11,11 @@
 	cursor: pointer;
 	user-select: none;
 
-	// Store the original colors as custom properties
-	--pill-original-text: inherit;
-	--pill-original-background: inherit;
-
 	&.is-style-outline {
-		// Default state (button 2) - inverted colors
-		color: var(--pill-original-background);
-		background: var(--pill-original-text);
-		border-color: var(--pill-original-text);
+		color: inherit;
+		background-color: transparent;
+		border-color: inherit;
+		backdrop-filter: none;
 	}
 
 	&[aria-checked="false"] {
