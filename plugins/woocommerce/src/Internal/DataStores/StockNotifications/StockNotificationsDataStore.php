@@ -509,11 +509,10 @@ CREATE TABLE $logs_table_name (
 	/**
 	 * Create an activity log.
 	 *
-	 * @param Notification $notification The data object to create the log for.
-	 * @param array        $args         Additional arguments.
+	 * @param array $args The log arguments.
 	 * @return int|false The log ID or false if the log was not created.
 	 */
-	public function create_activity_log( &$notification, $args ) {
-		return $this->data_store_logs->create( $notification, $args );
+	public function create_activity_log( $args ) {
+		return $this->data_store_logs->create( $args );
 	}
 }
