@@ -96,11 +96,11 @@ export const useApplyEditorStyles = (
 				injectedStyles.delete( styleSignature );
 			}
 
-			const styleElementt = editorStylesWrapper?.querySelector(
+			const existingStyleElement = editorStylesWrapper?.querySelector(
 				`#${ styleId }`
 			);
-			if ( styleElementt ) {
-				styleElementt.remove();
+			if ( existingStyleElement ) {
+				existingStyleElement.remove();
 			}
 		};
 	}, [ getStyleContent ] );
