@@ -11,19 +11,9 @@
 	cursor: pointer;
 	user-select: none;
 
-	&:hover {
-		/*background-color: color-mix(in srgb, var(--wp--preset--color--contrast) 10%, transparent);*/
-	}
-
 	&:focus {
 		outline-color: var(--wp--preset--color--accent-4);
 		outline-offset: 2px;
-	}
-
-	&[aria-checked="true"] {
-		&:hover {
-			/*background-color: color-mix(in srgb, var(--wp--preset--color--contrast) 85%, transparent);*/
-		}
 	}
 
 	&[aria-checked="false"] {
@@ -39,6 +29,4 @@
 
 .wc-block-add-to-cart-with-options-variation-selector-attribute-options__dropdown {
 	height: 3em;
-	padding: 0.25em 1em;
-	font-size: var(--wp--preset--font-size--small);
 }
