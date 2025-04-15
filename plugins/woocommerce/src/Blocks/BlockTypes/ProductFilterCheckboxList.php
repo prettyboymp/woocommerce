@@ -6,7 +6,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * Product Filter: Checkbox List Block.
  */
-final class ProductFilterCheckboxList extends AbstractInteractivityAPIBlock {
+final class ProductFilterCheckboxList extends AbstractInteractiveBlock {
 
 	/**
 	 * Block name.
@@ -27,8 +27,6 @@ final class ProductFilterCheckboxList extends AbstractInteractivityAPIBlock {
 		if ( empty( $block->context['filterData'] ) ) {
 			return '';
 		}
-
-		wp_enqueue_script_module( $this->get_full_block_name() );
 
 		$block_context = $block->context['filterData'];
 		$items         = $block_context['items'] ?? array();

@@ -7,7 +7,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * ProductFilters class.
  */
-class ProductFilters extends AbstractInteractivityAPIBlock {
+class ProductFilters extends AbstractInteractiveBlock {
 	/**
 	 * Block name.
 	 *
@@ -135,6 +135,7 @@ class ProductFilters extends AbstractInteractivityAPIBlock {
 					<div
 						class="wc-block-product-filters__overlay-dialog"
 						role="dialog"
+						aria-label="<?php echo esc_html__( 'Product Filters', 'woocommerce' ); ?>"
 					>
 						<header class="wc-block-product-filters__overlay-header">
 							<button

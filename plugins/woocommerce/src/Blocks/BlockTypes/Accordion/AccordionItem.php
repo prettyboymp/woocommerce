@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace Automattic\WooCommerce\Blocks\BlockTypes\Accordion;
 
-use Automattic\WooCommerce\Blocks\BlockTypes\AbstractInteractivityAPIBlock;
+use Automattic\WooCommerce\Blocks\BlockTypes\AbstractInteractiveBlock;
 
 /**
  * AccordionItem class.
  */
-class AccordionItem extends AbstractInteractivityAPIBlock {
+class AccordionItem extends AbstractInteractiveBlock {
 	/**
 	 * Block name.
 	 *
@@ -91,6 +91,15 @@ class AccordionItem extends AbstractInteractivityAPIBlock {
 	 * @return array|string|null
 	 */
 	protected function get_block_type_script( $key = null ) {
+		return null;
+	}
+
+	/**
+	 * Disable the editor style handle for this block type.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_editor_style() {
 		return null;
 	}
 }

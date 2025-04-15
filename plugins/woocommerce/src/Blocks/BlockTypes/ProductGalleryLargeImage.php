@@ -6,7 +6,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * ProductGalleryLargeImage class.
  */
-class ProductGalleryLargeImage extends AbstractInteractivityAPIBlock {
+class ProductGalleryLargeImage extends AbstractInteractiveBlock {
 	/**
 	 * Block name.
 	 *
@@ -200,5 +200,14 @@ class ProductGalleryLargeImage extends AbstractInteractivityAPIBlock {
 		return array(
 			'data-wp-on--click' => 'actions.openDialog',
 		);
+	}
+
+	/**
+	 * Disable the editor style handle for this block type.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_editor_style() {
+		return null;
 	}
 }

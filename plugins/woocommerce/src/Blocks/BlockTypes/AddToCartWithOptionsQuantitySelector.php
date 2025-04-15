@@ -9,7 +9,7 @@ use Automattic\WooCommerce\Enums\ProductType;
 /**
  * AddToCartWithOptionsQuantitySelector class.
  */
-class AddToCartWithOptionsQuantitySelector extends AbstractInteractivityAPIBlock {
+class AddToCartWithOptionsQuantitySelector extends AbstractInteractiveBlock {
 	/**
 	 * Block name.
 	 *

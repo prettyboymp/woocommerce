@@ -9,7 +9,7 @@ use Automattic\WooCommerce\Internal\ProductFilters\QueryClauses;
 /**
  * Product Filter: Status Block.
  */
-final class ProductFilterStatus extends AbstractInteractivityAPIBlock {
+final class ProductFilterStatus extends AbstractInteractiveBlock {
 
 	/**
 	 * Block name.
@@ -220,5 +220,14 @@ final class ProductFilterStatus extends AbstractInteractivityAPIBlock {
 				return $stock_count['count'] > 0;
 			}
 		);
+	}
+
+	/**
+	 * Disable the editor style handle for this block type.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_editor_style() {
+		return null;
 	}
 }

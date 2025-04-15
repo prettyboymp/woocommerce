@@ -12,7 +12,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * ProductFilterPriceSlider class.
  */
-class ProductFilterPriceSlider extends AbstractInteractivityAPIBlock {
+class ProductFilterPriceSlider extends AbstractInteractiveBlock {
 
 	/**
 	 * Block name.
@@ -149,5 +149,14 @@ class ProductFilterPriceSlider extends AbstractInteractivityAPIBlock {
 		</div>
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * Disable the editor style handle for this block type.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_editor_style() {
+		return null;
 	}
 }

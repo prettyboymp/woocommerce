@@ -10,7 +10,7 @@ use Automattic\WooCommerce\Internal\ProductFilters\QueryClauses;
 /**
  * Product Filter: Attribute Block.
  */
-final class ProductFilterAttribute extends AbstractInteractivityAPIBlock {
+final class ProductFilterAttribute extends AbstractInteractiveBlock {
 
 	/**
 	 * Block name.
@@ -405,5 +405,14 @@ final class ProductFilterAttribute extends AbstractInteractivityAPIBlock {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Disable the editor style handle for this block type.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_editor_style() {
+		return null;
 	}
 }

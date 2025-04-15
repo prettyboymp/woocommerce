@@ -7,7 +7,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * Product Filter: Active Block.
  */
-final class ProductFilterActive extends AbstractInteractivityAPIBlock {
+final class ProductFilterActive extends AbstractInteractiveBlock {
 	/**
 	 * Block name.
 	 *
@@ -77,6 +77,15 @@ final class ProductFilterActive extends AbstractInteractivityAPIBlock {
 	 * @return null
 	 */
 	protected function get_block_type_style() {
+		return null;
+	}
+
+	/**
+	 * Disable the editor style handle for this block type.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_editor_style() {
 		return null;
 	}
 }

@@ -252,7 +252,7 @@ const getBlockEntries = ( relativePath, blockEntries = blocks ) => {
 	);
 };
 
-// Script modules blocks (and styles) are handled in
+// Script module blocks scripts and styles are handled in
 // webpack-config-interactivity-blocks-frontend.js.
 const frontendScriptModuleBlocksToSkip = Object.keys( scriptModuleEntries );
 
@@ -268,30 +268,24 @@ const frontendEntries = getBlockEntries( 'frontend.{t,j}s{,x}', {
 	),
 } );
 
-// Remove frontend styles from style build,
+// Remove styles from style build,
 // that are already included in interactivity
 // script modules build.
-const blockStylingEntries = Object.fromEntries(
-	Object.entries(
-		getBlockEntries( '{index,block,frontend}.{t,j}s{,x}', {
-			...blocks,
-			...genericBlocks,
-			...cartAndCheckoutBlocks,
-		} )
-	).map( ( [ entry, scripts ] ) => {
-		if (
-			frontendScriptModuleBlocksToSkip.includes(
-				`woocommerce/${ entry }`
-			)
-		) {
-			return [
-				entry,
-				scripts.filter( ( script ) => ! script.includes( 'frontend' ) ),
-			];
-		}
-
-		return [ entry, scripts ];
-	} )
+const blockStylingEntries = getBlockEntries(
+	'{index,block,frontend}.{t,j}s{,x}',
+	{
+		...Object.fromEntries(
+			Object.entries( {
+				...blocks,
+				...genericBlocks,
+				...cartAndCheckoutBlocks,
+			} ).filter( ( [ blockName ] ) => {
+				return ! frontendScriptModuleBlocksToSkip.includes(
+					`woocommerce/${ blockName }`
+				);
+			} )
+		),
+	}
 );
 
 const entries = {

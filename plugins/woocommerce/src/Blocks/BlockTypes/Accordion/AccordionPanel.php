@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace Automattic\WooCommerce\Blocks\BlockTypes\Accordion;
 
-use Automattic\WooCommerce\Blocks\BlockTypes\AbstractInteractivityAPIBlock;
+use Automattic\WooCommerce\Blocks\BlockTypes\AbstractInteractiveBlock;
 
 /**
  * AccordionPanel class.
  */
-class AccordionPanel extends AbstractInteractivityAPIBlock {
+class AccordionPanel extends AbstractInteractiveBlock {
 	/**
 	 * Block name.
 	 *
@@ -33,6 +33,15 @@ class AccordionPanel extends AbstractInteractivityAPIBlock {
 	 * @return array|string|null
 	 */
 	protected function get_block_type_script( $key = null ) {
+		return null;
+	}
+
+	/**
+	 * Disable the editor style handle for this block type.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_editor_style() {
 		return null;
 	}
 }

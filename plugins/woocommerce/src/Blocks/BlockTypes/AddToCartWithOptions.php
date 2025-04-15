@@ -8,11 +8,10 @@ use Automattic\WooCommerce\Admin\Features\Features;
 use Automattic\WooCommerce\Blocks\Utils\StyleAttributesUtils;
 use Automattic\WooCommerce\Enums\ProductType;
 use Automattic\WooCommerce\Blocks\Utils\BlockTemplateUtils;
-use Automattic\WooCommerce\Blocks\BlockTypes\AbstractInteractivityAPIBlock;
 /**
  * AddToCartWithOptions class.
  */
-class AddToCartWithOptions extends AbstractInteractivityAPIBlock {
+class AddToCartWithOptions extends AbstractInteractiveBlock {
 	/**
 	 * Block name.
 	 *
@@ -111,10 +110,31 @@ class AddToCartWithOptions extends AbstractInteractivityAPIBlock {
 				)
 			);
 
+			/**
+			 * Filters the change the quantity to add to cart.
+			 *
+			 * @since 10.9.0
+			 * @param number $default_quantity The default quantity.
+			 * @param number $product_id The product id.
+			 */
+			$default_quantity = apply_filters( 'woocommerce_add_to_cart_quantity', 1, $product->get_id() );
+
+			$context = array(
+				'productId' => $product->get_id(),
+				'quantity'  => $default_quantity,
+				'variation' => array(),
+			);
+
 			$wrapper_attributes = get_block_wrapper_attributes(
 				array(
-					'class' => $classes,
-					'style' => esc_attr( $classes_and_styles['styles'] ),
+					'data-wp-interactive' => 'woocommerce/add-to-cart-with-options',
+					'data-wp-context'     => wp_json_encode(
+						$context,
+						JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
+					),
+					'data-wp-on--submit'  => 'actions.handleSubmit',
+					'class'               => $classes,
+					'style'               => esc_attr( $classes_and_styles['styles'] ),
 				)
 			);
 
@@ -133,7 +153,7 @@ class AddToCartWithOptions extends AbstractInteractivityAPIBlock {
 
 			if ( ! $is_disabled_compatibility_layer ) {
 				ob_start();
-				if ( ProductType::SIMPLE === $product_type ) {
+				if ( ProductType::SIMPLE === $product_type && $product->is_in_stock() && $product->is_purchasable() ) {
 					/**
 					 * Hook: woocommerce_before_add_to_cart_quantity.
 					 *
@@ -171,7 +191,7 @@ class AddToCartWithOptions extends AbstractInteractivityAPIBlock {
 				$hooks_before = ob_get_clean();
 
 				ob_start();
-				if ( ProductType::SIMPLE === $product_type ) {
+				if ( ProductType::SIMPLE === $product_type && $product->is_in_stock() && $product->is_purchasable() ) {
 					/**
 					 * Hook: woocommerce_after_add_to_cart_quantity.
 					 *
@@ -251,5 +271,14 @@ class AddToCartWithOptions extends AbstractInteractivityAPIBlock {
 		$product = $previous_product;
 
 		return $form_html;
+	}
+
+	/**
+	 * Disable the editor style handle for this block type.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_editor_style() {
+		return null;
 	}
 }

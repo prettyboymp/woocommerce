@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Automattic\WooCommerce\Blocks\BlockTypes\ProductCollection;
 
-use Automattic\WooCommerce\Blocks\BlockTypes\AbstractInteractivityAPIBlock;
+use Automattic\WooCommerce\Blocks\BlockTypes\AbstractInteractiveBlock;
 use WP_Query;
 
 /**
  * Controller class.
  */
-class Controller extends AbstractInteractivityAPIBlock {
+class Controller extends AbstractInteractiveBlock {
 
 	/**
 	 * Block name.
@@ -120,32 +120,14 @@ class Controller extends AbstractInteractivityAPIBlock {
 	 * @return boolean
 	 */
 	private function is_block_compatible( $block_name ) {
-		// Check for explicitly unsupported blocks.
-		$unsupported_blocks = array(
-			'core/post-content',
-			'woocommerce/mini-cart',
-			'woocommerce/featured-product',
-			'woocommerce/active-filters',
-			'woocommerce/price-filter',
-			'woocommerce/stock-filter',
-			'woocommerce/attribute-filter',
-			'woocommerce/rating-filter',
-		);
+		$block_type = \WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
+		// Client side navigation can be true in two states:
+		// - supports.interactivity === true;
+		// - supports.interactivity.clientNavigation === true; .
+		$supports_interactivity     = isset( $block_type->supports['interactivity'] ) && true === $block_type->supports['interactivity'];
+		$supports_client_navigation = isset( $block_type->supports['interactivity']['clientNavigation'] ) && true === $block_type->supports['interactivity']['clientNavigation'];
 
-		if ( in_array( $block_name, $unsupported_blocks, true ) ) {
-			return false;
-		}
-
-		// Check for supported prefixes.
-		if (
-			str_starts_with( $block_name, 'core/' ) ||
-			str_starts_with( $block_name, 'woocommerce/' )
-		) {
-			return true;
-		}
-
-		// Otherwise block is unsupported.
-		return false;
+		return $supports_interactivity || $supports_client_navigation;
 	}
 
 	/**
@@ -421,13 +403,11 @@ class Controller extends AbstractInteractivityAPIBlock {
 
 
 	/**
-	 * Disable the block type script, this block uses script modules.
-	 *
-	 * @param string|null $key The key of the script.
+	 * Disable the editor style handle for this block type.
 	 *
 	 * @return null
 	 */
-	protected function get_block_type_script( $key = null ) {
+	protected function get_block_type_editor_style() {
 		return null;
 	}
 }

@@ -9,13 +9,23 @@ use Automattic\WooCommerce\Blocks\Utils\StyleAttributesUtils;
  * Block type for variation selector attribute options in add to cart with options.
  * It's responsible to render the attribute options.
  */
-class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractInteractivityAPIBlock {
+class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractInteractiveBlock {
 	/**
 	 * Block name.
 	 *
 	 * @var string
 	 */
 	protected $block_name = 'add-to-cart-with-options-variation-selector-attribute-options';
+
+	/**
+	 * Disable the frontend script for this block type, it's built with script modules.
+	 *
+	 * @param string $key Data to get, or default to everything.
+	 * @return array|string|null
+	 */
+	protected function get_block_type_script( $key = null ) {
+		return null;
+	}
 
 	/**
 	 * Get the block's attributes.
@@ -163,16 +173,18 @@ class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractInte
 			'<div %s>%s</div>',
 			$this->get_normalized_attributes(
 				array(
-					'role'                => 'radiogroup',
 					'class'               => 'wc-block-add-to-cart-with-options-variation-selector-attribute-options__pills',
+					'role'                => 'radiogroup',
 					'id'                  => $attribute_id,
 					'aria-labeledby'      => $attribute_id . '_label',
 					'data-wp-interactive' => $this->get_full_block_name() . '__pills',
 					'data-wp-context'     => array(
+						'name'          => $attribute_name,
 						'options'       => $attribute_terms,
 						'selectedValue' => $this->get_default_selected_attribute( $attribute_terms ),
 						'focused'       => '',
 					),
+					'data-wp-init'        => 'callbacks.setDefaultSelectedAttribute',
 				),
 			),
 			$pills,
@@ -208,10 +220,9 @@ class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractInte
 				'<option %s>%s</option>',
 				$this->get_normalized_attributes(
 					array(
-						'value'              => $attribute_term['value'],
-						'selected'           => $attribute_term['isSelected'] ? 'selected' : null,
-						'data-wp-on--change' => 'actions.handleChange',
-						'data-wp-context'    => array(
+						'value'           => $attribute_term['value'],
+						'selected'        => $attribute_term['isSelected'] ? 'selected' : null,
+						'data-wp-context' => array(
 							'option' => $attribute_term,
 						),
 					),
@@ -228,9 +239,12 @@ class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractInte
 					'id'                  => $attribute_id,
 					'data-wp-interactive' => $this->get_full_block_name() . '__dropdown',
 					'data-wp-context'     => array(
+						'name'          => $attribute_name,
 						'options'       => $attribute_terms,
 						'selectedValue' => $this->get_default_selected_attribute( $attribute_terms ),
 					),
+					'data-wp-init'        => 'callbacks.setDefaultSelectedAttribute',
+					'data-wp-on--change'  => 'actions.handleChange',
 				),
 			),
 			$options,
