@@ -104,9 +104,9 @@ CREATE TABLE $table_name (
 	date_notified_gmt datetime NULL,
 	is_queued tinyint(1) NOT NULL DEFAULT 0,
 	PRIMARY KEY  (id),
-	KEY product_status_queue (product_id, status, is_queued),
-	KEY user_id (user_id),
-	KEY user_email (user_email)
+	KEY status_product_queued (status, product_id, is_queued),
+	KEY user_product (user_id, product_id),
+	KEY email_product (user_email, product_id)
 ) $collate;
 CREATE TABLE $meta_table_name (
 	id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -180,10 +180,10 @@ CREATE TABLE $logs_table_name (
 				'user_id'             => $notification->get_user_id( 'edit' ),
 				'user_email'          => $notification->get_user_email( 'edit' ),
 				'status'              => $notification->get_status( 'edit' ),
-				'date_created_gmt'    => $notification->get_date_created( 'edit' )->format( 'Y-m-d H:i:s' ),
-				'date_modified_gmt'   => $notification->get_date_modified( 'edit' )->format( 'Y-m-d H:i:s' ),
-				'date_subscribed_gmt' => $notification->get_date_subscribed( 'edit' ) ? $notification->get_date_subscribed( 'edit' )->format( 'Y-m-d H:i:s' ) : null,
-				'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? $notification->get_date_notified( 'edit' )->format( 'Y-m-d H:i:s' ) : null,
+				'date_created_gmt'    => gmdate( 'Y-m-d H:i:s', $notification->get_date_created( 'edit' )->getTimestamp() ),
+				'date_modified_gmt'   => gmdate( 'Y-m-d H:i:s', $notification->get_date_modified( 'edit' )->getTimestamp() ),
+				'date_subscribed_gmt' => $notification->get_date_subscribed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_subscribed( 'edit' )->getTimestamp() ) : null,
+				'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
 				'is_queued'           => $notification->is_queued( 'edit' ) ? 1 : 0,
 			),
 			array(
@@ -205,9 +205,9 @@ CREATE TABLE $logs_table_name (
 
 		$notification_id = (int) $wpdb->insert_id;
 		$notification->set_id( $notification_id );
+		$notification->apply_changes();
 
 		$notification->save_meta_data();
-		$notification->apply_changes();
 
 		return $notification->get_id();
 	}
@@ -272,12 +272,16 @@ CREATE TABLE $logs_table_name (
 			return new \WP_Error( 'invalid_stock_notification', 'Invalid notification ID.' );
 		}
 
-		$changes       = $notification->get_changes();
-		$date_modified = current_time( 'mysql' );
-		$result        = 0;
+		$changes = $notification->get_changes();
+		$result  = 0;
 
-		if ( array_intersect( array( 'product_id', 'user_id', 'user_email', 'status', 'is_queued', 'date_subscribed', 'date_notified' ), array_keys( $changes ) ) ) {
-			$notification->set_date_modified( $date_modified );
+		if ( array_intersect( array( 'product_id', 'user_id', 'user_email', 'status', 'is_queued', 'date_modified', 'date_subscribed', 'date_notified' ), array_keys( $changes ) ) ) {
+
+			if ( ! in_array( 'date_modified', array_keys( $changes ), true ) ) {
+				$date_modified = current_time( 'mysql' );
+				$notification->set_date_modified( $date_modified );
+			}
+
 			$result = $wpdb->update(
 				$this->get_table_name(),
 				array(
@@ -285,9 +289,10 @@ CREATE TABLE $logs_table_name (
 					'user_id'             => $notification->get_user_id( 'edit' ),
 					'user_email'          => $notification->get_user_email( 'edit' ),
 					'status'              => $notification->get_status( 'edit' ),
-					'date_modified_gmt'   => $notification->get_date_modified( 'edit' )->format( 'Y-m-d H:i:s' ),
-					'date_subscribed_gmt' => $notification->get_date_subscribed( 'edit' ) ? $notification->get_date_subscribed( 'edit' )->format( 'Y-m-d H:i:s' ) : null,
-					'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? $notification->get_date_notified( 'edit' )->format( 'Y-m-d H:i:s' ) : null,
+					'date_created_gmt'    => gmdate( 'Y-m-d H:i:s', $notification->get_date_created( 'edit' )->getTimestamp() ),
+					'date_modified_gmt'   => gmdate( 'Y-m-d H:i:s', $notification->get_date_modified( 'edit' )->getTimestamp() ),
+					'date_subscribed_gmt' => $notification->get_date_subscribed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_subscribed( 'edit' )->getTimestamp() ) : null,
+					'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
 					'is_queued'           => $notification->is_queued( 'edit' ) ? 1 : 0,
 				),
 				array( 'id' => $notification->get_id() ),
@@ -336,11 +341,9 @@ CREATE TABLE $logs_table_name (
 	 * @return int|false The meta ID or false if the meta was not added.
 	 */
 	public function add_meta( &$notification, $meta ) {
-		$add_meta        = $this->data_store_meta->add_meta( $notification, $meta );
-		$meta->id        = $add_meta;
-		$changes_applied = $this->after_meta_change( $notification, $meta );
-
-		return $add_meta && $changes_applied ? $add_meta : false;
+		$add_meta = $this->data_store_meta->add_meta( $notification, $meta );
+		$this->after_meta_change( $notification, $meta );
+		return $add_meta ? $add_meta : false;
 	}
 
 	/**
@@ -362,10 +365,9 @@ CREATE TABLE $logs_table_name (
 	 * @return bool
 	 */
 	public function update_meta( &$notification, $meta ): bool {
-		$update_meta     = $this->data_store_meta->update_meta( $notification, $meta );
-		$changes_applied = $this->after_meta_change( $notification, $meta );
-
-		return $update_meta && $changes_applied;
+		$update_meta = $this->data_store_meta->update_meta( $notification, $meta );
+		$this->after_meta_change( $notification, $meta );
+		return $update_meta;
 	}
 
 	/**
@@ -376,10 +378,10 @@ CREATE TABLE $logs_table_name (
 	 * @return bool
 	 */
 	public function delete_meta( &$notification, $meta ): bool {
-		$delete_meta     = $this->data_store_meta->delete_meta( $notification, $meta );
-		$changes_applied = $this->after_meta_change( $notification, $meta );
+		$delete_meta = $this->data_store_meta->delete_meta( $notification, $meta );
 
-		return $delete_meta && $changes_applied;
+		$this->after_meta_change( $notification, $meta );
+		return $delete_meta;
 	}
 
 	/**
@@ -391,10 +393,16 @@ CREATE TABLE $logs_table_name (
 	 * @return bool True if changes were applied, false otherwise.
 	 */
 	private function after_meta_change( &$notification, $meta ): bool {
-		method_exists( $meta, 'apply_changes' ) && $meta->apply_changes();
 
-		// Prevent this happening multiple time in same request.
-		if ( $this->should_save_after_meta_change( $notification, $meta ) ) {
+		$current_time      = current_time( 'mysql' );
+		$current_date_time = new \WC_DateTime( $current_time, new \DateTimeZone( 'GMT' ) );
+
+		$should_save =
+			$notification->get_id() > 0
+			&& $notification->get_date_modified() < $current_date_time
+			&& empty( $notification->get_changes() );
+
+		if ( $should_save ) {
 			$notification->set_date_modified( current_time( 'mysql' ) );
 			$notification->save();
 			return true;
@@ -404,63 +412,30 @@ CREATE TABLE $logs_table_name (
 	}
 
 	/**
-	 * Check if the notification should be saved after meta change.
-	 *
-	 * @param Notification $notification The notification object.
-	 * @param \stdClass    $meta         Metadata object.
-	 *
-	 * @return bool
-	 */
-	private function should_save_after_meta_change( &$notification, $meta ): bool {
-		$current_time      = current_time( 'mysql' );
-		$current_date_time = new \WC_DateTime( $current_time, new \DateTimeZone( 'GMT' ) );
-
-		$should_save =
-			$notification->get_id() > 0
-			&& $notification->get_date_modified() < $current_date_time
-			&& empty( $notification->get_changes() )
-			&& ( ! is_object( $meta ) );
-
-		// phpcs:disable WooCommerce.Commenting.CommentHooks.MissingSinceVersionComment
-		/**
-		 * Allows code to skip a full notification save() when metadata is changed.
-		 *
-		 * @since x.x.x
-		 *
-		 * @param bool $should_save Whether to trigger a full save after metadata is changed.
-		 * @return bool
-		 */
-		return apply_filters( 'woocommerce_stock_notifications_datastore_should_save_after_meta_change', $should_save );
-		// phpcs:enable WooCommerce.Commenting.CommentHooks.MissingSinceVersionComment
-	}
-
-	/**
-	 * Create a event.
+	 * Create an activity log.
 	 *
 	 * @param Notification $notification The data object to create the log for.
 	 * @param array        $args         Additional arguments.
 	 * @return int|false The log ID or false if the log was not created.
 	 */
-	public function create_event( &$notification, $args ) {
+	public function create_activity_log( &$notification, $args ) {
 		global $wpdb;
-
-		$args['action']     = sanitize_text_field( $args['action'] );
-		$args['user_id']    = absint( $args['user_id'] );
-		$args['user_email'] = sanitize_email( $args['user_email'] );
-		$args['ip_address'] = sanitize_text_field( $args['ip_address'] );
-		$args['note']       = sanitize_text_field( $args['note'] );
 
 		$data = array(
 			'notification_id' => $notification->get_id(),
-			'action'          => $args['action'],
-			'user_id'         => $args['user_id'],
-			'user_email'      => $args['user_email'],
-			'ip_address'      => $args['ip_address'],
+			'action'          => sanitize_text_field( $args['action'] ),
+			'user_id'         => absint( $args['user_id'] ),
+			'user_email'      => sanitize_email( $args['user_email'] ),
+			'ip_address'      => sanitize_text_field( $args['ip_address'] ),
 			'date_logged_gmt' => current_time( 'mysql' ),
-			'note'            => $args['note'],
+			'note'            => sanitize_text_field( $args['note'] ),
 		);
 
-		$result = $wpdb->insert( $this->get_logs_table_name(), $data );
+		$result = $wpdb->insert(
+			$this->get_logs_table_name(),
+			$data,
+			array( '%d', '%s', '%d', '%s', '%s', '%s', '%s' )
+		);
 
 		return $result ? (int) $wpdb->insert_id : false;
 	}
