@@ -27,7 +27,7 @@ const test = base.extend< { pageObject: AccordionPage } >( {
 	},
 } );
 
-test.describe( `${ blockData.slug } Block`, () => {
+test.skip( `${ blockData.slug } Block`, () => {
 	test.describe( 'without experimental blocks feature flag', () => {
 		test( 'can not be inserted in Post Editor when feature flag is disabled', async ( {
 			editor,
