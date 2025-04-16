@@ -90,10 +90,6 @@ class ProductFilters extends AbstractBlock {
 			},
 			''
 		);
-		$interactivity_context = array(
-			'params'        => $filter_params,
-			'activeFilters' => $active_filters,
-		);
 
 		$classes = '';
 		$styles  = '';
@@ -109,9 +105,14 @@ class ProductFilters extends AbstractBlock {
 			'data-wp-interactive'              => $this->get_full_block_name(),
 			'data-wp-watch--scrolling'         => 'callbacks.scrollLimit',
 			'data-wp-on--keyup'                => 'actions.closeOverlayOnEscape',
-			'data-wp-context'                  => wp_json_encode( $interactivity_context, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP ),
 			'data-wp-class--is-overlay-opened' => 'context.isOverlayOpened',
 			'style'                            => $styles,
+		);
+		$context_directive = wp_interactivity_data_wp_context(
+			array(
+				'params'        => $filter_params,
+				'activeFilters' => $active_filters,
+			)
 		);
 
 		// TODO: Remove this conditional once the fix is released in WP. https://github.com/woocommerce/gutenberg/pull/4.
@@ -121,7 +122,12 @@ class ProductFilters extends AbstractBlock {
 
 		ob_start();
 		?>
-		<div <?php echo get_block_wrapper_attributes( $wrapper_attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+		<div
+			<?php
+				echo get_block_wrapper_attributes( $wrapper_attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo $context_directive;
+			?>
+		>
 			<button
 				class="wc-block-product-filters__open-overlay"
 				data-wp-on--click="actions.openOverlay"
