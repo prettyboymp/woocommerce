@@ -129,7 +129,7 @@ class AddToCartWithOptions extends AbstractBlock {
 				)
 			);
 
-			$data_wp_context_directive = wp_interactivity_data_wp_context(array(
+			$context_directive = wp_interactivity_data_wp_context(array(
 				'productId' => $product->get_id(),
 				'quantity'  => $default_quantity,
 				'variation' => array(),
@@ -235,7 +235,7 @@ class AddToCartWithOptions extends AbstractBlock {
 			$form_html = sprintf(
 				'<form %1$s %2$s>%3$s%4$s%5$s</form>',
 				$wrapper_attributes,
-				$data_wp_context_directive,
+				$context_directive,
 				$hooks_before,
 				$template_part_blocks,
 				$hooks_after,
