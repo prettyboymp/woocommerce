@@ -94,16 +94,3 @@ if ( ! function_exists( '__experimental_woocommerce_register_address_provider' )
 		}
 	}
 }
-
-if ( ! function_exists( '__experimental_woocommerce_deregister_address_autocomplete_provider' ) ) {
-	/**
-	 * Deregister an address autocomplete provider.
-	 *
-	 * @param string $provider_id Provider ID.
-	 * @internal
-	 */
-	function __experimental_woocommerce_deregister_address_autocomplete_provider( string $provider_id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
-		$address_autocomplete = Package::container()->get( AddressAutocomplete::class );
-		$address_autocomplete->deregister_provider( $provider_id );
-	}
-}
