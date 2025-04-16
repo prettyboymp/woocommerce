@@ -4,18 +4,18 @@ declare( strict_types=1 );
 namespace Automattic\WooCommerce\Tests\Blocks\Domain\Services;
 
 use Mockery\Adapter\Phpunit\MockeryTestCase;
-use Automattic\WooCommerce\Blocks\Domain\Services\AddressAutocomplete;
+use Automattic\WooCommerce\Blocks\Domain\Services\AddressProviderService;
 use Automattic\WooCommerce\Blocks\Package;
 
 /**
- * Tests for Address Autocomplete functionality
+ * Tests for Address Provider Service functionality
  */
-class AddressAutocompleteTest extends MockeryTestCase {
+class AddressProviderServiceTest extends MockeryTestCase {
 
 	/**
 	 * System under test.
 	 *
-	 * @var AddressAutocomplete
+	 * @var AddressProviderService
 	 */
 	private $sut;
 
@@ -24,7 +24,7 @@ class AddressAutocompleteTest extends MockeryTestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
-		$this->sut = Package::container()->get( AddressAutocomplete::class );
+		$this->sut = Package::container()->get( AddressProviderService::class );
 		add_filter( 'doing_it_wrong_trigger_error', '__return_false' );
 	}
 
@@ -49,7 +49,7 @@ class AddressAutocompleteTest extends MockeryTestCase {
 	 * Test registering a valid provider
 	 */
 	public function test_register_valid_provider() {
-		$result = __experimental_woocommerce_register_address_autocomplete_provider( 'test-provider', 'Test Provider' );
+		$result = __experimental_woocommerce_register_address_provider( 'test-provider', 'Test Provider' );
 		$this->assertTrue( $result );
 
 		$this->assertTrue( $this->sut->is_provider_available( 'test-provider' ) );
@@ -62,7 +62,7 @@ class AddressAutocompleteTest extends MockeryTestCase {
 		$doing_it_wrong_mocker = \Mockery::mock( 'ActionCallback' );
 		$doing_it_wrong_mocker->shouldReceive( 'doing_it_wrong_run' )->withArgs(
 			array(
-				'__experimental_woocommerce_register_address_autocomplete_provider',
+				'__experimental_woocommerce_register_address_provider',
 				'Unable to register provider. The provider ID is required.',
 			)
 		)->once();
@@ -77,7 +77,7 @@ class AddressAutocompleteTest extends MockeryTestCase {
 			2
 		);
 
-		$result = __experimental_woocommerce_register_address_autocomplete_provider( '', 'Test Provider' );
+		$result = __experimental_woocommerce_register_address_provider( '', 'Test Provider' );
 		$this->assertFalse( $result );
 	}
 
@@ -88,7 +88,7 @@ class AddressAutocompleteTest extends MockeryTestCase {
 		$doing_it_wrong_mocker = \Mockery::mock( 'ActionCallback' );
 		$doing_it_wrong_mocker->shouldReceive( 'doing_it_wrong_run' )->withArgs(
 			array(
-				'__experimental_woocommerce_register_address_autocomplete_provider',
+				'__experimental_woocommerce_register_address_provider',
 				esc_html( sprintf( 'Unable to register provider with id: "%s". The provider name is required.', 'test-provider' ) ),
 			)
 		)->once();
@@ -103,7 +103,7 @@ class AddressAutocompleteTest extends MockeryTestCase {
 			2
 		);
 
-		$result = __experimental_woocommerce_register_address_autocomplete_provider( 'test-provider', '' );
+		$result = __experimental_woocommerce_register_address_provider( 'test-provider', '' );
 		$this->assertFalse( $result );
 	}
 
@@ -111,13 +111,13 @@ class AddressAutocompleteTest extends MockeryTestCase {
 	 * Test registering duplicate provider.
 	 */
 	public function test_register_duplicate_provider() {
-		$result = __experimental_woocommerce_register_address_autocomplete_provider( 'test-provider', 'Test Provider' );
+		$result = __experimental_woocommerce_register_address_provider( 'test-provider', 'Test Provider' );
 		$this->assertTrue( $result );
 
 		$doing_it_wrong_mocker = \Mockery::mock( 'ActionCallback' );
 		$doing_it_wrong_mocker->shouldReceive( 'doing_it_wrong_run' )->withArgs(
 			array(
-				'__experimental_woocommerce_register_address_autocomplete_provider',
+				'__experimental_woocommerce_register_address_provider',
 				esc_html( sprintf( 'Unable to register provider with id: "%s". The provider is already registered.', 'test-provider' ) ),
 			)
 		)->once();
@@ -132,7 +132,7 @@ class AddressAutocompleteTest extends MockeryTestCase {
 			2
 		);
 
-		$result = __experimental_woocommerce_register_address_autocomplete_provider( 'test-provider', 'Another Provider' );
+		$result = __experimental_woocommerce_register_address_provider( 'test-provider', 'Another Provider' );
 		$this->assertFalse( $result );
 
 		__experimental_woocommerce_deregister_address_autocomplete_provider( 'test-provider' );
@@ -146,7 +146,7 @@ class AddressAutocompleteTest extends MockeryTestCase {
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- This is a test case where we need to simulate the action not firing.
 		$GLOBALS['wp_actions']['woocommerce_blocks_loaded'] = 0;
 
-		$result = __experimental_woocommerce_register_address_autocomplete_provider( 'test-provider', 'Test Provider' );
+		$result = __experimental_woocommerce_register_address_provider( 'test-provider', 'Test Provider' );
 		$this->assertFalse( $result ); // Should return false initially.
 
 		// Trigger blocks loaded.
@@ -161,8 +161,8 @@ class AddressAutocompleteTest extends MockeryTestCase {
 	 * Test getting registered providers.
 	 */
 	public function test_get_providers() {
-		__experimental_woocommerce_register_address_autocomplete_provider( 'provider-1', 'Provider One' );
-		__experimental_woocommerce_register_address_autocomplete_provider( 'provider-2', 'Provider Two' );
+		__experimental_woocommerce_register_address_provider( 'provider-1', 'Provider One' );
+		__experimental_woocommerce_register_address_provider( 'provider-2', 'Provider Two' );
 		$providers = $this->sut->get_registered_providers();
 
 		$this->assertCount( 2, $providers );
@@ -211,14 +211,14 @@ class AddressAutocompleteTest extends MockeryTestCase {
 		);
 
 		// Test registration.
-		$result = __experimental_woocommerce_register_address_autocomplete_provider( 'test-provider', 'Test Provider' );
+		$result = __experimental_woocommerce_register_address_provider( 'test-provider', 'Test Provider' );
 		$this->assertTrue( $result );
 
 		// Verify provider is available.
 		$this->assertTrue( $this->sut->is_provider_available( 'test-provider' ) );
 
 		// Test deregistration.
-		__experimental_woocommerce_deregister_address_autocomplete_provider( 'test-provider' );
+		__experimental_woocommerce_register_address_provider( 'test-provider' );
 		$this->assertFalse( $this->sut->is_provider_available( 'test-provider' ) );
 	}
 }
