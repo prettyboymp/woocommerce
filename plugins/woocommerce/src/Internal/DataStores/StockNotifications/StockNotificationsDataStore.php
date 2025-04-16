@@ -222,9 +222,8 @@ CREATE TABLE $logs_table_name (
 
 		$notification_id = (int) $wpdb->insert_id;
 		$notification->set_id( $notification_id );
-		$notification->apply_changes();
-
 		$notification->save_meta_data();
+		$notification->apply_changes();
 
 		return $notification->get_id();
 	}
@@ -324,11 +323,13 @@ CREATE TABLE $logs_table_name (
 			if ( 0 === $result ) {
 				return new \WP_Error( 'db_update_error', 'Invalid notification ID.' );
 			}
-
-			$notification->apply_changes();
 		}
 
 		$notification->save_meta_data();
+
+		if ( $changes ) {
+			$notification->apply_changes();
+		}
 
 		return $result;
 	}

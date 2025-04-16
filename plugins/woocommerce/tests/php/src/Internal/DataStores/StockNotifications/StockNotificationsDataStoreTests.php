@@ -142,6 +142,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->set_user_id( 1 );
 		$notification->set_user_email( 'test@test.com' );
 		$notification->set_date_created( '2024-01-01 00:00:00' );
+		$notification->set_date_modified( '2024-01-01 00:00:00' );
 		$notification->save();
 
 		// Verify dates.
@@ -276,6 +277,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->set_product_id( 1 );
 		$notification->set_user_id( 1 );
 		$notification->set_date_created( '2024-01-01 00:00:00' );
+		$notification->set_date_modified( '2024-01-01 00:00:00' );
 		$notification->save();
 
 		$notification = new Notification( $notification->get_id() );
