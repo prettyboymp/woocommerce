@@ -184,10 +184,10 @@ CREATE TABLE $logs_table_name (
 
 		// Fill in created and modified dates.
 		if ( ! $notification->get_date_created( 'edit' ) ) {
-			$notification->set_date_created( current_time( 'mysql' ) );
+			$notification->set_date_created( time() );
 		}
 		if ( ! $notification->get_date_modified( 'edit' ) ) {
-			$notification->set_date_modified( current_time( 'mysql' ) );
+			$notification->set_date_modified( time() );
 		}
 
 		$insert = $wpdb->insert(
@@ -263,10 +263,10 @@ CREATE TABLE $logs_table_name (
 				'user_id'         => $data->user_id,
 				'user_email'      => $data->user_email,
 				'status'          => $data->status,
-				'date_created'    => $data->date_created_gmt,
-				'date_modified'   => $data->date_modified_gmt,
-				'date_subscribed' => $data->date_subscribed_gmt,
-				'date_notified'   => $data->date_notified_gmt,
+				'date_created'    => wc_string_to_timestamp( $data->date_created_gmt ),
+				'date_modified'   => wc_string_to_timestamp( $data->date_modified_gmt ),
+				'date_subscribed' => wc_string_to_timestamp( $data->date_subscribed_gmt ),
+				'date_notified'   => wc_string_to_timestamp( $data->date_notified_gmt ),
 				'is_queued'       => $data->is_queued,
 			)
 		);
@@ -294,8 +294,7 @@ CREATE TABLE $logs_table_name (
 		if ( array_intersect( array( 'product_id', 'user_id', 'user_email', 'status', 'is_queued', 'date_modified', 'date_subscribed', 'date_notified' ), array_keys( $changes ) ) ) {
 
 			if ( ! in_array( 'date_modified', array_keys( $changes ), true ) ) {
-				$date_modified = current_time( 'mysql' );
-				$notification->set_date_modified( $date_modified );
+				$notification->set_date_modified( time() );
 			}
 
 			$result = $wpdb->update(
@@ -410,16 +409,16 @@ CREATE TABLE $logs_table_name (
 	 */
 	private function after_meta_change( &$notification ): bool {
 
-		$current_time      = current_time( 'mysql' );
-		$current_date_time = new \WC_DateTime( $current_time, new \DateTimeZone( 'GMT' ) );
+		$current_time = time();
+		$current_date_time = new \WC_DateTime( "@$current_time", new \DateTimeZone( 'UTC' ) );
 
 		$should_save =
 			$notification->get_id() > 0
-			&& $notification->get_date_modified() < $current_date_time
+			&& $notification->get_date_modified( 'edit' ) < $current_date_time
 			&& empty( $notification->get_changes() );
 
 		if ( $should_save ) {
-			$notification->set_date_modified( current_time( 'mysql' ) );
+			$notification->set_date_modified( $current_time );
 			$notification->save();
 			return true;
 		}

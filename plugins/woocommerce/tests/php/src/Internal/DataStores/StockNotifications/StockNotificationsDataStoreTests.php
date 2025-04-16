@@ -24,8 +24,6 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 	public function setUp(): void {
 		parent::setUp();
 		$this->data_store = wc_get_container()->get( StockNotificationsDataStore::class );
-		// Ensure the timezone is set to UTC.
-		update_option( 'gmt_offset', 0 );
 	}
 
 	/**
@@ -38,8 +36,6 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}wc_stock_notifications" );
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}wc_stock_notificationmeta" );
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}wc_stock_notifications_logs" );
-		// Restore the timezone to the default.
-		delete_option( 'gmt_offset' );
 	}
 
 	/**
@@ -306,6 +302,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->add_meta_data( 'test_meta', 'test_value' );
 		$notification->save();
 
+		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
 		$notification = new Notification( $notification->get_id() );
 		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
 		$this->assertEquals( 'test_value', $notification->get_meta( 'test_meta' ) );
@@ -325,10 +322,12 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->set_product_id( 1 );
 		$notification->set_user_id( 1 );
 		$notification->set_date_created( '2024-01-01 00:00:00' );
+		$notification->set_date_modified( '2024-01-01 00:00:00' );
 		$notification->add_meta_data( 'test_meta', 'test_value' );
 		$notification->save();
 
 		$notification = new Notification( $notification->get_id() );
+		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
 		$notification->delete_meta_data( 'test_meta' );
 		$notification->save();
 
