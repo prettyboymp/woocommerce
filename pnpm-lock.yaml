@@ -3021,6 +3021,9 @@ importers:
       '@types/wordpress__blocks':
         specifier: 11.0.7
         version: 11.0.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@woocommerce/components':
+        specifier: workspace:*
+        version: link:../components
       '@woocommerce/navigation':
         specifier: workspace:*
         version: link:../navigation
@@ -3287,6 +3290,12 @@ importers:
       wireit:
         specifier: 0.14.10
         version: 0.14.10
+
+  packages/php/blueprint:
+    devDependencies:
+      '@wordpress/env':
+        specifier: 10.17.0
+        version: 10.17.0(patch_hash=ovltjfwrjswkqlvmxt7r5kywn4)(@types/node@22.9.1)
 
   packages/php/email-editor:
     devDependencies:
@@ -24289,6 +24298,9 @@ packages:
   third-party-web@0.26.5:
     resolution: {integrity: sha512-tDuKQJUTfjvi9Fcrs1s6YAQAB9mzhTSbBZMfNgtWNmJlHuoFeXO6dzBFdGeCWRvYL50jQGK0jPsBZYxqZQJ2SA==}
 
+  third-party-web@0.26.6:
+    resolution: {integrity: sha512-GsjP92xycMK8qLTcQCacgzvffYzEqe29wyz3zdKVXlfRD5Kz1NatCTOZEeDaSd6uCZXvGd2CNVtQ89RNIhJWvA==}
+
   throat@4.1.0:
     resolution: {integrity: sha512-wCVxLDcFxw7ujDxaeJC6nfl2XfHJNYs8yUYJnvMgtPEFlttP9tHSfRUv2vBe6C4hkVFPWoP1P6ZccbYjmSEkKA==}
 
@@ -29856,7 +29868,7 @@ snapshots:
 
   '@paulirish/trace_engine@0.0.39':
     dependencies:
-      third-party-web: 0.26.5
+      third-party-web: 0.26.6
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
@@ -57453,6 +57465,8 @@ snapshots:
   therror@0.2.0: {}
 
   third-party-web@0.26.5: {}
+
+  third-party-web@0.26.6: {}
 
   throat@4.1.0: {}
 
