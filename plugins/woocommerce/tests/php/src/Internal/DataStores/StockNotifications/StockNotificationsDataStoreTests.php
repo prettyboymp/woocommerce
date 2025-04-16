@@ -24,6 +24,8 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 	public function setUp(): void {
 		parent::setUp();
 		$this->data_store = wc_get_container()->get( StockNotificationsDataStore::class );
+		// Ensure the timezone is set to UTC.
+		update_option( 'gmt_offset', 0 );
 	}
 
 	/**
@@ -36,6 +38,8 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}wc_stock_notifications" );
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}wc_stock_notificationmeta" );
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}wc_stock_notifications_logs" );
+		// Restore the timezone to the default.
+		delete_option( 'gmt_offset' );
 	}
 
 	/**
