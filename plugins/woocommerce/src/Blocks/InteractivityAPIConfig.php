@@ -28,7 +28,7 @@ class InteractivityAPIConfig {
 	 * Initialize the core settings.
 	 */
 	private function initialize() {
-		if ( self::$core_settings_registered ) {
+		if ( $this->core_settings_registered ) {
 			return;
 		}
 
@@ -98,6 +98,6 @@ class InteractivityAPIConfig {
 			$this->initialize();
 		}
 
-		wp_interactivity_config( self::$settings_namespace, $data );
+		wp_interactivity_config( $this->settings_namespace, $data );
 	}
 }
