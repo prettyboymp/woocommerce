@@ -9,6 +9,7 @@ use Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFields;
 use Automattic\WooCommerce\Blocks\Package;
 use Automattic\WooCommerce\StoreApi\Utilities\PaymentUtils;
 use Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFieldsSchema\Validation;
+use Automattic\WooCommerce\Blocks\Domain\Services\AddressAutocomplete;
 
 /**
  * Checkout class.
@@ -542,6 +543,10 @@ class Checkout extends AbstractBlock {
 			$this->asset_data_registry->hydrate_data_from_api_request( 'checkoutData', '/wc/store/v1/checkout' );
 			$this->hydrate_customer_payment_methods();
 		}
+
+		// Enqueue address autocomplete providers.
+		$address_autocomplete_service = Package::container()->get( AddressAutocomplete::class );
+		$this->asset_data_registry->add( 'addressAutocompleteProviders', $address_autocomplete_service->get_registered_providers() );
 
 		/**
 		 * Fires after checkout block data is registered.
