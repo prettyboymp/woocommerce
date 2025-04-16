@@ -52,7 +52,6 @@ class ClassicTemplate extends AbstractDynamicBlock {
 
 		// Indicate to interactivity powered components that this block is on the page,
 		// and needs refresh to update data.
-		$this->asset_data_registry->add( 'needsRefreshForInteractivityAPI', true );
 		$this->add_woocommerce_interactivity_config(
 			[
 				'needsRefreshForInteractivityAPI' => true,
