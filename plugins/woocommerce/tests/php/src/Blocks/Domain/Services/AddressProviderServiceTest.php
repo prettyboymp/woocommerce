@@ -34,12 +34,12 @@ class AddressProviderServiceTest extends MockeryTestCase {
 	protected function tearDown(): void {
 		parent::tearDown();
 
-		// Get all registered providers and deregister them.
-		$providers = $this->sut->get_registered_providers();
-
-		foreach ( array_keys( $providers ) as $provider_id ) {
-			__experimental_woocommerce_deregister_address_autocomplete_provider( $provider_id );
-		}
+		// Use reflection to reset the class.
+		$reflection = new \ReflectionClass( $this->sut );
+		$property   = $reflection->getProperty( 'providers' );
+		// This is a no op in PHP 8.1 but we still need it for PHP 7.4.
+		$property->setAccessible( true );
+		$property->setValue( $this->sut, [] );
 
 		remove_filter( 'doing_it_wrong_trigger_error', '__return_false' );
 		remove_all_actions( 'doing_it_wrong_run' );
@@ -134,8 +134,6 @@ class AddressProviderServiceTest extends MockeryTestCase {
 
 		$result = __experimental_woocommerce_register_address_provider( 'test-provider', 'Another Provider' );
 		$this->assertFalse( $result );
-
-		__experimental_woocommerce_deregister_address_autocomplete_provider( 'test-provider' );
 	}
 
 	/**
@@ -170,55 +168,5 @@ class AddressProviderServiceTest extends MockeryTestCase {
 		$this->assertArrayHasKey( 'provider-2', $providers );
 		$this->assertEquals( 'Provider One', $providers['provider-1']['name'] );
 		$this->assertEquals( 'Provider Two', $providers['provider-2']['name'] );
-	}
-
-	/**
-	 * Test deregistering a non-existent provider.
-	 */
-	public function test_deregister_nonexistent_provider() {
-		$doing_it_wrong_mocker = \Mockery::mock( 'ActionCallback' );
-		$doing_it_wrong_mocker->shouldReceive( 'doing_it_wrong_run' )->once();
-
-		add_action(
-			'doing_it_wrong_run',
-			array(
-				$doing_it_wrong_mocker,
-				'doing_it_wrong_run',
-			),
-			10,
-			2
-		);
-
-		$result = $this->sut->deregister_provider( 'nonexistent-provider' );
-		$this->assertFalse( $result );
-	}
-
-	/**
-	 * Test successful registration and deregistration.
-	 */
-	public function test_successful_register_and_deregister() {
-		$doing_it_wrong_mocker = \Mockery::mock( 'ActionCallback' );
-		$doing_it_wrong_mocker->shouldReceive( 'doing_it_wrong_run' )->never();
-
-		add_action(
-			'doing_it_wrong_run',
-			array(
-				$doing_it_wrong_mocker,
-				'doing_it_wrong_run',
-			),
-			10,
-			2
-		);
-
-		// Test registration.
-		$result = __experimental_woocommerce_register_address_provider( 'test-provider', 'Test Provider' );
-		$this->assertTrue( $result );
-
-		// Verify provider is available.
-		$this->assertTrue( $this->sut->is_provider_available( 'test-provider' ) );
-
-		// Test deregistration.
-		__experimental_woocommerce_register_address_provider( 'test-provider' );
-		$this->assertFalse( $this->sut->is_provider_available( 'test-provider' ) );
 	}
 }
