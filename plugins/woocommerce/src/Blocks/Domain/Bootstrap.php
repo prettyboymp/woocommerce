@@ -10,6 +10,7 @@ use Automattic\WooCommerce\Blocks\BlockPatterns;
 use Automattic\WooCommerce\Blocks\BlockTemplatesRegistry;
 use Automattic\WooCommerce\Blocks\BlockTemplatesController;
 use Automattic\WooCommerce\Blocks\BlockTypesController;
+use Automattic\WooCommerce\Blocks\Domain\Services\AddressProviderService;
 use Automattic\WooCommerce\Blocks\Patterns\AIPatterns;
 use Automattic\WooCommerce\Blocks\Patterns\PatternRegistry;
 use Automattic\WooCommerce\Blocks\Patterns\PTKClient;
@@ -38,7 +39,6 @@ use Automattic\WooCommerce\StoreApi\SchemaController;
 use Automattic\WooCommerce\StoreApi\StoreApi;
 use Automattic\WooCommerce\Blocks\Shipping\ShippingController;
 use Automattic\WooCommerce\Blocks\TemplateOptions;
-use Automattic\WooCommerce\Blocks\Domain\Services\AddressAutocomplete;
 
 
 /**
@@ -407,9 +407,9 @@ class Bootstrap {
 		);
 		if ( Features::is_enabled( 'experimental-blocks' ) ) {
 			$this->container->register(
-				AddressAutocomplete::class,
+				AddressProviderService::class,
 				function () {
-					return new AddressAutocomplete();
+					return new AddressProviderService();
 				}
 			);
 		}
