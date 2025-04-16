@@ -297,7 +297,7 @@ class CheckoutSchema extends AbstractSchema {
 			}
 		}
 
-		return $fields;
+		return (object) $fields;
 	}
 
 	/**

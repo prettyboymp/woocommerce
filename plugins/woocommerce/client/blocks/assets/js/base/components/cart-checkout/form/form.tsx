@@ -121,17 +121,17 @@ const Form = <
 
 		// Previous errors are cleared when they're no longer present.
 		if ( previousErrors ) {
+			const errorsToClear: string[] = [];
 			Object.entries( previousErrors ).forEach( ( [ key ] ) => {
 				const inputRef = inputsRef.current[ key ];
 
 				// If error was previously set but no longer exists, clear it.
 				if ( ! ( key in errors ) ) {
-					dispatch( validationStore ).clearValidationError(
-						`${ addressType }_${ key }`
-					);
+					errorsToClear.push( `${ addressType }_${ key }` );
 					inputRef?.setErrorMessage( '' );
 				}
 			} );
+			dispatch( validationStore ).clearValidationErrors( errorsToClear );
 		}
 	}, [ errors, previousErrors, addressType, values ] );
 

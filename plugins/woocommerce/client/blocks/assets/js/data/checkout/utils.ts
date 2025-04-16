@@ -22,7 +22,13 @@ import {
 } from '@wordpress/data/build-types/types';
 import { checkoutStore } from '@woocommerce/block-data';
 import { select } from '@wordpress/data';
-import type { AdditionalValues, ContactForm } from '@woocommerce/settings';
+import type {
+	ContactForm,
+	ContactFormValues,
+	FormFields,
+	OrderForm,
+	OrderFormValues,
+} from '@woocommerce/settings';
 
 /**
  * Internal dependencies
@@ -242,9 +248,7 @@ export const hasValidationError = ( fieldKey: string ) => {
 	let prefix = '';
 	if ( CONTACT_FORM_KEYS.includes( fieldKey as keyof ContactForm ) ) {
 		prefix = 'contact_';
-	} else if (
-		ORDER_FORM_KEYS.includes( fieldKey as keyof AdditionalValues )
-	) {
+	} else if ( ORDER_FORM_KEYS.includes( fieldKey as keyof OrderForm ) ) {
 		prefix = 'order_';
 	} else {
 		return false;
