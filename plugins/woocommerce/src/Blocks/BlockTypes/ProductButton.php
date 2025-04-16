@@ -215,11 +215,11 @@ class ProductButton extends AbstractBlock {
 			$this->prevent_cache();
 		}
 
-		$div_directives = '
+		$div_directives    = '
 			data-wp-interactive="woocommerce/product-button"
 			data-wp-init="actions.refreshCartItems"
 		';
-		$context_directive= wp_interactivity_data_wp_context(
+		$context_directive = wp_interactivity_data_wp_context(
 			array(
 				'quantityToAdd'   => $default_quantity,
 				'productId'       => $product->get_id(),

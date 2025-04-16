@@ -165,7 +165,7 @@ class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractBloc
 				wp_interactivity_data_wp_context(
 					array(
 						'option' => $attribute_term,
-					) 
+					)
 				),
 				$attribute_term['label']
 			);
@@ -224,8 +224,8 @@ class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractBloc
 				'<option %s %s>%s</option>',
 				$this->get_normalized_attributes(
 					array(
-						'value'           => $attribute_term['value'],
-						'selected'        => $attribute_term['isSelected'] ? 'selected' : null,
+						'value'    => $attribute_term['value'],
+						'selected' => $attribute_term['isSelected'] ? 'selected' : null,
 					),
 				),
 				wp_interactivity_data_wp_context(

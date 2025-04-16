@@ -109,7 +109,7 @@ class ProductTemplate extends AbstractBlock {
 				)
 			)->render( array( 'dynamic' => false ) );
 
-			$li_directives = '
+			$li_directives     = '
 				data-wp-interactive="woocommerce/product-collection"
 				data-wp-key="product-item-' . $product_id . '"
 			';

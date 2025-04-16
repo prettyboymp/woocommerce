@@ -151,7 +151,7 @@ final class ProductFilterStatus extends AbstractBlock {
 			'data-wp-interactive' => 'woocommerce/product-filters',
 			'data-wp-key'         => wp_unique_prefixed_id( $this->get_full_block_name() ),
 		);
-		$context_directive = wp_interactivity_data_wp_context(
+		$context_directive  = wp_interactivity_data_wp_context(
 			array(
 				/* translators: {{label}} is the status filter item label. */
 				'activeLabelTemplate' => __( 'Status: {{label}}', 'woocommerce' ),

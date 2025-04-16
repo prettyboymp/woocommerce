@@ -41,7 +41,7 @@ final class ProductFilterActive extends AbstractBlock {
 			'data-wp-key'          => wp_unique_prefixed_id( $this->get_full_block_name() ),
 			'data-wp-bind--hidden' => '!state.hasActiveFilters',
 		);
-		$context_directive = wp_interactivity_data_wp_context(
+		$context_directive  = wp_interactivity_data_wp_context(
 			array(
 				'filterType' => 'active',
 			)

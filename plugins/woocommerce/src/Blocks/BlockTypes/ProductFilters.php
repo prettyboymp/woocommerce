@@ -75,14 +75,14 @@ class ProductFilters extends AbstractBlock {
 			}
 		);
 
-		$block_context         = array_merge(
+		$block_context = array_merge(
 			$block->context,
 			array(
 				'filterParams'  => $filter_params,
 				'activeFilters' => $active_filters,
 			),
 		);
-		$inner_blocks          = array_reduce(
+		$inner_blocks  = array_reduce(
 			$block->parsed_block['innerBlocks'],
 			function ( $carry, $parsed_block ) use ( $block_context ) {
 				$carry .= ( new \WP_Block( $parsed_block, $block_context ) )->render();
@@ -108,7 +108,7 @@ class ProductFilters extends AbstractBlock {
 			'data-wp-class--is-overlay-opened' => 'context.isOverlayOpened',
 			'style'                            => $styles,
 		);
-		$context_directive = wp_interactivity_data_wp_context(
+		$context_directive  = wp_interactivity_data_wp_context(
 			array(
 				'params'        => $filter_params,
 				'activeFilters' => $active_filters,

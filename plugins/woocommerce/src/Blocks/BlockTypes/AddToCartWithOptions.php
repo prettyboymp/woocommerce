@@ -129,11 +129,13 @@ class AddToCartWithOptions extends AbstractBlock {
 				)
 			);
 
-			$context_directive = wp_interactivity_data_wp_context(array(
-				'productId' => $product->get_id(),
-				'quantity'  => $default_quantity,
-				'variation' => array(),
-			));
+			$context_directive = wp_interactivity_data_wp_context(
+				array(
+					'productId' => $product->get_id(),
+					'quantity'  => $default_quantity,
+					'variation' => array(),
+				)
+			);
 
 			$hooks_before = '';
 			$hooks_after  = '';
