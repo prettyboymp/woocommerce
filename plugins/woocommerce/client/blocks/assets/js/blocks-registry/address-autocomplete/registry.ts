@@ -16,7 +16,7 @@ export interface SearchResult {
 	id: string;
 }
 
-interface AddressAutocompleteProvider {
+export interface AddressAutocompleteProvider {
 	id: string;
 	canSearch: ( currentAddress: Partial< BaseAddress > ) => boolean;
 	search: (
@@ -78,7 +78,7 @@ const isValidAddressAutocompleteProvider = (
  *
  * @param provider The provider configuration.
  */
-export const registerAddressAutocompleteProvider = (
+export const __experimentalRegisterAddressAutocompleteProvider = (
 	provider: unknown
 ): void => {
 	if ( ! isValidAddressAutocompleteProvider( provider ) ) {
@@ -115,7 +115,9 @@ export const registerAddressAutocompleteProvider = (
  *
  * @param id The ID of the provider to remove.
  */
-export const removeAddressAutocompleteProvider = ( id: string ): void => {
+export const __experimentalRemoveAddressAutocompleteProvider = (
+	id: string
+): void => {
 	if ( addressAutocompleteProviders[ id ] ) {
 		delete addressAutocompleteProviders[ id ];
 	}
@@ -126,7 +128,7 @@ export const removeAddressAutocompleteProvider = ( id: string ): void => {
  *
  * @return A record of registered providers.
  */
-export const getAddressAutocompleteProviders = (): Record<
+export const __experimentalGetAddressAutocompleteProviders = (): Record<
 	string,
 	AddressAutocompleteProvider
 > => {
