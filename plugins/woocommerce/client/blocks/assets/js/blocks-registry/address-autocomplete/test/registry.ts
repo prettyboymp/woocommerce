@@ -2,9 +2,9 @@
  * Internal dependencies
  */
 import {
-	registerAddressAutocompleteProvider,
-	getAddressAutocompleteProviders,
-	removeAddressAutocompleteProvider,
+	__experimentalRegisterAddressAutocompleteProvider,
+	__experimentalGetAddressAutocompleteProviders,
+	__experimentalRemoveAddressAutocompleteProvider,
 } from '../registry';
 
 jest.mock( '@woocommerce/settings', () => {
@@ -23,9 +23,9 @@ jest.mock( '@woocommerce/settings', () => {
 
 describe( 'Address Autocomplete Registry', () => {
 	afterEach( () => {
-		const providers = getAddressAutocompleteProviders();
+		const providers = __experimentalGetAddressAutocompleteProviders();
 		Object.keys( providers ).forEach( ( id ) => {
-			removeAddressAutocompleteProvider( id );
+			__experimentalRemoveAddressAutocompleteProvider( id );
 		} );
 	} );
 
@@ -37,9 +37,9 @@ describe( 'Address Autocomplete Registry', () => {
 			select: () => ( { address1: '123 Test St' } ),
 		};
 
-		registerAddressAutocompleteProvider( provider );
+		__experimentalRegisterAddressAutocompleteProvider( provider );
 
-		const providers = getAddressAutocompleteProviders();
+		const providers = __experimentalGetAddressAutocompleteProviders();
 		expect( providers[ provider.id ] ).toBe( provider );
 	} );
 
@@ -51,9 +51,9 @@ describe( 'Address Autocomplete Registry', () => {
 			select: () => ( { address1: '123 Test St' } ),
 		};
 
-		registerAddressAutocompleteProvider( provider );
+		__experimentalRegisterAddressAutocompleteProvider( provider );
 
-		const providers = getAddressAutocompleteProviders();
+		const providers = __experimentalGetAddressAutocompleteProviders();
 		expect( providers[ provider.id ] ).toBeUndefined();
 		expect( console ).toHaveErroredWith(
 			'The provider ID must be a non-empty string.'
@@ -67,9 +67,9 @@ describe( 'Address Autocomplete Registry', () => {
 			select: () => ( { address1: '123 Test St' } ),
 		};
 
-		registerAddressAutocompleteProvider( provider as any );
+		__experimentalRegisterAddressAutocompleteProvider( provider );
 
-		const providers = getAddressAutocompleteProviders();
+		const providers = __experimentalGetAddressAutocompleteProviders();
 		expect( providers[ provider.id ] ).toBeUndefined();
 		expect( console ).toHaveErroredWith(
 			`The "canSearch" method for provider "${ provider.id }" must be a function.`
@@ -84,9 +84,9 @@ describe( 'Address Autocomplete Registry', () => {
 			select: () => ( { address1: '123 Test St' } ),
 		};
 
-		registerAddressAutocompleteProvider( provider );
+		__experimentalRegisterAddressAutocompleteProvider( provider );
 
-		const providers = getAddressAutocompleteProviders();
+		const providers = __experimentalGetAddressAutocompleteProviders();
 		expect( providers[ provider.id ] ).toBeUndefined();
 		expect( console ).toHaveErroredWith(
 			`No server-side provider is registered with the ID "${ provider.id }".`
@@ -101,10 +101,10 @@ describe( 'Address Autocomplete Registry', () => {
 			select: () => ( { address1: '123 Test St' } ),
 		};
 
-		registerAddressAutocompleteProvider( provider );
-		registerAddressAutocompleteProvider( provider );
+		__experimentalRegisterAddressAutocompleteProvider( provider );
+		__experimentalRegisterAddressAutocompleteProvider( provider );
 
-		const providers = getAddressAutocompleteProviders();
+		const providers = __experimentalGetAddressAutocompleteProviders();
 		expect( Object.keys( providers ).length ).toBe( 1 );
 		expect( console ).toHaveErroredWith(
 			`A provider with the ID "${ provider.id }" is already registered.`
