@@ -164,7 +164,7 @@ test.describe( `${ blockData.name }`, () => {
 				await pageObject.getThumbnailsBlock( {
 					page: 'frontend',
 				} )
-			)
+			 )
 				.locator( 'img' )
 				.nth( 1 )
 				.click();
@@ -307,8 +307,9 @@ test.describe( `${ blockData.name }`, () => {
 			);
 			await closePopUpButton.click();
 
-			const singleProductImageId =
-				await getVisibleLargeImageId( largeImageBlock );
+			const singleProductImageId = await getVisibleLargeImageId(
+				largeImageBlock
+			);
 
 			expect( singleProductImageId ).toBe( nextImageId );
 		} );

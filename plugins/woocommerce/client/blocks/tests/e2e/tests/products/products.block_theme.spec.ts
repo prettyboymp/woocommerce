@@ -117,10 +117,12 @@ for ( const {
 
 			await page.goto( frontendPage );
 
-			const classicProducts =
-				await getProductsNameFromClassicTemplate( page );
-			const productQueryProducts =
-				await getProductsNameFromProductQuery( page );
+			const classicProducts = await getProductsNameFromClassicTemplate(
+				page
+			);
+			const productQueryProducts = await getProductsNameFromProductQuery(
+				page
+			);
 
 			expect( classicProducts ).toEqual( productQueryProducts );
 		} );

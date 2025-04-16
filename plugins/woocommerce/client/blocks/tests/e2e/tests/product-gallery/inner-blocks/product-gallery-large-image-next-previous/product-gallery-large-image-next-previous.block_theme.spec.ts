@@ -43,21 +43,21 @@ const getBoundingClientRect = async ( {
 			await pageObject.getNextPreviousButtonsBlock( {
 				page,
 			} )
-		)
+		 )
 			.locator( leftArrowSelector )
 			.evaluate( ( el ) => el.getBoundingClientRect() ),
 		rightArrow: await (
 			await pageObject.getNextPreviousButtonsBlock( {
 				page,
 			} )
-		)
+		 )
 			.locator( rightArrowSelector )
 			.evaluate( ( el ) => el.getBoundingClientRect() ),
 		gallery: await (
 			await pageObject.getMainImageBlock( {
 				page,
 			} )
-		).evaluate( ( el ) => el.getBoundingClientRect() ),
+		 ).evaluate( ( el ) => el.getBoundingClientRect() ),
 	};
 };
 

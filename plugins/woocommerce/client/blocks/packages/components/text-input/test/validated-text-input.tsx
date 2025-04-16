@@ -280,8 +280,9 @@ describe( 'ValidatedTextInput', () => {
 				);
 			};
 			await render( <TestComponent /> );
-			const textInputElement =
-				await screen.getByLabelText( 'Test Input' );
+			const textInputElement = await screen.getByLabelText(
+				'Test Input'
+			);
 			await expect( textInputElement ).toHaveFocus();
 			await expect( setValidationErrors ).toHaveBeenCalledWith( {
 				'test-input': {
@@ -324,8 +325,9 @@ describe( 'ValidatedTextInput', () => {
 				);
 			};
 			const { rerender } = await render( <TestComponent /> );
-			const textInputElement =
-				await screen.getByLabelText( 'Test Input' );
+			const textInputElement = await screen.getByLabelText(
+				'Test Input'
+			);
 			await expect( textInputElement ).toHaveFocus();
 			await expect( setValidationErrors ).not.toHaveBeenCalled();
 
@@ -367,8 +369,9 @@ describe( 'ValidatedTextInput', () => {
 				);
 			};
 			await render( <TestComponent /> );
-			const textInputElement =
-				await screen.getByLabelText( 'Test Input' );
+			const textInputElement = await screen.getByLabelText(
+				'Test Input'
+			);
 			await expect( textInputElement ).toHaveFocus();
 			await expect( setValidationErrors ).not.toHaveBeenCalled();
 		} );

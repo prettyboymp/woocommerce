@@ -111,7 +111,7 @@ export class ProductGalleryPage {
 		if ( page === 'frontend' ) {
 			return (
 				await this.frontendUtils.getBlockByName( blockName )
-			).filter( {
+			 ).filter( {
 				has: this.page.locator( ':visible' ),
 			} );
 		}
@@ -123,7 +123,7 @@ export class ProductGalleryPage {
 		if ( page === 'frontend' ) {
 			return (
 				await this.frontendUtils.getBlockByName( blockName )
-			).filter( {
+			 ).filter( {
 				has: this.page.locator( ':visible' ),
 			} );
 		}
@@ -140,7 +140,7 @@ export class ProductGalleryPage {
 		if ( page === 'frontend' ) {
 			return (
 				await this.frontendUtils.getBlockByName( blockName )
-			).filter( {
+			 ).filter( {
 				has: this.page.locator( ':visible' ),
 			} );
 		}
@@ -152,7 +152,7 @@ export class ProductGalleryPage {
 		if ( page === 'frontend' ) {
 			return (
 				await this.frontendUtils.getBlockByName( blockName )
-			).filter( {
+			 ).filter( {
 				has: this.page.locator( ':visible' ),
 			} );
 		}
@@ -168,7 +168,7 @@ export class ProductGalleryPage {
 		if ( page === 'frontend' ) {
 			return (
 				await this.frontendUtils.getBlockByName( blockName )
-			).filter( {
+			 ).filter( {
 				has: this.page.locator( ':visible' ),
 			} );
 		}
