@@ -69,18 +69,17 @@ if ( ! function_exists( '__experimental_woocommerce_register_address_provider' )
 	/**
 	 * Register an address provider.
 	 *
-	 * @param string $provider_id The unique identifier for the provider.
-	 * @param string $name        The human-readable name of the provider.
+	 * @param WC_Address_Provider $provider The address provider instance.
 	 * @return bool True if registration was successful, false otherwise.
 	 */
-	function __experimental_woocommerce_register_address_provider( string $provider_id, string $name ): bool { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
+	function __experimental_woocommerce_register_address_provider( WC_Address_Provider $provider ): bool { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
 		// Check if `woocommerce_blocks_loaded` ran. If not then the AddressProviderService class will not be available yet.
 		$woocommerce_blocks_loaded_ran = did_action( 'woocommerce_blocks_loaded' );
 		if ( ! $woocommerce_blocks_loaded_ran ) {
 			add_action(
 				'woocommerce_blocks_loaded',
-				function () use ( $provider_id, $name ) {
-					__experimental_woocommerce_register_address_provider( $provider_id, $name );
+				function () use ( $provider ) {
+					__experimental_woocommerce_register_address_provider( $provider );
 				}
 			);
 			return false;
@@ -88,7 +87,7 @@ if ( ! function_exists( '__experimental_woocommerce_register_address_provider' )
 
 		try {
 			$address_provider = Package::container()->get( AddressProviderService::class );
-			return $address_provider->register_provider( $provider_id, $name );
+			return $address_provider->register_provider( $provider );
 		} catch ( \Exception $e ) {
 			return false;
 		}

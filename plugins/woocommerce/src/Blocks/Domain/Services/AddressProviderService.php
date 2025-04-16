@@ -2,6 +2,8 @@
 declare( strict_types=1 );
 namespace Automattic\WooCommerce\Blocks\Domain\Services;
 
+use WC_Address_Provider;
+
 /**
  * Service class for managing address providers.
  */
@@ -9,19 +11,18 @@ class AddressProviderService {
 	/**
 	 * Registered providers
 	 *
-	 * @var array
+	 * @var WC_Address_Provider[]
 	 */
 	private $providers = [];
 
 	/**
 	 * Register a new address provider.
 	 *
-	 * @param string $id   The provider ID.
-	 * @param string $name The provider name.
+	 * @param WC_Address_Provider $provider The address provider instance.
 	 * @return bool True if registration was successful, false otherwise.
 	 */
-	public function register_provider( string $id, string $name ): bool {
-		if ( empty( $id ) ) {
+	public function register_provider( WC_Address_Provider $provider ): bool {
+		if ( empty( $provider->id ) ) {
 			_doing_it_wrong(
 				'__experimental_woocommerce_register_address_provider',
 				'Unable to register provider. The provider ID is required.',
@@ -30,28 +31,25 @@ class AddressProviderService {
 			return false;
 		}
 
-		if ( empty( $name ) ) {
+		if ( empty( $provider->name ) ) {
 			_doing_it_wrong(
 				'__experimental_woocommerce_register_address_provider',
-				esc_html( sprintf( 'Unable to register provider with id: "%s". The provider name is required.', $id ) ),
+				esc_html( sprintf( 'Unable to register provider with id: "%s". The provider name is required.', $provider->id ) ),
 				'10.1.0'
 			);
 			return false;
 		}
 
-		if ( isset( $this->providers[ $id ] ) ) {
+		if ( isset( $this->providers[ $provider->id ] ) ) {
 			_doing_it_wrong(
 				'__experimental_woocommerce_register_address_provider',
-				esc_html( sprintf( 'Unable to register provider with id: "%s". The provider is already registered.', $id ) ),
+				esc_html( sprintf( 'Unable to register provider with id: "%s". The provider is already registered.', $provider->id ) ),
 				'10.1.0'
 			);
 			return false;
 		}
 
-		$this->providers[ $id ] = [
-			'id'   => $id,
-			'name' => $name,
-		];
+		$this->providers[ $provider->id ] = $provider;
 
 		return true;
 	}
@@ -59,7 +57,7 @@ class AddressProviderService {
 	/**
 	 * Get all registered providers.
 	 *
-	 * @return array
+	 * @return WC_Address_Provider[]
 	 */
 	public function get_registered_providers(): array {
 		return $this->providers;
