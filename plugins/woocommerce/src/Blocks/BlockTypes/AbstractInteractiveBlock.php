@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
-use Automattic\WooCommerce\Blocks\Assets\Api as AssetApi;
-use Automattic\WooCommerce\Blocks\Assets\AssetDataRegistry;
-use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
-use Automattic\WooCommerce\Blocks\InteractivityAPIConfig;
-
-
 /**
  * AbstractInteractiveBlock class.
  */
@@ -30,6 +24,7 @@ abstract class AbstractInteractiveBlock extends AbstractBlock {
 
 		if ( ! empty( $result ) && ! is_admin() && ! WC()->is_rest_api_request() ) {
 			$this->enqueue_assets( $render_callback_attributes, $content, $block );
+			$this->interactivity_api_config->initialize();
 		}
 
 		// Even if the rendered block is empty, it's safest to enqueue the data.

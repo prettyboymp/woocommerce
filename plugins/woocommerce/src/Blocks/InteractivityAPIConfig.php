@@ -27,7 +27,7 @@ class InteractivityAPIConfig {
 	/**
 	 * Initialize the core settings.
 	 */
-	private function initialize() {
+	public function initialize() {
 		if ( $this->core_settings_registered ) {
 			return;
 		}

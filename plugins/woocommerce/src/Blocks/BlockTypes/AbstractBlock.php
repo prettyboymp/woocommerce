@@ -6,6 +6,7 @@ use Automattic\WooCommerce\Blocks\Assets\AssetDataRegistry;
 use Automattic\WooCommerce\Blocks\Assets\Api as AssetApi;
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
 use Automattic\WooCommerce\Admin\Features\Features;
+use Automattic\WooCommerce\Blocks\InteractivityAPIConfig;
 
 /**
  * AbstractBlock class.
@@ -70,7 +71,7 @@ abstract class AbstractBlock {
 	 * @param InteractivityAPIConfig $interactivity_api_config Instance of the interactivity API config.
 	 * @param string                 $block_name Optionally set block name during construct.
 	 */
-	public function __construct( AssetApi $asset_api, AssetDataRegistry $asset_data_registry, IntegrationRegistry $integration_registry, $interactivity_api_config, $block_name = '' ) {
+	public function __construct( AssetApi $asset_api, AssetDataRegistry $asset_data_registry, IntegrationRegistry $integration_registry, InteractivityAPIConfig $interactivity_api_config, $block_name = '' ) {
 		$this->asset_api                = $asset_api;
 		$this->asset_data_registry      = $asset_data_registry;
 		$this->integration_registry     = $integration_registry;
@@ -112,6 +113,7 @@ abstract class AbstractBlock {
 		if ( ! is_admin() && ! WC()->is_rest_api_request() ) {
 			$this->register_block_type_assets();
 			$this->enqueue_assets( $render_callback_attributes, $content, $block );
+			$this->interactivity_api_config->initialize();
 		}
 		return $this->render( $render_callback_attributes, $content, $block );
 	}
