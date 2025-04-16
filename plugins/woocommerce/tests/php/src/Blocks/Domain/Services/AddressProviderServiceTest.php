@@ -26,7 +26,6 @@ class AddressProviderServiceTest extends MockeryTestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		$this->sut = Package::container()->get( AddressProviderService::class );
-		add_filter( 'doing_it_wrong_trigger_error', '__return_false' );
 	}
 
 	/**
@@ -34,16 +33,7 @@ class AddressProviderServiceTest extends MockeryTestCase {
 	 */
 	protected function tearDown(): void {
 		parent::tearDown();
-
-		// Use reflection to reset the class.
-		$reflection = new \ReflectionClass( $this->sut );
-		$property   = $reflection->getProperty( 'providers' );
-		// This is a no op in PHP 8.1 but we still need it for PHP 7.4.
-		$property->setAccessible( true );
-		$property->setValue( $this->sut, [] );
-
-		remove_filter( 'doing_it_wrong_trigger_error', '__return_false' );
-		remove_all_actions( 'doing_it_wrong_run' );
+		remove_all_filters( 'woocommerce_address_providers' );
 	}
 
 	/**
@@ -54,126 +44,18 @@ class AddressProviderServiceTest extends MockeryTestCase {
 	 * @return WC_Address_Provider
 	 */
 	private function create_mock_provider( string $id, string $name ): WC_Address_Provider {
-		$provider = \Mockery::mock( WC_Address_Provider::class );
-		$provider->id = $id;
+		$provider       = \Mockery::mock( WC_Address_Provider::class );
+		$provider->id   = $id;
 		$provider->name = $name;
 		return $provider;
 	}
 
 	/**
-	 * Test registering a valid provider
+	 * Test getting providers when none are registered.
 	 */
-	public function test_register_valid_provider() {
-		$provider = $this->create_mock_provider( 'test-provider', 'Test Provider' );
-		$result = __experimental_woocommerce_register_address_provider( $provider );
-		$this->assertTrue( $result );
-
-		$this->assertTrue( $this->sut->is_provider_available( 'test-provider' ) );
-	}
-
-	/**
-	 * Test registering a provider with empty ID.
-	 */
-	public function test_register_provider_empty_id() {
-		$doing_it_wrong_mocker = \Mockery::mock( 'ActionCallback' );
-		$doing_it_wrong_mocker->shouldReceive( 'doing_it_wrong_run' )->withArgs(
-			array(
-				'__experimental_woocommerce_register_address_provider',
-				'Unable to register provider. The provider ID is required.',
-			)
-		)->once();
-
-		add_action(
-			'doing_it_wrong_run',
-			array(
-				$doing_it_wrong_mocker,
-				'doing_it_wrong_run',
-			),
-			10,
-			2
-		);
-
-		$provider = $this->create_mock_provider( '', 'Test Provider' );
-		$result = __experimental_woocommerce_register_address_provider( $provider );
-		$this->assertFalse( $result );
-	}
-
-	/**
-	 * Test registering a provider with empty name.
-	 */
-	public function test_register_provider_empty_name() {
-		$doing_it_wrong_mocker = \Mockery::mock( 'ActionCallback' );
-		$doing_it_wrong_mocker->shouldReceive( 'doing_it_wrong_run' )->withArgs(
-			array(
-				'__experimental_woocommerce_register_address_provider',
-				esc_html( sprintf( 'Unable to register provider with id: "%s". The provider name is required.', 'test-provider' ) ),
-			)
-		)->once();
-
-		add_action(
-			'doing_it_wrong_run',
-			array(
-				$doing_it_wrong_mocker,
-				'doing_it_wrong_run',
-			),
-			10,
-			2
-		);
-
-		$provider = $this->create_mock_provider( 'test-provider', '' );
-		$result = __experimental_woocommerce_register_address_provider( $provider );
-		$this->assertFalse( $result );
-	}
-
-	/**
-	 * Test registering duplicate provider.
-	 */
-	public function test_register_duplicate_provider() {
-		$provider = $this->create_mock_provider( 'test-provider', 'Test Provider' );
-		$result = __experimental_woocommerce_register_address_provider( $provider );
-		$this->assertTrue( $result );
-
-		$doing_it_wrong_mocker = \Mockery::mock( 'ActionCallback' );
-		$doing_it_wrong_mocker->shouldReceive( 'doing_it_wrong_run' )->withArgs(
-			array(
-				'__experimental_woocommerce_register_address_provider',
-				esc_html( sprintf( 'Unable to register provider with id: "%s". The provider is already registered.', 'test-provider' ) ),
-			)
-		)->once();
-
-		add_action(
-			'doing_it_wrong_run',
-			array(
-				$doing_it_wrong_mocker,
-				'doing_it_wrong_run',
-			),
-			10,
-			2
-		);
-
-		$duplicate_provider = $this->create_mock_provider( 'test-provider', 'Another Provider' );
-		$result = __experimental_woocommerce_register_address_provider( $duplicate_provider );
-		$this->assertFalse( $result );
-	}
-
-	/**
-	 * Test registration before blocks loaded.
-	 */
-	public function test_register_provider_before_blocks_loaded() {
-		// Reset the blocks loaded state.
-		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- This is a test case where we need to simulate the action not firing.
-		$GLOBALS['wp_actions']['woocommerce_blocks_loaded'] = 0;
-
-		$provider = $this->create_mock_provider( 'test-provider', 'Test Provider' );
-		$result = __experimental_woocommerce_register_address_provider( $provider );
-		$this->assertFalse( $result ); // Should return false initially.
-
-		// Trigger blocks loaded.
-		// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment
-		do_action( 'woocommerce_blocks_loaded' );
-
-		// Now check that the provider is registered.
-		$this->assertTrue( $this->sut->is_provider_available( 'test-provider' ) );
+	public function test_get_providers_empty() {
+		$providers = $this->sut->get_registered_providers();
+		$this->assertEmpty( $providers );
 	}
 
 	/**
@@ -183,8 +65,14 @@ class AddressProviderServiceTest extends MockeryTestCase {
 		$provider1 = $this->create_mock_provider( 'provider-1', 'Provider One' );
 		$provider2 = $this->create_mock_provider( 'provider-2', 'Provider Two' );
 
-		__experimental_woocommerce_register_address_provider( $provider1 );
-		__experimental_woocommerce_register_address_provider( $provider2 );
+		add_filter(
+			'woocommerce_address_providers',
+			function ( $providers ) use ( $provider1, $provider2 ) {
+				$providers[ $provider1->id ] = $provider1;
+				$providers[ $provider2->id ] = $provider2;
+				return $providers;
+			}
+		);
 
 		$providers = $this->sut->get_registered_providers();
 
@@ -193,5 +81,86 @@ class AddressProviderServiceTest extends MockeryTestCase {
 		$this->assertArrayHasKey( 'provider-2', $providers );
 		$this->assertSame( $provider1, $providers['provider-1'] );
 		$this->assertSame( $provider2, $providers['provider-2'] );
+	}
+
+	/**
+	 * Test checking if a provider is available.
+	 */
+	public function test_is_provider_available() {
+		$provider = $this->create_mock_provider( 'test-provider', 'Test Provider' );
+
+		add_filter(
+			'woocommerce_address_providers',
+			function ( $providers ) use ( $provider ) {
+				$providers[ $provider->id ] = $provider;
+				return $providers;
+			}
+		);
+
+		$this->assertTrue( $this->sut->is_provider_available( 'test-provider' ) );
+		$this->assertFalse( $this->sut->is_provider_available( 'non-existent-provider' ) );
+	}
+
+	/**
+	 * Test that multiple filters can add providers.
+	 */
+	public function test_multiple_provider_filters() {
+		$provider1 = $this->create_mock_provider( 'provider-1', 'Provider One' );
+		$provider2 = $this->create_mock_provider( 'provider-2', 'Provider Two' );
+
+		add_filter(
+			'woocommerce_address_providers',
+			function ( $providers ) use ( $provider1 ) {
+				return array_merge( $providers, [ $provider1->id => $provider1 ] );
+			},
+			10
+		);
+
+		add_filter(
+			'woocommerce_address_providers',
+			function ( $providers ) use ( $provider2 ) {
+				return array_merge( $providers, [ $provider2->id => $provider2 ] );
+			},
+			20
+		);
+
+		$providers = $this->sut->get_registered_providers();
+
+		$this->assertCount( 2, $providers );
+		$this->assertArrayHasKey( 'provider-1', $providers );
+		$this->assertArrayHasKey( 'provider-2', $providers );
+		$this->assertSame( $provider1, $providers['provider-1'] );
+		$this->assertSame( $provider2, $providers['provider-2'] );
+	}
+
+	/**
+	 * Test that later filters can override earlier ones.
+	 */
+	public function test_provider_filter_override() {
+		$provider1 = $this->create_mock_provider( 'test-provider', 'Original Provider' );
+		$provider2 = $this->create_mock_provider( 'test-provider', 'Override Provider' );
+
+		add_filter(
+			'woocommerce_address_providers',
+			function ( $providers ) use ( $provider1 ) {
+				return array_merge( $providers, [ $provider1->id => $provider1 ] );
+			},
+			10
+		);
+
+		add_filter(
+			'woocommerce_address_providers',
+			function ( $providers ) use ( $provider2 ) {
+				return array_merge( $providers, [ $provider2->id => $provider2 ] );
+			},
+			20
+		);
+
+		$providers = $this->sut->get_registered_providers();
+
+		$this->assertCount( 1, $providers );
+		$this->assertArrayHasKey( 'test-provider', $providers );
+		$this->assertSame( $provider2, $providers['test-provider'] );
+		$this->assertSame( 'Override Provider', $providers['test-provider']->name );
 	}
 }
