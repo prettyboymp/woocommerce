@@ -7,6 +7,7 @@ use Automattic\WooCommerce\Admin\Features\Features;
 use Automattic\WooCommerce\Blocks\Assets\AssetDataRegistry;
 use Automattic\WooCommerce\Blocks\Assets\Api as AssetApi;
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
+use Automattic\WooCommerce\Blocks\BlockTypes\AbstractInteractiveBlock;
 use Automattic\WooCommerce\Blocks\BlockTypes\Cart;
 use Automattic\WooCommerce\Blocks\BlockTypes\Checkout;
 use Automattic\WooCommerce\Blocks\BlockTypes\MiniCartContents;
@@ -34,6 +35,13 @@ final class BlockTypesController {
 	protected $asset_data_registry;
 
 	/**
+	 * Instance of the interactivity API config.
+	 *
+	 * @var InteractivityAPIConfig
+	 */
+	protected $interactivity_api_config;
+
+	/**
 	 * Holds the registered blocks that have WooCommerce blocks as their parents.
 	 *
 	 * @var array List of registered blocks.
@@ -43,12 +51,14 @@ final class BlockTypesController {
 	/**
 	 * Constructor.
 	 *
-	 * @param AssetApi          $asset_api Instance of the asset API.
-	 * @param AssetDataRegistry $asset_data_registry Instance of the asset data registry.
+	 * @param AssetApi               $asset_api Instance of the asset API.
+	 * @param AssetDataRegistry      $asset_data_registry Instance of the asset data registry.
+	 * @param InteractivityAPIConfig $interactivity_api_config Instance of the interactivity API config.
 	 */
-	public function __construct( AssetApi $asset_api, AssetDataRegistry $asset_data_registry ) {
-		$this->asset_api           = $asset_api;
-		$this->asset_data_registry = $asset_data_registry;
+	public function __construct( AssetApi $asset_api, AssetDataRegistry $asset_data_registry, InteractivityAPIConfig $interactivity_api_config ) {
+		$this->asset_api                = $asset_api;
+		$this->asset_data_registry      = $asset_data_registry;
+		$this->interactivity_api_config = $interactivity_api_config;
 		$this->init();
 	}
 
@@ -114,7 +124,7 @@ final class BlockTypesController {
 		foreach ( $block_types as $block_type ) {
 			$block_type_class = __NAMESPACE__ . '\\BlockTypes\\' . $block_type;
 
-			new $block_type_class( $this->asset_api, $this->asset_data_registry, new IntegrationRegistry() );
+			new $block_type_class( $this->asset_api, $this->asset_data_registry, new IntegrationRegistry(), $this->interactivity_api_config );
 		}
 	}
 

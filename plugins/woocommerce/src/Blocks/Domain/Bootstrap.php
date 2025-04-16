@@ -9,6 +9,7 @@ use Automattic\WooCommerce\Blocks\BlockPatterns;
 use Automattic\WooCommerce\Blocks\BlockTemplatesRegistry;
 use Automattic\WooCommerce\Blocks\BlockTemplatesController;
 use Automattic\WooCommerce\Blocks\BlockTypesController;
+use Automattic\WooCommerce\Blocks\InteractivityAPIConfig;
 use Automattic\WooCommerce\Blocks\Patterns\AIPatterns;
 use Automattic\WooCommerce\Blocks\Patterns\PatternRegistry;
 use Automattic\WooCommerce\Blocks\Patterns\PTKClient;
@@ -37,7 +38,6 @@ use Automattic\WooCommerce\StoreApi\SchemaController;
 use Automattic\WooCommerce\StoreApi\StoreApi;
 use Automattic\WooCommerce\Blocks\Shipping\ShippingController;
 use Automattic\WooCommerce\Blocks\TemplateOptions;
-use Automattic\WooCommerce\Blocks\SharedInteractivityConfig;
 
 /**
  * Takes care of bootstrapping the plugin.
@@ -141,9 +141,6 @@ class Bootstrap {
 			$this->container->get( Installer::class )->init();
 			$this->container->get( GoogleAnalytics::class )->init();
 			$this->container->get( is_admin() ? CheckoutFieldsAdmin::class : CheckoutFieldsFrontend::class )->init();
-
-			// Note that DI is not needed for one-time initialization of shared settings.
-			add_action( 'init', [ SharedInteractivityConfig::class, 'init' ] );
 		}
 
 		// Load assets unless this is a request specifically for the store API.
@@ -240,9 +237,10 @@ class Bootstrap {
 		$this->container->register(
 			BlockTypesController::class,
 			function ( Container $container ) {
-				$asset_api           = $container->get( AssetApi::class );
-				$asset_data_registry = $container->get( AssetDataRegistry::class );
-				return new BlockTypesController( $asset_api, $asset_data_registry );
+				$asset_api                = $container->get( AssetApi::class );
+				$asset_data_registry      = $container->get( AssetDataRegistry::class );
+				$interactivity_api_config = $container->get( InteractivityAPIConfig::class );
+				return new BlockTypesController( $asset_api, $asset_data_registry, $interactivity_api_config );
 			}
 		);
 		$this->container->register(
@@ -404,6 +402,12 @@ class Bootstrap {
 			BlockTemplatesController::class,
 			function () {
 				return new BlockTemplatesController();
+			}
+		);
+		$this->container->register(
+			InteractivityAPIConfig::class,
+			function () {
+				return new InteractivityAPIConfig();
 			}
 		);
 	}

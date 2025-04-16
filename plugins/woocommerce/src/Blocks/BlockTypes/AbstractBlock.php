@@ -2,7 +2,6 @@
 namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
 use WP_Block;
-use Automattic\WooCommerce\Blocks\Package;
 use Automattic\WooCommerce\Blocks\Assets\AssetDataRegistry;
 use Automattic\WooCommerce\Blocks\Assets\Api as AssetApi;
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
@@ -56,18 +55,27 @@ abstract class AbstractBlock {
 	protected $integration_registry;
 
 	/**
+	 * Interactivity API config.
+	 *
+	 * @var InteractivityAPIConfig
+	 */
+	protected $interactivity_api_config;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param AssetApi            $asset_api Instance of the asset API.
-	 * @param AssetDataRegistry   $asset_data_registry Instance of the asset data registry.
-	 * @param IntegrationRegistry $integration_registry Instance of the integration registry.
-	 * @param string              $block_name Optionally set block name during construct.
+	 * @param AssetApi               $asset_api Instance of the asset API.
+	 * @param AssetDataRegistry      $asset_data_registry Instance of the asset data registry.
+	 * @param IntegrationRegistry    $integration_registry Instance of the integration registry.
+	 * @param InteractivityAPIConfig $interactivity_api_config Instance of the interactivity API config.
+	 * @param string                 $block_name Optionally set block name during construct.
 	 */
-	public function __construct( AssetApi $asset_api, AssetDataRegistry $asset_data_registry, IntegrationRegistry $integration_registry, $block_name = '' ) {
-		$this->asset_api            = $asset_api;
-		$this->asset_data_registry  = $asset_data_registry;
-		$this->integration_registry = $integration_registry;
-		$this->block_name           = $block_name ? $block_name : $this->block_name;
+	public function __construct( AssetApi $asset_api, AssetDataRegistry $asset_data_registry, IntegrationRegistry $integration_registry, $interactivity_api_config, $block_name = '' ) {
+		$this->asset_api                = $asset_api;
+		$this->asset_data_registry      = $asset_data_registry;
+		$this->integration_registry     = $integration_registry;
+		$this->interactivity_api_config = $interactivity_api_config;
+		$this->block_name               = $block_name ? $block_name : $this->block_name;
 		$this->initialize();
 	}
 
@@ -79,6 +87,16 @@ abstract class AbstractBlock {
 	protected function get_full_block_name() {
 		return $this->namespace . '/' . $this->block_name;
 	}
+
+	/**
+	 * Add interactivity config to the shared woocommerce namespace.
+	 *
+	 * @param array $config The config to add.
+	 */
+	protected function add_woocommerce_interactivity_config( $config ) {
+		$this->interactivity_api_config->add( $config );
+	}
+
 
 	/**
 	 * The default render_callback for all blocks. This will ensure assets are enqueued just in time, then render

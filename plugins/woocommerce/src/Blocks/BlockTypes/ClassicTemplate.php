@@ -7,7 +7,6 @@ use Automattic\WooCommerce\Blocks\Templates\ProductCategoryTemplate;
 use Automattic\WooCommerce\Blocks\Templates\ProductTagTemplate;
 use Automattic\WooCommerce\Blocks\Templates\ProductSearchResultsTemplate;
 use Automattic\WooCommerce\Blocks\Templates\OrderConfirmationTemplate;
-use Automattic\WooCommerce\Blocks\SharedInteractivityConfig;
 use Automattic\WooCommerce\Blocks\Utils\StyleAttributesUtils;
 use WC_Shortcode_Checkout;
 use WC_Frontend_Scripts;
@@ -54,7 +53,7 @@ class ClassicTemplate extends AbstractDynamicBlock {
 		// Indicate to interactivity powered components that this block is on the page,
 		// and needs refresh to update data.
 		$this->asset_data_registry->add( 'needsRefreshForInteractivityAPI', true );
-		SharedInteractivityConfig::add(
+		$this->add_woocommerce_interactivity_config(
 			[
 				'needsRefreshForInteractivityAPI' => true,
 			]

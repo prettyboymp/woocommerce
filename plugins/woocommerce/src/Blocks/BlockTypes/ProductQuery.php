@@ -5,7 +5,6 @@ use Automattic\WooCommerce\Enums\ProductStatus;
 use WP_Query;
 use Automattic\WooCommerce\Blocks\Utils\Utils;
 use Automattic\WooCommerce\Enums\ProductStockStatus;
-use Automattic\WooCommerce\Blocks\SharedInteractivityConfig;
 // phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 // phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 // phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_key
@@ -184,7 +183,7 @@ class ProductQuery extends AbstractBlock {
 				'needsRefreshForInteractivityAPI',
 				true
 			);
-			SharedInteractivityConfig::add(
+			$this->add_woocommerce_interactivity_config(
 				[
 					'needsRefreshForInteractivityAPI' => true,
 				]

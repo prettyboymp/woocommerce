@@ -13,7 +13,7 @@ use InvalidArgumentException;
  *
  * Note that using wc-settings/AssetDataRegistry is deprecated and should only be used
  * for non-script-module blocks (ie those not using Interactivity API). For shared settings,
- * use SharedInteractivityConfig, for block specific settings use wp_interactivity_config.
+ * use AbstractBlock::add_woocommerce_interactivity_config(), for block specific settings use wp_interactivity_config.
  *
  * @since 2.5.0
  */

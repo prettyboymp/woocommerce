@@ -6,28 +6,28 @@ namespace Automattic\WooCommerce\Blocks;
 
 /**
  * Manages the registration of interactivity settings for WooCommerce blocks.
- * Initialization only happens on the first call to init().
+ * Initialization only happens on the first call to init(). Intended to be used as a singleton.
  */
-class SharedInteractivityConfig {
+class InteractivityAPIConfig {
 
 	/**
 	 * The namespace for the settings.
 	 *
 	 * @var string
 	 */
-	private static $settings_namespace = 'woocommerce';
+	private $settings_namespace = 'woocommerce';
 
 	/**
 	 * Whether the core settings have been registered.
 	 *
 	 * @var boolean
 	 */
-	private static $core_settings_registered = false;
+	private $core_settings_registered = false;
 
 	/**
 	 * Initialize the core settings.
 	 */
-	public static function init() {
+	private function initialize() {
 		if ( self::$core_settings_registered ) {
 			return;
 		}
@@ -93,9 +93,9 @@ class SharedInteractivityConfig {
 	 *
 	 * @param array $data The data to add to the settings.
 	 */
-	public static function add( $data ) {
-		if ( ! self::$core_settings_registered ) {
-			self::init();
+	public function add( $data ) {
+		if ( ! $this->core_settings_registered ) {
+			$this->initialize();
 		}
 
 		wp_interactivity_config( self::$settings_namespace, $data );
