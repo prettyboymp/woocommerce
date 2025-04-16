@@ -32,11 +32,11 @@ class InteractivityAPIConfig {
 			return;
 		}
 
-		self::$core_settings_registered = true;
+		$this->core_settings_registered = true;
 
-		self::add( self::get_currency_data() );
-		self::add( self::get_locale_data() );
-		self::add( self::get_core_data() );
+		$this->add( $this->get_currency_data() );
+		$this->add( $this->get_locale_data() );
+		$this->add( $this->get_core_data() );
 	}
 
 	/**
@@ -44,7 +44,7 @@ class InteractivityAPIConfig {
 	 *
 	 * @return array
 	 */
-	protected static function get_core_data() {
+	protected function get_core_data() {
 		return [
 			'isBlockTheme' => wp_is_block_theme(),
 		];
@@ -55,7 +55,7 @@ class InteractivityAPIConfig {
 	 *
 	 * @return array
 	 */
-	protected static function get_currency_data() {
+	protected function get_currency_data() {
 		$currency = get_woocommerce_currency();
 
 		return [
@@ -76,7 +76,7 @@ class InteractivityAPIConfig {
 	 *
 	 * @return array
 	 */
-	protected static function get_locale_data() {
+	protected function get_locale_data() {
 		global $wp_locale;
 
 		return [
