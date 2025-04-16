@@ -544,9 +544,11 @@ class Checkout extends AbstractBlock {
 			$this->hydrate_customer_payment_methods();
 		}
 
-		// Enqueue address autocomplete providers.
-		$address_autocomplete_service = Package::container()->get( AddressAutocomplete::class );
-		$this->asset_data_registry->add( 'addressAutocompleteProviders', $address_autocomplete_service->get_registered_providers() );
+		if ( Features::is_enabled( 'experimental-blocks' ) ) {
+			// Enqueue address autocomplete providers if experimental-blocks.
+			$address_autocomplete_service = Package::container()->get( AddressAutocomplete::class );
+			$this->asset_data_registry->add( 'addressAutocompleteProviders', $address_autocomplete_service->get_registered_providers() );
+		}
 
 		/**
 		 * Fires after checkout block data is registered.
