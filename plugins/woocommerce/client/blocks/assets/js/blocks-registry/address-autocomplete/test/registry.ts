@@ -1,4 +1,9 @@
 /**
+ * External dependencies
+ */
+import * as settings from '@woocommerce/settings';
+
+/**
  * Internal dependencies
  */
 import {
@@ -12,12 +17,14 @@ jest.mock( '@woocommerce/settings', () => {
 
 	return {
 		...originalModule,
-		getSetting: ( setting: string, ...rest: unknown[] ) => {
-			if ( setting === 'addressAutocompleteProviders' ) {
-				return [ 'test-provider', 'duplicate-provider' ];
-			}
-			return originalModule.getSetting( setting, ...rest );
-		},
+		getSetting: jest
+			.fn()
+			.mockImplementation( ( setting: string, ...rest: unknown[] ) => {
+				if ( setting === 'addressAutocompleteProviders' ) {
+					return [ 'test-provider', 'duplicate-provider' ];
+				}
+				return originalModule.getSetting( setting, ...rest );
+			} ),
 	};
 } );
 
@@ -109,5 +116,53 @@ describe( 'Address Autocomplete Registry', () => {
 		expect( console ).toHaveErroredWith(
 			`A provider with the ID "${ provider.id }" is already registered.`
 		);
+	} );
+
+	it( 'should remove a registered provider', () => {
+		const provider = {
+			id: 'test-provider',
+			canSearch: () => true,
+			search: () => ( { result: { text: 'Test', id: '1' } } ),
+			select: () => ( { address1: '123 Test St' } ),
+		};
+
+		__experimentalRegisterAddressAutocompleteProvider( provider );
+		let providers = __experimentalGetAddressAutocompleteProviders();
+		expect( providers[ provider.id ] ).toBe( provider );
+
+		__experimentalRemoveAddressAutocompleteProvider( provider.id );
+		providers = __experimentalGetAddressAutocompleteProviders();
+		expect( providers[ provider.id ] ).toBeUndefined();
+	} );
+
+	it( 'should return all registered providers', () => {
+		jest.mocked( settings.getSetting ).mockImplementation( ( setting ) => {
+			if ( setting === 'addressAutocompleteProviders' ) {
+				return [ 'provider-1', 'provider-2' ];
+			}
+			return settings.getSetting( setting );
+		} );
+		const provider1 = {
+			id: 'provider-1',
+			canSearch: () => true,
+			search: () => ( { result: { text: 'Test 1', id: '1' } } ),
+			select: () => ( { address1: '123 Test St' } ),
+		};
+
+		const provider2 = {
+			id: 'provider-2',
+			canSearch: () => true,
+			search: () => ( { result: { text: 'Test 2', id: '2' } } ),
+			select: () => ( { address1: '456 Test Ave' } ),
+		};
+
+		__experimentalRegisterAddressAutocompleteProvider( provider1 );
+		__experimentalRegisterAddressAutocompleteProvider( provider2 );
+
+		const providers = __experimentalGetAddressAutocompleteProviders();
+		expect( Object.keys( providers ) ).toContain( provider1.id );
+		expect( Object.keys( providers ) ).toContain( provider2.id );
+		expect( providers[ provider1.id ] ).toBe( provider1 );
+		expect( providers[ provider2.id ] ).toBe( provider2 );
 	} );
 } );
