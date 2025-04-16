@@ -1,8 +1,8 @@
 <?php
-
+declare( strict_types=1 );
 use Automattic\WooCommerce\Blocks\Package;
 use Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFields;
-use Automattic\WooCommerce\Blocks\Domain\Services\AddressAutocomplete;
+use Automattic\WooCommerce\Blocks\Domain\Services\AddressProviderService;
 
 if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
 	/**
@@ -65,30 +65,30 @@ if ( ! function_exists( '__internal_woocommerce_blocks_deregister_checkout_field
 	}
 }
 
-if ( ! function_exists( '__experimental_woocommerce_register_address_autocomplete_provider' ) ) {
+if ( ! function_exists( '__experimental_woocommerce_register_address_provider' ) ) {
 	/**
-	 * Register an address autocomplete provider.
+	 * Register an address provider.
 	 *
 	 * @param string $provider_id The unique identifier for the provider.
 	 * @param string $name        The human-readable name of the provider.
 	 * @return bool True if registration was successful, false otherwise.
 	 */
-	function __experimental_woocommerce_register_address_autocomplete_provider( string $provider_id, string $name ): bool { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
-		// Check if `woocommerce_blocks_loaded` ran. If not then the AddressAutocomplete class will not be available yet.
+	function __experimental_woocommerce_register_address_provider( string $provider_id, string $name ): bool { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
+		// Check if `woocommerce_blocks_loaded` ran. If not then the AddressProviderService class will not be available yet.
 		$woocommerce_blocks_loaded_ran = did_action( 'woocommerce_blocks_loaded' );
 		if ( ! $woocommerce_blocks_loaded_ran ) {
 			add_action(
 				'woocommerce_blocks_loaded',
 				function () use ( $provider_id, $name ) {
-					__experimental_woocommerce_register_address_autocomplete_provider( $provider_id, $name );
+					__experimental_woocommerce_register_address_provider( $provider_id, $name );
 				}
 			);
 			return false;
 		}
 
 		try {
-			$address_autocomplete = Package::container()->get( AddressAutocomplete::class );
-			return $address_autocomplete->register_provider( $provider_id, $name );
+			$address_provider = Package::container()->get( AddressProviderService::class );
+			return $address_provider->register_provider( $provider_id, $name );
 		} catch ( \Exception $e ) {
 			return false;
 		}
