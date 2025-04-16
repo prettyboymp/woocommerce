@@ -11,32 +11,32 @@ namespace Automattic\WooCommerce\Blocks;
 class InteractivityAPIConfig {
 
 	/**
-	 * The namespace for the settings.
+	 * The namespace for the config.
 	 *
 	 * @var string
 	 */
 	private $settings_namespace = 'woocommerce';
 
 	/**
-	 * Whether the core settings have been registered.
+	 * Whether the core config has been registered.
 	 *
 	 * @var boolean
 	 */
-	private $core_settings_registered = false;
+	private $core_config_registered = false;
 
 	/**
-	 * Initialize the core settings.
+	 * Initialize the shared core config.
 	 */
-	public function initialize() {
-		if ( $this->core_settings_registered ) {
+	public function initialize_shared_config() {
+		if ( $this->core_config_registered ) {
 			return;
 		}
 
-		$this->core_settings_registered = true;
+		$this->core_config_registered = true;
 
-		$this->add( $this->get_currency_data() );
-		$this->add( $this->get_locale_data() );
-		$this->add( $this->get_core_data() );
+		$this->add_shared_config( $this->get_currency_data() );
+		$this->add_shared_config( $this->get_locale_data() );
+		$this->add_shared_config( $this->get_core_data() );
 	}
 
 	/**
@@ -93,9 +93,9 @@ class InteractivityAPIConfig {
 	 *
 	 * @param array $data The data to add to the settings.
 	 */
-	public function add( $data ) {
-		if ( ! $this->core_settings_registered ) {
-			$this->initialize();
+	public function add_shared_config( $data ) {
+		if ( ! $this->core_config_registered ) {
+			$this->initialize_shared_config();
 		}
 
 		wp_interactivity_config( $this->settings_namespace, $data );

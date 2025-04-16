@@ -179,7 +179,7 @@ class ProductQuery extends AbstractBlock {
 		if ( self::is_woocommerce_variation( $parsed_block ) ) {
 			// Indicate to interactivity powered components that this block is on the page
 			// and needs refresh to update data.
-			$this->add_woocommerce_interactivity_config(
+			$this->add_shared_config(
 				[
 					'needsRefreshForInteractivityAPI' => true,
 				]

@@ -24,7 +24,7 @@ abstract class AbstractInteractiveBlock extends AbstractBlock {
 
 		if ( ! empty( $result ) && ! is_admin() && ! WC()->is_rest_api_request() ) {
 			$this->enqueue_assets( $render_callback_attributes, $content, $block );
-			$this->interactivity_api_config->initialize();
+			$this->interactivity_api_config->initialize_shared_config();
 		}
 
 		// Even if the rendered block is empty, it's safest to enqueue the data.

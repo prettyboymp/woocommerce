@@ -94,8 +94,8 @@ abstract class AbstractBlock {
 	 *
 	 * @param array $config The config to add.
 	 */
-	protected function add_woocommerce_interactivity_config( $config ) {
-		$this->interactivity_api_config->add( $config );
+	protected function add_shared_config( $config ) {
+		$this->interactivity_api_config->add_shared_config( $config );
 	}
 
 
@@ -113,7 +113,7 @@ abstract class AbstractBlock {
 		if ( ! is_admin() && ! WC()->is_rest_api_request() ) {
 			$this->register_block_type_assets();
 			$this->enqueue_assets( $render_callback_attributes, $content, $block );
-			$this->interactivity_api_config->initialize();
+			$this->interactivity_api_config->initialize_shared_config();
 		}
 		return $this->render( $render_callback_attributes, $content, $block );
 	}
