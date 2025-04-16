@@ -1,4 +1,4 @@
-<?php // phpcs:ignore Suin.Classes.PSR4
+<?php
 
 /**
  * StockNotification class file.
@@ -272,7 +272,7 @@ class Notification extends \WC_Data {
 	 * @return bool
 	 */
 	public function is_queued() {
-		return 1 === $this->get_prop( 'is_queued' );
+		return 1 === $this->get_prop( 'is_queued', 'edit' );
 	}
 
 	/*
@@ -335,7 +335,7 @@ class Notification extends \WC_Data {
 				'action'     => '',
 				'user_id'    => 0,
 				'user_email' => '',
-				'ip_address' => '',
+				'ip_address' => \WC_Geolocation::get_ip_address(),
 				'note'       => '',
 			)
 		);

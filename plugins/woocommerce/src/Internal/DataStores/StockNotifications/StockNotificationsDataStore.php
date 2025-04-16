@@ -1,4 +1,4 @@
-<?php // phpcs:ignore Suin.Classes.PSR4
+<?php
 /**
  * StockNotificationsDataStore class file.
  */
@@ -146,16 +146,12 @@ CREATE TABLE $logs_table_name (
 	}
 
 	/**
-	 * Get the internal meta keys.
-	 *
-	 * @return array
-	 */
-	public function get_internal_meta_keys(): array {
-		return array();
-	}
-
-	/**
 	 * Filter the raw meta data.
+	 *
+	 * This is required due to the use of the WC_Data::read_meta_data() method.
+	 * It's a post-specific method that used to filter internal meta data.
+	 * For custom tables, technically there is no internal meta data,
+	 * so this method is a no-op.
 	 *
 	 * @param Notification $notification  The data object to filter.
 	 * @param array        $raw_meta_data The raw meta data to filter.
@@ -163,6 +159,18 @@ CREATE TABLE $logs_table_name (
 	 */
 	public function filter_raw_meta_data( &$notification, $raw_meta_data ): array {
 		return $raw_meta_data;
+	}
+
+	/**
+	 * Get the internal meta keys.
+	 *
+	 * Required for the use of the WC_Data::is_internal_meta_key() method.
+	 * It's a no-op for custom tables.
+	 *
+	 * @return array
+	 */
+	public function get_internal_meta_keys(): array {
+		return array();
 	}
 
 	/**
@@ -179,7 +187,7 @@ CREATE TABLE $logs_table_name (
 			$notification->set_date_created( current_time( 'mysql' ) );
 		}
 		if ( ! $notification->get_date_modified( 'edit' ) ) {
-			$notification->set_date_modified( $notification->get_date_created( 'edit' )->format( 'Y-m-d H:i:s' ) );
+			$notification->set_date_modified( current_time( 'mysql' ) );
 		}
 
 		$insert = $wpdb->insert(
@@ -351,7 +359,7 @@ CREATE TABLE $logs_table_name (
 	 */
 	public function add_meta( &$notification, $meta ) {
 		$add_meta = $this->data_store_meta->add_meta( $notification, $meta );
-		$this->after_meta_change( $notification, $meta );
+		$this->after_meta_change( $notification );
 		return $add_meta ? $add_meta : false;
 	}
 
@@ -375,7 +383,7 @@ CREATE TABLE $logs_table_name (
 	 */
 	public function update_meta( &$notification, $meta ): bool {
 		$update_meta = $this->data_store_meta->update_meta( $notification, $meta );
-		$this->after_meta_change( $notification, $meta );
+		$this->after_meta_change( $notification );
 		return $update_meta;
 	}
 
@@ -389,7 +397,7 @@ CREATE TABLE $logs_table_name (
 	public function delete_meta( &$notification, $meta ): bool {
 		$delete_meta = $this->data_store_meta->delete_meta( $notification, $meta );
 
-		$this->after_meta_change( $notification, $meta );
+		$this->after_meta_change( $notification );
 		return $delete_meta;
 	}
 
@@ -401,7 +409,7 @@ CREATE TABLE $logs_table_name (
 	 *
 	 * @return bool True if changes were applied, false otherwise.
 	 */
-	private function after_meta_change( &$notification, $meta ): bool {
+	private function after_meta_change( &$notification ): bool {
 
 		$current_time      = current_time( 'mysql' );
 		$current_date_time = new \WC_DateTime( $current_time, new \DateTimeZone( 'GMT' ) );

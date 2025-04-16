@@ -1,4 +1,4 @@
-<?php // phpcs:ignore Suin.Classes.PSR4
+<?php
 
 declare( strict_types = 1 );
 namespace Automattic\WooCommerce\Tests\Internal\DataStores\StockNotifications;
@@ -279,6 +279,8 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->save();
 
 		$notification = new Notification( $notification->get_id() );
+		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
+		$this->assertEquals( '', $notification->get_meta( 'test_meta' ) );
 		$notification->add_meta_data( 'test_meta', 'test_value' );
 		$notification->save();
 
@@ -294,14 +296,18 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->set_product_id( 1 );
 		$notification->set_user_id( 1 );
 		$notification->set_date_created( '2024-01-01 00:00:00' );
+		$notification->set_date_modified( '2024-01-01 00:00:00' );
 		$notification->add_meta_data( 'test_meta', 'test_value' );
 		$notification->save();
 
 		$notification = new Notification( $notification->get_id() );
+		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
+		$this->assertEquals( 'test_value', $notification->get_meta( 'test_meta' ) );
 		$notification->update_meta_data( 'test_meta', 'updated_value' );
 		$notification->save();
 
 		$notification = new Notification( $notification->get_id() );
+		$this->assertEquals( 'updated_value', $notification->get_meta( 'test_meta' ) );
 		$this->assertNotEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
 	}
 
