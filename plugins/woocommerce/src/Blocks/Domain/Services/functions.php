@@ -64,32 +64,3 @@ if ( ! function_exists( '__internal_woocommerce_blocks_deregister_checkout_field
 		}
 	}
 }
-
-if ( ! function_exists( '__experimental_woocommerce_register_address_provider' ) ) {
-	/**
-	 * Register an address provider.
-	 *
-	 * @param WC_Address_Provider $provider The address provider instance.
-	 * @return bool True if registration was successful, false otherwise.
-	 */
-	function __experimental_woocommerce_register_address_provider( WC_Address_Provider $provider ): bool { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
-		// Check if `woocommerce_blocks_loaded` ran. If not then the AddressProviderService class will not be available yet.
-		$woocommerce_blocks_loaded_ran = did_action( 'woocommerce_blocks_loaded' );
-		if ( ! $woocommerce_blocks_loaded_ran ) {
-			add_action(
-				'woocommerce_blocks_loaded',
-				function () use ( $provider ) {
-					__experimental_woocommerce_register_address_provider( $provider );
-				}
-			);
-			return false;
-		}
-
-		try {
-			$address_provider = Package::container()->get( AddressProviderService::class );
-			return $address_provider->register_provider( $provider );
-		} catch ( \Exception $e ) {
-			return false;
-		}
-	}
-}
