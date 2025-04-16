@@ -74,24 +74,4 @@ class AddressProviderService {
 	public function is_provider_available( string $provider_id ): bool {
 		return isset( $this->providers[ $provider_id ] );
 	}
-
-	/**
-	 * Deregister a provider.
-	 *
-	 * @param string $provider_id The ID of the provider to deregister.
-	 * @return boolean True if provider was deregistered, false on failure.
-	 */
-	public function deregister_provider( string $provider_id ): bool {
-		if ( ! $this->is_provider_available( $provider_id ) ) {
-			_doing_it_wrong(
-				'__experimental_woocommerce_deregister_address_autocomplete_provider',
-				esc_html( sprintf( 'Unable to deregister provider with id: "%s". The provider is not registered.', $provider_id ) ),
-				'10.1.0'
-			);
-			return false;
-		}
-
-		unset( $this->providers[ $provider_id ] );
-		return true;
-	}
 }
