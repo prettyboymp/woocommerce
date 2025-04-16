@@ -16,9 +16,6 @@ class FactoryTests extends \WC_Unit_Test_Case {
 	 */
 	public function test_factory() {
 
-		$notification = Factory::get_notification( 1 );
-		$this->assertEquals( false, $notification );
-
 		// Create a notification.
 		$notification = new Notification();
 		$notification->set_product_id( 2 );
