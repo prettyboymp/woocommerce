@@ -47,5 +47,6 @@
 		"attributes": {
 			"isPreview": true
 		}
-	}
+	},
+	"viewScriptModule": "file:../woocommerce/product-filters.js"
 }

@@ -28,8 +28,6 @@ final class ProductFilterCheckboxList extends AbstractBlock {
 			return '';
 		}
 
-		wp_enqueue_script_module( $this->get_full_block_name() );
-
 		$block_context = $block->context['filterData'];
 		$items         = $block_context['items'] ?? array();
 		$show_counts   = $block_context['showCounts'] ?? false;

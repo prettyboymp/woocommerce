@@ -30,8 +30,6 @@ final class ProductFilterChips extends AbstractBlock {
 			return '';
 		}
 
-		wp_enqueue_script_module( $this->get_full_block_name() );
-
 		$items       = $block->context['filterData']['items'] ?? array();
 		$show_counts = $block->context['filterData']['showCounts'] ?? false;
 		$classes     = '';

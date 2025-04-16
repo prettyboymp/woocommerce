@@ -28,8 +28,6 @@ final class ProductFilterActive extends AbstractBlock {
 			return $content;
 		}
 
-		wp_enqueue_script_module( $this->get_full_block_name() );
-
 		$active_filters = $block->context['activeFilters'];
 
 		$filter_context = array(
