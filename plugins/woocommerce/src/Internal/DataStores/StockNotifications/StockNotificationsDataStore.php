@@ -406,8 +406,6 @@ CREATE TABLE $logs_table_name (
 	 * Perform after meta change operations.
 	 *
 	 * @param Notification $notification The notification object.
-	 * @param \stdClass    $meta         Metadata object.
-	 *
 	 * @return bool True if changes were applied, false otherwise.
 	 */
 	private function after_meta_change( &$notification ): bool {

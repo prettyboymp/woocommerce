@@ -1,5 +1,4 @@
 <?php
-
 /**
  * StockNotification class file.
  */
