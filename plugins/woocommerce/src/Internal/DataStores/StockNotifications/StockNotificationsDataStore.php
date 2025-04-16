@@ -409,7 +409,7 @@ CREATE TABLE $logs_table_name (
 	 */
 	private function after_meta_change( &$notification ): bool {
 
-		$current_time = time();
+		$current_time      = time();
 		$current_date_time = new \WC_DateTime( "@$current_time", new \DateTimeZone( 'UTC' ) );
 
 		$should_save =
