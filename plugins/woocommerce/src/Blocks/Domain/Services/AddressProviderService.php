@@ -3,9 +3,9 @@ declare( strict_types=1 );
 namespace Automattic\WooCommerce\Blocks\Domain\Services;
 
 /**
- * Service class for managing address autocomplete providers.
+ * Service class for managing address providers.
  */
-class AddressAutocomplete {
+class AddressProviderService {
 	/**
 	 * Registered providers
 	 *
@@ -14,7 +14,7 @@ class AddressAutocomplete {
 	private $providers = [];
 
 	/**
-	 * Register a new address autocomplete provider.
+	 * Register a new address provider.
 	 *
 	 * @param string $id   The provider ID.
 	 * @param string $name The provider name.
@@ -23,7 +23,7 @@ class AddressAutocomplete {
 	public function register_provider( string $id, string $name ): bool {
 		if ( empty( $id ) ) {
 			_doing_it_wrong(
-				'__experimental_woocommerce_register_address_autocomplete_provider',
+				'__experimental_woocommerce_register_address_provider',
 				'Unable to register provider. The provider ID is required.',
 				'10.1.0'
 			);
@@ -32,7 +32,7 @@ class AddressAutocomplete {
 
 		if ( empty( $name ) ) {
 			_doing_it_wrong(
-				'__experimental_woocommerce_register_address_autocomplete_provider',
+				'__experimental_woocommerce_register_address_provider',
 				esc_html( sprintf( 'Unable to register provider with id: "%s". The provider name is required.', $id ) ),
 				'10.1.0'
 			);
@@ -41,7 +41,7 @@ class AddressAutocomplete {
 
 		if ( isset( $this->providers[ $id ] ) ) {
 			_doing_it_wrong(
-				'__experimental_woocommerce_register_address_autocomplete_provider',
+				'__experimental_woocommerce_register_address_provider',
 				esc_html( sprintf( 'Unable to register provider with id: "%s". The provider is already registered.', $id ) ),
 				'10.1.0'
 			);
