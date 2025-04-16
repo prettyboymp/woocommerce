@@ -150,7 +150,7 @@ class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractBloc
 		$pills = '';
 		foreach ( $attribute_terms as $attribute_term ) {
 			$pills .= sprintf(
-				'<div %s>%s</div>',
+				'<div %s %s>%s</div>',
 				$this->get_normalized_attributes(
 					array(
 						'role'                       => 'radio',
@@ -160,17 +160,19 @@ class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractBloc
 						'data-wp-watch'              => 'callbacks.watchSelected',
 						'data-wp-on--click'          => 'actions.toggleSelected',
 						'data-wp-on--keydown'        => 'actions.handleKeyDown',
-						'data-wp-context'            => array(
-							'option' => $attribute_term,
-						),
 					),
+				),
+				wp_interactivity_data_wp_context(
+					array(
+						'option' => $attribute_term,
+					) 
 				),
 				$attribute_term['label']
 			);
 		}
 
 		return sprintf(
-			'<div %s>%s</div>',
+			'<div %s %s>%s</div>',
 			$this->get_normalized_attributes(
 				array(
 					'class'               => 'wc-block-add-to-cart-with-options-variation-selector-attribute-options__pills',
@@ -178,14 +180,16 @@ class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractBloc
 					'id'                  => $attribute_id,
 					'aria-labeledby'      => $attribute_id . '_label',
 					'data-wp-interactive' => $this->get_full_block_name() . '__pills',
-					'data-wp-context'     => array(
-						'name'          => $attribute_name,
-						'options'       => $attribute_terms,
-						'selectedValue' => $this->get_default_selected_attribute( $attribute_terms ),
-						'focused'       => '',
-					),
 					'data-wp-init'        => 'callbacks.setDefaultSelectedAttribute',
 				),
+			),
+			wp_interactivity_data_wp_context(
+				array(
+					'name'          => $attribute_name,
+					'options'       => $attribute_terms,
+					'selectedValue' => $this->get_default_selected_attribute( $attribute_terms ),
+					'focused'       => '',
+				)
 			),
 			$pills,
 		);
@@ -217,35 +221,39 @@ class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractBloc
 		$options = '';
 		foreach ( $attribute_terms as $attribute_term ) {
 			$options .= sprintf(
-				'<option %s>%s</option>',
+				'<option %s %s>%s</option>',
 				$this->get_normalized_attributes(
 					array(
 						'value'           => $attribute_term['value'],
 						'selected'        => $attribute_term['isSelected'] ? 'selected' : null,
-						'data-wp-context' => array(
-							'option' => $attribute_term,
-						),
 					),
+				),
+				wp_interactivity_data_wp_context(
+					array(
+						'option' => $attribute_term,
+					)
 				),
 				$attribute_term['label']
 			);
 		}
 
 		return sprintf(
-			'<select %s>%s</select>',
+			'<select %s $s>%s</select>',
 			$this->get_normalized_attributes(
 				array(
 					'class'               => 'wc-block-add-to-cart-with-options-variation-selector-attribute-options__dropdown',
 					'id'                  => $attribute_id,
 					'data-wp-interactive' => $this->get_full_block_name() . '__dropdown',
-					'data-wp-context'     => array(
-						'name'          => $attribute_name,
-						'options'       => $attribute_terms,
-						'selectedValue' => $this->get_default_selected_attribute( $attribute_terms ),
-					),
 					'data-wp-init'        => 'callbacks.setDefaultSelectedAttribute',
 					'data-wp-on--change'  => 'actions.handleChange',
 				),
+			),
+			wp_interactivity_data_wp_context(
+				array(
+					'name'          => $attribute_name,
+					'options'       => $attribute_terms,
+					'selectedValue' => $this->get_default_selected_attribute( $attribute_terms ),
+				)
 			),
 			$options,
 		);
