@@ -3,12 +3,10 @@ declare(strict_types=1);
 
 namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
-use Automattic\WooCommerce\Blocks\BlockTypes\AbstractInteractiveBlock;
-
 /**
  * Block type for grouped product selector in add to cart with options.
  */
-class AddToCartWithOptionsGroupedProductSelector extends AbstractInteractiveBlock {
+class AddToCartWithOptionsGroupedProductSelector extends AbstractBlock {
 	/**
 	 * Block name.
 	 *

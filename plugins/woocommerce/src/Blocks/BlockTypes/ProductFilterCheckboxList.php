@@ -6,7 +6,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * Product Filter: Checkbox List Block.
  */
-final class ProductFilterCheckboxList extends AbstractInteractiveBlock {
+final class ProductFilterCheckboxList extends AbstractBlock {
 
 	/**
 	 * Block name.
@@ -121,5 +121,32 @@ final class ProductFilterCheckboxList extends AbstractInteractiveBlock {
 		</div>
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * Disable the style handle for this block type. We use block.json to load the style.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_style() {
+		return null;
+	}
+
+	/**
+	 * Disable the editor style handle for this block type. We use block.json to load the style.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_editor_style() {
+		return null;
+	}
+
+	/**
+	 * Disable the script handle for this block type. We use block.json to load the script.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_script( $key = null ) {
+		return null;
 	}
 }

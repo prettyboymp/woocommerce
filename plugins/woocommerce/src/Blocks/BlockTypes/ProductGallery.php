@@ -9,7 +9,7 @@ use Automattic\WooCommerce\Enums\ProductType;
 /**
  * ProductGallery class.
  */
-class ProductGallery extends AbstractInteractiveBlock {
+class ProductGallery extends AbstractBlock {
 	/**
 	 * Block name.
 	 *

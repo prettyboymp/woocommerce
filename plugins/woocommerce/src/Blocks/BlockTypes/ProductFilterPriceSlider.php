@@ -12,7 +12,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * ProductFilterPriceSlider class.
  */
-class ProductFilterPriceSlider extends AbstractInteractiveBlock {
+class ProductFilterPriceSlider extends AbstractBlock {
 
 	/**
 	 * Block name.
@@ -33,8 +33,6 @@ class ProductFilterPriceSlider extends AbstractInteractiveBlock {
 		if ( is_admin() || wp_doing_ajax() || empty( $block->context['filterData'] ) || empty( $block->context['filterData']['price'] ) ) {
 			return '';
 		}
-
-		wp_enqueue_script_module( $this->get_full_block_name() );
 
 		$price_data = $block->context['filterData']['price'];
 		$min_price  = $price_data['minPrice'];
@@ -152,11 +150,29 @@ class ProductFilterPriceSlider extends AbstractInteractiveBlock {
 	}
 
 	/**
-	 * Disable the editor style handle for this block type.
+	 * Disable the editor style handle for this block type. We use block.json to load the style.
 	 *
 	 * @return null
 	 */
 	protected function get_block_type_editor_style() {
+		return null;
+	}
+
+	/**
+	 * Disable the style handle for this block type. We use block.json to load the style.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_style() {
+		return null;
+	}
+
+	/**
+	 * Disable the script handle for this block type. We use block.json to load the script.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_script( $key = null ) {
 		return null;
 	}
 }

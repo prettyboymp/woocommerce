@@ -9,7 +9,7 @@ use Automattic\WooCommerce\Enums\ProductType;
 /**
  * ProductButton class.
  */
-class ProductButton extends AbstractInteractiveBlock {
+class ProductButton extends AbstractBlock {
 
 	/**
 	 * Block name.

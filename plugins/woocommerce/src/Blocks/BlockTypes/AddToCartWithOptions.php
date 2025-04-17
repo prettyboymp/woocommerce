@@ -11,7 +11,7 @@ use Automattic\WooCommerce\Blocks\Utils\BlockTemplateUtils;
 /**
  * AddToCartWithOptions class.
  */
-class AddToCartWithOptions extends AbstractInteractiveBlock {
+class AddToCartWithOptions extends AbstractBlock {
 	/**
 	 * Block name.
 	 *

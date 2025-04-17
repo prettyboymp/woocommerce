@@ -43,5 +43,8 @@
 			"type": "string",
 			"default": ""
 		}
-	}
+	},
+	"viewScriptModule": "file:../woocommerce/product-filter-checkbox-list.js",
+	"style": "file:../woocommerce/product-filter-checkbox-list-style.css",
+	"editorStyle": "file:../woocommerce/product-filter-checkbox-list-editor.css"
 }

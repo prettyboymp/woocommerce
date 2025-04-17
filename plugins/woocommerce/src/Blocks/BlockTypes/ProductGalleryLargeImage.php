@@ -6,7 +6,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * ProductGalleryLargeImage class.
  */
-class ProductGalleryLargeImage extends AbstractInteractiveBlock {
+class ProductGalleryLargeImage extends AbstractBlock {
 	/**
 	 * Block name.
 	 *
