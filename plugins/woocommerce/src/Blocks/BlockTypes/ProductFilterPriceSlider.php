@@ -14,6 +14,8 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
  */
 class ProductFilterPriceSlider extends AbstractBlock {
 
+	use EnableBlockJsonAssetsTrait;
+
 	/**
 	 * Block name.
 	 *
@@ -147,32 +149,5 @@ class ProductFilterPriceSlider extends AbstractBlock {
 		</div>
 		<?php
 		return ob_get_clean();
-	}
-
-	/**
-	 * Disable the editor style handle for this block type. We use block.json to load the style.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_editor_style() {
-		return null;
-	}
-
-	/**
-	 * Disable the style handle for this block type. We use block.json to load the style.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_style() {
-		return null;
-	}
-
-	/**
-	 * Disable the script handle for this block type. We use block.json to load the script.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_script( $key = null ) {
-		return null;
 	}
 }

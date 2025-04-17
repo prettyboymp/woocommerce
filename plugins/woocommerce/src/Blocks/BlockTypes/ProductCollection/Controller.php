@@ -4,13 +4,15 @@ declare(strict_types=1);
 namespace Automattic\WooCommerce\Blocks\BlockTypes\ProductCollection;
 
 use Automattic\WooCommerce\Blocks\BlockTypes\AbstractBlock;
-
+use Automattic\WooCommerce\Blocks\BlockTypes\EnableBlockJsonAssetsTrait;
 use WP_Query;
 
 /**
  * Controller class.
  */
 class Controller extends AbstractBlock {
+
+	use EnableBlockJsonAssetsTrait;
 
 	/**
 	 * Block name.
@@ -400,34 +402,5 @@ class Controller extends AbstractBlock {
 		// Use HandlerRegistry to register collections.
 		$collection_handler_store = $this->collection_handler_registry->register_core_collections();
 		$this->query_builder->set_collection_handler_store( $collection_handler_store );
-	}
-
-
-	/**
-	 * Disable the editor style handle for this block type.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_editor_style() {
-		return null;
-	}
-
-	/**
-	 * Disable the style handle for this block type. We use block.json to load the style.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_style() {
-		return null;
-	}
-
-	/**
-	 * Disable the script handle for this block type. We use block.json to load the script.
-	 *
-	 * @param string|null $key The key of the script to get.
-	 * @return null
-	 */
-	protected function get_block_type_script( $key = null ) {
-		return null;
 	}
 }

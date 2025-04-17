@@ -8,6 +8,8 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
  */
 final class ProductFilterChips extends AbstractBlock {
 
+	use EnableBlockJsonAssetsTrait;
+
 	/**
 	 * Block name.
 	 *
