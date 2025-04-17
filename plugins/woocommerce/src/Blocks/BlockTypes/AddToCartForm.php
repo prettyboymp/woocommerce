@@ -9,7 +9,10 @@ use Automattic\WooCommerce\Blocks\Utils\StyleAttributesUtils;
 /**
  * CatalogSorting class.
  */
-class AddToCartForm extends AbstractInteractiveBlock {
+class AddToCartForm extends AbstractBlock {
+
+	use EnableBlockJsonAssetsTrait;
+
 	/**
 	 * Block name.
 	 *
@@ -162,8 +165,6 @@ class AddToCartForm extends AbstractInteractiveBlock {
 
 			return '';
 		}
-
-		wp_enqueue_script_module( $this->get_full_block_name() );
 
 		$product_name = $product->get_name();
 		$product_html = $is_stepper_style ? $this->add_steppers( $product_html, $product_name ) : $product_html;

@@ -9,7 +9,8 @@ use Automattic\WooCommerce\Enums\ProductType;
 /**
  * ProductButton class.
  */
-class ProductButton extends AbstractInteractiveBlock {
+class ProductButton extends AbstractBlock {
+	use EnableBlockJsonAssetsTrait;
 
 	/**
 	 * Block name.
@@ -91,8 +92,6 @@ class ProductButton extends AbstractInteractiveBlock {
 
 			return '';
 		}
-
-		wp_enqueue_script_module( 'woocommerce/product-button' );
 
 		$this->initialize_cart_state();
 
@@ -355,14 +354,5 @@ class ProductButton extends AbstractInteractiveBlock {
 			esc_attr__( 'View cart', 'woocommerce' ),
 			esc_html__( 'View cart', 'woocommerce' )
 		);
-	}
-
-	/**
-	 * Disable the editor style handle for this block type.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_editor_style() {
-		return null;
 	}
 }

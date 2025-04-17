@@ -6,7 +6,10 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * Block type for variation selector in add to cart with options.
  */
-class AddToCartWithOptionsVariationSelector extends AbstractInteractiveBlock {
+class AddToCartWithOptionsVariationSelector extends AbstractBlock {
+
+	use EnableBlockJsonAssetsTrait;
+
 	/**
 	 * Block name.
 	 *
@@ -58,22 +61,10 @@ class AddToCartWithOptionsVariationSelector extends AbstractInteractiveBlock {
 
 			add_filter( 'woocommerce_product_supports', array( $this, 'check_product_supports' ), 10, 3 );
 
-			wp_enqueue_script_module( $this->get_full_block_name() );
-
 			return $content;
 		}
 
 		return '';
-	}
-
-	/**
-	 * Disable the frontend script for this block type, it's built with script modules.
-	 *
-	 * @param string $key Data to get, or default to everything.
-	 * @return array|string|null
-	 */
-	protected function get_block_type_script( $key = null ) {
-		return null;
 	}
 
 	/**

@@ -11,7 +11,7 @@ use Automattic\WooCommerce\Internal\ProductFilters\QueryClauses;
 /**
  * Product Filter: Price Block.
  */
-final class ProductFilterPrice extends AbstractInteractiveBlock {
+final class ProductFilterPrice extends AbstractBlock {
 
 	/**
 	 * Block name.
@@ -120,8 +120,6 @@ final class ProductFilterPrice extends AbstractInteractiveBlock {
 			return '';
 		}
 
-		wp_enqueue_script_module( $this->get_full_block_name() );
-
 		$price_range   = $this->get_filtered_price( $block );
 		$min_range     = $price_range['min_price'] ?? 0;
 		$max_range     = $price_range['max_price'] ?? 0;
@@ -142,8 +140,9 @@ final class ProductFilterPrice extends AbstractInteractiveBlock {
 		);
 
 		$wrapper_attributes = array(
-			'data-wp-key'     => wp_unique_prefixed_id( $this->get_full_block_name() ),
-			'data-wp-context' => wp_json_encode(
+			'data-wp-interactive' => 'woocommerce/product-filters',
+			'data-wp-key'         => wp_unique_prefixed_id( $this->get_full_block_name() ),
+			'data-wp-context'     => wp_json_encode(
 				array(
 					'filterType' => 'price',
 					'minRange'   => $min_range,
@@ -252,6 +251,15 @@ final class ProductFilterPrice extends AbstractInteractiveBlock {
 	 * @return null
 	 */
 	protected function get_block_type_editor_style() {
+		return null;
+	}
+
+	/**
+	 * Disable the script handle for this block type. We use block.json to load the script.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_script( $key = null ) {
 		return null;
 	}
 }

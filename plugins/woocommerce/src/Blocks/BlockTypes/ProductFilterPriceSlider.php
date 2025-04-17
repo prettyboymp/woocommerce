@@ -12,7 +12,9 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * ProductFilterPriceSlider class.
  */
-class ProductFilterPriceSlider extends AbstractInteractiveBlock {
+class ProductFilterPriceSlider extends AbstractBlock {
+
+	use EnableBlockJsonAssetsTrait;
 
 	/**
 	 * Block name.
@@ -33,8 +35,6 @@ class ProductFilterPriceSlider extends AbstractInteractiveBlock {
 		if ( is_admin() || wp_doing_ajax() || empty( $block->context['filterData'] ) || empty( $block->context['filterData']['price'] ) ) {
 			return '';
 		}
-
-		wp_enqueue_script_module( $this->get_full_block_name() );
 
 		$price_data = $block->context['filterData']['price'];
 		$min_price  = $price_data['minPrice'];
@@ -60,9 +60,10 @@ class ProductFilterPriceSlider extends AbstractInteractiveBlock {
 
 		$wrapper_attributes = get_block_wrapper_attributes(
 			array(
-				'class'       => esc_attr( $classes ),
-				'style'       => esc_attr( $style ),
-				'data-wp-key' => wp_unique_prefixed_id( $this->get_full_block_name() ),
+				'data-wp-interactive' => 'woocommerce/product-filters',
+				'data-wp-key'         => wp_unique_prefixed_id( $this->get_full_block_name() ),
+				'class'               => esc_attr( $classes ),
+				'style'               => esc_attr( $style ),
 			)
 		);
 
@@ -149,14 +150,5 @@ class ProductFilterPriceSlider extends AbstractInteractiveBlock {
 		</div>
 		<?php
 		return ob_get_clean();
-	}
-
-	/**
-	 * Disable the editor style handle for this block type.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_editor_style() {
-		return null;
 	}
 }

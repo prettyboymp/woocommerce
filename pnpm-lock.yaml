@@ -194,8 +194,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/admin-layout:
     dependencies:
@@ -253,7 +253,7 @@ importers:
         version: 10.5.0(sass@1.69.5)(webpack@5.97.1)
       ts-jest:
         specifier: 29.1.x
-        version: 29.1.1(@babel/core@7.26.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.0))(jest@27.5.1(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.3.100)(@types/node@22.9.1)(typescript@5.7.2)))(typescript@5.7.2)
+        version: 29.1.1(@babel/core@7.25.7)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.25.7))(jest@27.5.1(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.3.100)(@types/node@22.9.1)(typescript@5.7.2)))(typescript@5.7.2)
       typescript:
         specifier: 5.7.x
         version: 5.7.2
@@ -264,8 +264,8 @@ importers:
         specifier: 5.1.x
         version: 5.1.4(webpack@5.97.1)
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/ai:
     dependencies:
@@ -406,8 +406,8 @@ importers:
         specifier: 2.0.x
         version: 2.0.0
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/api:
     dependencies:
@@ -455,8 +455,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/api-core-tests:
     dependencies:
@@ -489,8 +489,8 @@ importers:
         specifier: ^8.55.0
         version: 8.55.0
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/block-templates:
     dependencies:
@@ -601,8 +601,8 @@ importers:
         specifier: 5.1.x
         version: 5.1.4(webpack@5.97.1)
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/components:
     dependencies:
@@ -917,20 +917,20 @@ importers:
         specifier: 5.1.x
         version: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@4.15.1)(webpack@5.97.1)
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/create-product-editor-block:
     devDependencies:
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/create-woo-extension:
     devDependencies:
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/csv-export:
     dependencies:
@@ -975,8 +975,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/currency:
     dependencies:
@@ -1036,8 +1036,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/customer-effort-score:
     dependencies:
@@ -1160,8 +1160,8 @@ importers:
         specifier: 5.1.x
         version: 5.1.4(webpack@5.97.1)
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/data:
     dependencies:
@@ -1287,8 +1287,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/date:
     dependencies:
@@ -1360,8 +1360,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/dependency-extraction-webpack-plugin:
     dependencies:
@@ -1400,8 +1400,8 @@ importers:
         specifier: 5.1.x
         version: 5.1.4(webpack@5.97.1)
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/e2e-core-tests:
     dependencies:
@@ -1458,8 +1458,8 @@ importers:
         specifier: 23.20.0
         version: 23.20.0(eslint@8.55.0)(typescript@5.7.2)
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/e2e-environment:
     dependencies:
@@ -1555,8 +1555,8 @@ importers:
         specifier: ^7.5.4
         version: 7.5.4
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/e2e-utils:
     dependencies:
@@ -1625,8 +1625,8 @@ importers:
         specifier: 23.20.0
         version: 23.20.0(eslint@8.55.0)(typescript@5.7.2)
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/e2e-utils-playwright:
     devDependencies:
@@ -1806,8 +1806,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
       wp-types:
         specifier: ^3.65.0
         version: 3.66.1
@@ -1855,8 +1855,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/experimental:
     dependencies:
@@ -1991,8 +1991,8 @@ importers:
         specifier: 5.1.x
         version: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@4.15.1)(webpack@5.97.1)
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/explat:
     dependencies:
@@ -2061,8 +2061,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/expression-evaluation:
     dependencies:
@@ -2107,14 +2107,14 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/extend-cart-checkout-block:
     devDependencies:
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/integrate-plugin:
     dependencies:
@@ -2204,8 +2204,8 @@ importers:
         specifier: 5.1.x
         version: 5.1.4(webpack@5.97.1)
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/internal-e2e-builds:
     devDependencies:
@@ -2231,8 +2231,8 @@ importers:
         specifier: ^1.0.4
         version: 1.0.4
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/internal-js-tests:
     dependencies:
@@ -2295,8 +2295,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/internal-style-build:
     dependencies:
@@ -2362,8 +2362,8 @@ importers:
         specifier: 5.97.x
         version: 5.97.1(@swc/core@1.3.100)(webpack-cli@5.1.4)
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/navigation:
     dependencies:
@@ -2444,8 +2444,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/notices:
     dependencies:
@@ -2505,8 +2505,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/number:
     dependencies:
@@ -2554,8 +2554,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/onboarding:
     dependencies:
@@ -2666,8 +2666,8 @@ importers:
         specifier: 5.1.x
         version: 5.1.4(webpack@5.97.1)
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/product-editor:
     dependencies:
@@ -2943,8 +2943,8 @@ importers:
         specifier: 2.0.x
         version: 2.0.0
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/remote-logging:
     dependencies:
@@ -3004,8 +3004,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/settings-editor:
     dependencies:
@@ -3239,8 +3239,8 @@ importers:
         specifier: 2.0.x
         version: 2.0.0
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   packages/js/tracks:
     dependencies:
@@ -3288,8 +3288,14 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
+
+  packages/php/blueprint:
+    devDependencies:
+      '@wordpress/env':
+        specifier: 10.17.0
+        version: 10.17.0(patch_hash=ovltjfwrjswkqlvmxt7r5kywn4)(@types/node@22.9.1)
 
   packages/php/email-editor:
     devDependencies:
@@ -3451,8 +3457,8 @@ importers:
         specifier: ^3.17.4
         version: 3.17.4
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   plugins/woocommerce:
     dependencies:
@@ -3569,8 +3575,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
       wp-textdomain:
         specifier: 1.0.1
         version: 1.0.1
@@ -3687,8 +3693,8 @@ importers:
         specifier: ^3.17.4
         version: 3.17.4
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   plugins/woocommerce/client/admin:
     dependencies:
@@ -4249,8 +4255,8 @@ importers:
         specifier: 2.0.x
         version: 2.0.0
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   plugins/woocommerce/client/blocks:
     dependencies:
@@ -4842,8 +4848,8 @@ importers:
         specifier: 5.1.x
         version: 5.1.4(webpack-bundle-analyzer@4.9.1)(webpack-dev-server@4.15.1)(webpack@5.97.1)
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
       wordpress-data-wp-6-7:
         specifier: npm:@wordpress/data@wp-6.7
         version: '@wordpress/data@10.8.3(react@18.3.1)'
@@ -4930,8 +4936,8 @@ importers:
         specifier: ^14.16.1
         version: 14.16.1
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   tools/code-analyzer:
     dependencies:
@@ -4988,8 +4994,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   tools/compare-perf:
     dependencies:
@@ -5067,8 +5073,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   tools/monorepo-utils:
     dependencies:
@@ -5179,8 +5185,8 @@ importers:
         specifier: 5.1.x
         version: 5.1.4(webpack@5.97.1)
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   tools/package-release:
     dependencies:
@@ -5222,8 +5228,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   tools/release-posts:
     dependencies:
@@ -5298,8 +5304,8 @@ importers:
         specifier: 5.7.x
         version: 5.7.2
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
   tools/storybook:
     devDependencies:
@@ -5388,8 +5394,8 @@ importers:
         specifier: 5.97.x
         version: 5.97.1(@swc/core@1.3.100)(esbuild@0.18.20)
       wireit:
-        specifier: 0.14.10
-        version: 0.14.10
+        specifier: 0.14.12
+        version: 0.14.12
 
 packages:
 
@@ -25702,8 +25708,8 @@ packages:
     engines: {node: '>= 0.10.0'}
     hasBin: true
 
-  wireit@0.14.10:
-    resolution: {integrity: sha512-Y9wiNU92PcyfTcXRYzqjmilKl4Yfg30Jk/dwTN0e64JCkzoIP2QVo6gc8fjYK0gpL0/pq2IW+iMlknHLmLV+MQ==}
+  wireit@0.14.12:
+    resolution: {integrity: sha512-gNSd+nZmMo6cuICezYXRIayu6TSOeCSCDzjSF0q6g8FKDsRbdqrONrSZYzdk/uBISmRcv4vZtsno6GyGvdXwGA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -29163,10 +29169,7 @@ snapshots:
       jest-runner: 25.5.4
       jest-runtime: 25.5.4
     transitivePeerDependencies:
-      - bufferutil
-      - canvas
       - supports-color
-      - utf-8-validate
 
   '@jest/test-sequencer@26.6.3':
     dependencies:
@@ -58037,23 +58040,6 @@ snapshots:
       '@jest/types': 29.6.3
       babel-jest: 29.7.0(@babel/core@7.26.0)
 
-  ts-jest@29.1.1(@babel/core@7.26.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.0))(jest@27.5.1(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.3.100)(@types/node@22.9.1)(typescript@5.7.2)))(typescript@5.7.2):
-    dependencies:
-      bs-logger: 0.2.6
-      fast-json-stable-stringify: 2.1.0
-      jest: 27.5.1(node-notifier@8.0.2)(ts-node@10.9.2(@swc/core@1.3.100)(@types/node@22.9.1)(typescript@5.7.2))
-      jest-util: 29.7.0
-      json5: 2.2.3
-      lodash.memoize: 4.1.2
-      make-error: 1.3.6
-      semver: 7.6.3
-      typescript: 5.7.2
-      yargs-parser: 21.1.1
-    optionalDependencies:
-      '@babel/core': 7.26.0
-      '@jest/types': 29.6.3
-      babel-jest: 29.7.0(@babel/core@7.26.0)
-
   ts-loader@9.5.1(typescript@5.7.2)(webpack@5.89.0):
     dependencies:
       chalk: 4.1.2
@@ -59665,7 +59651,7 @@ snapshots:
 
   window-size@0.2.0: {}
 
-  wireit@0.14.10:
+  wireit@0.14.12:
     dependencies:
       brace-expansion: 4.0.0
       chokidar: 3.6.0

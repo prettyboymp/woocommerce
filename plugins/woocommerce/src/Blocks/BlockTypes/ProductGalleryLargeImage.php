@@ -6,7 +6,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * ProductGalleryLargeImage class.
  */
-class ProductGalleryLargeImage extends AbstractInteractiveBlock {
+class ProductGalleryLargeImage extends AbstractBlock {
 	/**
 	 * Block name.
 	 *
@@ -72,7 +72,6 @@ class ProductGalleryLargeImage extends AbstractInteractiveBlock {
 		}
 
 		$images_html = $this->get_main_images_html( $block->context, $post_id );
-		wp_enqueue_script_module( $this->get_full_block_name() );
 
 		$processor = new \WP_HTML_Tag_Processor( $content );
 		$processor->next_tag();

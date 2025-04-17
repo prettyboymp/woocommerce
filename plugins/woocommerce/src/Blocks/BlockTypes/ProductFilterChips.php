@@ -6,7 +6,9 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * Product Filter: Chips Block.
  */
-final class ProductFilterChips extends AbstractInteractiveBlock {
+final class ProductFilterChips extends AbstractBlock {
+
+	use EnableBlockJsonAssetsTrait;
 
 	/**
 	 * Block name.
@@ -30,8 +32,6 @@ final class ProductFilterChips extends AbstractInteractiveBlock {
 			return '';
 		}
 
-		wp_enqueue_script_module( $this->get_full_block_name() );
-
 		$items       = $block->context['filterData']['items'] ?? array();
 		$show_counts = $block->context['filterData']['showCounts'] ?? false;
 		$classes     = '';
@@ -54,10 +54,11 @@ final class ProductFilterChips extends AbstractInteractiveBlock {
 		$count                       = 0;
 
 		$wrapper_attributes = array(
-			'data-wp-key'     => wp_unique_prefixed_id( $this->get_full_block_name() ),
-			'data-wp-context' => '{}',
-			'class'           => esc_attr( $classes ),
-			'style'           => esc_attr( $style ),
+			'data-wp-interactive' => 'woocommerce/product-filters',
+			'data-wp-key'         => wp_unique_prefixed_id( $this->get_full_block_name() ),
+			'data-wp-context'     => '{}',
+			'class'               => esc_attr( $classes ),
+			'style'               => esc_attr( $style ),
 		);
 
 		ob_start();

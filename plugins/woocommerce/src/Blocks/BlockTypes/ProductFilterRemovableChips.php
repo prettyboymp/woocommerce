@@ -6,7 +6,9 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes;
 /**
  * Product Filter: Removable Chips Block.
  */
-final class ProductFilterRemovableChips extends AbstractInteractiveBlock {
+final class ProductFilterRemovableChips extends AbstractBlock {
+
+	use EnableBlockJsonAssetsTrait;
 
 	/**
 	 * Block name.
@@ -41,9 +43,10 @@ final class ProductFilterRemovableChips extends AbstractInteractiveBlock {
 		}
 
 		$wrapper_attributes = array(
-			'data-wp-key' => wp_unique_prefixed_id( $this->get_full_block_name() ),
-			'class'       => esc_attr( $classes ),
-			'style'       => esc_attr( $style ),
+			'data-wp-interactive' => 'woocommerce/product-filters',
+			'data-wp-key'         => wp_unique_prefixed_id( $this->get_full_block_name() ),
+			'class'               => esc_attr( $classes ),
+			'style'               => esc_attr( $style ),
 		);
 
 		ob_start();
@@ -92,14 +95,5 @@ final class ProductFilterRemovableChips extends AbstractInteractiveBlock {
 
 		<?php
 		return ob_get_clean();
-	}
-
-	/**
-	 * Disable the editor style handle for this block type.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_editor_style() {
-		return null;
 	}
 }

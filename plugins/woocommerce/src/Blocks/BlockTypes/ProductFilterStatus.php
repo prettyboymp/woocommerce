@@ -9,7 +9,7 @@ use Automattic\WooCommerce\Internal\ProductFilters\QueryClauses;
 /**
  * Product Filter: Status Block.
  */
-final class ProductFilterStatus extends AbstractInteractiveBlock {
+final class ProductFilterStatus extends AbstractBlock {
 
 	/**
 	 * Block name.
@@ -148,8 +148,9 @@ final class ProductFilterStatus extends AbstractInteractiveBlock {
 		);
 
 		$wrapper_attributes = array(
-			'data-wp-key'     => wp_unique_prefixed_id( $this->get_full_block_name() ),
-			'data-wp-context' => wp_json_encode(
+			'data-wp-interactive' => 'woocommerce/product-filters',
+			'data-wp-key'         => wp_unique_prefixed_id( $this->get_full_block_name() ),
+			'data-wp-context'     => wp_json_encode(
 				array(
 					/* translators: {{label}} is the status filter item label. */
 					'activeLabelTemplate' => __( 'Status: {{label}}', 'woocommerce' ),
@@ -228,6 +229,16 @@ final class ProductFilterStatus extends AbstractInteractiveBlock {
 	 * @return null
 	 */
 	protected function get_block_type_editor_style() {
+		return null;
+	}
+
+	/**
+	 * Disable the script handle for this block type. We use block.json to load the script.
+	 *
+	 * @param string|null $key The key of the script to get.
+	 * @return null
+	 */
+	protected function get_block_type_script( $key = null ) {
 		return null;
 	}
 }
