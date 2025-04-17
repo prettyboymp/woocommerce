@@ -92,8 +92,6 @@ class ProductButton extends AbstractBlock {
 			return '';
 		}
 
-		wp_enqueue_script_module( 'woocommerce/product-button' );
-
 		$this->initialize_cart_state();
 
 		wp_interactivity_state(

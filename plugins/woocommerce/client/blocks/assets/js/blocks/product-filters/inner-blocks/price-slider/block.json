@@ -54,6 +54,5 @@
 	"apiVersion": 3,
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"viewScriptModule": "file:../woocommerce/product-filter-price-slider.js",
-	"style": "file:../woocommerce/product-filter-price-slider-style.css",
-	"editorStyle": "file:../woocommerce/product-filter-price-slider-editor.css"
+	"style": "file:../woocommerce/product-filter-price-slider-style.css"
 }

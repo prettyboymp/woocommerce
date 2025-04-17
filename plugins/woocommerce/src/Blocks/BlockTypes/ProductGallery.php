@@ -112,8 +112,6 @@ class ProductGallery extends AbstractBlock {
 			return '';
 		}
 
-		wp_enqueue_script_module( $this->get_full_block_name() );
-
 		$image_src_data         = ProductGalleryUtils::get_product_gallery_image_data( $product );
 		$classname              = StyleAttributesUtils::get_classes_by_attributes( $attributes, array( 'extra_classes' ) );
 		$initial_image_id       = count( $image_src_data['image_ids'] ) > 0 ? $image_src_data['image_ids'][0] : -1;

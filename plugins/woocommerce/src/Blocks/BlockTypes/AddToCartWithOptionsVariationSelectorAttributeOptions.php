@@ -51,7 +51,6 @@ class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractBloc
 		$attribute_name = $block->context['woocommerce/attributeName'];
 
 		if ( isset( $attribute_name ) ) {
-			wp_enqueue_script_module( $this->get_full_block_name() );
 
 			$attributes = $this->parse_attributes( $attributes );
 
