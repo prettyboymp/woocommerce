@@ -87,19 +87,16 @@ class AddressProviderServiceTest extends MockeryTestCase {
 
 		$registered_providers = $this->sut->get_registered_providers();
 
-		// Test that we have two provider classes registered.
+		// Test that we have two provider instances registered.
 		$this->assertCount( 2, $registered_providers );
 
-		// Test that the registered providers are the correct class names.
-		$this->assertContains( $provider1_class_name, $registered_providers );
-		$this->assertContains( $provider2_class_name, $registered_providers );
-
-		// Test that instantiating these classes gives us the expected providers.
-		$provider1_instance = new $provider1_class_name();
-		$provider2_instance = new $provider2_class_name();
-
-		$this->assertEquals( 'Provider One', $provider1_instance->name );
-		$this->assertEquals( 'Provider Two', $provider2_instance->name );
+		// Test that the registered providers are instances with correct properties.
+		$this->assertInstanceOf( WC_Address_Provider::class, $registered_providers[0] );
+		$this->assertInstanceOf( WC_Address_Provider::class, $registered_providers[1] );
+		$this->assertEquals( 'provider-1', $registered_providers[0]->id );
+		$this->assertEquals( 'provider-2', $registered_providers[1]->id );
+		$this->assertEquals( 'Provider One', $registered_providers[0]->name );
+		$this->assertEquals( 'Provider Two', $registered_providers[1]->name );
 	}
 
 	/**
@@ -186,83 +183,173 @@ class AddressProviderServiceTest extends MockeryTestCase {
 
 		$registered_providers = $this->sut->get_registered_providers();
 
-		// Test that we have two provider classes registered.
+		// Test that we have two provider instances registered.
 		$this->assertCount( 2, $registered_providers );
 
-		// Test that both class names are registered.
-		$this->assertContains( $provider1_class_name, $registered_providers );
-		$this->assertContains( $provider2_class_name, $registered_providers );
-
-		// Test that instantiating these classes gives us the expected providers.
-		$provider1_instance = new $provider1_class_name();
-		$provider2_instance = new $provider2_class_name();
-
-		$this->assertEquals( 'Provider One', $provider1_instance->name );
-		$this->assertEquals( 'Provider Two', $provider2_instance->name );
+		// Test that both providers are properly instantiated.
+		$this->assertInstanceOf( WC_Address_Provider::class, $registered_providers[0] );
+		$this->assertInstanceOf( WC_Address_Provider::class, $registered_providers[1] );
+		$this->assertEquals( 'provider-1', $registered_providers[0]->id );
+		$this->assertEquals( 'provider-2', $registered_providers[1]->id );
+		$this->assertEquals( 'Provider One', $registered_providers[0]->name );
+		$this->assertEquals( 'Provider Two', $registered_providers[1]->name );
 	}
 
 	/**
-	 * Test that later filters can override earlier ones.
+	 * Test that invalid provider classes are filtered out.
 	 */
-	public function test_provider_filter_override() {
-		// Define original provider class.
-		$provider1_class = new class() extends WC_Address_Provider {
-			/**
-			 * Constructor.
-			 * Sets up the provider with an ID and name.
-			 */
-			public function __construct() {
-				$this->id   = 'test-provider';
-				$this->name = 'Original Provider';
-			}
-		};
-
-		// Define override provider class.
-		$provider2_class = new class() extends WC_Address_Provider {
-			/**
-			 * Constructor.
-			 * Sets up the provider with an ID and name.
-			 */
-			public function __construct() {
-				$this->id   = 'test-provider';
-				$this->name = 'Override Provider';
-			}
-		};
-
-		// Get class names for filters.
-		$provider1_class_name = get_class( $provider1_class );
-		$provider2_class_name = get_class( $provider2_class );
-
+	public function test_invalid_provider_classes() {
+		// Create classes in the filter to ensure they're unique.
 		add_filter(
 			'woocommerce_address_providers',
-			function ( $providers ) use ( $provider1_class_name ) {
-				$providers[] = $provider1_class_name;
-				return $providers;
-			},
-			10
-		);
+			function ( $providers ) {
+				// Add an invalid provider class without required properties.
+				$providers[] = get_class( new class() extends WC_Address_Provider {} );
 
-		add_filter(
-			'woocommerce_address_providers',
-			function ( $providers ) use ( $provider2_class_name ) {
-				$providers[] = $provider2_class_name;
+				// Add a valid provider class.
+				$providers[] = get_class( new class() extends WC_Address_Provider {
+					public function __construct() {
+						$this->id   = 'valid-provider';
+						$this->name = 'Valid Provider';
+					}
+				} );
+
+				// Add a non-existent class.
+				$providers[] = 'NonExistentClass';
+
 				return $providers;
-			},
-			20
+			}
 		);
 
 		$registered_providers = $this->sut->get_registered_providers();
 
-		// Test that both class names are registered.
-		$this->assertCount( 2, $registered_providers );
-		$this->assertContains( $provider1_class_name, $registered_providers );
-		$this->assertContains( $provider2_class_name, $registered_providers );
+		// Only the valid provider should be registered.
+		$this->assertCount( 1, $registered_providers );
+		$this->assertEquals( 'valid-provider', $registered_providers[0]->id );
+		$this->assertEquals( 'Valid Provider', $registered_providers[0]->name );
+	}
 
-		// Test that instantiating these classes gives us the expected providers.
-		$provider1_instance = new $provider1_class_name();
-		$provider2_instance = new $provider2_class_name();
+	/**
+	 * Test that non-WC_Address_Provider classes are filtered out.
+	 */
+	public function test_non_provider_classes() {
+		// Create classes in the filter to ensure they're unique.
+		add_filter(
+			'woocommerce_address_providers',
+			function ( $providers ) {
+				// Add a class that's not a WC_Address_Provider.
+				$providers[] = get_class( new class() {
+					public $id = 'non-provider';
+					public $name = 'Non Provider';
+				} );
 
-		$this->assertEquals( 'Original Provider', $provider1_instance->name );
-		$this->assertEquals( 'Override Provider', $provider2_instance->name );
+				// Add a valid provider class.
+				$providers[] = get_class( new class() extends WC_Address_Provider {
+					public function __construct() {
+						$this->id   = 'valid-provider';
+						$this->name = 'Valid Provider';
+					}
+				} );
+
+				return $providers;
+			}
+		);
+
+		$registered_providers = $this->sut->get_registered_providers();
+
+		// Only the valid provider should be registered.
+		$this->assertCount( 1, $registered_providers );
+		$this->assertEquals( 'valid-provider', $registered_providers[0]->id );
+		$this->assertEquals( 'Valid Provider', $registered_providers[0]->name );
+	}
+
+	/**
+	 * Test that providers are cached and not reinstantiated when the filter returns the same classes.
+	 */
+	public function test_provider_caching() {
+		$instantiation_count = 0;
+
+		// Define a test provider class that tracks instantiation.
+		$provider_class = new class() extends WC_Address_Provider {
+			public static $instance_count = 0;
+
+			public function __construct() {
+				self::$instance_count++;
+				$this->id   = 'test-provider';
+				$this->name = 'Test Provider';
+			}
+		};
+
+		$provider_class_name = get_class( $provider_class );
+
+		add_filter(
+			'woocommerce_address_providers',
+			function ( $providers ) use ( $provider_class_name ) {
+				$providers[] = $provider_class_name;
+				return $providers;
+			}
+		);
+
+		// First call should instantiate the provider.
+		$providers1 = $this->sut->get_registered_providers();
+		$initial_count = $provider_class::$instance_count;
+
+		// Second call should use cached instance.
+		$providers2 = $this->sut->get_registered_providers();
+
+		// Verify the instance count hasn't increased.
+		$this->assertEquals( $initial_count, $provider_class::$instance_count );
+
+		// Verify we got the same instance both times.
+		$this->assertSame( $providers1[0], $providers2[0] );
+	}
+
+	/**
+	 * Test that providers are reinstantiated when the filter returns different classes.
+	 */
+	public function test_provider_cache_invalidation() {
+		// Define first test provider class.
+		$provider1_class = new class() extends WC_Address_Provider {
+			public function __construct() {
+				$this->id   = 'provider-1';
+				$this->name = 'Provider One';
+			}
+		};
+
+		// Define second test provider class.
+		$provider2_class = new class() extends WC_Address_Provider {
+			public function __construct() {
+				$this->id   = 'provider-2';
+				$this->name = 'Provider Two';
+			}
+		};
+
+		$provider1_class_name = get_class( $provider1_class );
+		$provider2_class_name = get_class( $provider2_class );
+
+		// First, register provider1.
+		add_filter(
+			'woocommerce_address_providers',
+			function ( $providers ) use ( $provider1_class_name ) {
+				return [ $provider1_class_name ];
+			}
+		);
+
+		$first_result = $this->sut->get_registered_providers();
+		$this->assertCount( 1, $first_result );
+		$this->assertEquals( 'provider-1', $first_result[0]->id );
+
+		// Now change the filter to return provider2.
+		remove_all_filters( 'woocommerce_address_providers' );
+		add_filter(
+			'woocommerce_address_providers',
+			function ( $providers ) use ( $provider2_class_name ) {
+				return [ $provider2_class_name ];
+			}
+		);
+
+		$second_result = $this->sut->get_registered_providers();
+		$this->assertCount( 1, $second_result );
+		$this->assertEquals( 'provider-2', $second_result[0]->id );
 	}
 }
