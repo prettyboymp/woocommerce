@@ -113,8 +113,8 @@ abstract class AbstractBlock {
 		if ( ! is_admin() && ! WC()->is_rest_api_request() ) {
 			$this->register_block_type_assets();
 			$this->enqueue_assets( $render_callback_attributes, $content, $block );
-			$this->interactivity_api_config->initialize_shared_config();
 		}
+		$this->interactivity_api_config->initialize_shared_config();
 		return $this->render( $render_callback_attributes, $content, $block );
 	}
 
