@@ -13,6 +13,5 @@
 		"html": false
 	},
 	"usesContext": [ "query", "filterParams" ],
-	"viewScriptModule": "file:../woocommerce/product-filter-price.js",
-	"style": "file:../woocommerce/product-filter-price-style.css"
+	"viewScriptModule": "file:../woocommerce/product-filter-price.js"
 }

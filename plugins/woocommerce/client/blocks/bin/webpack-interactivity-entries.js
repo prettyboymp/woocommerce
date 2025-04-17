@@ -10,7 +10,8 @@ function blockSupportsInteractivity( blockJson ) {
 	return blockJson?.supports?.interactivity === true;
 }
 
-function findInteractivityBlockAssets( dir, additionalPatterns = [] ) {
+function findInteractivityBlockAssets( dir = [] ) {
+	const additionalPatterns = [ 'frontend.*s', 'style.scss', 'editor.scss' ];
 	let results = [];
 	const ents = fs.readdirSync( dir, { withFileTypes: true } );
 
@@ -29,6 +30,39 @@ function findInteractivityBlockAssets( dir, additionalPatterns = [] ) {
 				const assets = additionalPatterns.flatMap( ( pattern ) =>
 					glob.sync( pattern, { cwd: blockDir, absolute: true } )
 				);
+
+				// For block.json's viewScriptModule, style, editorStyle, check if the file exists and warn
+				// if it doesn't, so we don't try enqueue non-existent assets.
+				if ( blockJson.viewScriptModule ) {
+					if (
+						! fs.existsSync( path.join( blockDir, 'frontend.ts' ) )
+					) {
+						console.warn(
+							`viewScriptModule was declared in ${ blockJson.name } block.json but no frontend.ts file exists.`
+						);
+					}
+				}
+
+				if ( blockJson.style ) {
+					if (
+						! fs.existsSync( path.join( blockDir, 'style.scss' ) )
+					) {
+						console.warn(
+							`style was declared in ${ blockJson.name } block.json but no style.scss file exists.`
+						);
+					}
+				}
+
+				if ( blockJson.editorStyle ) {
+					if (
+						! fs.existsSync( path.join( blockDir, 'editor.scss' ) )
+					) {
+						console.warn(
+							`editorStyle was declared in ${ blockJson.name } block.json but no editor.scss file exists.`
+						);
+					}
+				}
+
 				results.push( {
 					blockName: blockJson.name,
 					blockJson: fullPath,
@@ -42,8 +76,7 @@ function findInteractivityBlockAssets( dir, additionalPatterns = [] ) {
 }
 
 const interactivityBlocks = findInteractivityBlockAssets(
-	path.resolve( __dirname, '../assets/js' ),
-	[ 'frontend.*s', 'style.scss', 'editor.scss' ]
+	path.resolve( __dirname, '../assets/js' )
 );
 
 const scriptModuleEntries = interactivityBlocks.reduce( ( acc, block ) => {

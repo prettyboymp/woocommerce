@@ -40,6 +40,5 @@
 			"type": "string"
 		}
 	},
-	"viewScriptModule": "file:../woocommerce/product-filter-removable-chips.js",
 	"style": "file:../woocommerce/product-filter-removable-chips-style.css"
 }

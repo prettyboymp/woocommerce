@@ -34,6 +34,5 @@
 		}
 	},
 	"usesContext": [ "activeFilters" ],
-	"viewScriptModule": "file:../woocommerce/product-filter-active.js",
-	"style": "file:../woocommerce/product-filter-active-style.css"
+	"viewScriptModule": "file:../woocommerce/product-filter-active.js"
 }
