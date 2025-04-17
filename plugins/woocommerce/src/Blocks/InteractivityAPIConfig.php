@@ -6,7 +6,8 @@ namespace Automattic\WooCommerce\Blocks;
 
 /**
  * Manages the registration of interactivity settings for WooCommerce blocks.
- * Initialization only happens on the first call to init(). Intended to be used as a singleton.
+ * Initialization only happens on the first call to initialize_shared_config.
+ * Intended to be used as a singleton.
  */
 class InteractivityAPIConfig {
 
