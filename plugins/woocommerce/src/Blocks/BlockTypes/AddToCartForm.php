@@ -10,6 +10,9 @@ use Automattic\WooCommerce\Blocks\Utils\StyleAttributesUtils;
  * CatalogSorting class.
  */
 class AddToCartForm extends AbstractBlock {
+
+	use EnableBlockJsonAssetsTrait;
+
 	/**
 	 * Block name.
 	 *

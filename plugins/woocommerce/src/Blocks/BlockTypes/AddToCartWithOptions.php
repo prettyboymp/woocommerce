@@ -12,6 +12,9 @@ use Automattic\WooCommerce\Blocks\Utils\BlockTemplateUtils;
  * AddToCartWithOptions class.
  */
 class AddToCartWithOptions extends AbstractBlock {
+
+	use EnableBlockJsonAssetsTrait;
+
 	/**
 	 * Block name.
 	 *
@@ -271,14 +274,5 @@ class AddToCartWithOptions extends AbstractBlock {
 		$product = $previous_product;
 
 		return $form_html;
-	}
-
-	/**
-	 * Disable the editor style handle for this block type.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_editor_style() {
-		return null;
 	}
 }

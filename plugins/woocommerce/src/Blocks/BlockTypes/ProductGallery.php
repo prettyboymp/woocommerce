@@ -10,6 +10,9 @@ use Automattic\WooCommerce\Enums\ProductType;
  * ProductGallery class.
  */
 class ProductGallery extends AbstractBlock {
+
+	use EnableBlockJsonAssetsTrait;
+
 	/**
 	 * Block name.
 	 *
@@ -156,14 +159,5 @@ class ProductGallery extends AbstractBlock {
 		}
 
 		return $html;
-	}
-
-	/**
-	 * Disable the editor style handle for this block type.
-	 *
-	 * @return null
-	 */
-	protected function get_block_type_editor_style() {
-		return null;
 	}
 }
