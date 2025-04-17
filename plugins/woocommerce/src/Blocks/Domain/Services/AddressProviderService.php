@@ -10,18 +10,57 @@ use WC_Address_Provider;
 class AddressProviderService {
 
 	/**
-	 * Get all registered provider class names.
+	 * Cached provider class names from the last filter call.
 	 *
-	 * @return string[] Array of fully qualified class names that extend WC_Address_Provider.
+	 * @var string[]
+	 */
+	private $cached_provider_class_names = [];
+
+	/**
+	 * Cached provider instances.
+	 *
+	 * @var WC_Address_Provider[]
+	 */
+	private $cached_providers = [];
+
+	/**
+	 * Get all registered providers.
+	 *
+	 * @return WC_Address_Provider[] array of WC_Address_Providers.
 	 */
 	public function get_registered_providers(): array {
 		/**
 		 * Filter the registered address providers.
 		 *
 		 * @since 10.2.0
-		 * @param string[] $providers Array of fully qualified class names that extend WC_Address_Provider.
+		 * @param WC_Address_Provider[] $providers Array of fully qualified class names that extend WC_Address_Provider.
 		 */
-		return apply_filters( 'woocommerce_address_providers', array() );
+		$provider_class_names = apply_filters( 'woocommerce_address_providers', [] );
+
+		// If the class names haven't changed, return the cached instances
+		if ( $this->cached_provider_class_names === $provider_class_names && ! empty( $this->cached_providers ) ) {
+			return $this->cached_providers;
+		}
+
+		$providers = [];
+
+		foreach ( $provider_class_names as $provider_class_name ) {
+			// Ensure the class exists and is a valid WC_Address_Provider subclass.
+			if ( class_exists( $provider_class_name ) && is_subclass_of( $provider_class_name, WC_Address_Provider::class ) ) {
+				$provider_instance = new $provider_class_name();
+
+				// Validate the instance has the necessary properties.
+				if ( ! empty( $provider_instance->id ) && ! empty( $provider_instance->name ) ) {
+					$providers[] = $provider_instance;
+				}
+			}
+		}
+
+		// Update the cache
+		$this->cached_provider_class_names = $provider_class_names;
+		$this->cached_providers = $providers;
+
+		return $providers;
 	}
 
 	/**
@@ -33,13 +72,8 @@ class AddressProviderService {
 	public function is_provider_available( string $provider_id ): bool {
 		$providers = $this->get_registered_providers();
 
-		foreach ( $providers as $provider_class ) {
-			if ( ! class_exists( $provider_class ) ) {
-				continue;
-			}
-
-			$provider = new $provider_class();
-			if ( $provider instanceof WC_Address_Provider && $provider->id === $provider_id ) {
+		foreach ( $providers as $provider ) {
+			if ( $provider->id === $provider_id ) {
 				return true;
 			}
 		}
