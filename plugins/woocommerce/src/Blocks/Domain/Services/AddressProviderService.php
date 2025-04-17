@@ -37,7 +37,7 @@ class AddressProviderService {
 		 */
 		$provider_class_names = apply_filters( 'woocommerce_address_providers', [] );
 
-		// If the class names haven't changed, return the cached instances
+		// If the class names haven't changed, return the cached instances.
 		if ( $this->cached_provider_class_names === $provider_class_names && ! empty( $this->cached_providers ) ) {
 			return $this->cached_providers;
 		}
@@ -56,9 +56,9 @@ class AddressProviderService {
 			}
 		}
 
-		// Update the cache
+		// Update the cache.
 		$this->cached_provider_class_names = $provider_class_names;
-		$this->cached_providers = $providers;
+		$this->cached_providers            = $providers;
 
 		return $providers;
 	}

@@ -207,12 +207,17 @@ class AddressProviderServiceTest extends MockeryTestCase {
 				$providers[] = get_class( new class() extends WC_Address_Provider {} );
 
 				// Add a valid provider class.
-				$providers[] = get_class( new class() extends WC_Address_Provider {
-					public function __construct() {
-						$this->id   = 'valid-provider';
-						$this->name = 'Valid Provider';
+				$providers[] = get_class(
+					new class() extends WC_Address_Provider {
+						/**
+						 * Constructor for valid test provider.
+						 */
+						public function __construct() {
+							$this->id   = 'valid-provider';
+							$this->name = 'Valid Provider';
+						}
 					}
-				} );
+				);
 
 				// Add a non-existent class.
 				$providers[] = 'NonExistentClass';
@@ -238,18 +243,31 @@ class AddressProviderServiceTest extends MockeryTestCase {
 			'woocommerce_address_providers',
 			function ( $providers ) {
 				// Add a class that's not a WC_Address_Provider.
-				$providers[] = get_class( new class() {
-					public $id = 'non-provider';
-					public $name = 'Non Provider';
-				} );
+				$providers[] = get_class(
+					new class() {
+						/**
+						 * @var string ID of the provider.
+						 */
+						public $id = 'non-provider';
+						/**
+						 * @var string Name of the provider.
+						 */
+						public $name = 'Non Provider';
+					}
+				);
 
 				// Add a valid provider class.
-				$providers[] = get_class( new class() extends WC_Address_Provider {
-					public function __construct() {
-						$this->id   = 'valid-provider';
-						$this->name = 'Valid Provider';
+				$providers[] = get_class(
+					new class() extends WC_Address_Provider {
+						/**
+						 * Constructor for valid test provider.
+						 */
+						public function __construct() {
+							$this->id   = 'valid-provider';
+							$this->name = 'Valid Provider';
+						}
 					}
-				} );
+				);
 
 				return $providers;
 			}
@@ -271,10 +289,16 @@ class AddressProviderServiceTest extends MockeryTestCase {
 
 		// Define a test provider class that tracks instantiation.
 		$provider_class = new class() extends WC_Address_Provider {
+			/**
+			 * @var int Count of instances created.
+			 */
 			public static $instance_count = 0;
 
+			/**
+			 * Constructor for test provider.
+			 */
 			public function __construct() {
-				self::$instance_count++;
+				++self::$instance_count;
 				$this->id   = 'test-provider';
 				$this->name = 'Test Provider';
 			}
@@ -291,7 +315,7 @@ class AddressProviderServiceTest extends MockeryTestCase {
 		);
 
 		// First call should instantiate the provider.
-		$providers1 = $this->sut->get_registered_providers();
+		$providers1    = $this->sut->get_registered_providers();
 		$initial_count = $provider_class::$instance_count;
 
 		// Second call should use cached instance.
@@ -310,6 +334,9 @@ class AddressProviderServiceTest extends MockeryTestCase {
 	public function test_provider_cache_invalidation() {
 		// Define first test provider class.
 		$provider1_class = new class() extends WC_Address_Provider {
+			/**
+			 * Constructor for test provider 1.
+			 */
 			public function __construct() {
 				$this->id   = 'provider-1';
 				$this->name = 'Provider One';
@@ -318,6 +345,9 @@ class AddressProviderServiceTest extends MockeryTestCase {
 
 		// Define second test provider class.
 		$provider2_class = new class() extends WC_Address_Provider {
+			/**
+			 * Constructor for test provider 2.
+			 */
 			public function __construct() {
 				$this->id   = 'provider-2';
 				$this->name = 'Provider Two';
@@ -331,7 +361,8 @@ class AddressProviderServiceTest extends MockeryTestCase {
 		add_filter(
 			'woocommerce_address_providers',
 			function ( $providers ) use ( $provider1_class_name ) {
-				return [ $provider1_class_name ];
+				$providers[] = $provider1_class_name;
+				return $providers;
 			}
 		);
 
@@ -344,7 +375,8 @@ class AddressProviderServiceTest extends MockeryTestCase {
 		add_filter(
 			'woocommerce_address_providers',
 			function ( $providers ) use ( $provider2_class_name ) {
-				return [ $provider2_class_name ];
+				$providers[] = $provider2_class_name;
+				return $providers;
 			}
 		);
 
