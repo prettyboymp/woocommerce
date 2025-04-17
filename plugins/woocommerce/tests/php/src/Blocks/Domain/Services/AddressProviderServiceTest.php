@@ -60,7 +60,7 @@ class AddressProviderServiceTest extends MockeryTestCase {
 			}
 		};
 
-		// Define test provider class for provider-2
+		// Define test provider class for provider-2.
 		$provider2_class = new class() extends WC_Address_Provider {
 			/**
 			 * Constructor.
@@ -72,7 +72,7 @@ class AddressProviderServiceTest extends MockeryTestCase {
 			}
 		};
 
-		// Get class names for filter
+		// Get class names for filter.
 		$provider1_class_name = get_class( $provider1_class );
 		$provider2_class_name = get_class( $provider2_class );
 
@@ -90,11 +90,11 @@ class AddressProviderServiceTest extends MockeryTestCase {
 		// Test that we have two provider classes registered.
 		$this->assertCount( 2, $registered_providers );
 
-		// Test that the registered providers are the correct class names
+		// Test that the registered providers are the correct class names.
 		$this->assertContains( $provider1_class_name, $registered_providers );
 		$this->assertContains( $provider2_class_name, $registered_providers );
 
-		// Test that instantiating these classes gives us the expected providers
+		// Test that instantiating these classes gives us the expected providers.
 		$provider1_instance = new $provider1_class_name();
 		$provider2_instance = new $provider2_class_name();
 
@@ -129,7 +129,7 @@ class AddressProviderServiceTest extends MockeryTestCase {
 			}
 		);
 
-		// Check if the provider is available
+		// Check if the provider is available.
 		$this->assertTrue( $this->sut->is_provider_available( 'test-provider' ) );
 		$this->assertFalse( $this->sut->is_provider_available( 'non-existent-provider' ) );
 	}
@@ -189,11 +189,11 @@ class AddressProviderServiceTest extends MockeryTestCase {
 		// Test that we have two provider classes registered.
 		$this->assertCount( 2, $registered_providers );
 
-		// Test that both class names are registered
+		// Test that both class names are registered.
 		$this->assertContains( $provider1_class_name, $registered_providers );
 		$this->assertContains( $provider2_class_name, $registered_providers );
 
-		// Test that instantiating these classes gives us the expected providers
+		// Test that instantiating these classes gives us the expected providers.
 		$provider1_instance = new $provider1_class_name();
 		$provider2_instance = new $provider2_class_name();
 
@@ -253,12 +253,12 @@ class AddressProviderServiceTest extends MockeryTestCase {
 
 		$registered_providers = $this->sut->get_registered_providers();
 
-		// Test that both class names are registered
+		// Test that both class names are registered.
 		$this->assertCount( 2, $registered_providers );
 		$this->assertContains( $provider1_class_name, $registered_providers );
 		$this->assertContains( $provider2_class_name, $registered_providers );
 
-		// Test that instantiating these classes gives us the expected providers
+		// Test that instantiating these classes gives us the expected providers.
 		$provider1_instance = new $provider1_class_name();
 		$provider2_instance = new $provider2_class_name();
 
