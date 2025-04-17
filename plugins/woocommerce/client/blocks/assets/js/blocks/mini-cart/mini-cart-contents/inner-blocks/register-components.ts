@@ -76,25 +76,25 @@ registerCheckoutBlock( {
 	),
 } );
 
-registerCheckoutBlock( {
-	metadata: miniCartItemsMetadata,
-	component: lazy(
-		() =>
-			import(
-				/* webpackChunkName: "mini-cart-contents-block/items" */ './mini-cart-items-block/frontend'
-			)
-	),
-} );
+// registerCheckoutBlock( {
+// 	metadata: miniCartItemsMetadata,
+// 	component: lazy(
+// 		() =>
+// 			import(
+// 				/* webpackChunkName: "mini-cart-contents-block/items" */ './mini-cart-items-block/frontend'
+// 			)
+// 	),
+// } );
 
-registerCheckoutBlock( {
-	metadata: miniCartProductsTableMetadata,
-	component: lazy(
-		() =>
-			import(
-				/* webpackChunkName: "mini-cart-contents-block/products-table" */ './mini-cart-products-table-block/block'
-			)
-	),
-} );
+// registerCheckoutBlock( {
+// 	metadata: miniCartProductsTableMetadata,
+// 	component: lazy(
+// 		() =>
+// 			import(
+// 				/* webpackChunkName: "mini-cart-contents-block/products-table" */ './mini-cart-products-table-block/block'
+// 			)
+// 	),
+// } );
 
 registerCheckoutBlock( {
 	metadata: miniCartFooterMetadata,

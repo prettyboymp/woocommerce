@@ -77,12 +77,28 @@ module.exports = {
 	],
 	module: {
 		rules: [
-			...moduleConfig.module.rules.filter(
-				( rule ) =>
-					! rule.test.test( '.css' ) &&
-					! rule.test.test( '.scss' ) &&
-					! rule.test.test( '.sass' )
-			),
+			{
+				test: /\.m?(j|t)sx?$/,
+				exclude: /node_modules/,
+				use: [
+					{
+						loader: 'babel-loader',
+						options: {
+							// Use Preact for JSX in the script module build.
+							plugins: [
+								[
+									'@babel/plugin-transform-react-jsx',
+									{
+										pragma: 'h',
+										pragmaFrag: 'Fragment',
+									},
+								],
+							],
+						},
+					},
+				],
+			},
+
 			{
 				test: /\.s?css$/,
 				use: [
