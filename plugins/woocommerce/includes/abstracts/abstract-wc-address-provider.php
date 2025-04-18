@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 abstract class WC_Address_Provider {
 
 	/**
-	 * Unique ID for the address provider - must be set.
+	 * Unique ID for the address provider.
 	 *
 	 * @var string
 	 */
