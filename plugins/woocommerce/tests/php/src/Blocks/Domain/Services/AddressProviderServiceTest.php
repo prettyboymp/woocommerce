@@ -408,28 +408,28 @@ class AddressProviderServiceTest extends MockeryTestCase {
 
 		$provider_class_name = get_class( $provider_class );
 
-		// First filter call
+		// First filter call.
 		add_filter(
 			'woocommerce_address_providers',
-			function ( $providers ) use ( $provider_class_name ) {
-				// Return a new array each time
+			function () use ( $provider_class_name ) {
+				// Return a new array each time.
 				return [ $provider_class_name ];
-			}
+			},
+			10,
+			0
 		);
 
-		// First call should instantiate the provider
-		$providers1 = $this->sut->get_registered_providers();
+		// First call should instantiate the provider.
+		$providers1    = $this->sut->get_registered_providers();
 		$initial_count = $provider_class::$instance_count;
 
-		// Second call should use cached instance even though filter returns a new array
+		// Second call should use cached instance even though filter returns a new array.
 		$providers2 = $this->sut->get_registered_providers();
 
-		// Verify the instance count hasn't increased
+		// Verify the instance count hasn't increased.
 		$this->assertEquals( $initial_count, $provider_class::$instance_count );
 
-		// Verify we got the same instance both times
+		// Verify we got the same instance both times.
 		$this->assertSame( $providers1[0], $providers2[0] );
 	}
-
-
 }
