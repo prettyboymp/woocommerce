@@ -37,6 +37,18 @@ class AddressProviderService {
 		 */
 		$provider_class_names = apply_filters( 'woocommerce_address_providers', [] );
 
+		$logger = wc_get_logger();
+
+		if ( ! is_array( $provider_class_names ) ) {
+			$logger->error(
+				'Invalid return value for woocommerce_address_providers, expected an array of class names.',
+				[
+					'context' => 'address_provider_service',
+				]
+			);
+			return [];
+		}
+
 		// If the class names haven't changed, return the cached instances.
 		if ( $this->cached_provider_class_names === $provider_class_names && ! empty( $this->cached_providers ) ) {
 			return $this->cached_providers;
@@ -52,6 +64,13 @@ class AddressProviderService {
 				// Validate the instance has the necessary properties.
 				if ( ! empty( $provider_instance->id ) && ! empty( $provider_instance->name ) ) {
 					$providers[] = $provider_instance;
+				} else {
+					$logger->error(
+						'Invalid address provider instance, id or name property is mising or empty: ' . $provider_class_name,
+						[
+							'context' => 'address_provider_service',
+						]
+					);
 				}
 			}
 		}
