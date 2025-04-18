@@ -21,12 +21,12 @@ abstract class WC_Address_Provider {
 	 *
 	 * @var string
 	 */
-	public $id = '';
+	public $id;
 
 	/**
 	 * Provider name.
 	 *
 	 * @var string
 	 */
-	public $name = '';
+	public $name;
 }
