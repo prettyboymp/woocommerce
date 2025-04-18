@@ -1,8 +1,7 @@
 <?php
-declare( strict_types=1 );
+
 use Automattic\WooCommerce\Blocks\Package;
 use Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFields;
-use Automattic\WooCommerce\Blocks\Domain\Services\AddressProviderService;
 
 if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
 	/**
