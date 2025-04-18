@@ -541,7 +541,7 @@ class AddressProviderServiceTest extends MockeryTestCase {
 			->expects( $this->once() )
 			->method( 'error' )
 			->with(
-				'Invalid address provider instance, id or name property is mising or empty: ' . $provider_class_name,
+				'Invalid address provider instance, id or name property is missing or empty: ' . $provider_class_name,
 				array( 'context' => 'address_provider_service' )
 			);
 
@@ -553,7 +553,7 @@ class AddressProviderServiceTest extends MockeryTestCase {
 	 * Test that multiple errors are logged when multiple issues exist.
 	 */
 	public function test_logs_multiple_errors() {
-		// Create a provider class without required properties
+		// Create a provider class without required properties.
 		$invalid_provider    = new class() extends WC_Address_Provider {};
 		$provider_class_name = get_class( $invalid_provider );
 
@@ -561,9 +561,9 @@ class AddressProviderServiceTest extends MockeryTestCase {
 			'woocommerce_address_providers',
 			function () use ( $provider_class_name ) {
 				return [
-					123, // Invalid type
-					'NonExistentClass', // Non-existent class
-					$provider_class_name, // Missing properties
+					123, // Invalid type.
+					'NonExistentClass', // Non-existent class.
+					$provider_class_name, // Missing properties.
 				];
 			}
 		);
@@ -581,12 +581,118 @@ class AddressProviderServiceTest extends MockeryTestCase {
 					array( 'context' => 'address_provider_service' ),
 				],
 				[
-					'Invalid address provider instance, id or name property is mising or empty: ' . $provider_class_name,
+					'Invalid address provider instance, id or name property is missing or empty: ' . $provider_class_name,
 					array( 'context' => 'address_provider_service' ),
 				]
 			);
 
 		$providers = $this->sut->get_registered_providers();
 		$this->assertEmpty( $providers );
+	}
+
+	/**
+	 * Test that duplicate provider IDs are detected and logged.
+	 */
+	public function test_logs_error_for_duplicate_provider_ids() {
+		// Create two provider classes with the same ID.
+		$provider1_class = new class() extends WC_Address_Provider {
+			/**
+			 * Constructor.
+			 */
+			public function __construct() {
+				$this->id   = 'duplicate-id';
+				$this->name = 'Provider One';
+			}
+		};
+
+		$provider2_class = new class() extends WC_Address_Provider {
+			/**
+			 * Constructor.
+			 */
+			public function __construct() {
+				$this->id   = 'duplicate-id';
+				$this->name = 'Provider Two';
+			}
+		};
+
+		$provider1_class_name = get_class( $provider1_class );
+		$provider2_class_name = get_class( $provider2_class );
+
+		add_filter(
+			'woocommerce_address_providers',
+			function () use ( $provider1_class_name, $provider2_class_name ) {
+				return [ $provider1_class_name, $provider2_class_name ];
+			}
+		);
+
+		$this->mock_logger
+			->expects( $this->once() )
+			->method( 'error' )
+			->with(
+				sprintf(
+					'Duplicate provider ID found. ID "%s" is used by both %s and %s.',
+					'duplicate-id',
+					$provider1_class_name,
+					$provider2_class_name
+				),
+				array( 'context' => 'address_provider_service' )
+			);
+
+		$providers = $this->sut->get_registered_providers();
+
+		// Only the first provider should be registered.
+		$this->assertCount( 1, $providers );
+		$this->assertEquals( 'duplicate-id', $providers[0]->id );
+		$this->assertEquals( 'Provider One', $providers[0]->name );
+	}
+
+	/**
+	 * Test that providers with unique IDs are all registered.
+	 */
+	public function test_accepts_unique_provider_ids() {
+		// Create two provider classes with different IDs.
+		$provider1_class = new class() extends WC_Address_Provider {
+			/**
+			 * Constructor.
+			 */
+			public function __construct() {
+				$this->id   = 'unique-id-1';
+				$this->name = 'Provider One';
+			}
+		};
+
+		$provider2_class = new class() extends WC_Address_Provider {
+			/**
+			 * Constructor.
+			 */
+			public function __construct() {
+				$this->id   = 'unique-id-2';
+				$this->name = 'Provider Two';
+			}
+		};
+
+		$provider1_class_name = get_class( $provider1_class );
+		$provider2_class_name = get_class( $provider2_class );
+
+		add_filter(
+			'woocommerce_address_providers',
+			function () use ( $provider1_class_name, $provider2_class_name ) {
+				return [ $provider1_class_name, $provider2_class_name ];
+			}
+		);
+
+		// The logger should not receive any error calls.
+		$this->mock_logger
+			->expects( $this->never() )
+			->method( 'error' );
+
+		$providers = $this->sut->get_registered_providers();
+
+		// Both providers should be registered.
+		$this->assertCount( 2, $providers );
+		$this->assertEquals( 'unique-id-1', $providers[0]->id );
+		$this->assertEquals( 'unique-id-2', $providers[1]->id );
+		$this->assertEquals( 'Provider One', $providers[0]->name );
+		$this->assertEquals( 'Provider Two', $providers[1]->name );
 	}
 }
