@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Extended by address providers to handle address provision, for autocomplete, maps, etc.
  *
  * @class       WC_Address_Provider
- * @version     10.2.0
+ * @version     9.9.0
  * @package     WooCommerce\Abstracts
  */
 abstract class WC_Address_Provider {
