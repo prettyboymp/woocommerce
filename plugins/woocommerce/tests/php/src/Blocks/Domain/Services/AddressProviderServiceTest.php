@@ -389,8 +389,8 @@ class AddressProviderServiceTest extends MockeryTestCase {
 	 * Test that providers are not reinstantiated when the filter returns the same class names in a new array.
 	 */
 	public function test_provider_caching_with_new_array() {
-		// Define a test provider class that tracks instantiation.
-		$provider_class = new class() extends WC_Address_Provider {
+		// Create a provider class that tracks instantiations.
+		$tracking_provider = new class() extends WC_Address_Provider {
 			/**
 			 * @var int Count of instances created.
 			 */
@@ -406,7 +406,10 @@ class AddressProviderServiceTest extends MockeryTestCase {
 			}
 		};
 
-		$provider_class_name = get_class( $provider_class );
+		$provider_class_name = get_class( $tracking_provider );
+
+		// Reset the static counter before starting the test.
+		$provider_class_name::$instance_count = 0;
 
 		// First filter call.
 		add_filter(
@@ -414,20 +417,16 @@ class AddressProviderServiceTest extends MockeryTestCase {
 			function () use ( $provider_class_name ) {
 				// Return a new array each time.
 				return [ $provider_class_name ];
-			},
-			10,
-			0
+			}
 		);
 
 		// First call should instantiate the provider.
-		$providers1    = $this->sut->get_registered_providers();
-		$initial_count = $provider_class::$instance_count;
+		$providers1 = $this->sut->get_registered_providers();
+		$this->assertEquals( 1, $provider_class_name::$instance_count, 'Provider should be instantiated once' );
 
 		// Second call should use cached instance even though filter returns a new array.
 		$providers2 = $this->sut->get_registered_providers();
-
-		// Verify the instance count hasn't increased.
-		$this->assertEquals( $initial_count, $provider_class::$instance_count );
+		$this->assertEquals( 1, $provider_class_name::$instance_count, 'Provider should not be instantiated again' );
 
 		// Verify we got the same instance both times.
 		$this->assertSame( $providers1[0], $providers2[0] );
