@@ -21,11 +21,22 @@ class AddressProviderServiceTest extends MockeryTestCase {
 	private $sut;
 
 	/**
+	 * The mock logger.
+	 *
+	 * @var \WC_Logger_Interface|\PHPUnit\Framework\MockObject\MockObject
+	 */
+	private $mock_logger;
+
+	/**
 	 * Setup test case.
 	 */
 	protected function setUp(): void {
 		parent::setUp();
 		$this->sut = Package::container()->get( AddressProviderService::class );
+
+		// Setup mock logger
+		$this->mock_logger = $this->getMockBuilder( 'WC_Logger_Interface' )->getMock();
+		add_filter( 'woocommerce_logging_class', array( $this, 'override_wc_logger' ) );
 	}
 
 	/**
@@ -34,6 +45,16 @@ class AddressProviderServiceTest extends MockeryTestCase {
 	protected function tearDown(): void {
 		parent::tearDown();
 		remove_all_filters( 'woocommerce_address_providers' );
+		remove_filter( 'woocommerce_logging_class', array( $this, 'override_wc_logger' ) );
+	}
+
+	/**
+	 * Overrides the WC logger.
+	 *
+	 * @return mixed
+	 */
+	public function override_wc_logger() {
+		return $this->mock_logger;
 	}
 
 	/**
@@ -430,5 +451,142 @@ class AddressProviderServiceTest extends MockeryTestCase {
 
 		// Verify we got the same instance both times.
 		$this->assertSame( $providers1[0], $providers2[0] );
+	}
+
+	/**
+	 * Test that errors are logged when filter returns non-array.
+	 */
+	public function test_logs_error_for_non_array_filter_return() {
+		add_filter(
+			'woocommerce_address_providers',
+			function () {
+				return 'not an array';
+			}
+		);
+
+		$this->mock_logger
+			->expects( $this->once() )
+			->method( 'error' )
+			->with(
+				'Invalid return value for woocommerce_address_providers, expected an array of class names.',
+				array( 'context' => 'address_provider_service' )
+			);
+
+		$providers = $this->sut->get_registered_providers();
+		$this->assertEmpty( $providers );
+	}
+
+	/**
+	 * Test that errors are logged for invalid class names.
+	 */
+	public function test_logs_error_for_invalid_class_name() {
+		add_filter(
+			'woocommerce_address_providers',
+			function () {
+				return [ 123 ]; // Non-string value.
+			}
+		);
+
+		$this->mock_logger
+			->expects( $this->once() )
+			->method( 'error' )
+			->with(
+				'Invalid class name for address provider, expected a string.',
+				array( 'context' => 'address_provider_service' )
+			);
+
+		$providers = $this->sut->get_registered_providers();
+		$this->assertEmpty( $providers );
+	}
+
+	/**
+	 * Test that errors are logged for non-existent classes.
+	 */
+	public function test_logs_error_for_non_existent_class() {
+		add_filter(
+			'woocommerce_address_providers',
+			function () {
+				return [ 'NonExistentClass' ];
+			}
+		);
+
+		$this->mock_logger
+			->expects( $this->once() )
+			->method( 'error' )
+			->with(
+				'Invalid address provider class, class does not exist or is not a subclass of WC_Address_Provider: NonExistentClass',
+				array( 'context' => 'address_provider_service' )
+			);
+
+		$providers = $this->sut->get_registered_providers();
+		$this->assertEmpty( $providers );
+	}
+
+	/**
+	 * Test that errors are logged for invalid provider instances.
+	 */
+	public function test_logs_error_for_invalid_provider_instance() {
+		// Create a provider class without required properties
+		$invalid_provider    = new class() extends WC_Address_Provider {};
+		$provider_class_name = get_class( $invalid_provider );
+
+		add_filter(
+			'woocommerce_address_providers',
+			function () use ( $provider_class_name ) {
+				return [ $provider_class_name ];
+			}
+		);
+
+		$this->mock_logger
+			->expects( $this->once() )
+			->method( 'error' )
+			->with(
+				'Invalid address provider instance, id or name property is mising or empty: ' . $provider_class_name,
+				array( 'context' => 'address_provider_service' )
+			);
+
+		$providers = $this->sut->get_registered_providers();
+		$this->assertEmpty( $providers );
+	}
+
+	/**
+	 * Test that multiple errors are logged when multiple issues exist.
+	 */
+	public function test_logs_multiple_errors() {
+		// Create a provider class without required properties
+		$invalid_provider    = new class() extends WC_Address_Provider {};
+		$provider_class_name = get_class( $invalid_provider );
+
+		add_filter(
+			'woocommerce_address_providers',
+			function () use ( $provider_class_name ) {
+				return [
+					123, // Invalid type
+					'NonExistentClass', // Non-existent class
+					$provider_class_name, // Missing properties
+				];
+			}
+		);
+
+		$this->mock_logger
+			->expects( $this->exactly( 3 ) )
+			->method( 'error' )
+			->withConsecutive(
+				[
+					'Invalid class name for address provider, expected a string.',
+					array( 'context' => 'address_provider_service' ),
+				],
+				[
+					'Invalid address provider class, class does not exist or is not a subclass of WC_Address_Provider: NonExistentClass',
+					array( 'context' => 'address_provider_service' ),
+				],
+				[
+					'Invalid address provider instance, id or name property is mising or empty: ' . $provider_class_name,
+					array( 'context' => 'address_provider_service' ),
+				]
+			);
+
+		$providers = $this->sut->get_registered_providers();
+		$this->assertEmpty( $providers );
 	}
 }
