@@ -32,7 +32,7 @@ class AddressProviderService {
 		/**
 		 * Filter the registered address providers.
 		 *
-		 * @since 10.2.0
+		 * @since 9.9.0
 		 * @param WC_Address_Provider[] $providers Array of fully qualified class names that extend WC_Address_Provider.
 		 */
 		$provider_class_names = apply_filters( 'woocommerce_address_providers', [] );
@@ -57,22 +57,44 @@ class AddressProviderService {
 		$providers = [];
 
 		foreach ( $provider_class_names as $provider_class_name ) {
-			// Ensure the class exists and is a valid WC_Address_Provider subclass.
-			if ( class_exists( $provider_class_name ) && is_subclass_of( $provider_class_name, WC_Address_Provider::class ) ) {
-				$provider_instance = new $provider_class_name();
 
-				// Validate the instance has the necessary properties.
-				if ( ! empty( $provider_instance->id ) && ! empty( $provider_instance->name ) ) {
-					$providers[] = $provider_instance;
-				} else {
-					$logger->error(
-						'Invalid address provider instance, id or name property is mising or empty: ' . $provider_class_name,
-						[
-							'context' => 'address_provider_service',
-						]
-					);
-				}
+			// Validate the class name is a string.
+			if ( ! is_string( $provider_class_name ) ) {
+				$logger->error(
+					'Invalid class name for address provider, expected a string.',
+					[
+						'context' => 'address_provider_service',
+					]
+				);
+				continue;
 			}
+
+			// Ensure the class exists and is a valid WC_Address_Provider subclass.
+			if ( ! class_exists( $provider_class_name ) || ! is_subclass_of( $provider_class_name, WC_Address_Provider::class ) ) {
+				$logger->error(
+					'Invalid address provider class, class does not exist or is not a subclass of WC_Address_Provider: ' . $provider_class_name,
+					[
+						'context' => 'address_provider_service',
+					]
+				);
+				continue;
+			}
+
+			$provider_instance = new $provider_class_name();
+
+			// Validate the instance has the necessary properties.
+			if ( empty( $provider_instance->id ) || empty( $provider_instance->name ) ) {
+				$logger->error(
+					'Invalid address provider instance, id or name property is mising or empty: ' . $provider_class_name,
+					[
+						'context' => 'address_provider_service',
+					]
+				);
+				continue;
+			}
+
+			// Add the provider instance to the array after all checks are completed.
+			$providers[] = $provider_instance;
 		}
 
 		// Update the cache.
