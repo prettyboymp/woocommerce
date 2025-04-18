@@ -55,7 +55,7 @@ class AddressProviderService {
 		}
 
 		$providers = [];
-		$seen_ids = [];
+		$seen_ids  = [];
 
 		foreach ( $provider_class_names as $provider_class_name ) {
 

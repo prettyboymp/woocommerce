@@ -34,7 +34,7 @@ class AddressProviderServiceTest extends MockeryTestCase {
 		parent::setUp();
 		$this->sut = Package::container()->get( AddressProviderService::class );
 
-		// Setup mock logger
+		// Setup mock logger.
 		$this->mock_logger = $this->getMockBuilder( 'WC_Logger_Interface' )->getMock();
 		add_filter( 'woocommerce_logging_class', array( $this, 'override_wc_logger' ) );
 	}
@@ -526,7 +526,7 @@ class AddressProviderServiceTest extends MockeryTestCase {
 	 * Test that errors are logged for invalid provider instances.
 	 */
 	public function test_logs_error_for_invalid_provider_instance() {
-		// Create a provider class without required properties
+		// Create a provider class without required properties.
 		$invalid_provider    = new class() extends WC_Address_Provider {};
 		$provider_class_name = get_class( $invalid_provider );
 
