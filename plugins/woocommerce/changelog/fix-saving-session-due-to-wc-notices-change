@@ -1,0 +1,4 @@
+Significance: patch
+Type: performance
+
+Avoid cart validation handling from forcing the session to be saved with no changes.
