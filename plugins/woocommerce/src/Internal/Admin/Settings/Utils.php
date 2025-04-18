@@ -426,7 +426,7 @@ class Utils {
 	 *               'url' => string The URL to redirect to for authorization.
 	 * }
 	 */
-	public static function get_wpcom_connection_authorization( string $return_url ): array {
+	public static function get_wpcom_connection_authorization( string $return_url, array $query_args = array() ): array {
 		$plugin_onboarding = new OnboardingPlugins();
 
 		$request = new WP_REST_Request();
@@ -442,6 +442,7 @@ class Utils {
 					'plugin_name'  => 'woocommerce-payments',
 					// Use the current user's WP admin color scheme.
 					'color_scheme' => $result['color_scheme'],
+					...$query_args,
 				),
 				$result['url']
 			);

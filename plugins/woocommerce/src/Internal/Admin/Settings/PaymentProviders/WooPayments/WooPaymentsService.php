@@ -700,7 +700,7 @@ class WooPaymentsService {
 				)
 			);
 			// Try to generate the authorization URL.
-			$wpcom_connection = $this->get_wpcom_connection_authorization( $return_url );
+			$wpcom_connection = $this->get_wpcom_connection_authorization( $return_url, array( 'flow' => 'nox_in_context' ) );
 			if ( ! $wpcom_connection['success'] ) {
 				$wpcom_step['errors'] = array_values( $wpcom_connection['errors'] );
 			}
@@ -1107,8 +1107,8 @@ class WooPaymentsService {
 	 *
 	 * @return array The WPCOM connection authorization details.
 	 */
-	private function get_wpcom_connection_authorization( string $return_url ): array {
-		return $this->proxy->call_static( Utils::class, 'get_wpcom_connection_authorization', $return_url );
+	private function get_wpcom_connection_authorization( string $return_url, array $query_args = array() ): array {
+		return $this->proxy->call_static( Utils::class, 'get_wpcom_connection_authorization', $return_url, $query_args );
 	}
 
 	/**
