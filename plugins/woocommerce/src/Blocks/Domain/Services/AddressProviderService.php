@@ -55,6 +55,7 @@ class AddressProviderService {
 		}
 
 		$providers = [];
+		$seen_ids = [];
 
 		foreach ( $provider_class_names as $provider_class_name ) {
 
@@ -85,13 +86,32 @@ class AddressProviderService {
 			// Validate the instance has the necessary properties.
 			if ( empty( $provider_instance->id ) || empty( $provider_instance->name ) ) {
 				$logger->error(
-					'Invalid address provider instance, id or name property is mising or empty: ' . $provider_class_name,
+					'Invalid address provider instance, id or name property is missing or empty: ' . $provider_class_name,
 					[
 						'context' => 'address_provider_service',
 					]
 				);
 				continue;
 			}
+
+			// Check for duplicate IDs.
+			if ( isset( $seen_ids[ $provider_instance->id ] ) ) {
+				$logger->error(
+					sprintf(
+						'Duplicate provider ID found. ID "%s" is used by both %s and %s.',
+						$provider_instance->id,
+						$seen_ids[ $provider_instance->id ],
+						$provider_class_name
+					),
+					[
+						'context' => 'address_provider_service',
+					]
+				);
+				continue;
+			}
+
+			// Track the ID and its provider class for error reporting.
+			$seen_ids[ $provider_instance->id ] = $provider_class_name;
 
 			// Add the provider instance to the array after all checks are completed.
 			$providers[] = $provider_instance;
