@@ -700,7 +700,7 @@ class WooPaymentsService {
 				)
 			);
 			// Try to generate the authorization URL.
-			$wpcom_connection = $this->get_wpcom_connection_authorization( $return_url, array( 'flow' => 'nox_in_context' ) );
+			$wpcom_connection = $this->get_wpcom_connection_authorization( $return_url, array( 'flow' => 'nox' ) );
 			if ( ! $wpcom_connection['success'] ) {
 				$wpcom_step['errors'] = array_values( $wpcom_connection['errors'] );
 			}
