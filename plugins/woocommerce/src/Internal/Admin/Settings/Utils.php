@@ -418,6 +418,7 @@ class Utils {
 	 * The most important part of the result is the URL to redirect to for authorization.
 	 *
 	 * @param string $return_url The URL to redirect to after the connection is authorized.
+	 * @param array  $query_args The query arguments to pass to the authorization endpoint.
 	 *
 	 * @return array {
 	 *               'success' => bool Whether the request was successful.

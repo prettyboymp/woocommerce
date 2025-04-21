@@ -1104,6 +1104,7 @@ class WooPaymentsService {
 	 * Get the WPCOM (Jetpack) connection authorization details.
 	 *
 	 * @param string $return_url The URL to redirect to after the connection is set up.
+	 * @param array  $query_args The query arguments to pass to the authorization endpoint.
 	 *
 	 * @return array The WPCOM connection authorization details.
 	 */
