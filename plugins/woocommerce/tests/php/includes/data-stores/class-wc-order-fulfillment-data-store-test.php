@@ -1,0 +1,478 @@
+<?php
+
+declare( strict_types=1 );
+
+/**
+ * Tests for the WC_Order_Fulfillment_Data_Store_Test  class.
+ *
+ * @package WooCommerce\Tests\Order_Fulfillment
+ */
+class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
+	/**
+	 * The instance of the order fulfillment data store to use.
+	 *
+	 * @var WC_Data_Store
+	 */
+	private static WC_Data_Store $order_fulfillment_data_store;
+
+	/**
+	 * Runs before all the tests of the class.
+	 */
+	public static function setUpBeforeClass(): void {
+		parent::setUpBeforeClass();
+
+		self::$order_fulfillment_data_store = WC_Data_Store::load( 'order-fulfillment' );
+	}
+
+	/**
+	 * Tests the create method of the order fulfillment data store.
+	 */
+	public function test_create_fulfillment() {
+		$fulfillment = new WC_Fulfillment();
+		$fulfillment->set_entity_type( 'order-fulfillment' );
+		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_items(
+			array(
+				array(
+					'item_id' => 1,
+					'qty'     => 2,
+				),
+				array(
+					'item_id' => 2,
+					'qty'     => 3,
+				),
+			)
+		);
+
+		$result = self::$order_fulfillment_data_store->create( $fulfillment );
+		$this->assertNotWPError( self::$order_fulfillment_data_store->get_error() );
+		$this->assertFulfillmentRecordInDB( $fulfillment );
+		$this->assertFulfillmentMetaInDB( $fulfillment );
+	}
+
+	/**
+	 * Tests the create method of the order fulfillment data store with invalid entity type.
+	 */
+	public function test_create_fulfillment_throws_error_on_invalid_entity_type() {
+		$fulfillment = new WC_Fulfillment();
+		$fulfillment->set_entity_type( '' );
+		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_items(
+			array(
+				array(
+					'item_id' => 1,
+					'qty'     => 2,
+				),
+			)
+		);
+
+		self::$order_fulfillment_data_store->create( $fulfillment );
+		$this->assertWPError( self::$order_fulfillment_data_store->get_error() );
+	}
+
+	/**
+	 * Tests the create method of the order fulfillment data store with invalid entity ID.
+	 */
+	public function test_create_fulfillment_throws_error_on_invalid_entity_id() {
+		$fulfillment = new WC_Fulfillment();
+		$fulfillment->set_entity_type( 'order-fulfillment' );
+		$fulfillment->set_entity_id( '' );
+		$fulfillment->set_items(
+			array(
+				array(
+					'item_id' => 1,
+					'qty'     => 2,
+				),
+			)
+		);
+		self::$order_fulfillment_data_store->create( $fulfillment );
+		$this->assertWPError( self::$order_fulfillment_data_store->get_error() );
+	}
+
+	/**
+	 * Tests the create method of the order fulfillment data store with invalid items.
+	 */
+	public function test_create_fulfillment_throws_error_on_invalid_items() {
+		$fulfillment = new WC_Fulfillment();
+		$fulfillment->set_entity_type( 'order-fulfillment' );
+		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_items( '' );
+
+		self::$order_fulfillment_data_store->create( $fulfillment );
+		$this->assertWPError( self::$order_fulfillment_data_store->get_error() );
+	}
+
+	/**
+	 * Tests the create method of the order fulfillment data store with no items.
+	 */
+	public function test_create_fulfillment_throws_error_on_empty_items() {
+		$fulfillment = new WC_Fulfillment();
+		$fulfillment->set_entity_type( 'order-fulfillment' );
+		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_items( array() );
+		self::$order_fulfillment_data_store->create( $fulfillment );
+		$this->assertWPError( self::$order_fulfillment_data_store->get_error() );
+	}
+
+	/**
+	 * Tests the create method of the order fulfillment data store with invalid item.
+	 */
+	public function test_create_fulfillment_throws_error_on_invalid_item() {
+		$fulfillment = new WC_Fulfillment();
+		$fulfillment->set_entity_type( 'order-fulfillment' );
+		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_items(
+			array(
+				array(
+					'item_id' => 1,
+					'qty'     => 2,
+				),
+				array(
+					'item_id' => 2,
+					// Missing qty.
+				),
+			)
+		);
+
+		self::$order_fulfillment_data_store->create( $fulfillment );
+		$this->assertWPError( self::$order_fulfillment_data_store->get_error() );
+	}
+
+	/**
+	 * Tests the read method of the order fulfillment data store.
+	 */
+	public function test_read_fulfillment() {
+		$fulfillment = new WC_Fulfillment();
+		$fulfillment->set_entity_type( 'order-fulfillment' );
+		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_items(
+			array(
+				array(
+					'item_id' => 1,
+					'qty'     => 2,
+				),
+				array(
+					'item_id' => 2,
+					'qty'     => 3,
+				),
+			)
+		);
+		self::$order_fulfillment_data_store->create( $fulfillment );
+
+		$this->assertNotNull( $fulfillment->get_id() );
+
+		$new_fulfillment = new WC_Fulfillment();
+		$new_fulfillment->set_id( $fulfillment->get_id() );
+
+		self::$order_fulfillment_data_store->read( $new_fulfillment );
+
+		$this->assertFulfillmentRecordInDB( $new_fulfillment );
+		$this->assertFulfillmentMetaInDB( $new_fulfillment );
+	}
+
+	/**
+	 * Tests the update method of the order fulfillment data store.
+	 */
+	public function test_update_fulfillment() {
+		$fulfillment = new WC_Fulfillment();
+		$fulfillment->set_id( 1 );
+		$fulfillment->set_entity_type( 'order-fulfillment' );
+		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_items(
+			array(
+				array(
+					'item_id' => 1,
+					'qty'     => 2,
+				),
+				array(
+					'item_id' => 2,
+					'qty'     => 3,
+				),
+			)
+		);
+		self::$order_fulfillment_data_store->create( $fulfillment );
+
+		$fulfillment->set_entity_id( 456 );
+		$fulfillment->set_items(
+			array(
+				array(
+					'item_id' => 3,
+					'qty'     => 4,
+				),
+				array(
+					'item_id' => 4,
+					'qty'     => 5,
+				),
+			)
+		);
+
+		self::$order_fulfillment_data_store->update( $fulfillment );
+
+		$this->assertFulfillmentRecordInDB( $fulfillment );
+		$this->assertFulfillmentMetaInDB( $fulfillment );
+	}
+
+	/**
+	 * Tests the delete method of the order fulfillment data store.
+	 */
+	public function test_delete_fulfillment() {
+		$fulfillment = new WC_Fulfillment();
+		$fulfillment->set_id( 1 );
+		$fulfillment->set_entity_type( 'order-fulfillment' );
+		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_items(
+			array(
+				array(
+					'item_id' => 1,
+					'qty'     => 2,
+				),
+				array(
+					'item_id' => 2,
+					'qty'     => 3,
+				),
+			)
+		);
+		self::$order_fulfillment_data_store->create( $fulfillment );
+
+		$this->assertNotNull( $fulfillment->get_id() );
+		$this->assertNull( $fulfillment->get_date_deleted() );
+
+		self::$order_fulfillment_data_store->delete( $fulfillment );
+		$this->assertNotNull( $fulfillment->get_date_deleted() );
+		$this->assertFulfillmentRecordInDB( $fulfillment );
+		$this->assertFulfillmentMetaInDB( $fulfillment );
+	}
+
+	/**
+	 * Tests the read_meta method of the order fulfillment data store.
+	 */
+	public function test_read_fulfillment_meta() {
+		$items = array(
+			array(
+				'item_id' => 1,
+				'qty'     => 2,
+			),
+			array(
+				'item_id' => 2,
+				'qty'     => 3,
+			),
+		);
+
+		$fulfillment = new WC_Fulfillment();
+		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_type( 'order-fulfillment' );
+
+		$fulfillment->set_items( $items );
+		$fulfillment->save();
+
+		$this->assertNotEquals( 0, $fulfillment->get_id() );
+
+		$result = self::$order_fulfillment_data_store->read_meta( $fulfillment );
+
+		$this->assertIsArray( $result );
+		$this->assertCount( 1, $result );
+		$this->assertIsObject( $result[0] );
+		$this->assertEquals( wp_json_encode( $items ), $result[0]->meta_value );
+		$this->assertEquals( '_items', $result[0]->meta_key );
+		$this->assertEquals( $fulfillment->get_id(), $result[0]->fulfillment_id );
+	}
+
+
+	/**
+	 * Tests the delete_meta method of the order fulfillment data store.
+	 */
+	public function test_delete_fulfillment_meta() {
+		$items = array(
+			array(
+				'item_id' => 1,
+				'qty'     => 2,
+			),
+			array(
+				'item_id' => 2,
+				'qty'     => 3,
+			),
+		);
+
+		$fulfillment = new WC_Fulfillment();
+		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_type( 'order-fulfillment' );
+		$fulfillment->set_items( $items );
+		$fulfillment->save();
+
+		$this->assertNotEquals( 0, $fulfillment->get_id() );
+
+		$meta = $fulfillment->get_meta_data();
+		$this->assertCount( 1, $meta );
+		$this->assertEquals( '_items', $meta[0]->key );
+		$this->assertEquals( wp_json_encode( $items ), $meta[0]->value );
+		$this->assertNotNull( $meta[0]->id );
+
+		self::$order_fulfillment_data_store->delete_meta( $fulfillment, $meta[0] ); // phpcs:ignore
+		$this->assertNull( self::$order_fulfillment_data_store->get_error() );
+
+		global $wpdb;
+		$db_metadata = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}wc_order_fulfillment_meta WHERE fulfillment_id = %d",
+				$fulfillment->get_id()
+			)
+		);
+		$this->assertCount( 0, $db_metadata );
+	}
+
+	/**
+	 * Tests the add_meta method of the order fulfillment data store.
+	 */
+	public function test_add_fulfillment_meta() {
+		$items = array(
+			array(
+				'item_id' => 1,
+				'qty'     => 2,
+			),
+			array(
+				'item_id' => 2,
+				'qty'     => 3,
+			),
+		);
+
+		$fulfillment = new WC_Fulfillment();
+		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_type( 'order-fulfillment' );
+
+		$fulfillment->set_items( $items );
+		$fulfillment->save();
+
+		$this->assertNotEquals( 0, $fulfillment->get_id() );
+
+		self::$order_fulfillment_data_store->add_meta(
+			$fulfillment,
+			new WC_Meta_Data(
+				array(
+					'key'   => '_new_meta_key',
+					'value' => 'new_meta_value',
+				)
+			)
+		);
+
+		global $wpdb;
+		$db_metadata = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}wc_order_fulfillment_meta WHERE fulfillment_id = %d",
+				$fulfillment->get_id()
+			)
+		);
+		foreach ( $db_metadata as $meta ) {
+			if ( '_new_meta_key' === $meta->meta_key ) {
+				break;
+			}
+		}
+
+		if ( ! isset( $meta ) ) {
+			self::fail( 'Meta not found in database.' );
+			return;
+		}
+
+		self::assertEquals( 'new_meta_value', $meta->meta_value );
+	}
+
+	/**
+	 * Tests the update_meta method of the order fulfillment data store.
+	 */
+	public function test_update_fulfillment_meta() {
+		$items = array(
+			array(
+				'item_id' => 1,
+				'qty'     => 2,
+			),
+			array(
+				'item_id' => 2,
+				'qty'     => 3,
+			),
+		);
+
+		$fulfillment = new WC_Fulfillment();
+		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_type( 'order-fulfillment' );
+
+		$fulfillment->set_items( $items );
+		$fulfillment->save();
+
+		$this->assertNotEquals( 0, $fulfillment->get_id() );
+		$new_items = array(
+			array(
+				'item_id' => 3,
+				'qty'     => 4,
+			),
+			array(
+				'item_id' => 4,
+				'qty'     => 5,
+			),
+		);
+		$fulfillment->set_items( $new_items );
+		$new_metadata = $fulfillment->get_meta_data();
+		$this->assertCount( 1, $new_metadata );
+		$this->assertEquals( '_items', $new_metadata[0]->key );
+
+		$result = self::$order_fulfillment_data_store->update_meta( $fulfillment, $new_metadata[0] );
+
+		$this->assertEquals( 1, $result );
+	}
+
+
+	/**
+	 * Asserts that a fulfillment record exists in the database.
+	 *
+	 * @param WC_Fulfillment $fulfillment The fulfillment object.
+	 */
+	private function assertFulfillmentRecordInDB( WC_Fulfillment $fulfillment ) {
+		global $wpdb;
+
+		$fulfillment_id = $fulfillment->get_id();
+		$record         = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}wc_order_fulfillments WHERE fulfillment_id = %d",
+				$fulfillment_id
+			)
+		);
+
+		$this->assertNotNull( $record );
+		$this->assertEquals( $fulfillment->get_entity_type(), $record->entity_type );
+		$this->assertEquals( $fulfillment->get_entity_id(), $record->entity_id );
+		$this->assertEquals( $fulfillment->get_date_created(), $record->date_created );
+		$this->assertEquals( $fulfillment->get_date_deleted(), $record->date_deleted );
+	}
+
+	/**
+	 * Asserts that a fulfillment record metadata matches the expected value.
+	 *
+	 * @param WC_Fulfillment $fulfillment The fulfillment object.
+	 */
+	private function assertFulfillmentMetaInDB( WC_Fulfillment $fulfillment ) {
+		global $wpdb;
+
+		$fulfillment_id = $fulfillment->get_id();
+		$metadata       = $fulfillment->get_meta_data();
+
+		$records = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}wc_order_fulfillment_meta WHERE fulfillment_id = %d",
+				$fulfillment_id,
+			),
+			OBJECT
+		);
+
+		foreach ( $metadata as $meta ) {
+			$meta_key   = $meta->key;
+			$meta_value = $meta->value;
+			$record     = array_filter(
+				$records,
+				function ( $record ) use ( $meta_key ) {
+					return $record->meta_key === $meta_key;
+				}
+			);
+
+			$this->assertNotEmpty( $record, $meta_key );
+			$this->assertEquals( $meta_value, reset( $record )->meta_value );
+		}
+	}
+}
