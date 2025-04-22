@@ -45,7 +45,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 		);
 
 		$fulfillment->set_entity_type( 'updated-entity-type' );
-		$fulfillment->set_entity_id( 456 );
+		$fulfillment->set_entity_id( '456' );
 		$fulfillment->save();
 
 		$this->assertEquals( 'updated-entity-type', $fulfillment->get_entity_type() );

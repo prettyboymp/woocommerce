@@ -34,16 +34,13 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 * @throws \Exception If the fulfillment data is invalid.
 	 * @throws \Exception If the fulfillment can't be created.
 	 */
-	public function create( &$data ) {
+	public function create( &$data ): void {
 		// Validate the fulfillment data.
 		if ( ! $data->get_entity_type() ) {
 			throw new \Exception( esc_html__( 'Invalid entity type.', 'woocommerce' ) );
 		}
 		if ( ! $data->get_entity_id() ) {
 			throw new \Exception( esc_html__( 'Invalid entity ID.', 'woocommerce' ) );
-		}
-		if ( ! is_array( $data->get_items() ) ) {
-			throw new \Exception( esc_html__( 'Items must be an array.', 'woocommerce' ) );
 		}
 		if ( empty( $data->get_items() ) ) {
 			throw new \Exception( esc_html__( 'The fulfillment should contain at least one item.', 'woocommerce' ) );
@@ -55,7 +52,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 		}
 
 		// Set fulfillment properties.
-		$data->set_date_updated( current_time( 'mysql' ) );
+		$data->set_date_updated( new \DateTime( current_time( 'mysql' ) ) );
 		$data->set_date_deleted( null );
 
 		// Save the fulfillment to the database.
@@ -65,8 +62,8 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 			array(
 				'entity_type'  => $data->get_entity_type(),
 				'entity_id'    => $data->get_entity_id(),
-				'date_updated' => $data->get_date_updated(),
-				'date_deleted' => $data->get_date_deleted(),
+				'date_updated' => $data->get_date_updated()->format( 'Y-m-d H:i:s' ),
+				'date_deleted' => $data->get_date_deleted() ? $data->get_date_deleted()->format( 'Y-m-d H:i:s' ) : null,
 			),
 			array(
 				'%s',
@@ -78,7 +75,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 
 		// Check for errors.
 		if ( false === $data_id ) {
-			throw new \Exception( __( 'Failed to insert fulfillment.', 'woocommerce' ) );
+			throw new \Exception( esc_html__( 'Failed to insert fulfillment.', 'woocommerce' ) );
 		}
 
 		// Set the ID of the fulfillment object.
@@ -103,7 +100,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 *
 	 * @throws \Exception If the fulfillment data can't be read.
 	 */
-	public function read( &$data ) {
+	public function read( &$data ): void {
 		// Read the fulfillment from the database.
 		global $wpdb;
 
@@ -125,8 +122,8 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 				'fulfillment_id' => $fulfillment_data['fulfillment_id'],
 				'entity_type'    => $fulfillment_data['entity_type'],
 				'entity_id'      => $fulfillment_data['entity_id'],
-				'date_updated'   => $fulfillment_data['date_updated'],
-				'date_deleted'   => $fulfillment_data['date_deleted'],
+				'date_updated'   => new \DateTime( $fulfillment_data['date_updated'] ),
+				'date_deleted'   => $fulfillment_data['date_deleted'] ? new \DateTime( $fulfillment_data['date_deleted'] ) : null,
 			)
 		);
 
@@ -144,7 +141,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 *
 	 * @throws \Exception If the fulfillment can't be updated.
 	 */
-	public function update( &$data ) {
+	public function update( &$data ): void {
 		// Update the fulfillment in the database.
 		global $wpdb;
 
@@ -154,8 +151,8 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 			array(
 				'entity_type'  => $data->get_entity_type(),
 				'entity_id'    => $data->get_entity_id(),
-				'date_updated' => $data->get_date_updated(),
-				'date_deleted' => $data->get_date_deleted(),
+				'date_updated' => $data->get_date_updated()->format( 'Y-m-d H:i:s' ),
+				'date_deleted' => $data->get_date_deleted() ? $data->get_date_deleted()->format( 'Y-m-d H:i:s' ) : null,
 			),
 			array( 'fulfillment_id' => $data_id ),
 			array(
@@ -189,7 +186,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 *
 	 * @throws \Exception If the fulfillment can't be deleted.
 	 */
-	public function delete( &$data, $args = array() ) {
+	public function delete( &$data, $args = array() ): void {
 		// Soft Delete the fulfillment from the database.
 		global $wpdb;
 
@@ -225,7 +222,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 		}
 
 		$data->init_meta_data( array() );
-		$data->set_date_deleted( $deletion_time );
+		$data->set_date_deleted( new \DateTime( $deletion_time ) );
 		$data->apply_changes();
 
 		$data->set_object_read( true );
@@ -239,7 +236,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 *
 	 * @throws \Exception If the fulfillment is not saved.
 	 */
-	public function read_meta( &$data ) {
+	public function read_meta( &$data ): array {
 		if ( ! $data->get_id() ) {
 			throw new \Exception( esc_html__( 'Invalid fulfillment.', 'woocommerce' ) );
 		}
@@ -269,7 +266,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 *
 	 * @throws \Exception If the fulfillment or meta is not saved.
 	 */
-	public function delete_meta( &$data, $meta ) {
+	public function delete_meta( &$data, $meta ): void {
 		// Check if the fulfillment and meta are saved.
 		$data_id = $data->get_id();
 		$meta_id = $meta->id;
@@ -298,11 +295,11 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 *
 	 * @param Fulfillment  $data The fulfillment object to save.
 	 * @param WC_Meta_Data $meta Meta object (containing at least ->id).
-	 * @return int|WP_Error meta ID or WP_Error on failure.
+	 * @return int meta ID or WP_Error on failure.
 	 *
 	 * @throws \Exception If the fulfillment or meta is not saved.
 	 */
-	public function add_meta( &$data, $meta ) {
+	public function add_meta( &$data, $meta ): int {
 		// Add the metadata for the fulfillment.
 		global $wpdb;
 
@@ -343,7 +340,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 *
 	 * @throws \Exception If the fulfillment or meta is not saved.
 	 */
-	public function update_meta( &$data, $meta ) {
+	public function update_meta( &$data, $meta ): int {
 		// Update the metadata for the fulfillment.
 		global $wpdb;
 

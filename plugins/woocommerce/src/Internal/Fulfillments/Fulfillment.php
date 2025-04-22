@@ -28,49 +28,49 @@ class Fulfillment extends \WC_Data {
 	 *
 	 * @var int
 	 */
-	protected $fulfillment_id;
+	protected int $fulfillment_id = 0;
 
 	/**
 	 * Entity type. Will be referencing an object type on the system. For WC, this is WC_Order.
 	 *
 	 * @var string
 	 */
-	protected $entity_type;
+	protected string $entity_type;
 
 	/**
 	 * Entity ID. Can be string, int, or UUID according to the entity used with this record.
 	 *
-	 * @var mixed
+	 * @var string
 	 * @since 9.9.0
 	 **/
-	protected $entity_id;
+	protected string $entity_id;
 
 	/**
 	 * Date when the record was updated.
 	 *
-	 * @var string
+	 * @var \DateTime
 	 * @since 9.9.0
 	 */
-	protected $date_updated;
+	protected \DateTime $date_updated;
 
 	/**
 	 * Date when the record was deleted.
 	 *
-	 * @var string
+	 * @var \DateTime|null
 	 */
-	protected $date_deleted = null;
+	protected ?\DateTime $date_deleted = null;
 
 	/**
 	 * Fulfillment items.
 	 *
 	 * @var array
 	 */
-	protected $items = array();
+	protected array $items = array();
 
 	/**
 	 * Fulfillment constructor. Loads fulfillment data.
 	 *
-	 * @param mixed $data Fulfillment data.
+	 * @param array|string|Fulfillment $data Fulfillment data.
 	 */
 	public function __construct( $data = '' ) {
 		parent::__construct( $data );
@@ -101,7 +101,7 @@ class Fulfillment extends \WC_Data {
 	 *
 	 * @return int Fulfillment ID.
 	 */
-	public function get_id() {
+	public function get_id(): int {
 		return $this->fulfillment_id;
 	}
 	/**
@@ -109,7 +109,7 @@ class Fulfillment extends \WC_Data {
 	 *
 	 * @param int $id Fulfillment ID.
 	 */
-	public function set_id( $id ) {
+	public function set_id( $id ): void {
 		$this->fulfillment_id = $id;
 		parent::set_id( $id );
 	}
@@ -118,64 +118,65 @@ class Fulfillment extends \WC_Data {
 	 *
 	 * @return string Entity type.
 	 */
-	public function get_entity_type() {
+	public function get_entity_type(): string {
 		return $this->entity_type;
 	}
 	/**
 	 * Set the entity type.
 	 *
-	 * @param string $entity_type Entity type.
+	 * @param class-string $entity_type Entity type.
 	 */
-	public function set_entity_type( $entity_type ) {
+	public function set_entity_type( string $entity_type ): void {
 		$this->entity_type = $entity_type;
 	}
 	/**
 	 * Get the entity ID.
 	 *
-	 * @return mixed Entity ID.
+	 * @return string Entity ID.
 	 */
-	public function get_entity_id() {
+	public function get_entity_id(): string {
 		return $this->entity_id;
 	}
 	/**
 	 * Set the entity ID.
 	 *
-	 * @param mixed $entity_id Entity ID.
+	 * @param class-string $entity_id Entity ID.
 	 */
-	public function set_entity_id( $entity_id ) {
+	public function set_entity_id( string $entity_id ): void {
 		$this->entity_id = $entity_id;
 	}
 	/**
 	 * Get the date updated.
 	 *
-	 * @return string Date updated.
+	 * @return \DateTime Date updated.
 	 */
-	public function get_date_updated() {
+	public function get_date_updated(): \DateTime {
 		return $this->date_updated;
 	}
 
 	/**
 	 * Set the date updated.
 	 *
-	 * @param string $date_updated Date updated.
+	 * @param \DateTime $date_updated Date updated.
 	 */
-	public function set_date_updated( $date_updated ) {
+	public function set_date_updated( \DateTime $date_updated ) {
 		$this->date_updated = $date_updated;
 	}
 	/**
 	 * Get the date deleted.
 	 *
-	 * @return string Date deleted.
+	 * @return \DateTime|null Date deleted.
 	 */
-	public function get_date_deleted() {
+	public function get_date_deleted(): ?\DateTime {
 		return $this->date_deleted;
 	}
 	/**
 	 * Set the date deleted.
 	 *
-	 * @param string $date_deleted Date deleted.
+	 * @param \DateTime|null $date_deleted Date deleted.
+	 * @return void
 	 */
-	public function set_date_deleted( $date_deleted ) {
+	public function set_date_deleted( ?\DateTime $date_deleted ): void {
 		$this->date_deleted = $date_deleted;
 	}
 
@@ -184,7 +185,7 @@ class Fulfillment extends \WC_Data {
 	 *
 	 * @return array Fulfillment items.
 	 */
-	public function get_items() {
+	public function get_items(): array {
 		$this->items = json_decode( $this->get_meta( '_items' ), true );
 		return $this->items;
 	}
@@ -194,7 +195,7 @@ class Fulfillment extends \WC_Data {
 	 *
 	 * @param array $items Fulfillment items.
 	 */
-	public function set_items( $items ) {
+	public function set_items( array $items ): void {
 		$this->items = $items;
 		$this->update_meta_data( '_items', wp_json_encode( $items ) );
 	}

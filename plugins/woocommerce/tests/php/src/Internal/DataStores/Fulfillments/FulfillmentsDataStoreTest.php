@@ -36,7 +36,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 	public function test_create_fulfillment() {
 		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_type( 'order-fulfillment' );
-		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_id( '123' );
 		$fulfillment->set_items(
 			array(
 				array(
@@ -61,7 +61,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 	public function test_create_fulfillment_throws_error_on_invalid_entity_type() {
 		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_type( '' );
-		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_id( '123' );
 		$fulfillment->set_items(
 			array(
 				array(
@@ -105,11 +105,10 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 	public function test_create_fulfillment_throws_error_on_invalid_items() {
 		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_type( 'order-fulfillment' );
-		$fulfillment->set_entity_id( 123 );
-		$fulfillment->set_items( '' );
+		$fulfillment->set_entity_id( '123' );
+		$fulfillment->set_props( array( 'meta_data' => array( '_items' => null ) ) );
 
-		$this->expectException( \Exception::class );
-		$this->expectExceptionMessage( 'Items must be an array.' );
+		$this->expectException( \TypeError::class );
 
 		self::$order_fulfillment_data_store->create( $fulfillment );
 	}
@@ -120,7 +119,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 	public function test_create_fulfillment_throws_error_on_empty_items() {
 		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_type( 'order-fulfillment' );
-		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_id( '123' );
 		$fulfillment->set_items( array() );
 
 		$this->expectException( \Exception::class );
@@ -135,7 +134,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 	public function test_create_fulfillment_throws_error_on_invalid_item() {
 		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_type( 'order-fulfillment' );
-		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_id( '123' );
 		$fulfillment->set_items(
 			array(
 				array(
@@ -161,7 +160,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 	public function test_read_fulfillment() {
 		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_type( 'order-fulfillment' );
-		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_id( '123' );
 		$fulfillment->set_items(
 			array(
 				array(
@@ -194,7 +193,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		$fulfillment = new Fulfillment();
 		$fulfillment->set_id( 1 );
 		$fulfillment->set_entity_type( 'order-fulfillment' );
-		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_id( '123' );
 		$fulfillment->set_items(
 			array(
 				array(
@@ -209,7 +208,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		);
 		self::$order_fulfillment_data_store->create( $fulfillment );
 
-		$fulfillment->set_entity_id( 456 );
+		$fulfillment->set_entity_id( '456' );
 		$fulfillment->set_items(
 			array(
 				array(
@@ -236,7 +235,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		$fulfillment = new Fulfillment();
 		$fulfillment->set_id( 1 );
 		$fulfillment->set_entity_type( 'order-fulfillment' );
-		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_id( '123' );
 		$fulfillment->set_items(
 			array(
 				array(
@@ -276,7 +275,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		);
 
 		$fulfillment = new Fulfillment();
-		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_id( '123' );
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 
 		$fulfillment->set_items( $items );
@@ -311,7 +310,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		);
 
 		$fulfillment = new Fulfillment();
-		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_id( '123' );
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 		$fulfillment->set_items( $items );
 		$fulfillment->save();
@@ -352,7 +351,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		);
 
 		$fulfillment = new Fulfillment();
-		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_id( '123' );
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 
 		$fulfillment->set_items( $items );
@@ -407,7 +406,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		);
 
 		$fulfillment = new Fulfillment();
-		$fulfillment->set_entity_id( 123 );
+		$fulfillment->set_entity_id( '123' );
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 
 		$fulfillment->set_items( $items );
@@ -454,8 +453,8 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		$this->assertNotNull( $record );
 		$this->assertEquals( $fulfillment->get_entity_type(), $record->entity_type );
 		$this->assertEquals( $fulfillment->get_entity_id(), $record->entity_id );
-		$this->assertEquals( $fulfillment->get_date_updated(), $record->date_updated );
-		$this->assertEquals( $fulfillment->get_date_deleted(), $record->date_deleted );
+		$this->assertEquals( $fulfillment->get_date_updated(), new \DateTime( $record->date_updated ) );
+		$this->assertEquals( $fulfillment->get_date_deleted(), $record->date_deleted ? new \DateTime( $record->date_deleted ) : null );
 	}
 
 	/**
