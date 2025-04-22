@@ -26,5 +26,22 @@ export const Edit = ( {
 };
 
 export const Save = (): JSX.Element => {
-	return <div { ...useBlockProps.save() } />;
+	return (
+		<div
+			{ ...useBlockProps.save( {
+				className: 'wc-block-components-skeleton',
+			} ) }
+		>
+			<div className="wc-block-components-skeleton__row">
+				<div
+					className="wc-block-components-skeleton__element"
+					style={ { width: '173px', height: '8px' } }
+				></div>
+				<div
+					className="wc-block-components-skeleton__element"
+					style={ { width: '45px', height: '8px' } }
+				></div>
+			</div>
+		</div>
+	);
 };

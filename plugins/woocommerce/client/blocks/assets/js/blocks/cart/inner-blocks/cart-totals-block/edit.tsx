@@ -44,7 +44,11 @@ export const Edit = ( { clientId }: { clientId: string } ): JSX.Element => {
 
 export const Save = (): JSX.Element => {
 	return (
-		<div { ...useBlockProps.save() }>
+		<div
+			{ ...useBlockProps.save( {
+				className: 'wc-block-components-sidebar',
+			} ) }
+		>
 			<InnerBlocks.Content />
 		</div>
 	);

@@ -44,7 +44,12 @@ export const Edit = ( { clientId }: Props ): JSX.Element => {
 
 export const Save = (): JSX.Element => {
 	return (
-		<div { ...useBlockProps.save() }>
+		<div
+			{ ...useBlockProps.save( {
+				className:
+					'wc-block-components-main wc-block-components-skeleton',
+			} ) }
+		>
 			<InnerBlocks.Content />
 		</div>
 	);
