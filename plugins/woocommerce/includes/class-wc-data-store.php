@@ -46,7 +46,6 @@ class WC_Data_Store {
 		'order-item-product'    => 'WC_Order_Item_Product_Data_Store',
 		'order-item-shipping'   => 'WC_Order_Item_Shipping_Data_Store',
 		'order-item-tax'        => 'WC_Order_Item_Tax_Data_Store',
-		'order-fulfillment'     => 'WC_Order_Fulfillment_Data_Store',
 		'payment-token'         => 'WC_Payment_Token_Data_Store',
 		'product'               => 'WC_Product_Data_Store_CPT',
 		'product-grouped'       => 'WC_Product_Grouped_Data_Store_CPT',

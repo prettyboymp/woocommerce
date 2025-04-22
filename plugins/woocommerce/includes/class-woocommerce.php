@@ -594,7 +594,6 @@ final class WooCommerce {
 		include_once WC_ABSPATH . 'includes/interfaces/class-wc-order-item-product-data-store-interface.php';
 		include_once WC_ABSPATH . 'includes/interfaces/class-wc-order-item-type-data-store-interface.php';
 		include_once WC_ABSPATH . 'includes/interfaces/class-wc-order-refund-data-store-interface.php';
-		include_once WC_ABSPATH . 'includes/interfaces/class-wc-order-fulfillment-data-store-interface.php';
 		include_once WC_ABSPATH . 'includes/interfaces/class-wc-payment-token-data-store-interface.php';
 		include_once WC_ABSPATH . 'includes/interfaces/class-wc-product-data-store-interface.php';
 		include_once WC_ABSPATH . 'includes/interfaces/class-wc-product-variable-data-store-interface.php';
@@ -648,7 +647,6 @@ final class WooCommerce {
 		include_once WC_ABSPATH . 'includes/class-wc-product-query.php';
 		include_once WC_ABSPATH . 'includes/class-wc-payment-tokens.php';
 		include_once WC_ABSPATH . 'includes/class-wc-shipping-zone.php';
-		include_once WC_ABSPATH . 'includes/class-wc-fulfillment.php';
 		include_once WC_ABSPATH . 'includes/gateways/class-wc-payment-gateway-cc.php';
 		include_once WC_ABSPATH . 'includes/gateways/class-wc-payment-gateway-echeck.php';
 		include_once WC_ABSPATH . 'includes/class-wc-countries.php';
@@ -689,7 +687,6 @@ final class WooCommerce {
 		include_once WC_ABSPATH . 'includes/data-stores/class-wc-order-item-product-data-store.php';
 		include_once WC_ABSPATH . 'includes/data-stores/class-wc-order-item-shipping-data-store.php';
 		include_once WC_ABSPATH . 'includes/data-stores/class-wc-order-item-tax-data-store.php';
-		include_once WC_ABSPATH . 'includes/data-stores/class-wc-order-fulfillment-data-store.php';
 		include_once WC_ABSPATH . 'includes/data-stores/class-wc-payment-token-data-store.php';
 		include_once WC_ABSPATH . 'includes/data-stores/class-wc-customer-data-store.php';
 		include_once WC_ABSPATH . 'includes/data-stores/class-wc-customer-data-store-session.php';

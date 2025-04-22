@@ -1,25 +1,29 @@
 <?php
 
+namespace Automattic\WooCommerce\Tests\Internal\Fulfillments;
+
+use Automattic\WooCommerce\Internal\Fulfillments\Fulfillment;
+
 /**
- * Tests for WC_Fulfillment object.
+ * Tests for Fulfillment object.
  */
-class WC_Fulfillment_Test extends WC_Unit_Test_Case {
+class FulfillmentTest extends \WC_Unit_Test_Case {
 	/**
-	 * Test that the WC_Fulfillment object can be created.
+	 * Test that the Fulfillment object can be created.
 	 */
 	public function test_wc_fulfillment_object() {
-		$fulfillment = new WC_Fulfillment();
-		$this->assertInstanceOf( 'WC_Fulfillment', $fulfillment );
+		$fulfillment = new Fulfillment();
+		$this->assertInstanceOf( Fulfillment::class, $fulfillment );
 	}
 
 	/**
-	 * Test that the WC_Fulfillment object can be created with an ID.
+	 * Test that the Fulfillment object can be created with an ID.
 	 */
 	public function test_wc_fulfillment_object_with_id_fetches_data_and_metadata() {
 		$db_fulfillment = $this->helper_create_fulfillment();
-		$fulfillment    = new WC_Fulfillment( $db_fulfillment->get_id() );
+		$fulfillment    = new Fulfillment( $db_fulfillment->get_id() );
 
-		$this->assertInstanceOf( 'WC_Fulfillment', $fulfillment );
+		$this->assertInstanceOf( Fulfillment::class, $fulfillment );
 		$this->assertEquals( $db_fulfillment->get_id(), $fulfillment->get_id() );
 		$this->assertEquals( $db_fulfillment->get_entity_type(), $fulfillment->get_entity_type() );
 		$this->assertEquals( $db_fulfillment->get_entity_id(), $fulfillment->get_entity_id() );
@@ -30,7 +34,7 @@ class WC_Fulfillment_Test extends WC_Unit_Test_Case {
 	}
 
 	/**
-	 * Test that WC_Fulfillment object can be updated.
+	 * Test that Fulfillment object can be updated.
 	 */
 	public function test_wc_fulfillment_object_update() {
 		$fulfillment = $this->helper_create_fulfillment(
@@ -49,7 +53,7 @@ class WC_Fulfillment_Test extends WC_Unit_Test_Case {
 	}
 
 	/**
-	 * Test that WC_Fulfillment object can be soft deleted.
+	 * Test that Fulfillment object can be soft deleted.
 	 */
 	public function test_wc_fulfillment_object_soft_delete() {
 		$fulfillment = $this->helper_create_fulfillment(
@@ -64,13 +68,13 @@ class WC_Fulfillment_Test extends WC_Unit_Test_Case {
 
 		$fulfillment->delete();
 
-		$fresh_fulfillment = new WC_Fulfillment( $fulfillment_id );
-		$this->assertInstanceOf( 'WC_Fulfillment', $fresh_fulfillment );
+		$fresh_fulfillment = new Fulfillment( $fulfillment_id );
+		$this->assertInstanceOf( Fulfillment::class, $fresh_fulfillment );
 		$this->assertNotEquals( null, $fresh_fulfillment->get_date_deleted() );
 	}
 
 	/**
-	 * Test that WC_Fulfillment object can be created with items.
+	 * Test that Fulfillment object can be created with items.
 	 */
 	public function test_wc_fulfillment_object_with_items() {
 		$fulfillment = $this->helper_create_fulfillment(
@@ -94,15 +98,15 @@ class WC_Fulfillment_Test extends WC_Unit_Test_Case {
 		$fulfillment->set_items( $items );
 		$fulfillment->save();
 
-		$fresh_fulfillment = new WC_Fulfillment( $fulfillment->get_id() );
-		$this->assertInstanceOf( 'WC_Fulfillment', $fresh_fulfillment );
+		$fresh_fulfillment = new Fulfillment( $fulfillment->get_id() );
+		$this->assertInstanceOf( Fulfillment::class, $fresh_fulfillment );
 		$this->assertEquals( $fulfillment->get_id(), $fresh_fulfillment->get_id() );
 
 		$this->assertEquals( $items, $fresh_fulfillment->get_items() );
 	}
 
 	/**
-	 * Test that WC_Fulfillment object can be created with metadata.
+	 * Test that Fulfillment object can be created with metadata.
 	 */
 	public function test_wc_fulfillment_object_with_metadata() {
 		$fulfillment = $this->helper_create_fulfillment(
@@ -162,10 +166,10 @@ class WC_Fulfillment_Test extends WC_Unit_Test_Case {
 	 * Helper function to create a fulfillment.
 	 *
 	 * @param array $args Arguments to create the fulfillment.
-	 * @return WC_Fulfillment The created fulfillment object.
+	 * @return Fulfillment The created fulfillment object.
 	 */
 	private function helper_create_fulfillment( $args = array() ) {
-		$fulfillment = new WC_Fulfillment();
+		$fulfillment = new Fulfillment();
 		$fulfillment->set_props(
 			array_merge(
 				array(

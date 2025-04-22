@@ -2,18 +2,24 @@
 
 declare( strict_types=1 );
 
+namespace Automattic\WooCommerce\Tests\Internal\DataStores\Fulfillments;
+
+use Automattic\WooCommerce\Internal\DataStores\Fulfillments\FulfillmentsDataStore;
+use Automattic\WooCommerce\Internal\Fulfillments\Fulfillment;
+use WC_Meta_Data;
+
 /**
  * Tests for the WC_Order_Fulfillment_Data_Store_Test  class.
  *
  * @package WooCommerce\Tests\Order_Fulfillment
  */
-class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
+class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 	/**
 	 * The instance of the order fulfillment data store to use.
 	 *
-	 * @var WC_Data_Store
+	 * @var FulfillmentsDataStore
 	 */
-	private static WC_Data_Store $order_fulfillment_data_store;
+	private static FulfillmentsDataStore $order_fulfillment_data_store;
 
 	/**
 	 * Runs before all the tests of the class.
@@ -21,14 +27,14 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 	public static function setUpBeforeClass(): void {
 		parent::setUpBeforeClass();
 
-		self::$order_fulfillment_data_store = WC_Data_Store::load( 'order-fulfillment' );
+		self::$order_fulfillment_data_store = new FulfillmentsDataStore();
 	}
 
 	/**
 	 * Tests the create method of the order fulfillment data store.
 	 */
 	public function test_create_fulfillment() {
-		$fulfillment = new WC_Fulfillment();
+		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 		$fulfillment->set_entity_id( 123 );
 		$fulfillment->set_items(
@@ -54,7 +60,7 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 	 * Tests the create method of the order fulfillment data store with invalid entity type.
 	 */
 	public function test_create_fulfillment_throws_error_on_invalid_entity_type() {
-		$fulfillment = new WC_Fulfillment();
+		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_type( '' );
 		$fulfillment->set_entity_id( 123 );
 		$fulfillment->set_items(
@@ -74,7 +80,7 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 	 * Tests the create method of the order fulfillment data store with invalid entity ID.
 	 */
 	public function test_create_fulfillment_throws_error_on_invalid_entity_id() {
-		$fulfillment = new WC_Fulfillment();
+		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 		$fulfillment->set_entity_id( '' );
 		$fulfillment->set_items(
@@ -93,7 +99,7 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 	 * Tests the create method of the order fulfillment data store with invalid items.
 	 */
 	public function test_create_fulfillment_throws_error_on_invalid_items() {
-		$fulfillment = new WC_Fulfillment();
+		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 		$fulfillment->set_entity_id( 123 );
 		$fulfillment->set_items( '' );
@@ -106,7 +112,7 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 	 * Tests the create method of the order fulfillment data store with no items.
 	 */
 	public function test_create_fulfillment_throws_error_on_empty_items() {
-		$fulfillment = new WC_Fulfillment();
+		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 		$fulfillment->set_entity_id( 123 );
 		$fulfillment->set_items( array() );
@@ -118,7 +124,7 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 	 * Tests the create method of the order fulfillment data store with invalid item.
 	 */
 	public function test_create_fulfillment_throws_error_on_invalid_item() {
-		$fulfillment = new WC_Fulfillment();
+		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 		$fulfillment->set_entity_id( 123 );
 		$fulfillment->set_items(
@@ -142,7 +148,7 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 	 * Tests the read method of the order fulfillment data store.
 	 */
 	public function test_read_fulfillment() {
-		$fulfillment = new WC_Fulfillment();
+		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 		$fulfillment->set_entity_id( 123 );
 		$fulfillment->set_items(
@@ -161,7 +167,7 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 
 		$this->assertNotNull( $fulfillment->get_id() );
 
-		$new_fulfillment = new WC_Fulfillment();
+		$new_fulfillment = new Fulfillment();
 		$new_fulfillment->set_id( $fulfillment->get_id() );
 
 		self::$order_fulfillment_data_store->read( $new_fulfillment );
@@ -174,7 +180,7 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 	 * Tests the update method of the order fulfillment data store.
 	 */
 	public function test_update_fulfillment() {
-		$fulfillment = new WC_Fulfillment();
+		$fulfillment = new Fulfillment();
 		$fulfillment->set_id( 1 );
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 		$fulfillment->set_entity_id( 123 );
@@ -216,7 +222,7 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 	 * Tests the delete method of the order fulfillment data store.
 	 */
 	public function test_delete_fulfillment() {
-		$fulfillment = new WC_Fulfillment();
+		$fulfillment = new Fulfillment();
 		$fulfillment->set_id( 1 );
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 		$fulfillment->set_entity_id( 123 );
@@ -258,7 +264,7 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 			),
 		);
 
-		$fulfillment = new WC_Fulfillment();
+		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_id( 123 );
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 
@@ -293,7 +299,7 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 			),
 		);
 
-		$fulfillment = new WC_Fulfillment();
+		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_id( 123 );
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 		$fulfillment->set_items( $items );
@@ -335,7 +341,7 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 			),
 		);
 
-		$fulfillment = new WC_Fulfillment();
+		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_id( 123 );
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 
@@ -390,7 +396,7 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 			),
 		);
 
-		$fulfillment = new WC_Fulfillment();
+		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_id( 123 );
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 
@@ -422,9 +428,9 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 	/**
 	 * Asserts that a fulfillment record exists in the database.
 	 *
-	 * @param WC_Fulfillment $fulfillment The fulfillment object.
+	 * @param Fulfillment $fulfillment The fulfillment object.
 	 */
-	private function assertFulfillmentRecordInDB( WC_Fulfillment $fulfillment ) {
+	private function assertFulfillmentRecordInDB( Fulfillment $fulfillment ) {
 		global $wpdb;
 
 		$fulfillment_id = $fulfillment->get_id();
@@ -445,9 +451,9 @@ class WC_Order_Fulfillment_Data_Store_Test extends WC_Unit_Test_Case {
 	/**
 	 * Asserts that a fulfillment record metadata matches the expected value.
 	 *
-	 * @param WC_Fulfillment $fulfillment The fulfillment object.
+	 * @param Fulfillment $fulfillment The fulfillment object.
 	 */
-	private function assertFulfillmentMetaInDB( WC_Fulfillment $fulfillment ) {
+	private function assertFulfillmentMetaInDB( Fulfillment $fulfillment ) {
 		global $wpdb;
 
 		$fulfillment_id = $fulfillment->get_id();

@@ -1,9 +1,14 @@
 <?php
 /**
- * Class WC_Fulfillment_Data_Store file.
+ * Class FulfillmentsDataStore file.
  *
  * @package WooCommerce\DataStores
  */
+
+namespace Automattic\WooCommerce\Internal\DataStores\Fulfillments;
+
+use Automattic\WooCommerce\Internal\Fulfillments\Fulfillment;
+use WP_Error;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -14,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @version  9.9.0
  */
-class WC_Order_Fulfillment_Data_Store extends WC_Data_Store_WP implements WC_Object_Data_Store_Interface {
+class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data_Store_Interface {
 
 	/**
 	 * Error object.
@@ -26,7 +31,7 @@ class WC_Order_Fulfillment_Data_Store extends WC_Data_Store_WP implements WC_Obj
 	/**
 	 * Method to create a new fulfillment in the database.
 	 *
-	 * @param WC_Fulfillment $data The fulfillment object to create.
+	 * @param Fulfillment $data The fulfillment object to create.
 	 *
 	 * @return void
 	 */
@@ -101,7 +106,7 @@ class WC_Order_Fulfillment_Data_Store extends WC_Data_Store_WP implements WC_Obj
 	/**
 	 * Method to read a fulfillment from the database.
 	 *
-	 * @param WC_Fulfillment $data The fulfillment object to read.
+	 * @param Fulfillment $data The fulfillment object to read.
 	 *
 	 * @return void
 	 */
@@ -143,7 +148,7 @@ class WC_Order_Fulfillment_Data_Store extends WC_Data_Store_WP implements WC_Obj
 	/**
 	 * Method to update an existing fulfillment in the database.
 	 *
-	 * @param WC_Fulfillment $data The fulfillment object to update.
+	 * @param Fulfillment $data The fulfillment object to update.
 	 *
 	 * @return void
 	 */
@@ -188,8 +193,8 @@ class WC_Order_Fulfillment_Data_Store extends WC_Data_Store_WP implements WC_Obj
 	/**
 	 * Method to delete a fulfillment from the database.
 	 *
-	 * @param WC_Fulfillment $data The fulfillment object to delete.
-	 * @param array          $args Optional arguments to pass to the delete method.
+	 * @param Fulfillment $data The fulfillment object to delete.
+	 * @param array       $args Optional arguments to pass to the delete method.
 	 *
 	 * @return void
 	 */
@@ -226,7 +231,7 @@ class WC_Order_Fulfillment_Data_Store extends WC_Data_Store_WP implements WC_Obj
 	/**
 	 * Method to read the metadata for a fulfillment.
 	 *
-	 * @param WC_Fulfillment $data The fulfillment object to read.
+	 * @param Fulfillment $data The fulfillment object to read.
 	 * @return array
 	 */
 	public function read_meta( &$data ) {
@@ -255,8 +260,8 @@ class WC_Order_Fulfillment_Data_Store extends WC_Data_Store_WP implements WC_Obj
 	/**
 	 * Method to delete the metadata for a fulfillment.
 	 *
-	 * @param WC_Fulfillment $data The fulfillment object to delete.
-	 * @param object         $meta Meta object (containing at least ->id).
+	 * @param Fulfillment $data The fulfillment object to delete.
+	 * @param object      $meta Meta object (containing at least ->id).
 	 *
 	 * @return void
 	 */
@@ -290,8 +295,8 @@ class WC_Order_Fulfillment_Data_Store extends WC_Data_Store_WP implements WC_Obj
 	/**
 	 * Method to add metadata for a fulfillment.
 	 *
-	 * @param WC_Fulfillment $data The fulfillment object to save.
-	 * @param object         $meta Meta object (containing at least ->id).
+	 * @param Fulfillment $data The fulfillment object to save.
+	 * @param object      $meta Meta object (containing at least ->id).
 	 * @return int|WP_Error meta ID or WP_Error on failure.
 	 */
 	public function add_meta( &$data, $meta ) {
@@ -330,8 +335,8 @@ class WC_Order_Fulfillment_Data_Store extends WC_Data_Store_WP implements WC_Obj
 	/**
 	 * Method to save the metadata for a fulfillment.
 	 *
-	 * @param WC_Fulfillment $data The fulfillment object to save.
-	 * @param object         $meta Meta object (containing at least ->id).
+	 * @param Fulfillment $data The fulfillment object to save.
+	 * @param object      $meta Meta object (containing at least ->id).
 	 *
 	 * @return void
 	 */
