@@ -27,7 +27,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 		$this->assertEquals( $db_fulfillment->get_id(), $fulfillment->get_id() );
 		$this->assertEquals( $db_fulfillment->get_entity_type(), $fulfillment->get_entity_type() );
 		$this->assertEquals( $db_fulfillment->get_entity_id(), $fulfillment->get_entity_id() );
-		$this->assertEquals( $db_fulfillment->get_date_created(), $fulfillment->get_date_created() );
+		$this->assertEquals( $db_fulfillment->get_date_updated(), $fulfillment->get_date_updated() );
 		$this->assertEquals( $db_fulfillment->get_date_deleted(), $fulfillment->get_date_deleted() );
 		$this->assertEquals( $db_fulfillment->get_items(), $fulfillment->get_items() );
 		$this->assertEquals( $db_fulfillment->get_meta_data(), $fulfillment->get_meta_data() );
@@ -204,7 +204,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 
 		// Check if the fulfillment was created successfully.
 		$this->assertNotEquals( 0, $fulfillment->get_id() );
-		$this->assertNotNull( $fulfillment->get_date_created() );
+		$this->assertNotNull( $fulfillment->get_date_updated() );
 
 		return $fulfillment;
 	}

@@ -444,7 +444,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		$this->assertNotNull( $record );
 		$this->assertEquals( $fulfillment->get_entity_type(), $record->entity_type );
 		$this->assertEquals( $fulfillment->get_entity_id(), $record->entity_id );
-		$this->assertEquals( $fulfillment->get_date_created(), $record->date_created );
+		$this->assertEquals( $fulfillment->get_date_updated(), $record->date_updated );
 		$this->assertEquals( $fulfillment->get_date_deleted(), $record->date_deleted );
 	}
 

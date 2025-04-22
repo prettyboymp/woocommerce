@@ -66,7 +66,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 		}
 
 		// Set fulfillment properties.
-		$data->set_date_created( current_time( 'mysql' ) );
+		$data->set_date_updated( current_time( 'mysql' ) );
 		$data->set_date_deleted( null );
 
 		// Save the fulfillment to the database.
@@ -76,7 +76,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 			array(
 				'entity_type'  => $data->get_entity_type(),
 				'entity_id'    => $data->get_entity_id(),
-				'date_created' => $data->get_date_created(),
+				'date_updated' => $data->get_date_updated(),
 				'date_deleted' => $data->get_date_deleted(),
 			),
 			array(
@@ -138,7 +138,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 				'fulfillment_id' => $fulfillment_data['fulfillment_id'],
 				'entity_type'    => $fulfillment_data['entity_type'],
 				'entity_id'      => $fulfillment_data['entity_id'],
-				'date_created'   => $fulfillment_data['date_created'],
+				'date_updated'   => $fulfillment_data['date_updated'],
 				'date_deleted'   => $fulfillment_data['date_deleted'],
 			)
 		);
@@ -167,7 +167,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 			array(
 				'entity_type'  => $data->get_entity_type(),
 				'entity_id'    => $data->get_entity_id(),
-				'date_created' => $data->get_date_created(),
+				'date_updated' => $data->get_date_updated(),
 				'date_deleted' => $data->get_date_deleted(),
 			),
 			array( 'fulfillment_id' => $data_id ),

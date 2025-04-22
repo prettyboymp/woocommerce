@@ -46,12 +46,12 @@ class Fulfillment extends \WC_Data {
 	protected $entity_id;
 
 	/**
-	 * Date when the record was created.
+	 * Date when the record was updated.
 	 *
 	 * @var string
 	 * @since 9.9.0
 	 */
-	protected $date_created;
+	protected $date_updated;
 
 	/**
 	 * Date when the record was deleted.
@@ -90,7 +90,7 @@ class Fulfillment extends \WC_Data {
 		}
 
 		// Load the items array.
-		$this->data_store = new FulfillmentsDataStore();
+		$this->data_store = wc_get_container()->get( FulfillmentsDataStore::class );
 		if ( $this->get_id() > 0 ) {
 			$this->data_store->read( $this );
 		}
@@ -146,20 +146,21 @@ class Fulfillment extends \WC_Data {
 		$this->entity_id = $entity_id;
 	}
 	/**
-	 * Get the date created.
+	 * Get the date updated.
 	 *
-	 * @return string Date created.
+	 * @return string Date updated.
 	 */
-	public function get_date_created() {
-		return $this->date_created;
+	public function get_date_updated() {
+		return $this->date_updated;
 	}
+
 	/**
-	 * Set the date created.
+	 * Set the date updated.
 	 *
-	 * @param string $date_created Date created.
+	 * @param string $date_updated Date updated.
 	 */
-	public function set_date_created( $date_created ) {
-		$this->date_created = $date_created;
+	public function set_date_updated( $date_updated ) {
+		$this->date_updated = $date_updated;
 	}
 	/**
 	 * Get the date deleted.
