@@ -1991,7 +1991,7 @@ CREATE TABLE {$wpdb->prefix}wc_order_fulfillments (
 	fulfillment_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	entity_type varchar(255) NOT NULL,
 	entity_id bigint(20) unsigned NOT NULL,
-	date_created datetime NOT NULL default '0000-00-00 00:00:00',
+	date_updated datetime NOT NULL default CURRENT_TIMESTAMP,
 	date_deleted datetime NULL,
 	PRIMARY KEY (fulfillment_id),
 	KEY entity_type_id (entity_type({$max_index_length}), entity_id)
@@ -2001,7 +2001,7 @@ CREATE TABLE {$wpdb->prefix}wc_order_fulfillment_meta (
 	fulfillment_id bigint(20) unsigned NOT NULL,
 	meta_key varchar(255) NULL,
 	meta_value longtext NULL,
-	date_created datetime NOT NULL default '0000-00-00 00:00:00',
+	date_updated datetime NOT NULL default CURRENT_TIMESTAMP,
 	date_deleted datetime NULL,
 	PRIMARY KEY (meta_id),
 	KEY meta_key (meta_key({$max_index_length})),
