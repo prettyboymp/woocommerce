@@ -25,43 +25,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data_Store_Interface {
 
 	/**
-	 * Error object.
-	 *
-	 * @var WP_Error|null $error The error object.
-	 */
-	protected $error = null;
-
-	/**
 	 * Method to create a new fulfillment in the database.
 	 *
 	 * @param Fulfillment $data The fulfillment object to create.
 	 *
 	 * @return void
+	 *
+	 * @throws \Exception If the fulfillment data is invalid.
+	 * @throws \Exception If the fulfillment can't be created.
 	 */
 	public function create( &$data ) {
-		$this->clear_error();
-
 		// Validate the fulfillment data.
 		if ( ! $data->get_entity_type() ) {
-			$this->set_error( new WP_Error( 'invalid_entity_type', __( 'Invalid entity type.', 'woocommerce' ) ) );
-			return;
+			throw new \Exception( esc_html__( 'Invalid entity type.', 'woocommerce' ) );
 		}
 		if ( ! $data->get_entity_id() ) {
-			$this->set_error( new WP_Error( 'invalid_entity_id', __( 'Invalid entity ID.', 'woocommerce' ) ) );
-			return;
+			throw new \Exception( esc_html__( 'Invalid entity ID.', 'woocommerce' ) );
 		}
 		if ( ! is_array( $data->get_items() ) ) {
-			$this->set_error( new WP_Error( 'invalid_items', __( 'Items must be an array.', 'woocommerce' ) ) );
-			return;
+			throw new \Exception( esc_html__( 'Items must be an array.', 'woocommerce' ) );
 		}
 		if ( empty( $data->get_items() ) ) {
-			$this->set_error( new WP_Error( 'missing_items', __( 'The fulfillment should contain at least one item.', 'woocommerce' ) ) );
-			return;
+			throw new \Exception( esc_html__( 'The fulfillment should contain at least one item.', 'woocommerce' ) );
 		}
 		foreach ( $data->get_items() as $item ) {
 			if ( ! isset( $item['item_id'] ) || ! isset( $item['qty'] ) ) {
-				$this->set_error( new WP_Error( 'invalid_item', __( 'Invalid item.', 'woocommerce' ) ) );
-				return;
+				throw new \Exception( esc_html__( 'Invalid item.', 'woocommerce' ) );
 			}
 		}
 
@@ -89,8 +78,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 
 		// Check for errors.
 		if ( false === $data_id ) {
-			$this->set_error( is_wp_error( $wpdb->error ) ? $wpdb->error : new WP_Error( 'fulfillment_insert_failed', __( 'Failed to insert fulfillment.', 'woocommerce' ) ) );
-			return;
+			throw new \Exception( __( 'Failed to insert fulfillment.', 'woocommerce' ) );
 		}
 
 		// Set the ID of the fulfillment object.
@@ -112,10 +100,10 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 * @param Fulfillment $data The fulfillment object to read.
 	 *
 	 * @return void
+	 *
+	 * @throws \Exception If the fulfillment data can't be read.
 	 */
 	public function read( &$data ) {
-		$this->clear_error();
-
 		// Read the fulfillment from the database.
 		global $wpdb;
 
@@ -129,8 +117,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 		);
 
 		if ( empty( $fulfillment_data ) ) {
-			$this->set_error( new WP_Error( 'fulfillment_not_found', __( 'Fulfillment not found.', 'woocommerce' ) ) );
-			return;
+			throw new \Exception( esc_html__( 'Fulfillment not found.', 'woocommerce' ) );
 		}
 
 		$data->set_props(
@@ -154,10 +141,10 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 * @param Fulfillment $data The fulfillment object to update.
 	 *
 	 * @return void
+	 *
+	 * @throws \Exception If the fulfillment can't be updated.
 	 */
 	public function update( &$data ) {
-		$this->clear_error();
-
 		// Update the fulfillment in the database.
 		global $wpdb;
 
@@ -182,8 +169,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 
 		// Check for errors.
 		if ( $wpdb->last_error ) {
-			$this->set_error( is_wp_error( $wpdb->error ) ? $wpdb->error : new WP_Error( 'fulfillment_update_failed', __( 'Failed to update fulfillment.', 'woocommerce' ) ) );
-			return;
+			throw new \Exception( esc_html__( 'Failed to update fulfillment.', 'woocommerce' ) );
 		}
 
 		// Update the metadata for the fulfillment.
@@ -200,10 +186,10 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 * @param array       $args Optional arguments to pass to the delete method.
 	 *
 	 * @return void
+	 *
+	 * @throws \Exception If the fulfillment can't be deleted.
 	 */
 	public function delete( &$data, $args = array() ) {
-		$this->clear_error();
-
 		// Soft Delete the fulfillment from the database.
 		global $wpdb;
 
@@ -223,8 +209,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 
 		// Check for errors.
 		if ( $wpdb->last_error ) {
-			$this->set_error( is_wp_error( $wpdb->error ) ? $wpdb->error : new WP_Error( 'fulfillment_delete_failed', __( 'Failed to delete fulfillment.', 'woocommerce' ) ) );
-			return;
+			throw new \Exception( esc_html__( 'Failed to delete fulfillment.', 'woocommerce' ) );
 		}
 
 		// Delete the metadata for the fulfillment.
@@ -236,8 +221,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 
 		// Check for errors.
 		if ( $wpdb->last_error ) {
-			$this->set_error( is_wp_error( $wpdb->error ) ? $wpdb->error : new WP_Error( 'fulfillment_meta_clear_failed', __( 'Failed to clear fulfillment meta.', 'woocommerce' ) ) );
-			return;
+			throw new \Exception( esc_html__( 'Failed to clear fulfillment meta.', 'woocommerce' ) );
 		}
 
 		$data->init_meta_data( array() );
@@ -252,13 +236,12 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 *
 	 * @param Fulfillment $data The fulfillment object to read.
 	 * @return array
+	 *
+	 * @throws \Exception If the fulfillment is not saved.
 	 */
 	public function read_meta( &$data ) {
-		$this->clear_error();
-
 		if ( ! $data->get_id() ) {
-			$this->set_error( new WP_Error( 'invalid_fulfillment', __( 'Invalid fulfillment.', 'woocommerce' ) ) );
-			return array();
+			throw new \Exception( esc_html__( 'Invalid fulfillment.', 'woocommerce' ) );
 		}
 
 		// Read the metadata for the fulfillment.
@@ -283,16 +266,15 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 * @param WC_Meta_Data $meta Meta object (containing at least ->id).
 	 *
 	 * @return void
+	 *
+	 * @throws \Exception If the fulfillment or meta is not saved.
 	 */
 	public function delete_meta( &$data, $meta ) {
-		$this->clear_error();
-
 		// Check if the fulfillment and meta are saved.
 		$data_id = $data->get_id();
 		$meta_id = $meta->id;
 		if ( ! is_numeric( $data_id ) || $data_id <= 0 || ! is_numeric( $meta_id ) || $meta_id <= 0 ) {
-			$this->set_error( new WP_Error( 'invalid_fulfillment_meta', __( 'Invalid fulfillment or meta.', 'woocommerce' ) ) );
-			return;
+			throw new \Exception( esc_html__( 'Invalid fulfillment or meta.', 'woocommerce' ) );
 		}
 
 		// Delete the metadata for the fulfillment.
@@ -317,9 +299,10 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 * @param Fulfillment  $data The fulfillment object to save.
 	 * @param WC_Meta_Data $meta Meta object (containing at least ->id).
 	 * @return int|WP_Error meta ID or WP_Error on failure.
+	 *
+	 * @throws \Exception If the fulfillment or meta is not saved.
 	 */
 	public function add_meta( &$data, $meta ) {
-		$this->clear_error();
 		// Add the metadata for the fulfillment.
 		global $wpdb;
 
@@ -344,8 +327,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 		// Note: There is no error check on WC_Data::save_meta_data(), and it expects us to return an ID in all cases.
 		// If there's an error, we should return null to indicate we didn't save it.
 		if ( $wpdb->last_error ) {
-			$this->set_error( new WP_Error( 'fulfillment_meta_insert_failed', __( 'Failed to insert fulfillment meta.', 'woocommerce' ) ) );
-			return null;
+			throw new \Exception( esc_html__( 'Failed to insert fulfillment meta.', 'woocommerce' ) );
 		}
 
 		return $wpdb->insert_id;
@@ -357,11 +339,11 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 * @param Fulfillment  $data The fulfillment object to save.
 	 * @param WC_Meta_Data $meta Meta object (containing at least ->id).
 	 *
-	 * @return void
+	 * @return int Number of rows updated.
+	 *
+	 * @throws \Exception If the fulfillment or meta is not saved.
 	 */
 	public function update_meta( &$data, $meta ) {
-		$this->clear_error();
-
 		// Update the metadata for the fulfillment.
 		global $wpdb;
 
@@ -388,33 +370,9 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 
 		// Check for errors.
 		if ( $wpdb->last_error ) {
-			$this->set_error( new WP_Error( 'fulfillment_meta_update_failed', __( 'Failed to update fulfillment meta.', 'woocommerce' ) ) );
-			return;
+			throw new \Exception( esc_html__( 'Failed to update fulfillment meta.', 'woocommerce' ) );
 		}
 
 		return $rows_updated;
-	}
-
-	/**
-	 * Get the error.
-	 */
-	public function get_error() {
-		return $this->error;
-	}
-
-	/**
-	 * Clear the error.
-	 */
-	protected function clear_error() {
-		$this->error = null;
-	}
-
-	/**
-	 * Set the error.
-	 *
-	 * @param WP_Error $error The error to set.
-	 */
-	protected function set_error( $error ) {
-		$this->error = $error;
 	}
 }

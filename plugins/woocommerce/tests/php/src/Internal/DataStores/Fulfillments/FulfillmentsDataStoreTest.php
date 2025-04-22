@@ -50,8 +50,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 			)
 		);
 
-		$result = self::$order_fulfillment_data_store->create( $fulfillment );
-		$this->assertNotWPError( self::$order_fulfillment_data_store->get_error() );
+		self::$order_fulfillment_data_store->create( $fulfillment );
 		$this->assertFulfillmentRecordInDB( $fulfillment );
 		$this->assertFulfillmentMetaInDB( $fulfillment );
 	}
@@ -72,8 +71,10 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 			)
 		);
 
+		$this->expectException( \Exception::class );
+		$this->expectExceptionMessage( 'Invalid entity type.' );
+
 		self::$order_fulfillment_data_store->create( $fulfillment );
-		$this->assertWPError( self::$order_fulfillment_data_store->get_error() );
 	}
 
 	/**
@@ -91,8 +92,11 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 				),
 			)
 		);
+
+		$this->expectException( \Exception::class );
+		$this->expectExceptionMessage( 'Invalid entity ID.' );
+
 		self::$order_fulfillment_data_store->create( $fulfillment );
-		$this->assertWPError( self::$order_fulfillment_data_store->get_error() );
 	}
 
 	/**
@@ -104,8 +108,10 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		$fulfillment->set_entity_id( 123 );
 		$fulfillment->set_items( '' );
 
+		$this->expectException( \Exception::class );
+		$this->expectExceptionMessage( 'Items must be an array.' );
+
 		self::$order_fulfillment_data_store->create( $fulfillment );
-		$this->assertWPError( self::$order_fulfillment_data_store->get_error() );
 	}
 
 	/**
@@ -116,8 +122,11 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		$fulfillment->set_entity_type( 'order-fulfillment' );
 		$fulfillment->set_entity_id( 123 );
 		$fulfillment->set_items( array() );
+
+		$this->expectException( \Exception::class );
+		$this->expectExceptionMessage( 'The fulfillment should contain at least one item.' );
+
 		self::$order_fulfillment_data_store->create( $fulfillment );
-		$this->assertWPError( self::$order_fulfillment_data_store->get_error() );
 	}
 
 	/**
@@ -140,8 +149,10 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 			)
 		);
 
+		$this->expectException( \Exception::class );
+		$this->expectExceptionMessage( 'Invalid item.' );
+
 		self::$order_fulfillment_data_store->create( $fulfillment );
-		$this->assertWPError( self::$order_fulfillment_data_store->get_error() );
 	}
 
 	/**
@@ -314,7 +325,6 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		$this->assertNotNull( $meta[0]->id );
 
 		self::$order_fulfillment_data_store->delete_meta( $fulfillment, $meta[0] ); // phpcs:ignore
-		$this->assertNull( self::$order_fulfillment_data_store->get_error() );
 
 		global $wpdb;
 		$db_metadata = $wpdb->get_results(
