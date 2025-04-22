@@ -1,4 +1,4 @@
-<?php
+<?php declare( strict_types=1 );
 
 namespace Automattic\WooCommerce\Tests\Internal\Fulfillments;
 
@@ -11,7 +11,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	/**
 	 * Test that the Fulfillment object can be created.
 	 */
-	public function test_wc_fulfillment_object() {
+	public function test_fulfillment_object() {
 		$fulfillment = new Fulfillment();
 		$this->assertInstanceOf( Fulfillment::class, $fulfillment );
 	}
@@ -19,7 +19,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	/**
 	 * Test that the Fulfillment object can be created with an ID.
 	 */
-	public function test_wc_fulfillment_object_with_id_fetches_data_and_metadata() {
+	public function test_fulfillment_object_with_id_fetches_data_and_metadata() {
 		$db_fulfillment = $this->helper_create_fulfillment();
 		$fulfillment    = new Fulfillment( $db_fulfillment->get_id() );
 
@@ -36,7 +36,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	/**
 	 * Test that Fulfillment object can be updated.
 	 */
-	public function test_wc_fulfillment_object_update() {
+	public function test_fulfillment_object_update() {
 		$fulfillment = $this->helper_create_fulfillment(
 			array(
 				'entity_type' => 'order-fulfillment',
@@ -55,7 +55,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	/**
 	 * Test that Fulfillment object can be soft deleted.
 	 */
-	public function test_wc_fulfillment_object_soft_delete() {
+	public function test_fulfillment_object_soft_delete() {
 		$fulfillment = $this->helper_create_fulfillment(
 			array(
 				'entity_type' => 'order-fulfillment',
@@ -76,7 +76,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	/**
 	 * Test that Fulfillment object can be created with items.
 	 */
-	public function test_wc_fulfillment_object_with_items() {
+	public function test_fulfillment_object_with_items() {
 		$fulfillment = $this->helper_create_fulfillment(
 			array(
 				'entity_type' => 'order-fulfillment',
@@ -108,7 +108,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	/**
 	 * Test that Fulfillment object can be created with metadata.
 	 */
-	public function test_wc_fulfillment_object_with_metadata() {
+	public function test_fulfillment_object_with_metadata() {
 		$fulfillment = $this->helper_create_fulfillment(
 			array(
 				'entity_type' => 'order-fulfillment',
@@ -125,7 +125,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	/**
 	 * Test that metadata can be updated.
 	 */
-	public function test_wc_fulfillment_object_update_metadata() {
+	public function test_fulfillment_object_update_metadata() {
 		$fulfillment = $this->helper_create_fulfillment(
 			array(
 				'entity_type' => 'order-fulfillment',
@@ -145,7 +145,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	/**
 	 * Test that metadata can be deleted.
 	 */
-	public function test_wc_fulfillment_object_delete_metadata() {
+	public function test_fulfillment_object_delete_metadata() {
 		$fulfillment = $this->helper_create_fulfillment(
 			array(
 				'entity_type' => 'order-fulfillment',

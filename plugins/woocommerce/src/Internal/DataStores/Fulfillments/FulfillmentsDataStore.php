@@ -5,9 +5,12 @@
  * @package WooCommerce\DataStores
  */
 
+declare( strict_types=1 );
+
 namespace Automattic\WooCommerce\Internal\DataStores\Fulfillments;
 
 use Automattic\WooCommerce\Internal\Fulfillments\Fulfillment;
+use WC_Meta_Data;
 use WP_Error;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -224,8 +227,24 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 			return;
 		}
 
-		$this->delete_meta( $data, $data->get_meta_data() );
+		// Delete the metadata for the fulfillment.
+		$wpdb->delete(
+			$wpdb->prefix . 'wc_order_fulfillment_meta',
+			array( 'fulfillment_id' => $data_id ),
+			array( '%d' )
+		);
+
+		// Check for errors.
+		if ( $wpdb->last_error ) {
+			$this->set_error( is_wp_error( $wpdb->error ) ? $wpdb->error : new WP_Error( 'fulfillment_meta_clear_failed', __( 'Failed to clear fulfillment meta.', 'woocommerce' ) ) );
+			return;
+		}
+
+		$data->init_meta_data( array() );
 		$data->set_date_deleted( $deletion_time );
+		$data->apply_changes();
+
+		$data->set_object_read( true );
 	}
 
 	/**
@@ -260,8 +279,8 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	/**
 	 * Method to delete the metadata for a fulfillment.
 	 *
-	 * @param Fulfillment $data The fulfillment object to delete.
-	 * @param object      $meta Meta object (containing at least ->id).
+	 * @param Fulfillment  $data The fulfillment object to delete.
+	 * @param WC_Meta_Data $meta Meta object (containing at least ->id).
 	 *
 	 * @return void
 	 */
@@ -295,8 +314,8 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	/**
 	 * Method to add metadata for a fulfillment.
 	 *
-	 * @param Fulfillment $data The fulfillment object to save.
-	 * @param object      $meta Meta object (containing at least ->id).
+	 * @param Fulfillment  $data The fulfillment object to save.
+	 * @param WC_Meta_Data $meta Meta object (containing at least ->id).
 	 * @return int|WP_Error meta ID or WP_Error on failure.
 	 */
 	public function add_meta( &$data, $meta ) {
@@ -335,8 +354,8 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	/**
 	 * Method to save the metadata for a fulfillment.
 	 *
-	 * @param Fulfillment $data The fulfillment object to save.
-	 * @param object      $meta Meta object (containing at least ->id).
+	 * @param Fulfillment  $data The fulfillment object to save.
+	 * @param WC_Meta_Data $meta Meta object (containing at least ->id).
 	 *
 	 * @return void
 	 */
