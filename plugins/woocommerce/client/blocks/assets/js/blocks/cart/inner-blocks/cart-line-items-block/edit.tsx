@@ -35,7 +35,11 @@ export const Save = (): JSX.Element => {
 						<th className="wc-block-cart-items__header-image">
 							<div
 								className="wc-block-components-skeleton__element"
-								style={ { height: '8px', width: '78px' } }
+								style={ {
+									height: '8px',
+									width: '78px',
+									display: 'inline-block',
+								} }
 							></div>
 						</th>
 						<th className="wc-block-cart-items__header-product"></th>

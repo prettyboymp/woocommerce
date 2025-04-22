@@ -174,13 +174,21 @@
 	.wp-block-woocommerce-empty-cart-block {
 		display: none;
 	}
+
+	.wp-block-woocommerce-cart-order-summary-heading-block {
+		padding-bottom: $gap;
+
+		.wc-block-components-skeleton__row {
+			padding-left: 0;
+		}
+	}
+
+	.wp-block-woocommerce-cart-order-summary-totals-block {
+		padding-top: $gap;
+	}
 }
 
 .wc-block-components-skeleton {
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-
 	.wc-block-components-skeleton__row {
 		display: flex;
 		gap: 1rem;
@@ -215,44 +223,6 @@
 @keyframes wc-skeleton-shimmer {
 	100% {
 		transform: translateX(100%);
-	}
-}
-
-.wc-block-components-skeleton--cart-line-items {
-	margin: 0;
-	padding: 0;
-
-	.wc-block-cart-items {
-		th:first-child {
-			padding-left: $gap-small;
-		}
-	}
-}
-
-.wc-block-components-skeleton--cart-order-summary {
-	border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
-	gap: 0;
-	margin-bottom: $gap-large;
-
-	.wc-block-components-skeleton__row {
-		display: flex;
-		gap: 1rem;
-		justify-content: space-between;
-		padding: $gap-small;
-
-		&:not(:last-child) {
-			position: relative;
-
-			&::after {
-				background: color-mix(in srgb, currentColor 10%, transparent);
-				content: "";
-				position: absolute;
-				bottom: 0;
-				left: $gap-small;
-				right: $gap-small;
-				height: 1px;
-			}
-		}
 	}
 }
 
