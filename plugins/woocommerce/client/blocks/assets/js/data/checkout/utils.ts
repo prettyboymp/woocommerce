@@ -238,25 +238,6 @@ export const getPaymentResultFromCheckoutResponse = (
 	return paymentResult;
 };
 
-export const validateAdditionalFields = (
-	additionalFields: AdditionalValues
-): boolean => {
-	// Early return if no additional fields to validate
-	if ( Object.keys( additionalFields ).length === 0 ) {
-		return true;
-	}
-
-	// Check each additional field for validation errors
-	// The validation store prefixes ads a prefix depending on the field location
-	for ( const fieldKey of Object.keys( additionalFields ) ) {
-		if ( hasValidationError( fieldKey ) ) {
-			return false;
-		}
-	}
-
-	return true;
-};
-
 export const hasValidationError = ( fieldKey: string ) => {
 	let prefix = '';
 	if ( CONTACT_FORM_KEYS.includes( fieldKey as keyof ContactForm ) ) {
@@ -275,4 +256,23 @@ export const hasValidationError = ( fieldKey: string ) => {
 		return true;
 	}
 	return false;
+};
+
+export const validateAdditionalFields = (
+	additionalFields: AdditionalValues
+): boolean => {
+	// Early return if no additional fields to validate
+	if ( Object.keys( additionalFields ).length === 0 ) {
+		return true;
+	}
+
+	// Check each additional field for validation errors
+	// The validation store prefixes ads a prefix depending on the field location
+	for ( const fieldKey of Object.keys( additionalFields ) ) {
+		if ( hasValidationError( fieldKey ) ) {
+			return false;
+		}
+	}
+
+	return true;
 };
