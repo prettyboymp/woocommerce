@@ -241,7 +241,7 @@ trait CheckoutTrait {
 		}
 
 		// We need to sync the customer additional fields with the order otherwise they will be overwritten on next page load.
-		if ( get_current_user_id() === $this->order->get_customer_id() ) {
+		if ( 0 !== $this->order->get_customer_id() && get_current_user_id() === $this->order->get_customer_id() ) {
 			$this->additional_fields_controller->sync_customer_additional_fields_with_order( $this->order, wc()->customer );
 		}
 	}
