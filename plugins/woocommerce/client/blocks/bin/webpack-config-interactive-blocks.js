@@ -89,8 +89,8 @@ module.exports = {
 								[
 									'@babel/plugin-transform-react-jsx',
 									{
-										pragma: 'h',
-										pragmaFrag: 'Fragment',
+										runtime: 'automatic',
+										importSource: 'preact',
 									},
 								],
 							],

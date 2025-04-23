@@ -12,8 +12,6 @@ export const { directive } = privateApis(
 	'I acknowledge that using private APIs means my theme or plugin will inevitably break in the next version of WordPress.'
 );
 
-console.log( 'hello world' );
-
 // data-wp-client-only-component
 directive(
 	'client-only-component',
@@ -27,7 +25,7 @@ directive(
 	}
 );
 
-store( 'myPlugin', {
+store( 'woocommerce/mini-cart-items-block', {
 	components: {
 		Comp: () => Block, // Disregard this double function, it won't be needed in the future
 	},

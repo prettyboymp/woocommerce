@@ -26,5 +26,5 @@
 	"textdomain": "woocommerce",
 	"apiVersion": 3,
 	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"viewScriptModule": "file:../woocommerce/mini-cart-items-block.js"
+	"viewScriptModule": "woocommerce/mini-cart-items-block"
 }
