@@ -244,7 +244,7 @@ class CheckoutSchema extends AbstractSchema {
 			'payment_method'     => $order->get_payment_method(),
 			'payment_result'     => $payment_result,
 			'additional_fields'  => (object) $this->get_additional_fields_response( $order ),
-			'__experimentalCart' => $cart ? $this->cart_schema->get_item_response( $cart ) : null,
+			'__experimentalCart' => $cart ? (object) $this->cart_schema->get_item_response( $cart ) : null,
 			self::EXTENDING_KEY  => $this->get_extended_data( self::IDENTIFIER ),
 		];
 	}
