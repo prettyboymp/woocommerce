@@ -15,9 +15,15 @@ const ajv = new Ajv( {
 	messages: true,
 } );
 
+// Override email format to match PHP's FILTER_VALIDATE_EMAIL.
+ajv.addFormat(
+	'email',
+	/^(?!.*[.]{2})[a-zA-Z0-9](?:[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]*[a-zA-Z0-9])?@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/i
+);
+
 addFormats( ajv, {
 	mode: 'fast',
-	formats: [ 'date', 'time', 'email', 'uri' ],
+	formats: [ 'date', 'time', 'uri' ],
 	keywords: true,
 } );
 addErrors( ajv );
@@ -30,3 +36,5 @@ declare global {
 }
 
 window.schemaParser = ajv;
+
+export { ajv as schemaParser };
