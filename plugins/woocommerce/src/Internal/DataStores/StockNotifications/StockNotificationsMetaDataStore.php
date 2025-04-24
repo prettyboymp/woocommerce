@@ -53,7 +53,7 @@ class StockNotificationsMetaDataStore extends CustomMetaDataStore {
 	public function delete_by_notification_id( $notification_id ) {
 		global $wpdb;
 
-		$table = $this->get_table_name();
+		$table  = $this->get_table_name();
 		$result = $wpdb->delete(
 			$table,
 			array( 'notification_id' => $notification_id ),
