@@ -45,7 +45,6 @@ interface StoreActions {
 	selectNextImage: ( event?: MouseEvent ) => void;
 	selectPreviousImage: ( event?: MouseEvent ) => void;
 	onSelectedLargeImageKeyDown: ( event: KeyboardEvent ) => void;
-	onViewAllImagesKeyDown: ( event: KeyboardEvent ) => void;
 	onThumbnailKeyDown: ( event: KeyboardEvent ) => void;
 	onDialogKeyDown: ( event: KeyboardEvent ) => void;
 	openDialog: () => void;
@@ -54,7 +53,6 @@ interface StoreActions {
 	onTouchMove: ( event: TouchEvent ) => void;
 	onTouchEnd: () => void;
 	onScroll: ( event: WheelEvent ) => void;
-	displayViewAll: () => boolean;
 }
 
 interface StoreCallbacks {
