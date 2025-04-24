@@ -42,7 +42,7 @@ use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\Coming
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\StatsServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ImportExportServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\EmailEditorServiceProvider;
-use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrderFulfillmentsRestControllerServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrderFulfillmentsServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductFiltersServiceProvider;
 
 /**
@@ -177,7 +177,7 @@ final class Container {
 			AdminSuggestionsServiceProvider::class,
 			EmailEditorServiceProvider::class,
 			ProductFiltersServiceProvider::class,
-			OrderFulfillmentsRestControllerServiceProvider::class,
+			OrderFulfillmentsServiceProvider::class,
 		);
 	}
 }

@@ -15,7 +15,7 @@ use Automattic\WooCommerce\Internal\Fulfillments\OrderFulfillmentsRestController
  *
  * @since 9.0.0
  */
-class OrderFulfillmentsRestControllerServiceProvider extends AbstractInterfaceServiceProvider {
+class OrderFulfillmentsServiceProvider extends AbstractInterfaceServiceProvider {
 
 	/**
 	 * The classes/interfaces that are serviced by this service provider.
