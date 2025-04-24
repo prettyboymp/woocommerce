@@ -1,8 +1,8 @@
 /**
  * External dependencies
  */
-import { useStoreCart } from '@woocommerce/base-context/hooks';
-import { CartLineItemsTable } from '@woocommerce/base-components/cart-checkout';
+// import { useStoreCart } from '@woocommerce/base-context/hooks';
+import CartLineItemsTable from '../../../../../base/components/cart-checkout/cart-line-items-table/index';
 import clsx from 'clsx';
 
 type MiniCartProductsTableBlockProps = {
@@ -12,7 +12,8 @@ type MiniCartProductsTableBlockProps = {
 const Block = ( {
 	className,
 }: MiniCartProductsTableBlockProps ): JSX.Element => {
-	const { cartItems, cartIsLoading } = useStoreCart();
+	// console.log( 'hi', CartLineItemsTable );
+	// const { cartItems, cartIsLoading } = useStoreCart();
 	return (
 		<div
 			className={ clsx(
@@ -20,9 +21,10 @@ const Block = ( {
 				'wc-block-mini-cart__products-table'
 			) }
 		>
+			<p>Hello World</p>
 			<CartLineItemsTable
-				lineItems={ cartItems }
-				isLoading={ cartIsLoading }
+				lineItems={ [] }
+				isLoading={ false }
 				className="wc-block-mini-cart-items"
 			/>
 		</div>

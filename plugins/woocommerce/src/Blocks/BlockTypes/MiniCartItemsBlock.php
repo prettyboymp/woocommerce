@@ -26,8 +26,13 @@ class MiniCartItemsBlock extends AbstractInnerBlock {
 	protected function render( $attributes, $content, $block ) {
 		ob_start();
 		?>
-		<div data-wp-client-only-component="components.Comp" data-wp-interactive="<?php echo esc_attr( $this->get_full_block_name() ); ?>">
-			Hello World
+		<div>
+			<div class="wp-block-woocommerce-mini-cart-items">
+				<?php echo $content; ?>
+			</div>
+			
+			<div data-wp-client-only-component="components.Comp" data-wp-interactive="<?php echo esc_attr( $this->get_full_block_name() ); ?>">
+			</div>
 		</div>
 		<?php
 		return ob_get_clean();

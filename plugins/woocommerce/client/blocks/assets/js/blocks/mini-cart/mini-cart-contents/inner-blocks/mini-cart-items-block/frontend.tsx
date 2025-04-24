@@ -2,11 +2,13 @@
  * External dependencies
  */
 import { privateApis, store } from '@wordpress/interactivity';
+import { Suspense } from 'preact/compat';
 
 /**
  * Internal dependencies
  */
 import Block from './component';
+import { renderPreactBlock } from './render-blocks';
 
 export const { directive } = privateApis(
 	'I acknowledge that using private APIs means my theme or plugin will inevitably break in the next version of WordPress.'
@@ -27,7 +29,17 @@ directive(
 
 store( 'woocommerce/mini-cart-items-block', {
 	components: {
-		Comp: () => Block, // Disregard this double function, it won't be needed in the future
+		Comp: () => {
+			const element = document.querySelector(
+				'.wp-block-woocommerce-mini-cart-items'
+			);
+
+			if ( ! element ) {
+				return () => {};
+			}
+
+			return renderPreactBlock( element );
+		},
 	},
 	state: {
 		timesClosed: -1,

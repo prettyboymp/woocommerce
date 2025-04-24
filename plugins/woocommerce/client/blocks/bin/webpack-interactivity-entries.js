@@ -11,7 +11,11 @@ function blockSupportsInteractivity( blockJson ) {
 }
 
 function findInteractivityBlockAssets( dir = [] ) {
-	const additionalPatterns = [ 'frontend.*s', 'style.scss', 'editor.scss' ];
+	const additionalPatterns = [
+		'frontend.@(ts|tsx|jsx)',
+		'style.scss',
+		'editor.scss',
+	];
 	let results = [];
 	const ents = fs.readdirSync( dir, { withFileTypes: true } );
 
@@ -34,8 +38,15 @@ function findInteractivityBlockAssets( dir = [] ) {
 				// For block.json's viewScriptModule, style, editorStyle, check if the file exists and warn
 				// if it doesn't, so we don't try enqueue non-existent assets.
 				if ( blockJson.viewScriptModule ) {
+					// change to check for ts, tsx, jsx
 					if (
-						! fs.existsSync( path.join( blockDir, 'frontend.ts' ) )
+						! fs.existsSync(
+							path.join( blockDir, 'frontend.ts' )
+						) &&
+						! fs.existsSync(
+							path.join( blockDir, 'frontend.tsx' )
+						) &&
+						! fs.existsSync( path.join( blockDir, 'frontend.jsx' ) )
 					) {
 						// eslint-disable-next-line no-console
 						console.warn(
