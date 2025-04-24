@@ -60,7 +60,7 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	 *
 	 * @return string
 	 */
-	public static function get_table_name(): string {
+	public function get_table_name(): string {
 		global $wpdb;
 		return $wpdb->prefix . 'wc_stock_notifications';
 	}
@@ -70,9 +70,8 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	 *
 	 * @return string
 	 */
-	public static function get_meta_table_name(): string {
-		global $wpdb;
-		return $wpdb->prefix . 'wc_stock_notificationmeta';
+	public function get_meta_table_name(): string {
+		return $this->data_store_meta->get_table_name();
 	}
 
 	/**
@@ -80,9 +79,8 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	 *
 	 * @return string
 	 */
-	public static function get_logs_table_name(): string {
-		global $wpdb;
-		return $wpdb->prefix . 'wc_stock_notifications_logs';
+	public function get_logs_table_name(): string {
+		return $this->data_store_logs->get_table_name();
 	}
 
 	/**

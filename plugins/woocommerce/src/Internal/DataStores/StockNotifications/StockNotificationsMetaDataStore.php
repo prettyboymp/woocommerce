@@ -21,8 +21,9 @@ class StockNotificationsMetaDataStore extends CustomMetaDataStore {
 	 *
 	 * @return string
 	 */
-	protected function get_table_name() {
-		return StockNotificationsDataStore::get_meta_table_name();
+	public function get_table_name() {
+		global $wpdb;
+		return $wpdb->prefix . 'wc_stock_notificationmeta';
 	}
 
 	/**

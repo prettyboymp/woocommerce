@@ -15,6 +15,16 @@ defined( 'ABSPATH' ) || exit;
 class StockNotificationsActivityLogsDataStore {
 
 	/**
+	 * Returns the name of the table used for storage.
+	 *
+	 * @return string
+	 */
+	public function get_table_name(): string {
+		global $wpdb;
+		return $wpdb->prefix . 'wc_stock_notifications_logs';
+	}
+
+	/**
 	 * Create an activity log.
 	 *
 	 * @param array $args Additional arguments.
@@ -23,7 +33,7 @@ class StockNotificationsActivityLogsDataStore {
 	public function create( $args ) {
 		global $wpdb;
 
-		$table = StockNotificationsDataStore::get_logs_table_name();
+		$table = $this->get_table_name();
 		$data  = array(
 			'notification_id' => absint( $args['notification_id'] ),
 			'action'          => sanitize_text_field( $args['action'] ),
@@ -65,7 +75,7 @@ class StockNotificationsActivityLogsDataStore {
 			)
 		);
 
-		$table  = StockNotificationsDataStore::get_logs_table_name();
+		$table  = $this->get_table_name();
 		$select = '*';
 		if ( 'count' === $args['return'] ) {
 			$select = 'COUNT(*)';
