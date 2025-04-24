@@ -343,9 +343,9 @@ CREATE TABLE $logs_table_name (
 
 		$wpdb->delete( $this->get_table_name(), array( 'id' => $notification->get_id() ), array( '%d' ) );
 
-		$wpdb->delete( $this->get_meta_table_name(), array( 'notification_id' => $notification->get_id() ), array( '%d' ) );
+		$this->data_store_meta->delete_by_notification_id( $notification->get_id() );
 
-		$wpdb->delete( $this->get_logs_table_name(), array( 'notification_id' => $notification->get_id() ), array( '%d' ) );
+		$this->data_store_logs->delete_by_notification_id( $notification->get_id() );
 	}
 
 	/**

@@ -43,4 +43,23 @@ class StockNotificationsMetaDataStore extends CustomMetaDataStore {
 	protected function get_object_id_field() {
 		return 'notification_id';
 	}
+
+	/**
+	 * Delete by notification ID.
+	 *
+	 * @param int $notification_id The notification ID.
+	 * @return bool True if the metadata were deleted, false otherwise.
+	 */
+	public function delete_by_notification_id( $notification_id ) {
+		global $wpdb;
+
+		$table = $this->get_table_name();
+		$result = $wpdb->delete(
+			$table,
+			array( 'notification_id' => $notification_id ),
+			array( '%d' )
+		);
+
+		return false === $result ? false : true;
+	}
 }

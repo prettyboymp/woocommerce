@@ -127,4 +127,23 @@ class StockNotificationsActivityLogsDataStore {
 
 		return $results;
 	}
+
+	/**
+	 * Delete by notification ID.
+	 *
+	 * @param int $notification_id The notification ID.
+	 * @return bool True if the logs were deleted, false otherwise.
+	 */
+	public function delete_by_notification_id( $notification_id ) {
+		global $wpdb;
+
+		$table = $this->get_table_name();
+		$result = $wpdb->delete(
+			$table,
+			array( 'notification_id' => $notification_id ),
+			array( '%d' )
+		);
+
+		return false === $result ? false : true;
+	}
 }
