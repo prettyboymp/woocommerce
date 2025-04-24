@@ -53,11 +53,10 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 
 		// Set fulfillment properties.
 		$data->set_date_updated( new \DateTime( current_time( 'mysql' ) ) );
-		$data->set_date_deleted( null );
 
 		// Save the fulfillment to the database.
 		global $wpdb;
-		$data_id = $wpdb->insert(
+		$rows_inserted = $wpdb->insert(
 			$wpdb->prefix . 'wc_order_fulfillments',
 			array(
 				'entity_type'  => $data->get_entity_type(),
@@ -74,7 +73,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 		);
 
 		// Check for errors.
-		if ( false === $data_id ) {
+		if ( false === $rows_inserted ) {
 			throw new \Exception( esc_html__( 'Failed to insert fulfillment.', 'woocommerce' ) );
 		}
 

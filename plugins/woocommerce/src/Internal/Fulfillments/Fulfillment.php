@@ -24,50 +24,6 @@ defined( 'ABSPATH' ) || exit;
  */
 class Fulfillment extends \WC_Data {
 	/**
-	 * Fulfillment ID.
-	 *
-	 * @var int
-	 */
-	protected int $fulfillment_id = 0;
-
-	/**
-	 * Entity type. Will be referencing an object type on the system. For WC, this is WC_Order.
-	 *
-	 * @var string
-	 */
-	protected string $entity_type;
-
-	/**
-	 * Entity ID. Can be string, int, or UUID according to the entity used with this record.
-	 *
-	 * @var string
-	 * @since 9.9.0
-	 **/
-	protected string $entity_id;
-
-	/**
-	 * Date when the record was updated.
-	 *
-	 * @var \DateTime
-	 * @since 9.9.0
-	 */
-	protected \DateTime $date_updated;
-
-	/**
-	 * Date when the record was deleted.
-	 *
-	 * @var \DateTime|null
-	 */
-	protected ?\DateTime $date_deleted = null;
-
-	/**
-	 * Fulfillment items.
-	 *
-	 * @var array
-	 */
-	protected array $items = array();
-
-	/**
 	 * Fulfillment constructor. Loads fulfillment data.
 	 *
 	 * @param array|string|Fulfillment $data Fulfillment data.
@@ -102,7 +58,7 @@ class Fulfillment extends \WC_Data {
 	 * @return int Fulfillment ID.
 	 */
 	public function get_id(): int {
-		return $this->fulfillment_id;
+		return $this->data['fulfillment_id'] ?? 0;
 	}
 	/**
 	 * Set the fulfillment ID.
@@ -110,16 +66,16 @@ class Fulfillment extends \WC_Data {
 	 * @param int $id Fulfillment ID.
 	 */
 	public function set_id( $id ): void {
-		$this->fulfillment_id = $id;
-		parent::set_id( $id );
+		$this->data['fulfillment_id'] = is_numeric( $id ) ? absint( $id ) : 0;
+		parent::set_id( $this->data['fulfillment_id'] );
 	}
 	/**
 	 * Get the entity type.
 	 *
-	 * @return string Entity type.
+	 * @return string|null Entity type.
 	 */
 	public function get_entity_type(): string {
-		return $this->entity_type;
+		return $this->data['entity_type'];
 	}
 	/**
 	 * Set the entity type.
@@ -127,31 +83,31 @@ class Fulfillment extends \WC_Data {
 	 * @param class-string $entity_type Entity type.
 	 */
 	public function set_entity_type( string $entity_type ): void {
-		$this->entity_type = $entity_type;
+		$this->data['entity_type'] = $entity_type;
 	}
 	/**
 	 * Get the entity ID.
 	 *
-	 * @return string Entity ID.
+	 * @return string|null Entity ID.
 	 */
 	public function get_entity_id(): string {
-		return $this->entity_id;
+		return $this->data['entity_id'];
 	}
 	/**
 	 * Set the entity ID.
 	 *
-	 * @param class-string $entity_id Entity ID.
+	 * @param class-string|null $entity_id Entity ID.
 	 */
 	public function set_entity_id( string $entity_id ): void {
-		$this->entity_id = $entity_id;
+		$this->data['entity_id'] = $entity_id;
 	}
 	/**
 	 * Get the date updated.
 	 *
-	 * @return \DateTime Date updated.
+	 * @return \DateTime|null Date updated.
 	 */
 	public function get_date_updated(): \DateTime {
-		return $this->date_updated;
+		return $this->data['date_updated'];
 	}
 
 	/**
@@ -160,7 +116,7 @@ class Fulfillment extends \WC_Data {
 	 * @param \DateTime $date_updated Date updated.
 	 */
 	public function set_date_updated( \DateTime $date_updated ) {
-		$this->date_updated = $date_updated;
+		$this->data['date_updated'] = $date_updated;
 	}
 	/**
 	 * Get the date deleted.
@@ -168,7 +124,7 @@ class Fulfillment extends \WC_Data {
 	 * @return \DateTime|null Date deleted.
 	 */
 	public function get_date_deleted(): ?\DateTime {
-		return $this->date_deleted;
+		return $this->data['date_deleted'] ?? null;
 	}
 	/**
 	 * Set the date deleted.
@@ -177,7 +133,7 @@ class Fulfillment extends \WC_Data {
 	 * @return void
 	 */
 	public function set_date_deleted( ?\DateTime $date_deleted ): void {
-		$this->date_deleted = $date_deleted;
+		$this->data['date_deleted'] = $date_deleted;
 	}
 
 	/**
@@ -186,8 +142,11 @@ class Fulfillment extends \WC_Data {
 	 * @return array Fulfillment items.
 	 */
 	public function get_items(): array {
-		$this->items = json_decode( $this->get_meta( '_items' ), true );
-		return $this->items;
+		$meta_data = $this->get_meta_data();
+		if ( $meta_data['_items'] ?? null ) {
+			return json_decode( $meta_data['_items'], true );
+		}
+		return array();
 	}
 
 	/**
@@ -196,7 +155,6 @@ class Fulfillment extends \WC_Data {
 	 * @param array $items Fulfillment items.
 	 */
 	public function set_items( array $items ): void {
-		$this->items = $items;
 		$this->update_meta_data( '_items', wp_json_encode( $items ) );
 	}
 }
