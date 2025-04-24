@@ -70,7 +70,7 @@ class ProductGalleryLargeImageNextPrevious extends AbstractBlock {
 				class="wc-block-product-gallery-large-image-next-previous__button <?php echo esc_attr( $classes_and_styles['classes'] ); ?>"
 				style="<?php echo esc_attr( $classes_and_styles['styles'] ); ?>"
 				data-wp-on--click="actions.selectPreviousImage"
-				data-wp-bind--disabled="context.disableLeft"
+				data-wp-bind--disabled="state.disableLeft"
 				aria-label="Previous image"
 			>
 				<svg
@@ -92,7 +92,7 @@ class ProductGalleryLargeImageNextPrevious extends AbstractBlock {
 				class="wc-block-product-gallery-large-image-next-previous__button <?php echo esc_attr( $classes_and_styles['classes'] ); ?>"
 				style="<?php echo esc_attr( $classes_and_styles['styles'] ); ?>"
 				data-wp-on--click="actions.selectNextImage"
-				data-wp-bind--disabled="context.disableRight"
+				data-wp-bind--disabled="state.disableRight"
 				aria-label="Next image"
 			>
 				<svg
