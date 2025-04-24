@@ -2,8 +2,11 @@
 
 namespace Automattic\WooCommerce\Internal\Fulfillments;
 
+use Automattic\WooCommerce\Internal\DataStores\Fulfillments\FulfillmentsDataStore;
 use Automattic\WooCommerce\Internal\RestApiControllerBase;
+use WP_Http;
 use WP_REST_Request;
+use WP_REST_Response;
 
 /**
  * Class with methods for handling order fulfillments.
@@ -183,6 +186,204 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 
 		// User doesn't have permission to view the fulfillment.
 		return $this->get_authentication_error_by_method( $request->get_method() );
+	}
+
+	/**
+	 * Get the fulfillments for the order.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 *
+	 * @return array|WP_Error The fulfillments for the order, or an error if the request fails.
+	 */
+	public function get_fulfillments( WP_REST_Request $request ) {
+		$order_id     = (int) $request->get_param( 'order_id' );
+		$fulfillments = array();
+
+		// Fetch fulfillments for the order.
+		$datastore    = wc_get_container()->get( FulfillmentsDataStore::class );
+		$fulfillments = $datastore->get_fulfillments( $order_id );
+
+		return $fulfillments;
+	}
+
+	/**
+	 * Create a new fulfillment with the given data for the order.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 *
+	 * @return WP_REST_Response|WP_Error The created fulfillment, or an error if the request fails.
+	 */
+	public function create_fulfillment( WP_REST_Request $request ) {
+		$order_id = (int) $request->get_param( 'order_id' );
+
+		// Create a new fulfillment.
+		$datastore   = wc_get_container()->get( FulfillmentsDataStore::class );
+		$fulfillment = $datastore->create_fulfillment( $order_id, $request->get_json_params() );
+
+		if ( is_wp_error( $fulfillment ) ) {
+			return new WP_REST_Response(
+				'woocommerce_rest_fulfillment_create_failed',
+				__( 'Failed to create fulfillment.', 'woocommerce' ),
+				array( 'status' => WP_Http::INTERNAL_SERVER_ERROR )
+			);
+		}
+
+		return new WP_REST_Response(
+			array(
+				'fulfillment_id' => $fulfillment->get_id(),
+			),
+			WP_Http::CREATED
+		);
+	}
+
+	/**
+	 * Get a specific fulfillment for the order.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 *
+	 * @return WP_REST_Response|WP_Error The fulfillment for the order, or an error if the request fails.
+	 */
+	public function get_fulfillment( WP_REST_Request $request ) {
+		$order_id       = (int) $request->get_param( 'order_id' );
+		$fulfillment_id = (int) $request->get_param( 'fulfillment_id' );
+
+		// Fetch the fulfillment for the order.
+		$datastore = wc_get_container()->get( FulfillmentsDataStore::class );
+
+		return new WP_REST_Response(
+			array(
+				'fulfillment_id' => 0,
+			),
+			WP_Http::OK
+		);
+	}
+
+	/**
+	 * Update a specific fulfillment for the order.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 *
+	 * @return WP_REST_Response|WP_Error The updated fulfillment, or an error if the request fails.
+	 */
+	public function update_fulfillment( WP_REST_Request $request ) {
+		$order_id       = (int) $request->get_param( 'order_id' );
+		$fulfillment_id = (int) $request->get_param( 'fulfillment_id' );
+
+		// Update the fulfillment for the order.
+		$datastore = wc_get_container()->get( FulfillmentsDataStore::class );
+
+		return new WP_REST_Response(
+			array(
+				'fulfillment_id' => 0,
+			),
+			WP_Http::OK
+		);
+	}
+
+	/**
+	 * Delete a specific fulfillment for the order.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 *
+	 * @return WP_REST_Response|WP_Error The deleted fulfillment, or an error if the request fails.
+	 */
+	public function delete_fulfillment( WP_REST_Request $request ) {
+		$order_id       = (int) $request->get_param( 'order_id' );
+		$fulfillment_id = (int) $request->get_param( 'fulfillment_id' );
+
+		// Delete the fulfillment for the order.
+		$datastore = wc_get_container()->get( FulfillmentsDataStore::class );
+
+		return new WP_REST_Response(
+			array(
+				'fulfillment_id' => 0,
+			),
+			WP_Http::NO_CONTENT
+		);
+	}
+
+	/**
+	 * Get the metadata for a specific fulfillment.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 *
+	 * @return WP_REST_Response|WP_Error The metadata for the fulfillment, or an error if the request fails.
+	 */
+	public function get_fulfillment_meta( WP_REST_Request $request ) {
+		$order_id       = (int) $request->get_param( 'order_id' );
+		$fulfillment_id = (int) $request->get_param( 'fulfillment_id' );
+
+		// Fetch the metadata for the fulfillment.
+		$datastore = wc_get_container()->get( FulfillmentsDataStore::class );
+
+		return new WP_REST_Response(
+			array(
+				'meta' => array(),
+			),
+			WP_Http::OK
+		);
+	}
+
+	/**
+	 * Update the metadata for a specific fulfillment.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 *
+	 * @return WP_REST_Response|WP_Error The updated metadata for the fulfillment, or an error if the request fails.
+	 */
+	public function update_fulfillment_meta( WP_REST_Request $request ) {
+		$order_id       = (int) $request->get_param( 'order_id' );
+		$fulfillment_id = (int) $request->get_param( 'fulfillment_id' );
+
+		// Update the metadata for the fulfillment.
+		$datastore = wc_get_container()->get( FulfillmentsDataStore::class );
+
+		return new WP_REST_Response(
+			array(
+				'meta' => array(),
+			),
+			WP_Http::OK
+		);
+	}
+
+	/**
+	 * Delete the metadata for a specific fulfillment.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 *
+	 * @return WP_REST_Response|WP_Error The deleted metadata for the fulfillment, or an error if the request fails.
+	 */
+	public function delete_fulfillment_meta( WP_REST_Request $request ) {
+		$order_id       = (int) $request->get_param( 'order_id' );
+		$fulfillment_id = (int) $request->get_param( 'fulfillment_id' );
+
+		// Delete the metadata for the fulfillment.
+		$datastore = wc_get_container()->get( FulfillmentsDataStore::class );
+
+		return new WP_REST_Response(
+			array(
+				'meta' => array(),
+			),
+			WP_Http::NO_CONTENT
+		);
+	}
+
+	/**
+	 * Get the tracking number details for a given tracking number, if possible.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 *
+	 * @return WP_REST_Response|WP_Error The tracking number details, or an error if the request fails.
+	 */
+	public function get_tracking_number_details( WP_REST_Request $request ) {
+		$tracking_number = $request->get_param( 'tracking_number' );
+
+		return new WP_REST_Response(
+			array(
+				'tracking_number_details' => array(),
+			),
+			WP_Http::OK
+		);
 	}
 
 	/**
