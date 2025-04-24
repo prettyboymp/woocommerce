@@ -23,14 +23,15 @@ class ImportActivatePlugin implements StepProcessor {
 	public function process( $schema ): StepProcessorResult {
 		$result = StepProcessorResult::success( ActivatePlugin::get_step_name() );
 
-		// phpcs:ignore
-		$name = $schema->pluginName;
+		// Not snake case because it's a property of the schema.
+		$plugin_path = $schema->pluginPath; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
-		$activate = $this->activate_plugin_by_slug( $name );
-		if ( $activate ) {
-			$result->add_info( "Activated {$name}." );
+		$activate = $this->wp_activate_plugin( $plugin_path );
+
+		if ( $this->is_wp_error( $activate ) ) {
+			$result->add_error( "Unable to activate {$plugin_path}." );
 		} else {
-			$result->add_error( "Unable to activate {$name}." );
+			$result->add_info( "Activated {$plugin_path}." );
 		}
 
 		return $result;

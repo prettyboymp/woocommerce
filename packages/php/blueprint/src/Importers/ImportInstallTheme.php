@@ -53,7 +53,12 @@ class ImportInstallTheme implements StepProcessor {
 	public function process( $schema ): StepProcessorResult {
 		$installed_themes = $this->wp_get_themes();
 		// phpcs:ignore
-		$theme = $schema->themeZipFile;
+		$theme = $schema->themeData;
+
+		if ( 'wordpress.org/themes' !== $theme->resource ) {
+			$this->result->add_info( "Skipped installing a theme. Unsupported resource type. Only 'wordpress.org/themes' is supported at the moment." );
+			return $this->result;
+		}
 
 		if ( ! isset( $schema->options ) ) {
 			$schema->options = new \stdClass();
@@ -101,7 +106,7 @@ class ImportInstallTheme implements StepProcessor {
 	 */
 	protected function activate_theme( $schema ) {
 		// phpcs:ignore
-		$theme = $schema->themeZipFile;
+		$theme = $schema->themeData;
 		if ( isset( $schema->options->activate ) && true === $schema->options->activate ) {
 			$this->wp_switch_theme( $theme->slug );
 			$current_theme = $this->wp_get_theme()->get_stylesheet();
@@ -115,14 +120,14 @@ class ImportInstallTheme implements StepProcessor {
 
 
 	/**
-	 * Install the theme from the local plugin path.
+	 * Install the theme from the local path.
 	 *
-	 * @param string $local_plugin_path The local path of the plugin to be installed.
+	 * @param string $local_path The local path of the theme to be installed.
 	 *
 	 * @return bool True if the installation was successful, false otherwise.
 	 */
-	protected function install( $local_plugin_path ) {
-		$unzip_result = $this->wp_unzip_file( $local_plugin_path, $this->wp_get_theme_root() );
+	protected function install( $local_path ) {
+		$unzip_result = $this->wp_unzip_file( $local_path, $this->wp_get_theme_root() );
 
 		if ( $this->is_wp_error( $unzip_result ) ) {
 			return false;

@@ -16,6 +16,7 @@ export interface ImageDataItem {
 	src: string;
 	srcSet: string;
 	sizes: string;
+	isActive?: boolean;
 }
 
 export interface ProductGalleryState {
@@ -52,6 +53,7 @@ interface StoreActions {
 	onTouchStart: ( event: TouchEvent ) => void;
 	onTouchMove: ( event: TouchEvent ) => void;
 	onTouchEnd: () => void;
+	onScroll: ( event: WheelEvent ) => void;
 	displayViewAll: () => boolean;
 }
 
