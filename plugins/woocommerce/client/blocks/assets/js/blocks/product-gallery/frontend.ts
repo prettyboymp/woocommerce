@@ -40,28 +40,20 @@ const scrollThumbnailIntoView = ( imageId: number ) => {
 		return;
 	}
 
-	const thumbnailElement = galleryContainer.querySelector(
-		`.wc-block-product-gallery-thumbnails__thumbnail img[data-image-id="${ imageId }"]`
+	const thumbnail = galleryContainer.querySelector(
+		`.wc-block-product-gallery-thumbnails__thumbnail[data-image-id="${ imageId }"]`
 	);
 
-	if ( ! thumbnailElement ) {
+	if ( ! thumbnail ) {
 		return;
 	}
 
 	// Find the thumbnail scrollable container
-	const scrollContainer = thumbnailElement.closest(
+	const scrollContainer = thumbnail.closest(
 		'.wc-block-product-gallery-thumbnails__scrollable'
 	);
 
 	if ( ! scrollContainer ) {
-		return;
-	}
-
-	const thumbnail = thumbnailElement.closest(
-		'.wc-block-product-gallery-thumbnails__thumbnail'
-	);
-
-	if ( ! thumbnail ) {
 		return;
 	}
 
@@ -386,6 +378,7 @@ const productGallery: ProductGalleryStore = {
 				element.classList.add( 'is-active' );
 				element.setAttribute( 'tabIndex', '0' );
 			} else {
+				element.classList.remove( 'is-active' );
 				element.setAttribute( 'tabIndex', '-1' );
 			}
 		},

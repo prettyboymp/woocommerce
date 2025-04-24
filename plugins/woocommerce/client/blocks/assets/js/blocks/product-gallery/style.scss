@@ -164,7 +164,7 @@ $dialog-padding: 20px;
 		aspect-ratio: 1 / 1;
 		outline: none;
 
-		&--active {
+		&.is-active {
 			position: relative;
 			pointer-events: none;
 			cursor: default;
