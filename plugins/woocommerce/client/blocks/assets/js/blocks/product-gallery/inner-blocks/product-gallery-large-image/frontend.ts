@@ -51,16 +51,8 @@ const productGalleryLargeImage: ProductGalleryLargeImageStore = {
 				return;
 			}
 
-			const selectedImage = target.querySelector(
-				`[data-image-id="${ state.selectedImageId }"]`
-			) as HTMLElement | null;
-
-			if ( ! selectedImage ) {
-				return;
-			}
-
-			selectedImage.style.transform = `scale(1.0)`;
-			selectedImage.style.transformOrigin = '';
+			target.style.transform = `scale(1.0)`;
+			target.style.transformOrigin = '';
 		},
 	},
 };
