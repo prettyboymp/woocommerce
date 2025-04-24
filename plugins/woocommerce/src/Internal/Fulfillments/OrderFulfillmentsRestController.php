@@ -29,7 +29,32 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 * @return string
 	 */
 	protected function get_rest_api_namespace(): string {
-		return 'orders';
+		return 'order_fulfillments';
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function get_base_schema(): array {
+		$schema                = parent::get_base_schema();
+		$schema['title']       = __( 'Fulfillment', 'woocommerce' );
+		$schema['description'] = __( 'Fulfillments for an order.', 'woocommerce' );
+		$schema['properties']  = array(
+			'order_id'       => array(
+				'description' => __( 'Unique identifier for the order.', 'woocommerce' ),
+				'type'        => 'integer',
+				'context'     => array( 'view', 'edit' ),
+				'readonly'    => true,
+			),
+			'fulfillment_id' => array(
+				'description' => __( 'Unique identifier for the fulfillment.', 'woocommerce' ),
+				'type'        => 'integer',
+				'context'     => array( 'view', 'edit' ),
+				'readonly'    => true,
+			),
+		);
+
+		return $schema;
 	}
 
 	/**
@@ -142,10 +167,9 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 */
 	protected function check_permission_for_fulfillments( WP_REST_Request $request ) {
 		// Check if the user is logged in as admin, and has the required capability.
-		if ( is_admin() ) {
-			if ( current_user_can( 'manage_woocommerce' ) ) {
-				return true;
-			}
+		// Admins who can manage WooCommerce can view all fulfillments.
+		if ( is_admin() && current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown
+			return true;
 		}
 
 		// Otherwise, check if the user has permission to view the order.
@@ -158,11 +182,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		}
 
 		// User doesn't have permission to view the fulfillment.
-		return new \WP_Error(
-			'woocommerce_rest_cannot_view',
-			__( 'Sorry, you cannot view this resource.', 'woocommerce' ),
-			array( 'status' => rest_authorization_required_code() )
-		);
+		return $this->get_authentication_error_by_method( $request->get_method() );
 	}
 
 	/**
@@ -171,7 +191,8 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 * @return array
 	 */
 	private function get_args_for_get_fulfillments(): array {
-		return array();}
+		return array();
+	}
 
 	/**
 	 * Get the schema for the get fulfillments endpoint.
@@ -179,7 +200,8 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 * @return array
 	 */
 	private function get_schema_for_get_fulfillments(): array {
-		return array();}
+		return array();
+	}
 
 	/**
 	 * Get the arguments for the create fulfillment endpoint.
