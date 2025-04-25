@@ -50,9 +50,7 @@ test.describe( 'Shopper → Shipping', () => {
 		await admin.page
 			.getByLabel( 'Default customer location' )
 			.selectOption( 'No location by default' );
-		await admin.page
-			.getByRole( 'button', { name: 'Save changes' } )
-			.click();
+		await admin.saveAdminPage();
 
 		await admin.visitAdminPage(
 			'admin.php?page=wc-settings&tab=shipping&zone_id=new'
@@ -64,9 +62,7 @@ test.describe( 'Shopper → Shipping', () => {
 		await admin.page
 			.getByRole( 'checkbox', { name: 'United Kingdom (UK)' } )
 			.click(); // .check() won't work here as the input disappears immediately after checking.
-		await admin.page
-			.getByRole( 'button', { name: 'Save changes' } )
-			.click();
+		await admin.saveAdminPage();
 		await admin.page
 			.getByRole( 'button', { name: 'Add shipping method' } )
 			.click();
@@ -81,9 +77,7 @@ test.describe( 'Shopper → Shipping', () => {
 				.getByRole( 'button', { name: 'Save changes' } )
 				.isDisabled() )
 		) {
-			await admin.page
-				.getByRole( 'button', { name: 'Save changes' } )
-				.click();
+			await admin.saveAdminPage();
 		}
 		await expect(
 			admin.page.getByRole( 'button', { name: 'Save changes' } )
@@ -115,16 +109,7 @@ test.describe( 'Shopper → Shipping', () => {
 	test( '1. With shipping methods for the default location, shipping methods for _any_ location, and local pickup enabled, the shopper sees shipping rates and pickup options - rates are selected default', async ( {
 		localPickupUtils,
 		frontendUtils,
-		page,
 	} ) => {
-		await page.goto(
-			'/?disable_third_party_local_pickup_method_registration'
-		);
-		await expect(
-			page.getByText(
-				'Third party local pickup method registration disabled.'
-			)
-		).toBeVisible();
 		await localPickupUtils.enableLocalPickup();
 		await localPickupUtils.addPickupLocation( {
 			location: {
@@ -268,25 +253,14 @@ test.describe( 'Shopper → Shipping', () => {
 		frontendUtils,
 		checkoutPageObject,
 		shippingUtils,
-		page,
 	} ) => {
-		await page.goto(
-			'/?disable_third_party_local_pickup_method_registration'
-		);
-		await expect(
-			page.getByText(
-				'Third party local pickup method registration disabled.'
-			)
-		).toBeVisible();
 		await localPickupUtils.disableLocalPickup();
 		await shippingUtils.disableShippingCostsRequireAddress();
 		await admin.visitAdminPage( 'admin.php?page=wc-settings&tab=general' );
 		await admin.page
 			.getByLabel( 'Default customer location' )
 			.selectOption( 'No location by default' );
-		await admin.page
-			.getByRole( 'button', { name: 'Save changes' } )
-			.click();
+		await admin.saveAdminPage();
 
 		await admin.visitAdminPage( 'admin.php?page=wc-settings&tab=shipping' );
 
@@ -299,9 +273,7 @@ test.describe( 'Shopper → Shipping', () => {
 		// Then only one "name: yes" remains, making it the first, even though it's the second rate.
 		await admin.page.getByRole( 'link', { name: 'Yes' } ).first().click();
 		await admin.page.getByRole( 'link', { name: 'Yes' } ).first().click();
-		await admin.page
-			.getByRole( 'button', { name: 'Save changes' } )
-			.click();
+		await admin.saveAdminPage();
 
 		await frontendUtils.goToShop();
 		await frontendUtils.addToCart( REGULAR_PRICED_PRODUCT_NAME );
@@ -351,17 +323,7 @@ test.describe( 'Shopper → Shipping', () => {
 		localPickupUtils,
 		admin,
 		frontendUtils,
-		page,
 	} ) => {
-		await page.goto(
-			'/?disable_third_party_local_pickup_method_registration'
-		);
-		await expect(
-			page.getByText(
-				'Third party local pickup method registration disabled.'
-			)
-		).toBeVisible();
-
 		await admin.visitAdminPage( 'admin.php?page=wc-settings&tab=shipping' );
 		// Accept the delete dialog, then remove the listener;
 		const acceptDialog = ( dialog: Dialog ) => dialog.accept();
@@ -392,9 +354,7 @@ test.describe( 'Shopper → Shipping', () => {
 		// Then only one "name: yes" remains, making it the first, even though it's the second rate.
 		await admin.page.getByRole( 'link', { name: 'Yes' } ).first().click();
 		await admin.page.getByRole( 'link', { name: 'Yes' } ).first().click();
-		await admin.page
-			.getByRole( 'button', { name: 'Save changes' } )
-			.click();
+		await admin.saveAdminPage();
 
 		await frontendUtils.goToShop();
 		await frontendUtils.addToCart( REGULAR_PRICED_PRODUCT_NAME );
@@ -433,17 +393,7 @@ test.describe( 'Shopper → Shipping', () => {
 		localPickupUtils,
 		admin,
 		frontendUtils,
-		page,
 	} ) => {
-		await page.goto(
-			'/?disable_third_party_local_pickup_method_registration'
-		);
-		await expect(
-			page.getByText(
-				'Third party local pickup method registration disabled.'
-			)
-		).toBeVisible();
-
 		await admin.visitAdminPage( 'admin.php?page=wc-settings&tab=shipping' );
 		// Accept the delete dialog, then remove the listener;
 		const acceptDialog = ( dialog: Dialog ) => dialog.accept();
@@ -464,9 +414,7 @@ test.describe( 'Shopper → Shipping', () => {
 		// Then only one "name: yes" remains, making it the first, even though it's the second rate.
 		await admin.page.getByRole( 'link', { name: 'Yes' } ).first().click();
 		await admin.page.getByRole( 'link', { name: 'Yes' } ).first().click();
-		await admin.page
-			.getByRole( 'button', { name: 'Save changes' } )
-			.click();
+		await admin.saveAdminPage();
 
 		await frontendUtils.goToShop();
 		await frontendUtils.addToCart( REGULAR_PRICED_PRODUCT_NAME );
@@ -492,18 +440,8 @@ test.describe( 'Shopper → Shipping', () => {
 		localPickupUtils,
 		frontendUtils,
 		shippingUtils,
-		page,
 		checkoutPageObject,
 	} ) => {
-		await page.goto(
-			'/?disable_third_party_local_pickup_method_registration'
-		);
-		await expect(
-			page.getByText(
-				'Third party local pickup method registration disabled.'
-			)
-		).toBeVisible();
-
 		await localPickupUtils.disableLocalPickup();
 		await shippingUtils.enableShippingCostsRequireAddress();
 
@@ -598,18 +536,8 @@ test.describe( 'Shopper → Shipping', () => {
 		localPickupUtils,
 		admin,
 		frontendUtils,
-		page,
 		shippingUtils,
 	} ) => {
-		await page.goto(
-			'/?disable_third_party_local_pickup_method_registration'
-		);
-		await expect(
-			page.getByText(
-				'Third party local pickup method registration disabled.'
-			)
-		).toBeVisible();
-
 		await admin.visitAdminPage( 'admin.php?page=wc-settings&tab=shipping' );
 		// Accept the delete dialog, then remove the listener;
 		const acceptDialog = ( dialog: Dialog ) => dialog.accept();
@@ -631,9 +559,7 @@ test.describe( 'Shopper → Shipping', () => {
 		// Then only one "name: yes" remains, making it the first, even though it's the second rate.
 		await admin.page.getByRole( 'link', { name: 'Yes' } ).first().click();
 		await admin.page.getByRole( 'link', { name: 'Yes' } ).first().click();
-		await admin.page
-			.getByRole( 'button', { name: 'Save changes' } )
-			.click();
+		await admin.saveAdminPage();
 
 		await frontendUtils.goToShop();
 		await frontendUtils.addToCart( REGULAR_PRICED_PRODUCT_NAME );

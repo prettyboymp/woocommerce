@@ -7,7 +7,10 @@
  * @version  2.6.0
  */
 
+declare(strict_types=1);
+
 use Automattic\WooCommerce\Internal\Admin\EmailPreview\EmailPreview;
+use Automattic\WooCommerce\Internal\EmailEditor\WooContentProcessor;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -39,7 +42,7 @@ class WC_Admin {
 		add_filter( 'admin_body_class', array( $this, 'include_admin_body_class' ), 9999 );
 
 		// Add body class for Marketplace and My Subscriptions pages.
-		if ( isset( $_GET['page'] ) && 'wc-addons' === $_GET['page'] ) {
+		if ( isset( $_GET['page'] ) && 'wc-addons' === $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			add_filter( 'admin_body_class', array( 'WC_Admin_Addons', 'filter_admin_body_classes' ) );
 		}
 	}
@@ -70,6 +73,11 @@ class WC_Admin {
 		include_once __DIR__ . '/class-wc-admin-exporters.php';
 
 		// Help Tabs.
+		/**
+		 * Filter to enable/disable admin help tab.
+		 *
+		 * @since 3.6.0
+		 */
 		if ( apply_filters( 'woocommerce_enable_admin_help_tab', true ) ) {
 			include_once __DIR__ . '/class-wc-admin-help.php';
 		}
@@ -181,6 +189,11 @@ class WC_Admin {
 			}
 		}
 
+		/**
+		 * Filter to prevent admin access.
+		 *
+		 * @since 3.6.0
+		 */
 		if ( apply_filters( 'woocommerce_prevent_admin_access', $prevent_access ) ) {
 			wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
 			exit;
@@ -242,87 +255,38 @@ class WC_Admin {
 	 * Preview email editor placeholder dummy content.
 	 */
 	public function preview_email_editor_dummy_content() {
-		if ( isset( $_GET['preview_woocommerce_mail_editor_content'] ) ) {
-			if ( ! ( isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'preview-mail' ) ) ) {
-				die( 'Security check' );
-			}
-
-			/**
-			 * Email preview instance for rendering dummy content.
-			 *
-			 * @var EmailPreview $email_preview - email preview instance
-			 */
-			$email_preview = wc_get_container()->get( EmailPreview::class );
-
-			if ( isset( $_GET['type'] ) ) {
-				$type_param = sanitize_text_field( wp_unslash( $_GET['type'] ) );
-				try {
-					$email_preview->set_email_type( $type_param );
-				} catch ( InvalidArgumentException $e ) {
-					wp_die( esc_html__( 'Invalid email type.', 'woocommerce' ), 400 );
-				}
-			}
-
-			$message = $this->capture_woo_content( $email_preview );
-
-			// print the preview email.
-			// phpcs:ignore WordPress.Security.EscapeOutput
-			echo $message;
-			// phpcs:enable
-			exit;
+		$message = '';
+		if ( ! isset( $_GET['preview_woocommerce_mail_editor_content'] ) ) {
+			return;
 		}
-	}
 
-	/**
-	 * Captures and returns the main content of a WooCommerce email preview without header and footer.
-	 *
-	 * This is an extracted function from an active PR.
-	 *
-	 * @see https://github.com/woocommerce/woocommerce/pull/56199
-	 *
-	 * Updater after https://github.com/woocommerce/woocommerce/pull/56199 is merged
-	 *
-	 * @param EmailPreview $email_preview - email preview instance.
-	 * @return string
-	 */
-	private function capture_woo_content( $email_preview ): string {
-		// Store the existing header and footer callbacks.
-		global $wp_filter;
-		$original_header_filters = isset( $wp_filter['woocommerce_email_header'] ) ? clone $wp_filter['woocommerce_email_header'] : null;
-		$original_footer_filters = isset( $wp_filter['woocommerce_email_footer'] ) ? clone $wp_filter['woocommerce_email_footer'] : null;
+		if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'preview-mail' ) ) {
+			die( 'Security check' );
+		}
 
-		// Remove header and footer filters because we want to get only the main content.
-		remove_all_filters( 'woocommerce_email_header' );
-		remove_all_filters( 'woocommerce_email_footer' );
+		/**
+		 * Email preview instance for rendering dummy content.
+		 *
+		 * @var EmailPreview $email_preview - email preview instance
+		 */
+		$email_preview = wc_get_container()->get( EmailPreview::class );
 
-		// Start output buffering to prevent partial renders with PHP notices or warnings.
-		ob_start();
+		$type_param = EmailPreview::DEFAULT_EMAIL_TYPE;
+		if ( isset( $_GET['type'] ) ) {
+			$type_param = sanitize_text_field( wp_unslash( $_GET['type'] ) );
+		}
+
 		try {
-			$message = $email_preview->render();
-			$message = $email_preview->ensure_links_open_in_new_tab( $message );
-		} catch ( Throwable $e ) {
-			ob_end_clean();
-			wp_die( esc_html__( 'There was an error rendering an email preview.', 'woocommerce' ), 404 );
-		}
-		ob_end_clean();
-
-		// Restore the original header and footer filters.
-		if ( $original_header_filters ) {
-			foreach ( $original_header_filters->callbacks as $priority => $callbacks ) {
-				foreach ( $callbacks as $filter ) {
-					add_filter( 'woocommerce_email_header', $filter['function'], $priority, $filter['accepted_args'] );
-				}
-			}
-		}
-		if ( $original_footer_filters ) {
-			foreach ( $original_footer_filters->callbacks as $priority => $callbacks ) {
-				foreach ( $callbacks as $filter ) {
-					add_filter( 'woocommerce_email_footer', $filter['function'], $priority, $filter['accepted_args'] );
-				}
-			}
+			$message = $email_preview->generate_placeholder_content( $type_param );
+		} catch ( \Exception $e ) {
+			// Catch other potential errors during content generation.
+			wp_die( esc_html__( 'There was an error rendering the email preview.', 'woocommerce' ), 404 );
 		}
 
-		return $message;
+		// Print the placeholder content.
+		// phpcs:ignore WordPress.Security.EscapeOutput
+		echo $message;
+		exit;
 	}
 
 	/**
@@ -343,6 +307,11 @@ class WC_Admin {
 		$wc_pages = array_diff( $wc_pages, array( 'profile', 'user-edit' ) );
 
 		// Check to make sure we're on a WooCommerce admin page.
+		/**
+		 * Filter to determine if admin footer text should be displayed.
+		 *
+		 * @since 2.3
+		 */
 		if ( isset( $current_screen->id ) && apply_filters( 'woocommerce_display_admin_footer_text', in_array( $current_screen->id, $wc_pages, true ) ) ) {
 			// Change the footer text.
 			if ( ! get_option( 'woocommerce_admin_footer_text_rated' ) ) {
