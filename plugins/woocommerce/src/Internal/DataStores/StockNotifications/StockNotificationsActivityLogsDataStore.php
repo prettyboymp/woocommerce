@@ -30,7 +30,7 @@ class StockNotificationsActivityLogsDataStore {
 	 * @param array $args Additional arguments.
 	 * @return int|false The log ID or false if the log was not created.
 	 */
-	public function create( $args ) {
+	public function create( array $args ) {
 		global $wpdb;
 
 		$table = $this->get_table_name();
@@ -59,7 +59,7 @@ class StockNotificationsActivityLogsDataStore {
 	 * @param array $args The arguments.
 	 * @return array|int An array of logs or the number of logs.
 	 */
-	public function query( $args ) {
+	public function query( array $args ) {
 		global $wpdb;
 
 		$args = wp_parse_args(
@@ -134,7 +134,7 @@ class StockNotificationsActivityLogsDataStore {
 	 * @param int $notification_id The notification ID.
 	 * @return bool True if the logs were deleted, false otherwise.
 	 */
-	public function delete_by_notification_id( $notification_id ) {
+	public function delete_by_notification_id( int $notification_id ): bool {
 		global $wpdb;
 
 		$table  = $this->get_table_name();
