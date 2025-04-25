@@ -13,7 +13,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 	/**
 	 * The data store instance.
 	 *
-	 * @var StockNotificationsActivityLogsDataStore
+	 * @var StockNotificationsDataStore
 	 */
 	private $data_store;
 
