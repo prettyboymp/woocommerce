@@ -2,7 +2,6 @@
 namespace Automattic\WooCommerce\Blocks\Domain;
 
 use Automattic\Jetpack\Constants;
-use Automattic\WooCommerce\Admin\Features\Features;
 use Automattic\WooCommerce\Blocks\Assets\Api as AssetApi;
 use Automattic\WooCommerce\Blocks\Assets\AssetDataRegistry;
 use Automattic\WooCommerce\Blocks\AssetsController;
