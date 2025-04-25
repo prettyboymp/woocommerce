@@ -1,4 +1,4 @@
-<?php // phpcs:ignore Suin.Classes.PSR4
+<?php
 
 declare( strict_types = 1 );
 namespace Automattic\WooCommerce\Tests\Internal\StockNotifications;
