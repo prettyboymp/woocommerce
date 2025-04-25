@@ -344,6 +344,8 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 	 * @param string $entity_id The entity ID.
 	 *
 	 * @return Fulfillment[] Fulfillment object.
+	 *
+	 * @throws \Exception If the fulfillment data can't be read.
 	 */
 	public function read_fulfillments( string $entity_type, string $entity_id ): array {
 		// Read the fulfillment data from the database.
@@ -358,8 +360,8 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 			ARRAY_A
 		);
 
-		if ( empty( $fulfillment_data ) ) {
-			return array();
+		if ( is_wp_error( $fulfillment_data ) ) {
+			throw new \Exception( esc_html__( 'Failed to read fulfillment data.', 'woocommerce' ) );
 		}
 
 		// Create Fulfillment objects from the data.
