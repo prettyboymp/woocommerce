@@ -41,7 +41,7 @@ class StockNotificationsActivityLogsDataStore {
 			'user_email'      => sanitize_email( $args['user_email'] ),
 			'ip_address'      => sanitize_text_field( $args['ip_address'] ),
 			'date_logged_gmt' => current_time( 'mysql' ),
-			'note'            => sanitize_text_field( $args['note'] ),
+			'payload'         => sanitize_text_field( $args['note'] ),
 		);
 
 		$result = $wpdb->insert(
