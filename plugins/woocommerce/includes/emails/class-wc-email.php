@@ -266,6 +266,13 @@ class WC_Email extends WC_Settings_API {
 	public $block_email_editor_enabled;
 
 	/**
+	 * Block content template path.
+	 *
+	 * @var string
+	 */
+	public $template_block_content = 'emails/block/general-block-email.php';
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -621,6 +628,23 @@ class WC_Email extends WC_Settings_API {
 	}
 
 	/**
+	 * Get block editor email template content.
+	 *
+	 * @return string
+	 */
+	public function get_block_editor_email_template_content() {
+		return wc_get_template_html(
+			$this->template_block_content,
+			array(
+				'order'         => $this->object,
+				'sent_to_admin' => false,
+				'plain_text'    => false,
+				'email'         => $this,
+			)
+		);
+	}
+
+	/**
 	 * Get email content type.
 	 *
 	 * @param string $default_content_type Default wp_mail() content type.
@@ -902,10 +926,10 @@ class WC_Email extends WC_Settings_API {
 		 *
 		 * @since 5.6.0
 		 * @param bool     $return Whether the email was sent successfully.
-		 * @param int      $id     Email ID.
+		 * @param string   $id     Email ID.
 		 * @param WC_Email $this   WC_Email instance.
 		 */
-		do_action( 'woocommerce_email_sent', $return, $this->id, $this );
+		do_action( 'woocommerce_email_sent', $return, (string) $this->id, $this );
 
 		return $return;
 	}
@@ -1199,7 +1223,7 @@ class WC_Email extends WC_Settings_API {
 		// Do admin actions.
 		$this->admin_actions();
 		?>
-		<h2><?php echo esc_html( $this->get_title() ); ?> <?php wc_back_link( __( 'Return to emails', 'woocommerce' ), admin_url( 'admin.php?page=wc-settings&tab=email' ) ); ?></h2>
+		<?php wc_back_header( $this->get_title(), __( 'Return to emails', 'woocommerce' ), admin_url( 'admin.php?page=wc-settings&tab=email' ) ); ?>
 
 		<?php echo wpautop( wp_kses_post( $this->get_description() ) ); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped ?>
 

@@ -8,6 +8,7 @@ import {
 	useInnerBlocksProps,
 } from '@wordpress/block-editor';
 import { BlockEditProps, InnerBlockTemplate } from '@wordpress/blocks';
+import { withProductDataContext } from '@woocommerce/shared-hocs';
 
 /**
  * Internal dependencies
@@ -16,104 +17,57 @@ import { ProductGalleryBlockSettings } from './block-settings/index';
 import type { ProductGalleryBlockAttributes } from './types';
 
 const TEMPLATE: InnerBlockTemplate[] = [
+	[ 'woocommerce/product-gallery-thumbnails' ],
 	[
-		'core/group',
-		{
-			layout: {
-				type: 'flex',
-				flexWrap: 'nowrap',
-				verticalAlignment: 'top',
-			},
-			metadata: {
-				name: 'Gallery Area',
-			},
-			className: 'wc-block-product-gallery__gallery-area',
-		},
+		'woocommerce/product-gallery-large-image',
+		{},
 		[
-			[ 'woocommerce/product-gallery-thumbnails' ],
 			[
-				'core/group',
+				'woocommerce/product-sale-badge',
 				{
-					layout: {
-						type: 'flex',
-						orientation: 'vertical',
-						justifyContent: 'center',
-						verticalAlignment: 'top',
-					},
-					style: {
-						layout: { selfStretch: 'fixed', flexSize: '100%' },
-					},
-					metadata: {
-						name: 'Large Image and Navigation',
-					},
-					className:
-						'wc-block-product-gallery__large-image-and-navigation',
+					align: 'right',
 				},
-				[
-					[
-						'woocommerce/product-gallery-large-image',
-						{},
-						[
-							[
-								'woocommerce/product-sale-badge',
-								{
-									align: 'right',
-									style: {
-										spacing: {
-											margin: {
-												top: '4px',
-												right: '4px',
-												bottom: '4px',
-												left: '4px',
-											},
-										},
-									},
-								},
-							],
-							[
-								'woocommerce/product-gallery-large-image-next-previous',
-								{
-									layout: {
-										type: 'flex',
-										verticalAlignment: 'bottom',
-									},
-								},
-							],
-						],
-					],
-				],
+			],
+			[
+				'woocommerce/product-gallery-large-image-next-previous',
+				{
+					style: {
+						border: { radius: '100%' },
+					},
+				},
 			],
 		],
 	],
 ];
 
-export const Edit = ( {
-	attributes,
-	setAttributes,
-}: BlockEditProps< ProductGalleryBlockAttributes > ) => {
-	const blockProps = useBlockProps( {
-		className: 'wc-block-product-gallery',
-	} );
+export const Edit = withProductDataContext(
+	( {
+		attributes,
+		setAttributes,
+	}: BlockEditProps< ProductGalleryBlockAttributes > ) => {
+		const blockProps = useBlockProps( {
+			className: 'wc-block-product-gallery',
+		} );
 
-	return (
-		<div { ...blockProps }>
-			<InspectorControls>
-				<ProductGalleryBlockSettings
-					attributes={ attributes }
-					setAttributes={ setAttributes }
+		return (
+			<div { ...blockProps }>
+				<InspectorControls>
+					<ProductGalleryBlockSettings
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+				</InspectorControls>
+				<InnerBlocks
+					allowedBlocks={ [
+						'woocommerce/product-gallery-large-image',
+						'woocommerce/product-gallery-thumbnails',
+					] }
+					template={ TEMPLATE }
 				/>
-			</InspectorControls>
-			<InnerBlocks
-				allowedBlocks={ [
-					'woocommerce/product-gallery-large-image',
-					'woocommerce/product-gallery-thumbnails',
-				] }
-				templateLock={ false }
-				template={ TEMPLATE }
-			/>
-		</div>
-	);
-};
+			</div>
+		);
+	}
+);
 
 export const Save = () => {
 	const blockProps = useBlockProps.save();

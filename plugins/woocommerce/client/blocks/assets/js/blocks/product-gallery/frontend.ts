@@ -24,7 +24,12 @@ const getArrowsState = ( imageNumber: number, totalImages: number ) => ( {
 } );
 
 /**
- * Scrolls an image into view.
+ * Scrolls the image into view for the main image.
+ *
+ * We use getElement to get the current element that triggered the action
+ * to find the closest gallery container and scroll the image into view.
+ * This is necessary because if you have two galleries on the same page with the same image IDs,
+ * then we need to query the image in the correct gallery to avoid scrolling the wrong image into view.
  *
  * @param {string} imageId - The ID of the image to scroll into view.
  */
@@ -32,9 +37,27 @@ const scrollImageIntoView = ( imageId: number ) => {
 	if ( ! imageId ) {
 		return;
 	}
-	const imageElement = document.querySelector(
+
+	// Get the current element that triggered the action
+	const element = getElement()?.ref as HTMLElement;
+
+	if ( ! element ) {
+		return;
+	}
+
+	// Find the closest gallery container
+	const galleryContainer = element.closest(
+		'.wp-block-woocommerce-product-gallery'
+	);
+
+	if ( ! galleryContainer ) {
+		return;
+	}
+
+	const imageElement = galleryContainer.querySelector(
 		`.wp-block-woocommerce-product-gallery-large-image img[data-image-id="${ imageId }"]`
 	);
+
 	if ( imageElement ) {
 		imageElement.scrollIntoView( {
 			behavior: 'smooth',
@@ -42,6 +65,79 @@ const scrollImageIntoView = ( imageId: number ) => {
 			inline: 'center',
 		} );
 	}
+};
+
+/**
+ * Scrolls the thumbnail into view.
+ *
+ * @param {number} imageId - The ID of the thumbnail to scroll into view.
+ */
+const scrollThumbnailIntoView = ( imageId: number ) => {
+	if ( ! imageId ) {
+		return;
+	}
+
+	// Get the current element that triggered the action
+	const element = getElement()?.ref as HTMLElement;
+
+	if ( ! element ) {
+		return;
+	}
+
+	// Find the closest gallery container
+	const galleryContainer = element.closest(
+		'.wp-block-woocommerce-product-gallery'
+	);
+
+	if ( ! galleryContainer ) {
+		return;
+	}
+
+	const thumbnailElement = galleryContainer.querySelector(
+		`.wc-block-product-gallery-thumbnails__thumbnail img[data-image-id="${ imageId }"]`
+	);
+
+	if ( ! thumbnailElement ) {
+		return;
+	}
+
+	// Find the thumbnail scrollable container
+	const scrollContainer = thumbnailElement.closest(
+		'.wc-block-product-gallery-thumbnails__scrollable'
+	);
+
+	if ( ! scrollContainer ) {
+		return;
+	}
+
+	const thumbnail = thumbnailElement.closest(
+		'.wc-block-product-gallery-thumbnails__thumbnail'
+	);
+
+	if ( ! thumbnail ) {
+		return;
+	}
+
+	// Calculate the scroll position to center the thumbnail
+	const containerRect = scrollContainer.getBoundingClientRect();
+	const thumbnailRect = thumbnail.getBoundingClientRect();
+
+	const scrollTop =
+		scrollContainer.scrollTop +
+		( thumbnailRect.top - containerRect.top ) -
+		( containerRect.height - thumbnailRect.height ) / 2;
+	const scrollLeft =
+		scrollContainer.scrollLeft +
+		( thumbnailRect.left - containerRect.left ) -
+		( containerRect.width - thumbnailRect.width ) / 2;
+
+	// Use scrollTo to avoid scrolling the entire page which
+	// happens with scrollIntoView.
+	scrollContainer.scrollTo( {
+		top: scrollTop,
+		left: scrollLeft,
+		behavior: 'smooth',
+	} );
 };
 
 /**
@@ -126,12 +222,16 @@ const productGallery = {
 		 * @return Array The subset of processed image data.
 		 */
 		get thumbnails() {
-			const { imageData } = getContext();
+			const { imageData, selectedImageId } = getContext();
 			const allImageIds = imageData?.image_ids || [];
 			// Map the image IDs to the image data. imageData?.images is an object and it's sorted by image ID - which we don't want.
-			return allImageIds.map(
-				( imageId ) => imageData?.images[ imageId ]
-			);
+			return allImageIds.map( ( imageId ) => {
+				const imageObject = imageData?.images[ imageId ];
+				return {
+					...imageObject,
+					isActive: imageId === selectedImageId,
+				};
+			} );
 		},
 	},
 	actions: {
@@ -159,6 +259,7 @@ const productGallery = {
 
 			if ( imageIndex !== -1 ) {
 				scrollImageIntoView( imageId );
+				scrollThumbnailIntoView( imageId );
 			}
 		},
 		selectCurrentImage: ( event?: MouseEvent ) => {
@@ -184,7 +285,6 @@ const productGallery = {
 			if ( event ) {
 				event.stopPropagation();
 			}
-
 			const { imageData, selectedImageId } = getContext();
 			const allImageIds = imageData?.image_ids || [];
 			const selectedImageNumber = getSelectedImageNumber(

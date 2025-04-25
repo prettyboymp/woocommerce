@@ -4,7 +4,6 @@ declare( strict_types = 1 );
 
 namespace Automattic\WooCommerce\Admin\Features\Blueprint;
 
-use Automattic\WooCommerce\Admin\Features\Blueprint\Exporters\ExportWCCoreProfilerOptions;
 use Automattic\WooCommerce\Admin\Features\Blueprint\Exporters\ExportWCPaymentGateways;
 use Automattic\WooCommerce\Admin\Features\Blueprint\Exporters\ExportWCSettingsAccount;
 use Automattic\WooCommerce\Admin\Features\Blueprint\Exporters\ExportWCSettingsAdvanced;
@@ -14,15 +13,10 @@ use Automattic\WooCommerce\Admin\Features\Blueprint\Exporters\ExportWCSettingsIn
 use Automattic\WooCommerce\Admin\Features\Blueprint\Exporters\ExportWCSettingsProducts;
 use Automattic\WooCommerce\Admin\Features\Blueprint\Exporters\ExportWCSettingsSiteVisibility;
 use Automattic\WooCommerce\Admin\Features\Blueprint\Exporters\ExportWCShipping;
-use Automattic\WooCommerce\Admin\Features\Blueprint\Exporters\ExportWCTaskOptions;
 use Automattic\WooCommerce\Admin\Features\Blueprint\Exporters\ExportWCTaxRates;
-use Automattic\WooCommerce\Admin\Features\Blueprint\Importers\ImportSetWCPaymentGateways;
-use Automattic\WooCommerce\Admin\Features\Blueprint\Importers\ImportSetWCShipping;
-use Automattic\WooCommerce\Admin\Features\Blueprint\Importers\ImportSetWCTaxRates;
 use Automattic\WooCommerce\Admin\PageController;
 use Automattic\WooCommerce\Blueprint\Exporters\HasAlias;
 use Automattic\WooCommerce\Blueprint\Exporters\StepExporter;
-use Automattic\WooCommerce\Blueprint\StepProcessor;
 use Automattic\WooCommerce\Blueprint\UseWPFunctions;
 
 /**
@@ -55,18 +49,6 @@ class Init {
 		);
 
 		add_filter( 'wooblueprint_exporters', array( $this, 'add_woo_exporters' ) );
-
-		// Add a filter to hide the save button on the blueprint settings page.
-		add_action(
-			'woocommerce_settings_advanced',
-			function () {
-				global $hide_save_button;
-				$page_id = PageController::get_instance()->get_current_screen_id();
-				if ( 'woocommerce_page_wc-settings-advanced-blueprint' === $page_id ) {
-					$hide_save_button = true;
-				}
-			}
-		);
 	}
 
 	/**
@@ -191,7 +173,7 @@ class Init {
 		return array(
 			array(
 				'id'          => 'settings',
-				'description' => __( 'It includes all the items featured in WooCommerce | Settings.', 'woocommerce' ),
+				'description' => __( 'Includes all the items featured in WooCommerce | Settings.', 'woocommerce' ),
 				'label'       => __( 'WooCommerce Settings', 'woocommerce' ),
 				'icon'        => 'settings',
 				'items'       => array_map(
@@ -208,14 +190,14 @@ class Init {
 			),
 			array(
 				'id'          => 'plugins',
-				'description' => __( 'It includes all the installed plugins and extensions.', 'woocommerce' ),
+				'description' => __( 'Includes all the installed plugins and extensions.', 'woocommerce' ),
 				'label'       => __( 'Plugins and extensions', 'woocommerce' ),
 				'icon'        => 'plugins',
 				'items'       => $this->get_plugins_for_export_group(),
 			),
 			array(
 				'id'          => 'themes',
-				'description' => __( 'It includes all the installed themes.', 'woocommerce' ),
+				'description' => __( 'Includes all the installed themes.', 'woocommerce' ),
 				'label'       => __( 'Themes', 'woocommerce' ),
 				'icon'        => 'layout',
 				'items'       => $this->get_themes_for_export_group(),
