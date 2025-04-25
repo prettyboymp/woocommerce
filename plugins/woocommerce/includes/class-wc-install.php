@@ -1991,6 +1991,8 @@ CREATE TABLE {$wpdb->prefix}wc_order_fulfillments (
 	fulfillment_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 	entity_type varchar(255) NOT NULL,
 	entity_id bigint(20) unsigned NOT NULL,
+	status varchar(255) NOT NULL,
+	is_fulfilled tinyint(1) NOT NULL DEFAULT 0,
 	date_updated datetime NOT NULL,
 	date_deleted datetime NULL,
 	PRIMARY KEY (fulfillment_id),

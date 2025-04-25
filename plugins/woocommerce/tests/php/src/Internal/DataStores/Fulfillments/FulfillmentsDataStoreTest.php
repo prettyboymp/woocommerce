@@ -108,7 +108,8 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		$fulfillment->set_entity_id( '123' );
 		$fulfillment->set_props( array( 'meta_data' => array( '_items' => null ) ) );
 
-		$this->expectException( \TypeError::class );
+		$this->expectException( \Exception::class );
+		$this->expectExceptionMessage( 'The fulfillment should contain at least one item.' );
 
 		self::$order_fulfillment_data_store->create( $fulfillment );
 	}
@@ -253,10 +254,23 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		$this->assertNotNull( $fulfillment->get_id() );
 		$this->assertNull( $fulfillment->get_date_deleted() );
 
+		// Cache the metadata before deletion.
+		$metadata = $fulfillment->get_meta_data();
+
+		// Cache the ID before deletion.
+		$fulfillment_id = $fulfillment->get_id();
+
 		self::$order_fulfillment_data_store->delete( $fulfillment );
-		$this->assertNotNull( $fulfillment->get_date_deleted() );
-		$this->assertFulfillmentRecordInDB( $fulfillment );
-		$this->assertFulfillmentMetaInDB( $fulfillment );
+		// The fulfillment should be reset to it's initial state.
+		$this->assertEquals( 0, $fulfillment->get_id() );
+		$this->assertEquals( null, $fulfillment->get_entity_type() );
+		$this->assertEquals( null, $fulfillment->get_entity_id() );
+		$this->assertEquals( array(), $fulfillment->get_items() );
+		$this->assertEquals( array(), $fulfillment->get_meta_data() );
+		$this->assertEquals( null, $fulfillment->get_date_updated() );
+		$this->assertEquals( null, $fulfillment->get_date_deleted() );
+		$this->assertFulfillmentRecordInDB( $fulfillment, $fulfillment_id, true );
+		$this->assertFulfillmentMetaInDB( $fulfillment, $fulfillment_id, $metadata );
 	}
 
 	/**
@@ -408,7 +422,6 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		$fulfillment = new Fulfillment();
 		$fulfillment->set_entity_id( '123' );
 		$fulfillment->set_entity_type( 'order-fulfillment' );
-
 		$fulfillment->set_items( $items );
 		$fulfillment->save();
 
@@ -433,16 +446,131 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 		$this->assertEquals( 1, $result );
 	}
 
+	/**
+	 * Tests reading multiple fulfillments.
+	 */
+	public function test_read_fulfillments() {
+		$this->prepare_db_for_test();
+		$fulfillments = self::$order_fulfillment_data_store->read_fulfillments( 'order-fulfillment', '123' );
+		$this->assertCount( 2, $fulfillments );
+		$this->assertEquals( '123', $fulfillments[0]->get_entity_id() );
+		$this->assertEquals( 'order-fulfillment', $fulfillments[0]->get_entity_type() );
+		$this->assertEquals(
+			array(
+				array(
+					'item_id' => 1,
+					'qty'     => 2,
+				),
+
+			),
+			$fulfillments[0]->get_items(),
+		);
+		$this->assertEquals( '123', $fulfillments[1]->get_entity_id() );
+		$this->assertEquals( 'order-fulfillment', $fulfillments[1]->get_entity_type() );
+		$this->assertEquals(
+			array(
+				array(
+					'item_id' => 4,
+					'qty'     => 5,
+				),
+			),
+			$fulfillments[1]->get_items(),
+		);
+	}
+
+	/**
+	 * Create a test fulfillment and save it to the database.
+	 *
+	 * @param string $entity_type The entity type.
+	 * @param string $entity_id The entity ID.
+	 * @param array  $items The items to fulfill.
+	 *
+	 * @return Fulfillment The created fulfillment object.
+	 */
+	private function create_test_fulfillment( string $entity_type, string $entity_id, array $items ) {
+		$fulfillment = new Fulfillment();
+		$fulfillment->set_id( 0 );
+		$fulfillment->set_entity_type( $entity_type );
+		$fulfillment->set_entity_id( $entity_id );
+		$fulfillment->set_items( $items );
+		$fulfillment->save();
+		$fulfillment->save_meta_data();
+
+		$this->assertNotEquals( 0, $fulfillment->get_id() );
+
+		$this->assertFulfillmentRecordInDB( $fulfillment );
+		$this->assertFulfillmentMetaInDB( $fulfillment );
+
+		return $fulfillment;
+	}
+
+	/**
+	 * Creates fulfillment records in the database for testing.
+	 */
+	private function prepare_db_for_test() {
+		$this->create_test_fulfillment(
+			'order-fulfillment',
+			'123',
+			array(
+				array(
+					'item_id' => 1,
+					'qty'     => 2,
+				),
+			)
+		);
+		$this->create_test_fulfillment(
+			'order-fulfillment',
+			'456',
+			array(
+				array(
+					'item_id' => 2,
+					'qty'     => 3,
+				),
+			)
+		);
+		$this->create_test_fulfillment(
+			'order-fulfillment',
+			'789',
+			array(
+				array(
+					'item_id' => 3,
+					'qty'     => 4,
+				),
+			)
+		);
+		$this->create_test_fulfillment(
+			'order-fulfillment',
+			'123',
+			array(
+				array(
+					'item_id' => 4,
+					'qty'     => 5,
+				),
+			)
+		);
+		$this->create_test_fulfillment(
+			'order-fulfillment',
+			'456',
+			array(
+				array(
+					'item_id' => 5,
+					'qty'     => 6,
+				),
+			)
+		);
+	}
 
 	/**
 	 * Asserts that a fulfillment record exists in the database.
 	 *
 	 * @param Fulfillment $fulfillment The fulfillment object.
+	 * @param int         $deleted_id  The ID of the deleted record.
+	 * @param bool        $is_deleted  Whether the record is deleted.
 	 */
-	private function assertFulfillmentRecordInDB( Fulfillment $fulfillment ) {
+	private function assertFulfillmentRecordInDB( Fulfillment $fulfillment, int $deleted_id = 0, bool $is_deleted = false ) {
 		global $wpdb;
 
-		$fulfillment_id = $fulfillment->get_id();
+		$fulfillment_id = $is_deleted ? $deleted_id : $fulfillment->get_id();
 		$record         = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM {$wpdb->prefix}wc_order_fulfillments WHERE fulfillment_id = %d",
@@ -450,23 +578,34 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 			)
 		);
 
-		$this->assertNotNull( $record );
-		$this->assertEquals( $fulfillment->get_entity_type(), $record->entity_type );
-		$this->assertEquals( $fulfillment->get_entity_id(), $record->entity_id );
-		$this->assertEquals( $fulfillment->get_date_updated(), new \DateTime( $record->date_updated ) );
-		$this->assertEquals( $fulfillment->get_date_deleted(), $record->date_deleted ? new \DateTime( $record->date_deleted ) : null );
+		if ( ! $is_deleted ) {
+			$this->assertNotNull( $record );
+			$this->assertEquals( $fulfillment->get_entity_type(), $record->entity_type );
+			$this->assertEquals( $fulfillment->get_entity_id(), $record->entity_id );
+			$this->assertEquals( $fulfillment->get_date_updated(), $record->date_updated );
+			$this->assertEquals( $fulfillment->get_date_deleted(), $record->date_deleted );
+		} else {
+			$this->assertNotNull( $record );
+			$this->assertNotEquals( $fulfillment->get_id(), $record->fulfillment_id );
+			$this->assertNotEquals( null, $record->date_deleted );
+		}
 	}
 
 	/**
 	 * Asserts that a fulfillment record metadata matches the expected value.
 	 *
 	 * @param Fulfillment $fulfillment The fulfillment object.
+	 * @param int         $deleted_id  The ID of the deleted record, if deleted.
+	 * @param array|null  $metadata    The metadata to check.
 	 */
-	private function assertFulfillmentMetaInDB( Fulfillment $fulfillment ) {
+	private function assertFulfillmentMetaInDB( Fulfillment $fulfillment, int $deleted_id = 0, ?array $metadata = null ) {
 		global $wpdb;
 
-		$fulfillment_id = $fulfillment->get_id();
-		$metadata       = $fulfillment->get_meta_data();
+		$fulfillment_id = 0 === $deleted_id ? $fulfillment->get_id() : $deleted_id;
+
+		if ( null === $metadata ) {
+			$metadata = $fulfillment->get_meta_data();
+		}
 
 		$records = $wpdb->get_results(
 			$wpdb->prepare(
@@ -486,7 +625,7 @@ class FulfillmentsDataStoreTest extends \WC_Unit_Test_Case {
 				}
 			);
 
-			$this->assertNotEmpty( $record, $meta_key );
+			$this->assertNotEmpty( $record, "$meta_key is empty" );
 			$this->assertEquals( $meta_value, reset( $record )->meta_value );
 		}
 	}
