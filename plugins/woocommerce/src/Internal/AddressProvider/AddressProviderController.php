@@ -1,27 +1,27 @@
 <?php
 declare( strict_types=1 );
-namespace Automattic\WooCommerce\Blocks\Domain\Services;
+namespace Automattic\WooCommerce\Internal\AddressProvider;
 
 use WC_Address_Provider;
 
 /**
  * Service class for managing address providers.
  */
-class AddressProviderService {
+class AddressProviderController {
 
 	/**
 	 * Cached provider class names from the last filter call.
 	 *
 	 * @var string[]
 	 */
-	private $cached_provider_class_names = [];
+	private $cached_provider_class_names = array();
 
 	/**
 	 * Cached provider instances.
 	 *
 	 * @var WC_Address_Provider[]
 	 */
-	private $cached_providers = [];
+	private $cached_providers = array();
 
 	/**
 	 * Get all registered providers.
@@ -35,18 +35,18 @@ class AddressProviderService {
 		 * @since 9.9.0
 		 * @param WC_Address_Provider[] $providers Array of fully qualified class names that extend WC_Address_Provider.
 		 */
-		$provider_class_names = apply_filters( 'woocommerce_address_providers', [] );
+		$provider_class_names = apply_filters( 'woocommerce_address_providers', array() );
 
 		$logger = wc_get_logger();
 
 		if ( ! is_array( $provider_class_names ) ) {
 			$logger->error(
 				'Invalid return value for woocommerce_address_providers, expected an array of class names.',
-				[
+				array(
 					'context' => 'address_provider_service',
-				]
+				)
 			);
-			return [];
+			return array();
 		}
 
 		// If the class names haven't changed, return the cached instances.
@@ -54,8 +54,8 @@ class AddressProviderService {
 			return $this->cached_providers;
 		}
 
-		$providers = [];
-		$seen_ids  = [];
+		$providers = array();
+		$seen_ids  = array();
 
 		foreach ( $provider_class_names as $provider_class_name ) {
 
@@ -63,9 +63,9 @@ class AddressProviderService {
 			if ( ! is_string( $provider_class_name ) ) {
 				$logger->error(
 					'Invalid class name for address provider, expected a string.',
-					[
+					array(
 						'context' => 'address_provider_service',
-					]
+					)
 				);
 				continue;
 			}
@@ -74,9 +74,9 @@ class AddressProviderService {
 			if ( ! class_exists( $provider_class_name ) || ! is_subclass_of( $provider_class_name, WC_Address_Provider::class ) ) {
 				$logger->error(
 					'Invalid address provider class, class does not exist or is not a subclass of WC_Address_Provider: ' . $provider_class_name,
-					[
+					array(
 						'context' => 'address_provider_service',
-					]
+					)
 				);
 				continue;
 			}
@@ -87,9 +87,9 @@ class AddressProviderService {
 			if ( empty( $provider_instance->id ) || empty( $provider_instance->name ) ) {
 				$logger->error(
 					'Invalid address provider instance, id or name property is missing or empty: ' . $provider_class_name,
-					[
+					array(
 						'context' => 'address_provider_service',
-					]
+					)
 				);
 				continue;
 			}
@@ -103,9 +103,9 @@ class AddressProviderService {
 						$seen_ids[ $provider_instance->id ],
 						$provider_class_name
 					),
-					[
+					array(
 						'context' => 'address_provider_service',
-					]
+					)
 				);
 				continue;
 			}
