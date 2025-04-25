@@ -59,9 +59,9 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->set_user_email( 'test@test.com' );
 		$notification->set_status( 'active' );
 		$notification->set_date_created( '2024-01-01 00:00:00' );
-		$notification->set_date_modified( '2024-01-01 00:00:00' );
-		$notification->set_date_subscribed( '2024-01-01 00:00:00' );
-		$notification->set_date_notified( '2024-01-01 00:00:00' );
+		$notification->set_date_modified( '2024-02-01 00:00:00' );
+		$notification->set_date_subscribed( '2024-03-01 00:00:00' );
+		$notification->set_date_notified( '2024-04-01 00:00:00' );
 		$notification->set_is_queued( true );
 
 		$notification->save();
@@ -73,9 +73,9 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$this->assertEquals( 'test@test.com', $notification->get_user_email() );
 		$this->assertEquals( 'active', $notification->get_status() );
 		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_created()->format( 'Y-m-d H:i:s' ) );
-		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
-		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_subscribed()->format( 'Y-m-d H:i:s' ) );
-		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_notified()->format( 'Y-m-d H:i:s' ) );
+		$this->assertEquals( '2024-02-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
+		$this->assertEquals( '2024-03-01 00:00:00', $notification->get_date_subscribed()->format( 'Y-m-d H:i:s' ) );
+		$this->assertEquals( '2024-04-01 00:00:00', $notification->get_date_notified()->format( 'Y-m-d H:i:s' ) );
 		$this->assertTrue( $notification->is_queued() );
 	}
 
