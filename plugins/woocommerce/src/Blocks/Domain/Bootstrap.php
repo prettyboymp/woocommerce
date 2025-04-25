@@ -10,7 +10,6 @@ use Automattic\WooCommerce\Blocks\BlockPatterns;
 use Automattic\WooCommerce\Blocks\BlockTemplatesRegistry;
 use Automattic\WooCommerce\Blocks\BlockTemplatesController;
 use Automattic\WooCommerce\Blocks\BlockTypesController;
-use Automattic\WooCommerce\Blocks\Domain\Services\AddressProviderService;
 use Automattic\WooCommerce\Blocks\Patterns\AIPatterns;
 use Automattic\WooCommerce\Blocks\Patterns\PatternRegistry;
 use Automattic\WooCommerce\Blocks\Patterns\PTKClient;
@@ -405,14 +404,6 @@ class Bootstrap {
 				return new BlockTemplatesController();
 			}
 		);
-		if ( Features::is_enabled( 'experimental-blocks' ) ) {
-			$this->container->register(
-				AddressProviderService::class,
-				function () {
-					return new AddressProviderService();
-				}
-			);
-		}
 	}
 
 	/**

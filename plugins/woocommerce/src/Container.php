@@ -7,9 +7,12 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce;
 
+use Automattic\WooCommerce\Admin\Features\Features;
 use Automattic\WooCommerce\Internal\DependencyManagement\ContainerException;
 use Automattic\WooCommerce\Internal\DependencyManagement\ExtendedContainer;
 use Automattic\WooCommerce\Internal\DependencyManagement\RuntimeContainer;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AddressProviderService;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AddressProviderServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AdminSettingsServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\CostOfGoodsSoldServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\COTMigrationServiceProvider;
@@ -142,7 +145,7 @@ final class Container {
 	 * @return array<int,class-string>
 	 */
 	private function get_service_providers(): array {
-		return array(
+		$providers = array(
 			AssignDefaultCategoryServiceProvider::class,
 			DownloadPermissionsAdjusterServiceProvider::class,
 			EmailPreviewServiceProvider::class,
@@ -177,5 +180,9 @@ final class Container {
 			EmailEditorServiceProvider::class,
 			ProductFiltersServiceProvider::class,
 		);
+		if ( Features::is_enabled( 'experimental-blocks' ) ) {
+			$providers[] = AddressProviderServiceProvider::class;
+		}
+		return $providers;
 	}
 }
