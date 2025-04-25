@@ -189,7 +189,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 		}
 
 		// Set the fulfillment object to a fresh state.
-		$data->reset();
+		$data = new Fulfillment();
 	}
 
 	/**

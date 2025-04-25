@@ -77,7 +77,7 @@ class Fulfillment extends \WC_Data {
 	 * @return string|null Entity type.
 	 */
 	public function get_entity_type(): ?string {
-		return $this->data['entity_type'];
+		return $this->data['entity_type'] ?? null;
 	}
 
 	/**
@@ -95,7 +95,7 @@ class Fulfillment extends \WC_Data {
 	 * @return string|null Entity ID.
 	 */
 	public function get_entity_id(): ?string {
-		return $this->data['entity_id'];
+		return $this->data['entity_id'] ?? null;
 	}
 
 	/**
@@ -124,7 +124,7 @@ class Fulfillment extends \WC_Data {
 	 * @return string|null Fulfillment status.
 	 */
 	public function get_status(): ?string {
-		return $this->data['status'];
+		return $this->data['status'] ?? null;
 	}
 
 	/**
@@ -153,7 +153,7 @@ class Fulfillment extends \WC_Data {
 	 * @return string|null Date updated.
 	 */
 	public function get_date_updated(): ?string {
-		return $this->data['date_updated'];
+		return $this->data['date_updated'] ?? null;
 	}
 
 	/**
@@ -170,7 +170,7 @@ class Fulfillment extends \WC_Data {
 	 * @return string|null Date deleted.
 	 */
 	public function get_date_deleted(): ?string {
-		return $this->data['date_deleted'];
+		return $this->data['date_deleted'] ?? null;
 	}
 	/**
 	 * Set the date deleted.
@@ -217,18 +217,5 @@ class Fulfillment extends \WC_Data {
 	 */
 	public function set_items( array $items ): void {
 		$this->update_meta_data( '_items', wp_json_encode( $items ) );
-	}
-
-	/**
-	 * Resets the object to its default state.
-	 *
-	 * @return void
-	 */
-	public function reset(): void {
-		$this->data = array();
-		$this->set_id( 0 );
-		$this->init_meta_data();
-		$this->set_object_read( false );
-		$this->apply_changes();
 	}
 }
