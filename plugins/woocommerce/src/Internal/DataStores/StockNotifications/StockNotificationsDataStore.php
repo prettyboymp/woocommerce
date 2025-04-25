@@ -22,21 +22,21 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	 *
 	 * @var DatabaseUtil
 	 */
-	protected $database_util;
+	protected DatabaseUtil $database_util;
 
 	/**
 	 * Handles custom metadata in the wc_stock_notificationmeta table.
 	 *
 	 * @var StockNotificationsMetaDataStore
 	 */
-	protected $data_store_meta;
+	protected StockNotificationsMetaDataStore $data_store_meta;
 
 	/**
 	 * The activity logs data store.
 	 *
 	 * @var StockNotificationsActivityLogsDataStore
 	 */
-	protected $data_store_logs;
+	protected StockNotificationsActivityLogsDataStore $data_store_logs;
 
 	/**
 	 * Initialize.
@@ -430,7 +430,7 @@ CREATE TABLE $logs_table_name (
 	 * @param array $args The arguments.
 	 * @return array|int An array of notifications or the number of notifications.
 	 */
-	public function query( $args ) {
+	public function query( array $args ) {
 		global $wpdb;
 
 		$args = wp_parse_args(
@@ -516,7 +516,7 @@ CREATE TABLE $logs_table_name (
 	 * @param array $args The log arguments.
 	 * @return int|false The log ID or false if the log was not created.
 	 */
-	public function create_activity_log( $args ) {
+	public function create_activity_log( array $args ) {
 		return $this->data_store_logs->create( $args );
 	}
 
@@ -526,7 +526,7 @@ CREATE TABLE $logs_table_name (
 	 * @param array $args The query arguments.
 	 * @return array|int An array of logs or the number of logs.
 	 */
-	public function query_activity_logs( $args ) {
+	public function query_activity_logs( array $args ) {
 		return $this->data_store_logs->query( $args );
 	}
 }
