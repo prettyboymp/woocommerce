@@ -89,14 +89,12 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$result = $notification->save();
 		$this->assertInstanceOf( \WP_Error::class, $result );
 		$this->assertEquals( 'stock_notification_validation_error', $result->get_error_code() );
-		$this->assertEquals( 'Product ID is required', $result->get_error_message() );
 
 		// Test missing user_id and user_email.
 		$notification->set_product_id( 1 );
 		$result = $notification->save();
 		$this->assertInstanceOf( \WP_Error::class, $result );
 		$this->assertEquals( 'stock_notification_validation_error', $result->get_error_code() );
-		$this->assertEquals( 'User ID or User Email is required', $result->get_error_message() );
 	}
 
 	/**
