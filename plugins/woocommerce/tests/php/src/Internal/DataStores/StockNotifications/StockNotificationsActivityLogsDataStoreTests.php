@@ -45,7 +45,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'user_id'         => 1,
 			'user_email'      => 'test@test.com',
 			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log',
+			'payload'         => 'Test log',
 		);
 
 		$log_id = $this->data_store->create_activity_log( $args );
@@ -63,7 +63,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 		$this->assertEquals( $args['user_id'], $log[0]['user_id'] );
 		$this->assertEquals( $args['user_email'], $log[0]['user_email'] );
 		$this->assertEquals( $args['ip_address'], $log[0]['ip_address'] );
-		$this->assertEquals( $args['note'], $log[0]['note'] );
+		$this->assertEquals( $args['payload'], $log[0]['payload'] );
 	}
 
 	/**
@@ -77,7 +77,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'user_id'         => 1,
 			'user_email'      => 'test1@test.com',
 			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log 1',
+			'payload'         => 'Test log 1',
 		);
 
 		$args2 = array(
@@ -86,7 +86,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'user_id'         => 1,
 			'user_email'      => 'test2@test.com',
 			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log 2',
+			'payload'         => 'Test log 2',
 		);
 
 		$this->data_store->create_activity_log( $args1 );
@@ -113,7 +113,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'user_id'         => 1,
 			'user_email'      => 'test1@test.com',
 			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log 1',
+			'payload'         => 'Test log 1',
 		);
 
 		$args2 = array(
@@ -122,7 +122,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'user_id'         => 1,
 			'user_email'      => 'test2@test.com',
 			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log 2',
+			'payload'         => 'Test log 2',
 		);
 
 		$this->data_store->create_activity_log( $args1 );
@@ -149,7 +149,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'user_id'         => 1,
 			'user_email'      => 'test1@test.com',
 			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log 1',
+			'payload'         => 'Test log 1',
 		);
 
 		$args2 = array(
@@ -158,7 +158,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'user_id'         => 2,
 			'user_email'      => 'test2@test.com',
 			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log 2',
+			'payload'         => 'Test log 2',
 		);
 
 		$this->data_store->create_activity_log( $args1 );
@@ -185,7 +185,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'user_id'         => 1,
 			'user_email'      => 'test1@test.com',
 			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log 1',
+			'payload'         => 'Test log 1',
 		);
 
 		$args2 = array(
@@ -194,7 +194,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'user_id'         => 2,
 			'user_email'      => 'test2@test.com',
 			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log 2',
+			'payload'         => 'Test log 2',
 		);
 
 		$this->data_store->create_activity_log( $args1 );
@@ -221,7 +221,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'user_id'         => 1,
 			'user_email'      => 'test1@test.com',
 			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log 1',
+			'payload'         => 'Test log 1',
 		);
 
 		$args2 = array(
@@ -230,7 +230,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'user_id'         => 2,
 			'user_email'      => 'test2@test.com',
 			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log 2',
+			'payload'         => 'Test log 2',
 		);
 
 		$args3 = array(
@@ -239,7 +239,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'user_id'         => 3,
 			'user_email'      => 'test3@test.com',
 			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log 3',
+			'payload'         => 'Test log 3',
 		);
 
 		$this->data_store->create_activity_log( $args1 );
@@ -268,7 +268,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'user_id'         => 1,
 			'user_email'      => 'test1@test.com',
 			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log 1',
+			'payload'         => 'Test log 1',
 		);
 
 		$args2 = array(
@@ -277,7 +277,7 @@ class StockNotificationsActivityLogsDataStoreTests extends \WC_Unit_Test_Case {
 			'user_id'         => 2,
 			'user_email'      => 'test2@test.com',
 			'ip_address'      => '127.0.0.1',
-			'note'            => 'Test log 2',
+			'payload'         => 'Test log 2',
 		);
 
 		$this->data_store->create_activity_log( $args1 );
