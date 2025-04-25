@@ -436,7 +436,7 @@ class AddressProviderControllerTest extends MockeryTestCase {
 			'woocommerce_address_providers',
 			function () use ( $provider_class_name ) {
 				// Return a new array each time.
-				return [ $provider_class_name ];
+				return array( $provider_class_name );
 			}
 		);
 
@@ -482,7 +482,7 @@ class AddressProviderControllerTest extends MockeryTestCase {
 		add_filter(
 			'woocommerce_address_providers',
 			function () {
-				return [ 123 ]; // Non-string value.
+				return array( 123 ); // Non-string value.
 			}
 		);
 
@@ -505,7 +505,7 @@ class AddressProviderControllerTest extends MockeryTestCase {
 		add_filter(
 			'woocommerce_address_providers',
 			function () {
-				return [ 'NonExistentClass' ];
+				return array( 'NonExistentClass' );
 			}
 		);
 
@@ -532,7 +532,7 @@ class AddressProviderControllerTest extends MockeryTestCase {
 		add_filter(
 			'woocommerce_address_providers',
 			function () use ( $provider_class_name ) {
-				return [ $provider_class_name ];
+				return array( $provider_class_name );
 			}
 		);
 
@@ -559,11 +559,11 @@ class AddressProviderControllerTest extends MockeryTestCase {
 		add_filter(
 			'woocommerce_address_providers',
 			function () use ( $provider_class_name ) {
-				return [
+				return array(
 					123, // Invalid type.
 					'NonExistentClass', // Non-existent class.
 					$provider_class_name, // Missing properties.
-				];
+				);
 			}
 		);
 
@@ -571,18 +571,18 @@ class AddressProviderControllerTest extends MockeryTestCase {
 			->expects( $this->exactly( 3 ) )
 			->method( 'error' )
 			->withConsecutive(
-				[
+				array(
 					'Invalid class name for address provider, expected a string.',
 					array( 'context' => 'address_provider_service' ),
-				],
-				[
+				),
+				array(
 					'Invalid address provider class, class does not exist or is not a subclass of WC_Address_Provider: NonExistentClass',
 					array( 'context' => 'address_provider_service' ),
-				],
-				[
+				),
+				array(
 					'Invalid address provider instance, id or name property is missing or empty: ' . $provider_class_name,
 					array( 'context' => 'address_provider_service' ),
-				]
+				)
 			);
 
 		$providers = $this->sut->get_registered_providers();
@@ -620,7 +620,7 @@ class AddressProviderControllerTest extends MockeryTestCase {
 		add_filter(
 			'woocommerce_address_providers',
 			function () use ( $provider1_class_name, $provider2_class_name ) {
-				return [ $provider1_class_name, $provider2_class_name ];
+				return array( $provider1_class_name, $provider2_class_name );
 			}
 		);
 
@@ -676,7 +676,7 @@ class AddressProviderControllerTest extends MockeryTestCase {
 		add_filter(
 			'woocommerce_address_providers',
 			function () use ( $provider1_class_name, $provider2_class_name ) {
-				return [ $provider1_class_name, $provider2_class_name ];
+				return array( $provider1_class_name, $provider2_class_name );
 			}
 		);
 
