@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @version  9.9.0
  */
-class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data_Store_Interface {
+class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data_Store_Interface, FulfillmentsDataStoreInterface {
 
 	/**
 	 * Method to create a new fulfillment in the database.
@@ -52,7 +52,7 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 		}
 
 		// Set fulfillment properties.
-		$data->set_date_updated( new \DateTime( current_time( 'mysql' ) ) );
+		$data->set_date_updated( current_time( 'mysql' ) );
 
 		// Save the fulfillment to the database.
 		global $wpdb;
@@ -61,15 +61,12 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 			array(
 				'entity_type'  => $data->get_entity_type(),
 				'entity_id'    => $data->get_entity_id(),
-				'date_updated' => $data->get_date_updated()->format( 'Y-m-d H:i:s' ),
-				'date_deleted' => $data->get_date_deleted() ? $data->get_date_deleted()->format( 'Y-m-d H:i:s' ) : null,
+				'status'       => $data->get_status() ?? 'unfulfilled',
+				'is_fulfilled' => $data->get_is_fulfilled() ? 1 : 0,
+				'date_updated' => $data->get_date_updated(),
+				'date_deleted' => $data->get_date_deleted(),
 			),
-			array(
-				'%s',
-				'%d',
-				'%s',
-				'%s',
-			)
+			array( '%s', '%s', '%s', '%d', '%s', '%s' )
 		);
 
 		// Check for errors.
@@ -116,18 +113,8 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 			throw new \Exception( esc_html__( 'Fulfillment not found.', 'woocommerce' ) );
 		}
 
-		$data->set_props(
-			array(
-				'fulfillment_id' => $fulfillment_data['fulfillment_id'],
-				'entity_type'    => $fulfillment_data['entity_type'],
-				'entity_id'      => $fulfillment_data['entity_id'],
-				'date_updated'   => new \DateTime( $fulfillment_data['date_updated'] ),
-				'date_deleted'   => $fulfillment_data['date_deleted'] ? new \DateTime( $fulfillment_data['date_deleted'] ) : null,
-			)
-		);
-
+		$data->set_props( $fulfillment_data );
 		$data->read_meta_data( true );
-
 		$data->set_object_read( true );
 	}
 
@@ -150,22 +137,19 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 			array(
 				'entity_type'  => $data->get_entity_type(),
 				'entity_id'    => $data->get_entity_id(),
-				'date_updated' => $data->get_date_updated()->format( 'Y-m-d H:i:s' ),
-				'date_deleted' => $data->get_date_deleted() ? $data->get_date_deleted()->format( 'Y-m-d H:i:s' ) : null,
+				'status'       => $data->get_status(),
+				'is_fulfilled' => $data->get_is_fulfilled() ? 1 : 0,
+				'date_updated' => $data->get_date_updated(),
+				'date_deleted' => $data->get_date_deleted(),
 			),
 			array( 'fulfillment_id' => $data_id ),
-			array(
-				'%s',
-				'%d',
-				'%s',
-				'%s',
-			),
+			array( '%s', '%s', '%s', '%d', '%s', '%s' ),
 			array( '%d' )
 		);
 
 		// Check for errors.
 		if ( $wpdb->last_error ) {
-			throw new \Exception( esc_html__( 'Failed to update fulfillment.', 'woocommerce' ) );
+			throw new \Exception( esc_html__( 'Failed to update fulfillment.', 'woocommerce' ) . ' ' . esc_html( $wpdb->last_error ) );
 		}
 
 		// Update the metadata for the fulfillment.
@@ -193,13 +177,9 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 		$deletion_time = current_time( 'mysql' );
 		$wpdb->update(
 			$wpdb->prefix . 'wc_order_fulfillments',
-			array(
-				'date_deleted' => $deletion_time,
-			),
+			array( 'date_deleted' => $deletion_time ),
 			array( 'fulfillment_id' => $data_id ),
-			array(
-				'%s',
-			),
+			array( '%s' ),
 			array( '%d' )
 		);
 
@@ -208,23 +188,8 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 			throw new \Exception( esc_html__( 'Failed to delete fulfillment.', 'woocommerce' ) );
 		}
 
-		// Delete the metadata for the fulfillment.
-		$wpdb->delete(
-			$wpdb->prefix . 'wc_order_fulfillment_meta',
-			array( 'fulfillment_id' => $data_id ),
-			array( '%d' )
-		);
-
-		// Check for errors.
-		if ( $wpdb->last_error ) {
-			throw new \Exception( esc_html__( 'Failed to clear fulfillment meta.', 'woocommerce' ) );
-		}
-
-		$data->init_meta_data( array() );
-		$data->set_date_deleted( new \DateTime( $deletion_time ) );
-		$data->apply_changes();
-
-		$data->set_object_read( true );
+		// Set the fulfillment object to a fresh state.
+		$data->reset();
 	}
 
 	/**
@@ -370,5 +335,50 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 		}
 
 		return $rows_updated;
+	}
+
+	/**
+	 * Method to read the fulfillment data.
+	 *
+	 * @param string $entity_type The entity type.
+	 * @param string $entity_id The entity ID.
+	 *
+	 * @return Fulfillment[] Fulfillment object.
+	 */
+	public function read_fulfillments( string $entity_type, string $entity_id ): array {
+		// Read the fulfillment data from the database.
+		global $wpdb;
+
+		$fulfillment_data = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}wc_order_fulfillments WHERE entity_type = %s AND entity_id = %s",
+				$entity_type,
+				$entity_id
+			),
+			ARRAY_A
+		);
+
+		if ( empty( $fulfillment_data ) ) {
+			return array();
+		}
+
+		// Create Fulfillment objects from the data.
+		$fulfillments = array();
+		foreach ( $fulfillment_data as $data ) {
+			// Note: Don't initialize with ID, it will cause a re-read from the database.
+			// Set the ID directly after the object is created.
+			$fulfillment = new Fulfillment();
+			$fulfillment->set_id( $data['fulfillment_id'] );
+			$fulfillment->set_props( $data );
+			$fulfillment->apply_changes();
+			$fulfillment->set_object_read( true );
+
+			// Read the metadata for the fulfillment.
+			$fulfillment->read_meta_data( true );
+
+			$fulfillments[] = $fulfillment;
+		}
+
+		return $fulfillments;
 	}
 }
