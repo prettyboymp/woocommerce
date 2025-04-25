@@ -1,22 +1,21 @@
 <?php
 declare( strict_types=1 );
 
-namespace Automattic\WooCommerce\Tests\Blocks\Domain\Services;
+namespace Automattic\WooCommerce\Tests\Internal\AddressProvider;
 
+use Automattic\WooCommerce\Internal\AddressProvider\AddressProviderController;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
-use Automattic\WooCommerce\Blocks\Domain\Services\AddressProviderService;
-use Automattic\WooCommerce\Blocks\Package;
 use WC_Address_Provider;
 
 /**
  * Tests for Address Provider Service functionality
  */
-class AddressProviderServiceTest extends MockeryTestCase {
+class AddressProviderControllerTest extends MockeryTestCase {
 
 	/**
 	 * System under test.
 	 *
-	 * @var AddressProviderService
+	 * @var AddressProviderController
 	 */
 	private $sut;
 
@@ -32,7 +31,7 @@ class AddressProviderServiceTest extends MockeryTestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
-		$this->sut = Package::container()->get( AddressProviderService::class );
+		$this->sut = new AddressProviderController();
 
 		// Setup mock logger.
 		$this->mock_logger = $this->getMockBuilder( 'WC_Logger_Interface' )->getMock();
