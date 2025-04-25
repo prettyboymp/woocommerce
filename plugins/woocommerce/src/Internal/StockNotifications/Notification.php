@@ -335,7 +335,7 @@ class Notification extends \WC_Data {
 				'user_id'    => 0,
 				'user_email' => '',
 				'ip_address' => \WC_Geolocation::get_ip_address(),
-				'note'       => '',
+				'payload'    => '',
 			)
 		);
 
