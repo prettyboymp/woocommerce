@@ -260,6 +260,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification = new Notification( $notification->get_id() );
 		$this->assertEquals( 'test_value', $notification->get_meta( 'test_meta' ) );
 		$notification->delete_meta_data( 'test_meta' );
+		$this->assertFalse( $notification->meta_exists( 'test_meta' ) );
 		$notification->save();
 
 		$notification = new Notification( $notification->get_id() );
