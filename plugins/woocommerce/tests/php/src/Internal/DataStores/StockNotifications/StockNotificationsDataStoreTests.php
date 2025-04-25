@@ -351,7 +351,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 				'user_id'    => 1,
 			)
 		);
-		$this->assertEquals( 1, count( $notifications ) );
+		$this->assertCount( 1, $notifications );
 	}
 
 	/**
@@ -375,7 +375,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 				'status' => 'active',
 			)
 		);
-		$this->assertEquals( 1, count( $notifications ) );
+		$this->assertCount( 1, $notifications );
 	}
 
 	/**
@@ -398,7 +398,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 				'product_id' => 1,
 			)
 		);
-		$this->assertEquals( 1, count( $notifications ) );
+		$this->assertCount( 1, $notifications );
 	}
 
 	/**
@@ -421,7 +421,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 				'user_id' => 1,
 			)
 		);
-		$this->assertEquals( 1, count( $notifications ) );
+		$this->assertCount( 1, $notifications );
 	}
 
 	/**
@@ -446,7 +446,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 				'user_email' => 'test@test.com',
 			)
 		);
-		$this->assertEquals( 1, count( $notifications ) );
+		$this->assertCount( 1, $notifications );
 	}
 
 	/**
@@ -470,7 +470,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 				'is_queued' => true,
 			)
 		);
-		$this->assertEquals( 1, count( $notifications ) );
+		$this->assertCount( 1, $notifications );
 	}
 
 	/**
@@ -504,7 +504,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 				'offset' => 1,
 			)
 		);
-		$this->assertEquals( 2, count( $notifications ) );
+		$this->assertCount( 2, $notifications );
 
 		$this->assertEquals( 2, $notifications[0]->get_id() );
 		$this->assertEquals( 3, $notifications[1]->get_id() );
