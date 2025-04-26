@@ -52,7 +52,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	public function register_routes() {
 		// Register the route for getting and setting order fulfillments.
 		register_rest_route(
-			$this->get_rest_api_namespace(),
+			$this->route_namespace,
 			$this->rest_base,
 			array(
 				array(
@@ -74,7 +74,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 
 		// Register the route for getting a specific fulfillment.
 		register_rest_route(
-			$this->get_rest_api_namespace(),
+			$this->route_namespace,
 			$this->rest_base . '/(?P<fulfillment_id>[\d]+)',
 			array(
 				array(
@@ -103,7 +103,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 
 		// Register the route for fulfillment metadata.
 		register_rest_route(
-			$this->get_rest_api_namespace(),
+			$this->route_namespace,
 			$this->rest_base . '/(?P<fulfillment_id>[\d]+)/metadata',
 			array(
 				array(
@@ -132,7 +132,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 
 		// Register the route for tracking number lookup.
 		register_rest_route(
-			$this->get_rest_api_namespace(),
+			$this->route_namespace,
 			'/fulfillments/lookup',
 			array(
 				array(
@@ -157,7 +157,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	protected function check_permission_for_fulfillments( WP_REST_Request $request ) {
 		// Check if the user is logged in as admin, and has the required capability.
 		// Admins who can manage WooCommerce can view all fulfillments.
-		if ( is_admin() && current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown
+		if ( current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown
 			return true;
 		}
 
@@ -168,11 +168,17 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		if ( $request->has_param( 'order_id' ) ) {
 			$order_id = (int) $request->get_param( 'order_id' );
 			$order    = wc_get_order( $order_id );
+
+			if ( ! $order ) {
+				return new \WP_Error(
+					'woocommerce_rest_order_invalid_id',
+					__( 'Invalid order ID.', 'woocommerce' ),
+					array( 'status' => WP_Http::NOT_FOUND )
+				);
+			}
+
 			// Check if the order exists, and if the current user is the owner of the order, and the request is a read request.
-			if ( $order
-				&& get_current_user_id() === $order->get_customer_id()
-				&& \WP_REST_Server::READABLE === $request->get_method()
-			) {
+			if ( get_current_user_id() === $order->get_customer_id() && \WP_REST_Server::READABLE === $request->get_method() ) {
 				return true;
 			}
 		}
@@ -216,7 +222,11 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		// Return the fulfillments.
 		return new WP_REST_Response(
 			array(
-				'fulfillments' => $fulfillments,
+				'fulfillments' => array_map(
+					function ( $fulfillment ) {
+						return $fulfillment->get_raw_data(); },
+					$fulfillments
+				),
 			),
 			WP_Http::OK
 		);
@@ -992,12 +1002,6 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		return array(
 			'type'       => 'object',
 			'properties' => array(
-				'id'    => array(
-					'description' => __( 'Unique identifier for the meta data.', 'woocommerce' ),
-					'type'        => 'integer',
-					'context'     => array( 'view', 'edit' ),
-					'readonly'    => true,
-				),
 				'key'   => array(
 					'description' => __( 'The key of the meta data.', 'woocommerce' ),
 					'type'        => 'string',

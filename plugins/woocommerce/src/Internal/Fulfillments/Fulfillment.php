@@ -218,4 +218,31 @@ class Fulfillment extends \WC_Data {
 	public function set_items( array $items ): void {
 		$this->update_meta_data( '_items', wp_json_encode( $items ) );
 	}
+
+	/**
+	 * Returns all data for this object as an associative array.
+	 *
+	 * @return array
+	 */
+	public function get_raw_data() {
+		return array_merge( array( 'id' => $this->get_id() ), $this->data, array( 'meta_data' => $this->get_raw_meta_data() ) );
+	}
+
+	/**
+	 * Returns the data store for this object.
+	 *
+	 * @return FulfillmentsDataStore
+	 */
+	public function get_raw_meta_data() {
+		$meta_data = array();
+
+		foreach ( $this->get_meta_data() as $meta ) {
+			$meta_data[] = array(
+				'key'   => $meta->key,
+				'value' => $meta->value,
+			);
+		}
+
+		return $meta_data;
+	}
 }

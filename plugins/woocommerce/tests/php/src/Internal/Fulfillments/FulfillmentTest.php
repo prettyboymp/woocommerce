@@ -3,6 +3,7 @@
 namespace Automattic\WooCommerce\Tests\Internal\Fulfillments;
 
 use Automattic\WooCommerce\Internal\Fulfillments\Fulfillment;
+use FulfillmentsHelper;
 
 /**
  * Tests for Fulfillment object.
@@ -20,7 +21,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	 * Test that the Fulfillment object can be created with an ID.
 	 */
 	public function test_fulfillment_object_with_id_fetches_data_and_metadata() {
-		$db_fulfillment = $this->helper_create_fulfillment();
+		$db_fulfillment = FulfillmentsHelper::create_fulfillment();
 		$fulfillment    = new Fulfillment( $db_fulfillment->get_id() );
 
 		$this->assertInstanceOf( Fulfillment::class, $fulfillment );
@@ -37,7 +38,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	 * Test that Fulfillment object can be updated.
 	 */
 	public function test_fulfillment_object_update() {
-		$fulfillment = $this->helper_create_fulfillment(
+		$fulfillment = FulfillmentsHelper::create_fulfillment(
 			array(
 				'entity_type' => 'order-fulfillment',
 				'entity_id'   => 123,
@@ -56,7 +57,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	 * Test that Fulfillment object can be soft deleted.
 	 */
 	public function test_fulfillment_object_soft_delete() {
-		$fulfillment = $this->helper_create_fulfillment(
+		$fulfillment = FulfillmentsHelper::create_fulfillment(
 			array(
 				'entity_type' => 'order-fulfillment',
 				'entity_id'   => 123,
@@ -77,7 +78,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	 * Test that Fulfillment object can be created with items.
 	 */
 	public function test_fulfillment_object_with_items() {
-		$fulfillment = $this->helper_create_fulfillment(
+		$fulfillment = FulfillmentsHelper::create_fulfillment(
 			array(
 				'entity_type' => 'order-fulfillment',
 				'entity_id'   => 123,
@@ -109,7 +110,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	 * Test that Fulfillment object can be created with metadata.
 	 */
 	public function test_fulfillment_object_with_metadata() {
-		$fulfillment = $this->helper_create_fulfillment(
+		$fulfillment = FulfillmentsHelper::create_fulfillment(
 			array(
 				'entity_type' => 'order-fulfillment',
 				'entity_id'   => 123,
@@ -126,7 +127,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	 * Test that metadata can be updated.
 	 */
 	public function test_fulfillment_object_update_metadata() {
-		$fulfillment = $this->helper_create_fulfillment(
+		$fulfillment = FulfillmentsHelper::create_fulfillment(
 			array(
 				'entity_type' => 'order-fulfillment',
 				'entity_id'   => 123,
@@ -146,7 +147,7 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 	 * Test that metadata can be deleted.
 	 */
 	public function test_fulfillment_object_delete_metadata() {
-		$fulfillment = $this->helper_create_fulfillment(
+		$fulfillment = FulfillmentsHelper::create_fulfillment(
 			array(
 				'entity_type' => 'order-fulfillment',
 				'entity_id'   => 123,
@@ -160,52 +161,5 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 		$fulfillment->save();
 
 		$this->assertEquals( '', $fulfillment->get_meta( 'test_meta_key' ) );
-	}
-
-	/**
-	 * Helper function to create a fulfillment.
-	 *
-	 * @param array $args Arguments to create the fulfillment.
-	 * @return Fulfillment The created fulfillment object.
-	 */
-	private function helper_create_fulfillment( $args = array() ) {
-		$fulfillment = new Fulfillment();
-		$fulfillment->set_props(
-			array_merge(
-				array(
-					'id'          => 0,
-					'entity_type' => 'order-fulfillment',
-					'entity_id'   => 123,
-				),
-				$args
-			)
-		);
-
-		$fulfillment->add_meta_data(
-			'test_meta_key',
-			'test_meta_value',
-			true
-		);
-
-		$fulfillment->set_items(
-			array(
-				array(
-					'item_id' => 1,
-					'qty'     => 2,
-				),
-				array(
-					'item_id' => 2,
-					'qty'     => 3,
-				),
-			)
-		);
-
-		$fulfillment->save();
-
-		// Check if the fulfillment was created successfully.
-		$this->assertNotEquals( 0, $fulfillment->get_id() );
-		$this->assertNotNull( $fulfillment->get_date_updated() );
-
-		return $fulfillment;
 	}
 }
