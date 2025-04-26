@@ -4,7 +4,7 @@ declare( strict_types = 1 );
 namespace Automattic\WooCommerce\Tests\Internal\Fulfillments;
 
 use Automattic\WooCommerce\Internal\Fulfillments\OrderFulfillmentsRestController;
-use FulfillmentsHelper;
+use Automattic\WooCommerce\Tests\Internal\Fulfillments\Helpers\FulfillmentsHelper;
 use WC_Helper_Order;
 use WC_Order;
 use WC_REST_Unit_Test_Case;

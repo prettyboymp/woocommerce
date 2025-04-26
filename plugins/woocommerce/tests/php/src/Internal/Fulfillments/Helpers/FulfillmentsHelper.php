@@ -1,6 +1,9 @@
-<?php
+<?php declare( strict_types=1 );
+
+namespace Automattic\WooCommerce\Tests\Internal\Fulfillments\Helpers;
 
 use Automattic\WooCommerce\Internal\Fulfillments\Fulfillment;
+use WC_Order;
 
 /**
  * Helper class for creating and managing fulfillments in tests.

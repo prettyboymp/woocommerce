@@ -3,7 +3,7 @@
 namespace Automattic\WooCommerce\Tests\Internal\Fulfillments;
 
 use Automattic\WooCommerce\Internal\Fulfillments\Fulfillment;
-use FulfillmentsHelper;
+use Automattic\WooCommerce\Tests\Internal\Fulfillments\Helpers\FulfillmentsHelper;
 
 /**
  * Tests for Fulfillment object.
