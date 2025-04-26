@@ -145,9 +145,13 @@ const Block = (): JSX.Element | null => {
 		);
 	}, [ shippingRates ] );
 
-	const [ selectedOption, setSelectedOption ] = useState< string >(
-		() => pickupLocations.find( ( rate ) => rate.selected )?.rate_id || ''
+	const findSelectedOption = useCallback(
+		() => pickupLocations.find( ( rate ) => rate.selected )?.rate_id || '',
+		[ pickupLocations ]
 	);
+
+	const [ selectedOption, setSelectedOption ] =
+		useState< string >( findSelectedOption );
 
 	const onSelectRate = useCallback(
 		( rateId: string ) => {
@@ -155,7 +159,6 @@ const Block = (): JSX.Element | null => {
 		},
 		[ selectShippingRate ]
 	);
-
 	// Prepare props to pass to the ExperimentalOrderLocalPickupPackages slot fill.
 	// We need to pluck out receiveCart.
 	// eslint-disable-next-line no-unused-vars
@@ -172,16 +175,17 @@ const Block = (): JSX.Element | null => {
 
 	useEffect( () => {
 		if (
-			! selectedOption &&
-			pickupLocations[ 0 ] &&
-			selectedOption !== pickupLocations[ 0 ].rate_id
+			! pickupLocations.some(
+				( rate ) => rate.rate_id === findSelectedOption()
+			) &&
+			!! pickupLocations[ 0 ]?.rate_id
 		) {
 			setSelectedOption( pickupLocations[ 0 ].rate_id );
 			onSelectRate( pickupLocations[ 0 ].rate_id );
 		}
 		// Removing onSelectRate as it lead to an infinite loop when only one pickup location is available.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ pickupLocations, selectedOption ] );
+	}, [ pickupLocations, findSelectedOption ] );
 
 	const packageCount = getShippingRatesPackageCount( shippingRates );
 	return (
