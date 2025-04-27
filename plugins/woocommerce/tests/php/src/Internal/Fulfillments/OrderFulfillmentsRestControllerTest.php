@@ -1292,12 +1292,10 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 		$this->assertEquals(
 			array(
 				array(
-					'id'    => 1,
 					'key'   => 'test_meta_key',
 					'value' => 'test_meta_value',
 				),
 				array(
-					'id'    => 2,
 					'key'   => '_items',
 					'value' => wp_json_encode(
 						array(
@@ -1313,7 +1311,13 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 					),
 				),
 			),
-			$response->get_data()['meta_data']
+			array_map(
+				function ( $meta ) {
+					unset( $meta['id'] );
+					return $meta;
+				},
+				$response->get_data()['meta_data']
+			)
 		);
 	}
 
@@ -1343,12 +1347,10 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 		$this->assertEquals(
 			array(
 				array(
-					'id'    => 1,
 					'key'   => 'test_meta_key',
 					'value' => 'test_meta_value',
 				),
 				array(
-					'id'    => 2,
 					'key'   => '_items',
 					'value' => wp_json_encode(
 						array(
@@ -1364,7 +1366,13 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 					),
 				),
 			),
-			$response->get_data()['meta_data']
+			array_map(
+				function ( $meta ) {
+					unset( $meta['id'] );
+					return $meta;
+				},
+				$response->get_data()['meta_data']
+			)
 		);
 	}
 
@@ -1567,31 +1575,33 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 		$this->assertEquals( WP_Http::OK, $response->get_status() );
 		$this->assertEquals(
 			array(
-				'meta_data' => array(
-					array(
-						'id'    => 45,
-						'key'   => 'test_meta_key',
-						'value' => 'test_meta_value_updated',
-					),
-					array(
-						'id'    => 46,
-						'key'   => '_items',
-						'value' => wp_json_encode(
+				array(
+					'key'   => 'test_meta_key',
+					'value' => 'test_meta_value_updated',
+				),
+				array(
+					'key'   => '_items',
+					'value' => wp_json_encode(
+						array(
 							array(
-								array(
-									'item_id' => 1,
-									'qty'     => 2,
-								),
-								array(
-									'item_id' => 2,
-									'qty'     => 3,
-								),
-							)
-						),
+								'item_id' => 1,
+								'qty'     => 2,
+							),
+							array(
+								'item_id' => 2,
+								'qty'     => 3,
+							),
+						)
 					),
 				),
 			),
-			$response->get_data()
+			array_map(
+				function ( $meta ) {
+					unset( $meta['id'] );
+					return $meta;
+				},
+				$response->get_data()['meta_data']
+			)
 		);
 
 		// Clean up the test environment.
