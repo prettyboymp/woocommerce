@@ -210,13 +210,13 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 * @return WP_REST_Response The fulfillments for the order, or an error if the request fails.
 	 */
 	public function get_fulfillments( WP_REST_Request $request ): WP_REST_Response {
-		$order_id     = esc_attr( $request->get_param( 'order_id' ) );
+		$order_id     = (int) $request->get_param( 'order_id' );
 		$fulfillments = array();
 
 		// Fetch fulfillments for the order.
 		try {
 			$datastore    = wc_get_container()->get( FulfillmentsDataStore::class );
-			$fulfillments = $datastore->read_fulfillments( WC_Order::class, $order_id );
+			$fulfillments = $datastore->read_fulfillments( WC_Order::class, "$order_id" );
 		} catch ( \Exception $e ) {
 			return $this->prepare_error_response(
 				$e->getCode(),
@@ -246,7 +246,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 * @return WP_REST_Response The created fulfillment, or an error if the request fails.
 	 */
 	public function create_fulfillment( WP_REST_Request $request ) {
-		$order_id = esc_attr( $request->get_param( 'order_id' ) );
+		$order_id = (int) $request->get_param( 'order_id' );
 
 		// Create a new fulfillment.
 		try {
@@ -254,7 +254,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 			$fulfillment->set_props( $request->get_body_params() );
 			$fulfillment->set_meta_data( $request->get_body_params()['meta_data'] );
 			$fulfillment->set_entity_type( WC_Order::class );
-			$fulfillment->set_entity_id( $order_id );
+			$fulfillment->set_entity_id( "$order_id" );
 
 			$fulfillment->save();
 		} catch ( \Exception $e ) {
@@ -311,13 +311,13 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 * @return WP_REST_Response The updated fulfillment, or an error if the request fails.
 	 */
 	public function update_fulfillment( WP_REST_Request $request ): WP_REST_Response {
-		$order_id       = esc_attr( $request->get_param( 'order_id' ) );
-		$fulfillment_id = esc_attr( $request->get_param( 'fulfillment_id' ) );
+		$order_id       = (int) $request->get_param( 'order_id' );
+		$fulfillment_id = (int) $request->get_param( 'fulfillment_id' );
 
 		// Update the fulfillment for the order.
 		try {
 			$fulfillment = new Fulfillment( $fulfillment_id );
-			if ( $fulfillment->get_id() === 0 || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== $order_id ) {
+			if ( $fulfillment->get_id() !== $fulfillment_id || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== "$order_id" ) {
 				return $this->prepare_error_response(
 					'woocommerce_rest_fulfillment_invalid_id',
 					__( 'Invalid fulfillment ID.', 'woocommerce' ),
@@ -364,13 +364,13 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 * @return WP_REST_Response The deleted fulfillment, or an error if the request fails.
 	 */
 	public function delete_fulfillment( WP_REST_Request $request ) {
-		$order_id       = esc_attr( $request->get_param( 'order_id' ) );
-		$fulfillment_id = esc_attr( $request->get_param( 'fulfillment_id' ) );
+		$order_id       = (int) $request->get_param( 'order_id' );
+		$fulfillment_id = (int) $request->get_param( 'fulfillment_id' );
 
 		// Delete the fulfillment for the order.
 		try {
 			$fulfillment = new Fulfillment( $fulfillment_id );
-			if ( $fulfillment->geT_id() === 0 || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== "$order_id" ) {
+			if ( $fulfillment->get_id() !== $fulfillment_id || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== "$order_id" ) {
 				return $this->prepare_error_response(
 					'woocommerce_rest_fulfillment_invalid_id',
 					__( 'Invalid fulfillment ID.', 'woocommerce' ),
@@ -408,7 +408,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		// Fetch the metadata for the fulfillment.
 		try {
 			$fulfillment = new Fulfillment( $fulfillment_id );
-			if ( $fulfillment->get_id() === 0 || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== "$order_id" ) {
+			if ( $fulfillment->get_id() !== $fulfillment_id || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== "$order_id" ) {
 				return $this->prepare_error_response(
 					'woocommerce_rest_fulfillment_invalid_id',
 					__( 'Invalid fulfillment ID.', 'woocommerce' ),
@@ -445,7 +445,8 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		// Update the metadata for the fulfillment.
 		try {
 			$fulfillment = new Fulfillment( $fulfillment_id );
-			if ( $fulfillment->get_id() === 0 || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== "$order_id" ) {
+
+			if ( $fulfillment->get_id() !== $fulfillment_id || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== "$order_id" ) {
 				return $this->prepare_error_response(
 					'woocommerce_rest_fulfillment_invalid_id',
 					__( 'Invalid fulfillment ID.', 'woocommerce' ),
@@ -495,7 +496,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		// Delete the metadata for the fulfillment.
 		try {
 			$fulfillment = new Fulfillment( $fulfillment_id );
-			if ( $fulfillment->get_id() === 0 || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== $order_id ) {
+			if ( $fulfillment->get_id() !== $fulfillment_id || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== "$order_id" ) {
 				return $this->prepare_error_response(
 					'woocommerce_rest_fulfillment_invalid_id',
 					__( 'Invalid fulfillment ID.', 'woocommerce' ),
@@ -566,6 +567,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 */
 	private function get_schema_for_get_fulfillments(): array {
 		$schema               = $this->get_base_schema();
+		$schema['title']      = __( 'Get fulfillments response.', 'woocommerce' );
 		$schema['properties'] = array(
 			'fulfillment' => array(
 				'description' => __( 'The fulfillment object.', 'woocommerce' ),
@@ -593,6 +595,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 */
 	private function get_schema_for_create_fulfillment(): array {
 		$schema               = $this->get_base_schema();
+		$schema['title']      = __( 'Create fulfillment response.', 'woocommerce' );
 		$schema['properties'] = array(
 			'fulfillment' => array(
 				'description' => __( 'The created fulfillment object.', 'woocommerce' ),
@@ -633,7 +636,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 */
 	private function get_schema_for_get_fulfillment(): array {
 		$schema               = $this->get_base_schema();
-		$schema['title']      = __( 'The returned fulfillment response.', 'woocommerce' );
+		$schema['title']      = __( 'Get fulfillment response.', 'woocommerce' );
 		$schema['properties'] = array(
 			'fulfillment' => array(
 				'description' => __( 'The fulfillment object.', 'woocommerce' ),
@@ -662,7 +665,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 */
 	private function get_schema_for_update_fulfillment(): array {
 		$schema               = $this->get_base_schema();
-		$schema['title']      = __( 'The updated fulfillment response.', 'woocommerce' );
+		$schema['title']      = __( 'Update fulfillment response.', 'woocommerce' );
 		$schema['properties'] = array(
 			'fulfillment' => array(
 				'description' => __( 'The fulfillment object.', 'woocommerce' ),
@@ -704,7 +707,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 */
 	private function get_schema_for_delete_fulfillment(): array {
 		$schema               = $this->get_base_schema();
-		$schema['title']      = __( 'The deleted fulfillment response.', 'woocommerce' );
+		$schema['title']      = __( 'Delete fulfillment response.', 'woocommerce' );
 		$schema['properties'] = array(
 			'message' => array(
 				'description' => __( 'The response message.', 'woocommerce' ),
@@ -745,7 +748,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 */
 	private function get_schema_for_get_fulfillment_meta(): array {
 		$schema               = $this->get_base_schema();
-		$schema['title']      = __( 'The returned fulfillment meta data response.', 'woocommerce' );
+		$schema['title']      = __( 'Get fulfillment meta data response.', 'woocommerce' );
 		$schema['properties'] = array(
 			'meta_data' => array(
 				'description' => __( 'The meta data array.', 'woocommerce' ),
@@ -801,7 +804,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 */
 	private function get_schema_for_update_fulfillment_meta(): array {
 		$schema               = $this->get_base_schema();
-		$schema['title']      = __( 'The updated fulfillment meta data response.', 'woocommerce' );
+		$schema['title']      = __( 'Update fulfillment meta data response.', 'woocommerce' );
 		$schema['properties'] = array(
 			'meta_data' => array(
 				'description' => __( 'The meta data array.', 'woocommerce' ),
@@ -852,7 +855,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 */
 	private function get_schema_for_delete_fulfillment_meta(): array {
 		$schema               = $this->get_base_schema();
-		$schema['title']      = __( 'The final fulfillment meta data response.', 'woocommerce' );
+		$schema['title']      = __( 'Delete fulfillment meta data response.', 'woocommerce' );
 		$schema['properties'] = array(
 			'meta_data' => array(
 				'description' => __( 'The meta data array.', 'woocommerce' ),
@@ -891,7 +894,9 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 * @return array
 	 */
 	private function get_schema_for_get_tracking_number_details(): array {
-		return array(
+		$schema               = $this->get_base_schema();
+		$schema['title']      = __( 'The tracking number details response.', 'woocommerce' );
+		$schema['properties'] = array(
 			'tracking_number_details' => array(
 				'description' => __( 'The tracking number details.', 'woocommerce' ),
 				'type'        => 'object',
@@ -915,6 +920,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 				),
 			),
 		);
+		return $schema;
 	}
 
 	/**

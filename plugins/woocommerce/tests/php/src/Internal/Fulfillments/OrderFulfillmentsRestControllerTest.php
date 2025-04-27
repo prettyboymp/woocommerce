@@ -1747,6 +1747,196 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 	}
 
 	/**
+	 * Test deleting fulfillment meta data for a regular user.
+	 */
+	public function test_delete_fulfillment_meta_data_for_regular_user() {
+		// Get a previously created order.
+		$order_id = self::$created_order_ids[4];
+		$request  = new WP_REST_Request( 'GET', '/wc/v3/orders/' . $order_id . '/fulfillments' );
+		$response = $this->server->dispatch( $request );
+
+		$fulfillments = $response->get_data()['fulfillments'];
+		$this->assertIsArray( $fulfillments );
+		$this->assertCount( 10, $fulfillments );
+
+		$fulfillment_id = $fulfillments[4]['fulfillment_id'];
+
+		// Delete the fulfillment meta data for the order.
+		$request = new WP_REST_Request( 'DELETE', '/wc/v3/orders/' . $order_id . '/fulfillments/' . $fulfillment_id . '/metadata' );
+		$request->set_body_params(
+			array(
+				'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			),
+		);
+		$response = $this->server->dispatch( $request );
+
+		// Check the response. It should be an error saying that a regular user cannot delete a fulfillment.
+		$this->assertEquals( WP_Http::UNAUTHORIZED, $response->get_status() );
+		$this->assertEquals(
+			array(
+				'code'    => 'woocommerce_rest_cannot_delete',
+				'message' => 'Sorry, you cannot delete resources.',
+				'data'    => array( 'status' => WP_Http::UNAUTHORIZED ),
+			),
+			$response->get_data()
+		);
+	}
+
+	/**
+	 * Test deleting fulfillment meta data for an admin user.
+	 */
+	public function test_delete_fulfillment_meta_data_for_admin_user() {
+		// Get a previously created order.
+		$order_id = self::$created_order_ids[0];
+		$request  = new WP_REST_Request( 'GET', '/wc/v3/orders/' . $order_id . '/fulfillments' );
+		$response = $this->server->dispatch( $request );
+
+		$fulfillments = $response->get_data()['fulfillments'];
+		$this->assertIsArray( $fulfillments );
+		$this->assertCount( 10, $fulfillments );
+
+		$fulfillment_id = $fulfillments[0]['fulfillment_id'];
+
+		wp_set_current_user( 1 );
+
+		// Delete the fulfillment meta data for the order.
+		$request = new WP_REST_Request( 'DELETE', '/wc/v3/orders/' . $order_id . '/fulfillments/' . $fulfillment_id . '/metadata' );
+		$request->set_body_params(
+			array(
+				'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			),
+		);
+		$response = $this->server->dispatch( $request );
+
+		// Check the response. It should be ok.
+		$this->assertEquals( WP_Http::NO_CONTENT, $response->get_status() );
+		// Clean up the test environment.
+		wp_set_current_user( 0 );
+	}
+
+	/**
+	 * Test deleting fulfillment meta data with an invalid order ID.
+	 */
+	public function test_delete_fulfillment_meta_data_invalid_order_id() {
+		// Get a previously created order.
+		$order_id = self::$created_order_ids[0];
+		$request  = new WP_REST_Request( 'GET', '/wc/v3/orders/' . $order_id . '/fulfillments' );
+		$response = $this->server->dispatch( $request );
+
+		$fulfillments = $response->get_data()['fulfillments'];
+		$this->assertIsArray( $fulfillments );
+		$this->assertCount( 10, $fulfillments );
+
+		$fulfillment_id = $fulfillments[0]['fulfillment_id'];
+
+		wp_set_current_user( 1 );
+
+		// Delete the fulfillment meta data for the order with an invalid order ID.
+		$request = new WP_REST_Request( 'DELETE', '/wc/v3/orders/999999/fulfillments/' . $fulfillment_id . '/metadata' );
+		$request->set_body_params(
+			array(
+				'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			),
+		);
+		$response = $this->server->dispatch( $request );
+
+		// Check the response. It should be an error saying that the order ID is invalid.
+		$this->assertEquals( WP_Http::NOT_FOUND, $response->get_status() );
+		$this->assertEquals(
+			array(
+				'code'    => 'woocommerce_rest_order_invalid_id',
+				'message' => 'Invalid order ID.',
+				'data'    => array( 'status' => WP_Http::NOT_FOUND ),
+			),
+			$response->get_data()
+		);
+		// Clean up the test environment.
+		wp_set_current_user( 0 );
+	}
+
+	/**
+	 * Test deleting fulfillment meta data with an invalid fulfillment ID.
+	 */
+	public function test_delete_fulfillment_meta_data_invalid_fulfillment_id() {
+		// Get a previously created order.
+		$order_id = self::$created_order_ids[0];
+		$request  = new WP_REST_Request( 'GET', '/wc/v3/orders/' . $order_id . '/fulfillments' );
+		$response = $this->server->dispatch( $request );
+
+		$fulfillments = $response->get_data()['fulfillments'];
+		$this->assertIsArray( $fulfillments );
+		$this->assertCount( 10, $fulfillments );
+
+		wp_set_current_user( 1 );
+
+		// Delete the fulfillment meta data for the order with an invalid fulfillment ID.
+		$request = new WP_REST_Request( 'DELETE', '/wc/v3/orders/' . $order_id . '/fulfillments/999999/metadata' );
+		$request->set_body_params(
+			array(
+				'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			),
+		);
+		$response = $this->server->dispatch( $request );
+
+		// Check the response. It should be an error saying that the fulfillment ID is invalid.
+		$this->assertEquals( WP_Http::BAD_REQUEST, $response->get_status() );
+		$this->assertEquals(
+			array(
+				'code'    => 0,
+				'message' => 'Fulfillment not found.',
+				'data'    => array( 'status' => WP_Http::BAD_REQUEST ),
+			),
+			$response->get_data()
+		);
+		// Clean up the test environment.
+		wp_set_current_user( 0 );
+	}
+
+	/**
+	 * Test deleting fulfillment meta data for a non-matching user.
+	 */
+	public function test_delete_fulfillment_meta_data_invalid_user() {
+		// Prepare the test environment.
+		$current_user = wp_get_current_user();
+
+		// Get a previously created order.
+		$order_id = self::$created_order_ids[0];
+		$request  = new WP_REST_Request( 'GET', '/wc/v3/orders/' . $order_id . '/fulfillments' );
+		$response = $this->server->dispatch( $request );
+
+		$fulfillments = $response->get_data()['fulfillments'];
+		$this->assertIsArray( $fulfillments );
+		$this->assertCount( 10, $fulfillments );
+
+		$fulfillment_id = $fulfillments[0]['fulfillment_id'];
+
+		wp_set_current_user( self::$created_user_id );
+
+		// Delete the fulfillment meta data for the order, with a different user.
+		$request = new WP_REST_Request( 'DELETE', '/wc/v3/orders/' . $order_id . '/fulfillments/' . $fulfillment_id . '/metadata' );
+		$request->set_body_params(
+			array(
+				'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			),
+		);
+		$response = $this->server->dispatch( $request );
+
+		// Check the response. It should be an error saying that a regular user cannot delete a fulfillment.
+		$this->assertEquals( WP_Http::FORBIDDEN, $response->get_status() );
+		$this->assertEquals(
+			array(
+				'code'    => 'woocommerce_rest_cannot_delete',
+				'message' => 'Sorry, you cannot delete resources.',
+				'data'    => array( 'status' => WP_Http::FORBIDDEN ),
+			),
+			$response->get_data()
+		);
+
+		wp_set_current_user( $current_user->ID );
+	}
+
+
+	/**
 	 * Pretty print the given array.
 	 *
 	 * @param array $data The data to pretty print.
