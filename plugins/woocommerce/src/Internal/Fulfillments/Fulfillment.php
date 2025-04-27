@@ -13,6 +13,7 @@ declare( strict_types=1 );
 namespace Automattic\WooCommerce\Internal\Fulfillments;
 
 use Automattic\WooCommerce\Internal\DataStores\Fulfillments\FulfillmentsDataStore;
+use WC_Meta_Data;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -164,6 +165,7 @@ class Fulfillment extends \WC_Data {
 	public function set_date_updated( ?string $date_updated ) {
 		$this->data['date_updated'] = $date_updated;
 	}
+
 	/**
 	 * Get the date deleted.
 	 *
@@ -172,6 +174,7 @@ class Fulfillment extends \WC_Data {
 	public function get_date_deleted(): ?string {
 		return $this->data['date_deleted'] ?? null;
 	}
+
 	/**
 	 * Set the date deleted.
 	 *
@@ -229,20 +232,11 @@ class Fulfillment extends \WC_Data {
 	}
 
 	/**
-	 * Returns the data store for this object.
+	 * Returns the meta data as array for this object.
 	 *
 	 * @return FulfillmentsDataStore
 	 */
 	public function get_raw_meta_data() {
-		$meta_data = array();
-
-		foreach ( $this->get_meta_data() as $meta ) {
-			$meta_data[] = array(
-				'key'   => $meta->key,
-				'value' => $meta->value,
-			);
-		}
-
-		return $meta_data;
+		return array_map( fn( WC_Meta_Data $meta ) => (array) $meta->get_data(), $this->get_meta_data() );
 	}
 }

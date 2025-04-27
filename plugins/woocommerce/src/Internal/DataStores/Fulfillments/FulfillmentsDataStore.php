@@ -42,14 +42,8 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 		if ( ! $data->get_entity_id() ) {
 			throw new \Exception( esc_html__( 'Invalid entity ID.', 'woocommerce' ) );
 		}
-		if ( empty( $data->get_items() ) ) {
-			throw new \Exception( esc_html__( 'The fulfillment should contain at least one item.', 'woocommerce' ) );
-		}
-		foreach ( $data->get_items() as $item ) {
-			if ( ! isset( $item['item_id'] ) || ! isset( $item['qty'] ) ) {
-				throw new \Exception( esc_html__( 'Invalid item.', 'woocommerce' ) );
-			}
-		}
+
+		$this->validate_items( $data );
 
 		// Set fulfillment properties.
 		$data->set_date_updated( current_time( 'mysql' ) );
@@ -151,6 +145,8 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 		if ( $wpdb->last_error ) {
 			throw new \Exception( esc_html__( 'Failed to update fulfillment.', 'woocommerce' ) . ' ' . esc_html( $wpdb->last_error ) );
 		}
+
+		$this->validate_items( $data );
 
 		// Update the metadata for the fulfillment.
 		$data->save_meta_data();
@@ -382,5 +378,36 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 		}
 
 		return $fulfillments;
+	}
+
+	/**
+	 * Method to validate the items in a fulfillment.
+	 *
+	 * @param Fulfillment $data The fulfillment object to validate.
+	 *
+	 * @return void
+	 *
+	 * @throws \Exception If the fulfillment data is invalid.
+	 */
+	private function validate_items( Fulfillment $data ): void {
+		if ( empty( $data->get_items() ) ) {
+			throw new \Exception( esc_html__( 'The fulfillment should contain at least one item.', 'woocommerce' ) );
+		}
+
+		foreach ( $data->get_items() as $item ) {
+			if ( ! isset( $item['item_id'] )
+				// The item ID and qty should be set.
+				|| ! isset( $item['qty'] )
+				// The item ID should be integers.
+				|| ! is_int( $item['item_id'] )
+				// Allow the qty to be a float too.
+				|| ( ! is_int( $item['qty'] ) && ! is_float( $item['qty'] ) )
+				// The item ID and qty should be greater than 0.
+				|| $item['item_id'] <= 0
+				|| $item['qty'] <= 0
+				) {
+				throw new \Exception( esc_html__( 'Invalid item.', 'woocommerce' ) );
+			}
+		}
 	}
 }

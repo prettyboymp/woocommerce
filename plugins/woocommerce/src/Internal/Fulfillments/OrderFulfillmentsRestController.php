@@ -13,12 +13,15 @@ use WC_Order;
 use WP_Http;
 use WP_REST_Request;
 use WP_REST_Response;
+use WP_REST_Server;
 
 /**
  * OrderFulfillmentsRestController class file.
  *
- * ! Note: This REST controller is only created for WC_Order entities.
- * ! If you are using another entity type for your fulfillments, you should create a new controller.
+ * !> Note: This REST controller is only created for `WC_Order` type of entities, that allow
+ * !> managing fulfillments only for admins. Regular users can only view their fulfillments.
+ * !>
+ * !> If you are using another entity type for your fulfillments, you should create a new controller.
  *
  * @package Automattic\WooCommerce\Internal\Fulfillments
  */
@@ -153,17 +156,11 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 *
 	 * @param WP_REST_Request $request The request for which the permission is checked.
 	 * @return bool|\WP_Error True if the current user has the capability, otherwise an "Unauthorized" error or False if no error is available for the request method.
+	 *
+	 * @throws \WP_Error If the URL contains an order, but the order does not exist.
 	 */
 	protected function check_permission_for_fulfillments( WP_REST_Request $request ) {
-		// Check if the user is logged in as admin, and has the required capability.
-		// Admins who can manage WooCommerce can view all fulfillments.
-		if ( current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown
-			return true;
-		}
-
-		// Fetch the order.
-		// We allow this because we need to render the order fulfillments on the customer's order details and order tracking pages.
-		// But they will be only able to view them, not edit.
+		// Fetch the order first if there's an order_id in the request.
 		$order = null;
 		if ( $request->has_param( 'order_id' ) ) {
 			$order_id = (int) $request->get_param( 'order_id' );
@@ -172,15 +169,23 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 			if ( ! $order ) {
 				return new \WP_Error(
 					'woocommerce_rest_order_invalid_id',
-					__( 'Invalid order ID.', 'woocommerce' ),
-					array( 'status' => WP_Http::NOT_FOUND )
+					esc_html__( 'Invalid order ID.', 'woocommerce' ),
+					array( 'status' => esc_attr( WP_Http::NOT_FOUND ) )
 				);
 			}
+		}
 
-			// Check if the order exists, and if the current user is the owner of the order, and the request is a read request.
-			if ( get_current_user_id() === $order->get_customer_id() && \WP_REST_Server::READABLE === $request->get_method() ) {
-				return true;
-			}
+		// Check if the user is logged in as admin, and has the required capability.
+		// Admins who can manage WooCommerce can view all fulfillments.
+		if ( current_user_can( 'manage_woocommerce' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Unknown
+			return true;
+		}
+
+		// Check if the order exists, and if the current user is the owner of the order, and the request is a read request.
+		// We allow this because we need to render the order fulfillments on the customer's order details and order tracking pages.
+		// But they will be only able to view them, not edit.
+		if ( get_current_user_id() === $order->get_customer_id() && WP_REST_Server::READABLE === $request->get_method() ) {
+			return true;
 		}
 
 		// Return an error related to the request method.
@@ -202,7 +207,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 	 *
 	 * @param WP_REST_Request $request The request object.
 	 *
-	 * @return array The fulfillments for the order, or an error if the request fails.
+	 * @return WP_REST_Response The fulfillments for the order, or an error if the request fails.
 	 */
 	public function get_fulfillments( WP_REST_Request $request ): WP_REST_Response {
 		$order_id     = esc_attr( $request->get_param( 'order_id' ) );
@@ -213,7 +218,8 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 			$datastore    = wc_get_container()->get( FulfillmentsDataStore::class );
 			$fulfillments = $datastore->read_fulfillments( WC_Order::class, $order_id );
 		} catch ( \Exception $e ) {
-			return new WP_REST_Response(
+			return $this->prepare_error_response(
+				$e->getCode(),
 				$e->getMessage(),
 				WP_Http::BAD_REQUEST
 			);
@@ -245,19 +251,21 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		// Create a new fulfillment.
 		try {
 			$fulfillment = new Fulfillment();
-			$fulfillment->set_props( $request->get_json_params() );
-			$fulfillment->set_meta_data( $request->get_json_params()['meta_data'] );
+			$fulfillment->set_props( $request->get_body_params() );
+			$fulfillment->set_meta_data( $request->get_body_params()['meta_data'] );
 			$fulfillment->set_entity_type( WC_Order::class );
 			$fulfillment->set_entity_id( $order_id );
+
 			$fulfillment->save();
 		} catch ( \Exception $e ) {
-			return new WP_REST_Response(
+			return $this->prepare_error_response(
+				$e->getCode(),
 				$e->getMessage(),
-				WP_Http::UNAUTHORIZED
+				WP_Http::BAD_REQUEST
 			);
 		}
 
-		return new WP_REST_Response( array( 'fulfillment' => $fulfillment ), WP_Http::CREATED );
+		return new WP_REST_Response( array( 'fulfillment' => $fulfillment->get_raw_data() ), WP_Http::CREATED );
 	}
 
 	/**
@@ -274,21 +282,23 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		// Fetch the fulfillment for the order.
 		try {
 			$fulfillment = new Fulfillment( $fulfillment_id );
-			if ( $fulfillment->get_entity_type() !== WC_Order::class && $fulfillment->get_entity_id() !== $order_id ) {
-				return new WP_REST_Response(
-					__( 'Fulfillment does not belong to this order.', 'woocommerce' ),
-					WP_Http::UNAUTHORIZED
+			if ( $fulfillment->get_id() !== $fulfillment_id || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== "$order_id" ) {
+				return $this->prepare_error_response(
+					'woocommerce_rest_fulfillment_invalid_id',
+					__( 'Invalid fulfillment ID.', 'woocommerce' ),
+					WP_Http::NOT_FOUND
 				);
 			}
 		} catch ( \Exception $e ) {
-			return new WP_REST_Response(
+			return $this->prepare_error_response(
+				$e->getCode(),
 				$e->getMessage(),
 				WP_Http::BAD_REQUEST
 			);
 		}
 
 		return new WP_REST_Response(
-			array( 'fulfillment' => $fulfillment ),
+			array( 'fulfillment' => $fulfillment->get_raw_data() ),
 			WP_Http::OK
 		);
 	}
@@ -307,26 +317,41 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		// Update the fulfillment for the order.
 		try {
 			$fulfillment = new Fulfillment( $fulfillment_id );
-			if ( $fulfillment->get_entity_type() !== WC_Order::class && $fulfillment->get_entity_id() !== $order_id ) {
-				return new WP_REST_Response(
-					__( 'Fulfillment does not belong to this order.', 'woocommerce' ),
-					WP_Http::UNAUTHORIZED
+			if ( $fulfillment->get_id() === 0 || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== $order_id ) {
+				return $this->prepare_error_response(
+					'woocommerce_rest_fulfillment_invalid_id',
+					__( 'Invalid fulfillment ID.', 'woocommerce' ),
+					WP_Http::NOT_FOUND
 				);
 			}
-			$fulfillment->set_props( $request->get_json_params() );
-			$fulfillment->set_meta_data( $request->get_json_params()['meta_data'] );
-			$fulfillment->set_entity_type( WC_Order::class );
-			$fulfillment->set_entity_id( $order_id );
+
+			$fulfillment->set_props( $request->get_body_params() );
+			if ( isset( $request->get_body_params()['meta_data'] ) && is_array( $request->get_body_params()['meta_data'] ) ) {
+				// Update the meta data keys that exist in the request.
+				foreach ( $request->get_body_params()['meta_data'] as $meta ) {
+					$fulfillment->update_meta_data( $meta['key'], $meta['value'], $meta['id'] ?? 0 );
+				}
+
+				// Remove the meta data keys that don't exist in the request, by matching their keys.
+				$existing_meta_data = $fulfillment->get_meta_data();
+				foreach ( $existing_meta_data as $meta ) {
+					if ( ! in_array( $meta->key, array_column( $request->get_body_params()['meta_data'], 'key' ), true ) ) {
+						$fulfillment->delete_meta_data( $meta->key );
+					}
+				}
+			}
 			$fulfillment->save();
+			$fulfillment->save_meta_data();
 		} catch ( \Exception $e ) {
-			return new WP_REST_Response(
+			return $this->prepare_error_response(
+				$e->getCode(),
 				$e->getMessage(),
-				WP_Http::UNAUTHORIZED
+				WP_Http::BAD_REQUEST
 			);
 		}
 
 		return new WP_REST_Response(
-			array( 'fulfillment' => $fulfillment ),
+			array( 'fulfillment' => $fulfillment->get_raw_data() ),
 			WP_Http::OK
 		);
 	}
@@ -345,15 +370,17 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		// Delete the fulfillment for the order.
 		try {
 			$fulfillment = new Fulfillment( $fulfillment_id );
-			if ( $fulfillment->get_entity_type() !== WC_Order::class && $fulfillment->get_entity_id() !== $order_id ) {
-				return new WP_REST_Response(
-					__( 'Fulfillment does not belong to this order.', 'woocommerce' ),
-					WP_Http::UNAUTHORIZED
+			if ( $fulfillment->geT_id() === 0 || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== "$order_id" ) {
+				return $this->prepare_error_response(
+					'woocommerce_rest_fulfillment_invalid_id',
+					__( 'Invalid fulfillment ID.', 'woocommerce' ),
+					WP_Http::NOT_FOUND
 				);
 			}
 			$fulfillment->delete();
 		} catch ( \Exception $e ) {
-			return new WP_REST_Response(
+			return $this->prepare_error_response(
+				$e->getCode(),
 				$e->getMessage(),
 				WP_Http::BAD_REQUEST
 			);
@@ -381,14 +408,16 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		// Fetch the metadata for the fulfillment.
 		try {
 			$fulfillment = new Fulfillment( $fulfillment_id );
-			if ( $fulfillment->get_entity_type() !== WC_Order::class && $fulfillment->get_entity_id() !== $order_id ) {
-				return new WP_REST_Response(
-					__( 'Fulfillment does not belong to this order.', 'woocommerce' ),
-					WP_Http::UNAUTHORIZED
+			if ( $fulfillment->get_id() === 0 || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== "$order_id" ) {
+				return $this->prepare_error_response(
+					'woocommerce_rest_fulfillment_invalid_id',
+					__( 'Invalid fulfillment ID.', 'woocommerce' ),
+					WP_Http::NOT_FOUND
 				);
 			}
 		} catch ( \Exception $e ) {
-			return new WP_REST_Response(
+			return $this->prepare_error_response(
+				$e->getCode(),
 				$e->getMessage(),
 				WP_Http::BAD_REQUEST
 			);
@@ -396,7 +425,7 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 
 		return new WP_REST_Response(
 			array(
-				'meta_data' => $fulfillment->get_meta_data(),
+				'meta_data' => $fulfillment->get_raw_meta_data(),
 			),
 			WP_Http::OK
 		);
@@ -416,26 +445,37 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		// Update the metadata for the fulfillment.
 		try {
 			$fulfillment = new Fulfillment( $fulfillment_id );
-			if ( $fulfillment->get_entity_type() !== WC_Order::class && $fulfillment->get_entity_id() !== $order_id ) {
-				return new WP_REST_Response(
-					__( 'Fulfillment does not belong to this order.', 'woocommerce' ),
-					WP_Http::UNAUTHORIZED
+			if ( $fulfillment->get_id() === 0 || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== "$order_id" ) {
+				return $this->prepare_error_response(
+					'woocommerce_rest_fulfillment_invalid_id',
+					__( 'Invalid fulfillment ID.', 'woocommerce' ),
+					WP_Http::NOT_FOUND
 				);
 			}
-			foreach ( $request->get_json_params() as $key => $value ) {
-				$fulfillment->update_meta_data( $key, $value );
+			// Update the meta data keys that exist in the request.
+			foreach ( $request->get_body_params()['meta_data'] as $meta ) {
+				$fulfillment->update_meta_data( $meta['key'], $meta['value'], $meta['id'] ?? 0 );
+			}
+
+			// Remove the meta data keys that don't exist in the request, by matching their keys.
+			$existing_meta_data = $fulfillment->get_meta_data();
+			foreach ( $existing_meta_data as $meta ) {
+				if ( ! in_array( $meta->key, array_column( $request->get_body_params()['meta_data'], 'key' ), true ) ) {
+					$fulfillment->delete_meta_data( $meta->key );
+				}
 			}
 			$fulfillment->save();
 		} catch ( \Exception $e ) {
-			return new WP_REST_Response(
+			return $this->prepare_error_response(
+				$e->getCode(),
 				$e->getMessage(),
-				WP_Http::UNAUTHORIZED
+				WP_Http::BAD_REQUEST
 			);
 		}
 
 		return new WP_REST_Response(
 			array(
-				'meta_data' => $fulfillment->get_meta_data(),
+				'meta_data' => $fulfillment->get_raw_meta_data(),
 			),
 			WP_Http::OK
 		);
@@ -455,16 +495,18 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		// Delete the metadata for the fulfillment.
 		try {
 			$fulfillment = new Fulfillment( $fulfillment_id );
-			if ( $fulfillment->get_entity_type() !== WC_Order::class && $fulfillment->get_entity_id() !== $order_id ) {
-				return new WP_REST_Response(
-					__( 'Fulfillment does not belong to this order.', 'woocommerce' ),
-					WP_Http::UNAUTHORIZED
+			if ( $fulfillment->get_id() === 0 || $fulfillment->get_entity_type() !== WC_Order::class || $fulfillment->get_entity_id() !== $order_id ) {
+				return $this->prepare_error_response(
+					'woocommerce_rest_fulfillment_invalid_id',
+					__( 'Invalid fulfillment ID.', 'woocommerce' ),
+					WP_Http::NOT_FOUND
 				);
 			}
 			$fulfillment->delete_meta_data( $request->get_param( 'meta_key' ) );
 			$fulfillment->save();
 		} catch ( \Exception $e ) {
-			return new WP_REST_Response(
+			return $this->prepare_error_response(
+				$e->getCode(),
 				$e->getMessage(),
 				WP_Http::BAD_REQUEST
 			);
@@ -500,7 +542,6 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 			WP_Http::OK
 		);
 	}
-
 
 	/**
 	 * Get the arguments for the get order fulfillments endpoint.
@@ -957,18 +998,6 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 				),
 			) : array(),
 			array(
-				'entity_type'  => array(
-					'description' => __( 'The type of entity for which the fulfillment is created.', 'woocommerce' ),
-					'type'        => 'string',
-					'required'    => true,
-					'context'     => array( 'view', 'edit' ),
-				),
-				'entity_id'    => array(
-					'description' => __( 'Unique identifier for the entity.', 'woocommerce' ),
-					'type'        => 'string',
-					'required'    => true,
-					'context'     => array( 'view', 'edit' ),
-				),
 				'status'       => array(
 					'description' => __( 'The status of the fulfillment.', 'woocommerce' ),
 					'type'        => 'string',
@@ -1002,6 +1031,12 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		return array(
 			'type'       => 'object',
 			'properties' => array(
+				'id'    => array(
+					'description' => __( 'The unique identifier for the meta data. Set `0` for new records.', 'woocommerce' ),
+					'type'        => 'integer',
+					'context'     => array( 'view', 'edit' ),
+					'readonly'    => true,
+				),
 				'key'   => array(
 					'description' => __( 'The key of the meta data.', 'woocommerce' ),
 					'type'        => 'string',
@@ -1018,6 +1053,26 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 			'required'   => true,
 			'context'    => array( 'view', 'edit' ),
 			'readonly'   => true,
+		);
+	}
+
+	/**
+	 * Prepare an error response.
+	 *
+	 * @param string $code The error code.
+	 * @param string $message The error message.
+	 * @param int    $status The HTTP status code.
+	 *
+	 * @return WP_REST_Response The error response.
+	 */
+	private function prepare_error_response( $code, $message, $status ): WP_REST_Response {
+		return new WP_REST_Response(
+			array(
+				'code'    => $code,
+				'message' => $message,
+				'data'    => array( 'status' => $status ),
+			),
+			$status
 		);
 	}
 }

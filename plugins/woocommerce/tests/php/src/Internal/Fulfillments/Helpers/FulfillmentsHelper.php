@@ -43,7 +43,6 @@ class FulfillmentsHelper {
 				);
 			}
 		} else {
-
 			$fulfillment->add_meta_data(
 				'test_meta_key',
 				'test_meta_value',
