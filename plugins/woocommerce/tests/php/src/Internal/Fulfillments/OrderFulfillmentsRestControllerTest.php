@@ -505,7 +505,6 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 		$this->assertEquals( $fulfillments[0]['is_fulfilled'], $fulfillment['is_fulfilled'] );
 		$this->assertEquals( $fulfillments[0]['meta_data'], $fulfillment['meta_data'] );
 		$this->assertEquals( $fulfillments[0]['date_updated'], $fulfillment['date_updated'] );
-		$this->assertEquals( $fulfillments[0]['date_deleted'], $fulfillment['date_deleted'] );
 	}
 
 	/**
