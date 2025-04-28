@@ -1,0 +1,4 @@
+Significance: patch
+Type: fix
+
+Prevent shipping rates being hidden when checkout fields are marked optional
