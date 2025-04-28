@@ -1,6 +1,6 @@
 <?php
 /**
- * Fulfillable trait.
+ * AbstractFulfillmentManager class file.
  */
 
 declare( strict_types=1 );
@@ -10,7 +10,7 @@ namespace Automattic\WooCommerce\Internal\Fulfillments;
 use Automattic\WooCommerce\Internal\DataStores\Fulfillments\FulfillmentsDataStore;
 
 /**
- * This trait is used to mark classes that can be fulfilled.
+ * Abstract fulfillment manager.
  *
  * @since 9.0.0
  */
