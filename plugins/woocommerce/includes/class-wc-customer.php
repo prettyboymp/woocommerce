@@ -322,10 +322,11 @@ class WC_Customer extends WC_Legacy_Customer {
 			$shipping_address['postcode'] = $this->get_shipping_postcode();
 		}
 
-		$address_fields = WC()->countries->get_country_locale();
-		$locale_key     = ! empty( $shipping_address['country'] ) && array_key_exists( $shipping_address['country'], $address_fields ) ? $shipping_address['country'] : 'default';
-		$default_locale = $address_fields['default'];
-		$country_locale = $address_fields[ $locale_key ] ?? array();
+		$shipping_fields = WC()->countries->get_address_fields( '', 'shipping_' );
+		$address_fields  = WC()->countries->get_country_locale();
+		$locale_key      = ! empty( $shipping_address['country'] ) && array_key_exists( $shipping_address['country'], $address_fields ) ? $shipping_address['country'] : 'default';
+		$default_locale  = $address_fields['default'];
+		$country_locale  = $address_fields[ $locale_key ] ?? array();
 
 		/**
 		 * Checks all shipping address fields against the country's locale settings.
@@ -337,6 +338,17 @@ class WC_Customer extends WC_Legacy_Customer {
 		foreach ( $shipping_address as $key => $value ) {
 			// Skip further checks if the field has a value. From this point on $value is empty.
 			if ( ! empty( $value ) ) {
+				continue;
+			}
+
+			// Check if the field is marked optional in the checkout's shipping_fields, if so skip checking it.
+			if (
+				isset( $shipping_fields[ 'shipping_' . $key ] ) &&
+				(
+					! isset( $shipping_fields[ $key ]['required'] ) ||
+					false === wc_string_to_bool( $shipping_fields[ $key ]['required'] )
+				)
+			) {
 				continue;
 			}
 
