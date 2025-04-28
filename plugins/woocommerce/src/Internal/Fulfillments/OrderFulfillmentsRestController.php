@@ -251,8 +251,8 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 		// Create a new fulfillment.
 		try {
 			$fulfillment = new Fulfillment();
-			$fulfillment->set_props( $request->get_body_params() );
-			$fulfillment->set_meta_data( $request->get_body_params()['meta_data'] );
+			$fulfillment->set_props( $request->get_json_params() );
+			$fulfillment->set_meta_data( $request->get_json_params()['meta_data'] );
 			$fulfillment->set_entity_type( WC_Order::class );
 			$fulfillment->set_entity_id( "$order_id" );
 
@@ -325,17 +325,17 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 				);
 			}
 
-			$fulfillment->set_props( $request->get_body_params() );
-			if ( isset( $request->get_body_params()['meta_data'] ) && is_array( $request->get_body_params()['meta_data'] ) ) {
+			$fulfillment->set_props( $request->get_json_params() );
+			if ( isset( $request->get_json_params()['meta_data'] ) && is_array( $request->get_json_params()['meta_data'] ) ) {
 				// Update the meta data keys that exist in the request.
-				foreach ( $request->get_body_params()['meta_data'] as $meta ) {
+				foreach ( $request->get_json_params()['meta_data'] as $meta ) {
 					$fulfillment->update_meta_data( $meta['key'], $meta['value'], $meta['id'] ?? 0 );
 				}
 
 				// Remove the meta data keys that don't exist in the request, by matching their keys.
 				$existing_meta_data = $fulfillment->get_meta_data();
 				foreach ( $existing_meta_data as $meta ) {
-					if ( ! in_array( $meta->key, array_column( $request->get_body_params()['meta_data'], 'key' ), true ) ) {
+					if ( ! in_array( $meta->key, array_column( $request->get_json_params()['meta_data'], 'key' ), true ) ) {
 						$fulfillment->delete_meta_data( $meta->key );
 					}
 				}
@@ -454,14 +454,14 @@ class OrderFulfillmentsRestController extends RestApiControllerBase {
 				);
 			}
 			// Update the meta data keys that exist in the request.
-			foreach ( $request->get_body_params()['meta_data'] as $meta ) {
+			foreach ( $request->get_json_params()['meta_data'] as $meta ) {
 				$fulfillment->update_meta_data( $meta['key'], $meta['value'], $meta['id'] ?? 0 );
 			}
 
 			// Remove the meta data keys that don't exist in the request, by matching their keys.
 			$existing_meta_data = $fulfillment->get_meta_data();
 			foreach ( $existing_meta_data as $meta ) {
-				if ( ! in_array( $meta->key, array_column( $request->get_body_params()['meta_data'], 'key' ), true ) ) {
+				if ( ! in_array( $meta->key, array_column( $request->get_json_params()['meta_data'], 'key' ), true ) ) {
 					$fulfillment->delete_meta_data( $meta->key );
 				}
 			}

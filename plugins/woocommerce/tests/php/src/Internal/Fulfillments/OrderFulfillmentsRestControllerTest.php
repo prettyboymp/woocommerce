@@ -187,37 +187,40 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Create a fulfillment for the order.
 		$request = new WP_REST_Request( 'POST', '/wc/v3/orders/' . $order->get_id() . '/fulfillments' );
-		$request->set_body_params(
-			array(
-				'entity_type'  => WC_Order::class,
-				'entity_id'    => '' . $order->get_id(),
-				'status'       => 'unfulfilled',
-				'is_fulfilled' => false,
-				'meta_data'    => array(
-					array(
-						'key'   => 'test_meta_key',
-						'value' => 'test_meta_value',
-					),
-					array(
-						'key'   => 'test_meta_key_2',
-						'value' => 'test_meta_value_2',
-					),
-					array(
-						'key'   => '_items',
-						'value' => wp_json_encode(
-							array(
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'entity_type'  => WC_Order::class,
+					'entity_id'    => '' . $order->get_id(),
+					'status'       => 'unfulfilled',
+					'is_fulfilled' => false,
+					'meta_data'    => array(
+						array(
+							'key'   => 'test_meta_key',
+							'value' => 'test_meta_value',
+						),
+						array(
+							'key'   => 'test_meta_key_2',
+							'value' => 'test_meta_value_2',
+						),
+						array(
+							'key'   => '_items',
+							'value' => wp_json_encode(
 								array(
-									'item_id' => 1,
-									'qty'     => 2,
-								),
-								array(
-									'item_id' => 2,
-									'qty'     => 3,
-								),
-							)
+									array(
+										'item_id' => 1,
+										'qty'     => 2,
+									),
+									array(
+										'item_id' => 2,
+										'qty'     => 3,
+									),
+								)
+							),
 						),
 					),
-				),
+				)
 			)
 		);
 		$response = $this->server->dispatch( $request );
@@ -245,40 +248,43 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 		// Create a fulfillment for the order.
 		wp_set_current_user( 1 );
 		$request = new WP_REST_Request( 'POST', '/wc/v3/orders/' . $order->get_id() . '/fulfillments' );
-		$request->set_body_params(
-			array(
-				'entity_type'  => WC_Order::class,
-				'entity_id'    => '' . $order->get_id(),
-				'status'       => 'unfulfilled',
-				'is_fulfilled' => false,
-				'meta_data'    => array(
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key',
-						'value' => 'test_meta_value',
-					),
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key_2',
-						'value' => 'test_meta_value_2',
-					),
-					array(
-						'id'    => 0,
-						'key'   => '_items',
-						'value' => wp_json_encode(
-							array(
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'entity_type'  => WC_Order::class,
+					'entity_id'    => '' . $order->get_id(),
+					'status'       => 'unfulfilled',
+					'is_fulfilled' => false,
+					'meta_data'    => array(
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key',
+							'value' => 'test_meta_value',
+						),
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key_2',
+							'value' => 'test_meta_value_2',
+						),
+						array(
+							'id'    => 0,
+							'key'   => '_items',
+							'value' => wp_json_encode(
 								array(
-									'item_id' => 1,
-									'qty'     => 2,
-								),
-								array(
-									'item_id' => 2,
-									'qty'     => 3,
-								),
-							)
+									array(
+										'item_id' => 1,
+										'qty'     => 2,
+									),
+									array(
+										'item_id' => 2,
+										'qty'     => 3,
+									),
+								)
+							),
 						),
 					),
-				),
+				)
 			)
 		);
 		$response = $this->server->dispatch( $request );
@@ -333,22 +339,25 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Create a fulfillment for the order.
 		$request = new WP_REST_Request( 'POST', '/wc/v3/orders/' . $order->get_id() . '/fulfillments' );
-		$request->set_body_params(
-			array(
-				'entity_type'  => WC_Order::class,
-				'entity_id'    => '' . $order->get_id(),
-				'status'       => 'unfulfilled',
-				'is_fulfilled' => false,
-				'meta_data'    => array(
-					array(
-						'key'   => 'test_meta_key',
-						'value' => 'test_meta_value',
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'entity_type'  => WC_Order::class,
+					'entity_id'    => '' . $order->get_id(),
+					'status'       => 'unfulfilled',
+					'is_fulfilled' => false,
+					'meta_data'    => array(
+						array(
+							'key'   => 'test_meta_key',
+							'value' => 'test_meta_value',
+						),
+						array(
+							'key'   => 'test_meta_key_2',
+							'value' => 'test_meta_value_2',
+						),
 					),
-					array(
-						'key'   => 'test_meta_key_2',
-						'value' => 'test_meta_value_2',
-					),
-				),
+				)
 			)
 		);
 		$response = $this->server->dispatch( $request );
@@ -382,19 +391,22 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Create a fulfillment for the order with invalid items.
 		$request = new WP_REST_Request( 'POST', '/wc/v3/orders/' . $order->get_id() . '/fulfillments' );
-		$request->set_body_params(
-			array(
-				'entity_type'  => WC_Order::class,
-				'entity_id'    => '' . $order->get_id(),
-				'status'       => 'unfulfilled',
-				'is_fulfilled' => false,
-				'meta_data'    => array(
-					array(
-						'id'    => 0,
-						'key'   => '_items',
-						'value' => wp_json_encode( $items ),
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'entity_type'  => WC_Order::class,
+					'entity_id'    => '' . $order->get_id(),
+					'status'       => 'unfulfilled',
+					'is_fulfilled' => false,
+					'meta_data'    => array(
+						array(
+							'id'    => 0,
+							'key'   => '_items',
+							'value' => wp_json_encode( $items ),
+						),
 					),
-				),
+				)
 			)
 		);
 		$response = $this->server->dispatch( $request );
@@ -424,40 +436,43 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Create a fulfillment for the order with an invalid order ID.
 		$request = new WP_REST_Request( 'POST', '/wc/v3/orders/999999/fulfillments' );
-		$request->set_body_params(
-			array(
-				'entity_type'  => WC_Order::class,
-				'entity_id'    => '' . $order->get_id(),
-				'status'       => 'unfulfilled',
-				'is_fulfilled' => false,
-				'meta_data'    => array(
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key',
-						'value' => 'test_meta_value',
-					),
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key_2',
-						'value' => 'test_meta_value_2',
-					),
-					array(
-						'id'    => 0,
-						'key'   => '_items',
-						'value' => wp_json_encode(
-							array(
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'entity_type'  => WC_Order::class,
+					'entity_id'    => '' . $order->get_id(),
+					'status'       => 'unfulfilled',
+					'is_fulfilled' => false,
+					'meta_data'    => array(
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key',
+							'value' => 'test_meta_value',
+						),
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key_2',
+							'value' => 'test_meta_value_2',
+						),
+						array(
+							'id'    => 0,
+							'key'   => '_items',
+							'value' => wp_json_encode(
 								array(
-									'item_id' => 1,
-									'qty'     => 2,
-								),
-								array(
-									'item_id' => 2,
-									'qty'     => 3,
-								),
-							)
+									array(
+										'item_id' => 1,
+										'qty'     => 2,
+									),
+									array(
+										'item_id' => 2,
+										'qty'     => 3,
+									),
+								)
+							),
 						),
 					),
-				),
+				)
 			)
 		);
 		$response = $this->server->dispatch( $request );
@@ -654,38 +669,41 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 		// Update the fulfillment for the order.
 		wp_set_current_user( self::$created_user_id );
 		$request = new WP_REST_Request( 'PUT', '/wc/v3/orders/' . $order_id . '/fulfillments/' . $fulfillment_id );
-		$request->set_body_params(
-			array(
-				'status'       => 'fulfilled',
-				'is_fulfilled' => true,
-				'meta_data'    => array(
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key',
-						'value' => 'test_meta_value',
-					),
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key_2',
-						'value' => 'test_meta_value_2',
-					),
-					array(
-						'id'    => 0,
-						'key'   => '_items',
-						'value' => wp_json_encode(
-							array(
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'status'       => 'fulfilled',
+					'is_fulfilled' => true,
+					'meta_data'    => array(
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key',
+							'value' => 'test_meta_value',
+						),
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key_2',
+							'value' => 'test_meta_value_2',
+						),
+						array(
+							'id'    => 0,
+							'key'   => '_items',
+							'value' => wp_json_encode(
 								array(
-									'item_id' => 1,
-									'qty'     => 2,
-								),
-								array(
-									'item_id' => 2,
-									'qty'     => 3,
-								),
-							)
+									array(
+										'item_id' => 1,
+										'qty'     => 2,
+									),
+									array(
+										'item_id' => 2,
+										'qty'     => 3,
+									),
+								)
+							),
 						),
 					),
-				),
+				)
 			)
 		);
 		wp_set_current_user( self::$created_user_id );
@@ -721,41 +739,44 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 		// Update the fulfillment for the order.
 		wp_set_current_user( 1 );
 		$request = new WP_REST_Request( 'PUT', '/wc/v3/orders/' . $order_id . '/fulfillments/' . $fulfillment_id );
-		$request->set_body_params(
-			array(
-				'status'       => 'fulfilled',
-				'is_fulfilled' => true,
-				'meta_data'    => array(
-					// Test value delete by changing the key.
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key_ok',
-						'value' => 'test_meta_value_ok',
-					),
-					// Test new value.
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key_2',
-						'value' => 'test_meta_value_2_ok',
-					),
-					// Test items update.
-					array(
-						'id'    => 0,
-						'key'   => '_items',
-						'value' => wp_json_encode(
-							array(
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'status'       => 'fulfilled',
+					'is_fulfilled' => true,
+					'meta_data'    => array(
+						// Test value delete by changing the key.
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key_ok',
+							'value' => 'test_meta_value_ok',
+						),
+						// Test new value.
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key_2',
+							'value' => 'test_meta_value_2_ok',
+						),
+						// Test items update.
+						array(
+							'id'    => 0,
+							'key'   => '_items',
+							'value' => wp_json_encode(
 								array(
-									'item_id' => 10,
-									'qty'     => 20,
-								),
-								array(
-									'item_id' => 20,
-									'qty'     => 30,
-								),
-							)
+									array(
+										'item_id' => 10,
+										'qty'     => 20,
+									),
+									array(
+										'item_id' => 20,
+										'qty'     => 30,
+									),
+								)
+							),
 						),
 					),
-				),
+				)
 			)
 		);
 
@@ -833,38 +854,41 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 		// Update the fulfillment for the order with an invalid order ID.
 		wp_set_current_user( 1 );
 		$request = new WP_REST_Request( 'PUT', '/wc/v3/orders/999999/fulfillments/' . $fulfillment_id );
-		$request->set_body_params(
-			array(
-				'status'       => 'fulfilled',
-				'is_fulfilled' => true,
-				'meta_data'    => array(
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key',
-						'value' => 'test_meta_value',
-					),
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key_2',
-						'value' => 'test_meta_value_2',
-					),
-					array(
-						'id'    => 0,
-						'key'   => '_items',
-						'value' => wp_json_encode(
-							array(
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'status'       => 'fulfilled',
+					'is_fulfilled' => true,
+					'meta_data'    => array(
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key',
+							'value' => 'test_meta_value',
+						),
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key_2',
+							'value' => 'test_meta_value_2',
+						),
+						array(
+							'id'    => 0,
+							'key'   => '_items',
+							'value' => wp_json_encode(
 								array(
-									'item_id' => 1,
-									'qty'     => 2,
-								),
-								array(
-									'item_id' => 2,
-									'qty'     => 3,
-								),
-							)
+									array(
+										'item_id' => 1,
+										'qty'     => 2,
+									),
+									array(
+										'item_id' => 2,
+										'qty'     => 3,
+									),
+								)
+							),
 						),
 					),
-				),
+				)
 			)
 		);
 		$response = $this->server->dispatch( $request );
@@ -899,38 +923,41 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 		// Update the fulfillment for the order with an invalid fulfillment ID.
 		wp_set_current_user( 1 );
 		$request = new WP_REST_Request( 'PUT', '/wc/v3/orders/' . $order_id . '/fulfillments/999999' );
-		$request->set_body_params(
-			array(
-				'status'       => 'fulfilled',
-				'is_fulfilled' => true,
-				'meta_data'    => array(
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key',
-						'value' => 'test_meta_value',
-					),
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key_2',
-						'value' => 'test_meta_value_2',
-					),
-					array(
-						'id'    => 0,
-						'key'   => '_items',
-						'value' => wp_json_encode(
-							array(
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'status'       => 'fulfilled',
+					'is_fulfilled' => true,
+					'meta_data'    => array(
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key',
+							'value' => 'test_meta_value',
+						),
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key_2',
+							'value' => 'test_meta_value_2',
+						),
+						array(
+							'id'    => 0,
+							'key'   => '_items',
+							'value' => wp_json_encode(
 								array(
-									'item_id' => 1,
-									'qty'     => 2,
-								),
-								array(
-									'item_id' => 2,
-									'qty'     => 3,
-								),
-							)
+									array(
+										'item_id' => 1,
+										'qty'     => 2,
+									),
+									array(
+										'item_id' => 2,
+										'qty'     => 3,
+									),
+								)
+							),
 						),
 					),
-				),
+				)
 			)
 		);
 
@@ -968,22 +995,25 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 		// Update the fulfillment for the order with an invalid fulfillment ID.
 		wp_set_current_user( 1 );
 		$request = new WP_REST_Request( 'PUT', '/wc/v3/orders/' . $order_id . '/fulfillments/' . $fulfillment_id );
-		$request->set_body_params(
-			array(
-				'status'       => 'fulfilled',
-				'is_fulfilled' => true,
-				'meta_data'    => array(
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key',
-						'value' => 'test_meta_value',
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'status'       => 'fulfilled',
+					'is_fulfilled' => true,
+					'meta_data'    => array(
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key',
+							'value' => 'test_meta_value',
+						),
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key_2',
+							'value' => 'test_meta_value_2',
+						),
 					),
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key_2',
-						'value' => 'test_meta_value_2',
-					),
-				),
+				)
 			)
 		);
 
@@ -1026,17 +1056,20 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Update the fulfillment for the order with an invalid fulfillment ID.
 		$request = new WP_REST_Request( 'PUT', '/wc/v3/orders/' . $order_id . '/fulfillments/' . $fulfillment_id );
-		$request->set_body_params(
-			array(
-				'status'       => 'fulfilled',
-				'is_fulfilled' => true,
-				'meta_data'    => array(
-					array(
-						'id'    => 0,
-						'key'   => '_items',
-						'value' => wp_json_encode( $items ),
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'status'       => 'fulfilled',
+					'is_fulfilled' => true,
+					'meta_data'    => array(
+						array(
+							'id'    => 0,
+							'key'   => '_items',
+							'value' => wp_json_encode( $items ),
+						),
 					),
-				),
+				)
 			)
 		);
 		$response = $this->server->dispatch( $request );
@@ -1494,17 +1527,20 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Update the fulfillment meta data for the order.
 		$request = new WP_REST_Request( 'PUT', '/wc/v3/orders/' . $order_id . '/fulfillments/' . $fulfillment_id . '/metadata' );
-		$request->set_body_params(
-			array(
-				'meta_data' => array(
-					array(
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'meta_data' => array(
 						array(
-							'id'    => 0,
-							'key'   => 'test_meta_key',
-							'value' => 'test_meta_value_updated',
+							array(
+								'id'    => 0,
+								'key'   => 'test_meta_key',
+								'value' => 'test_meta_value_updated',
+							),
 						),
 					),
-				),
+				)
 			)
 		);
 
@@ -1541,31 +1577,34 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Update the fulfillment meta data for the order.
 		$request = new WP_REST_Request( 'PUT', '/wc/v3/orders/' . $order_id . '/fulfillments/' . $fulfillment_id . '/metadata' );
-		$request->set_body_params(
-			array(
-				'meta_data' => array(
-					array(
-						'id'    => 0,
-						'key'   => 'test_meta_key',
-						'value' => 'test_meta_value_updated',
-					),
-					array(
-						'id'    => 0,
-						'key'   => '_items',
-						'value' => wp_json_encode(
-							array(
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'meta_data' => array(
+						array(
+							'id'    => 0,
+							'key'   => 'test_meta_key',
+							'value' => 'test_meta_value_updated',
+						),
+						array(
+							'id'    => 0,
+							'key'   => '_items',
+							'value' => wp_json_encode(
 								array(
-									'item_id' => 1,
-									'qty'     => 2,
-								),
-								array(
-									'item_id' => 2,
-									'qty'     => 3,
-								),
-							)
+									array(
+										'item_id' => 1,
+										'qty'     => 2,
+									),
+									array(
+										'item_id' => 2,
+										'qty'     => 3,
+									),
+								)
+							),
 						),
 					),
-				),
+				)
 			)
 		);
 		$response = $this->server->dispatch( $request );
@@ -1626,17 +1665,20 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Update the fulfillment meta data for the order with an invalid order ID.
 		$request = new WP_REST_Request( 'PUT', '/wc/v3/orders/999999/fulfillments/' . $fulfillment_id . '/metadata' );
-		$request->set_body_params(
-			array(
-				'meta_data' => array(
-					array(
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'meta_data' => array(
 						array(
-							'id'    => 0,
-							'key'   => 'test_meta_key',
-							'value' => 'test_meta_value_updated',
+							array(
+								'id'    => 0,
+								'key'   => 'test_meta_key',
+								'value' => 'test_meta_value_updated',
+							),
 						),
 					),
-				),
+				)
 			)
 		);
 		$response = $this->server->dispatch( $request );
@@ -1673,17 +1715,20 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Update the fulfillment meta data for the order with an invalid fulfillment ID.
 		$request = new WP_REST_Request( 'PUT', '/wc/v3/orders/' . $order_id . '/fulfillments/999999/metadata' );
-		$request->set_body_params(
-			array(
-				'meta_data' => array(
-					array(
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'meta_data' => array(
 						array(
-							'id'    => 0,
-							'key'   => 'test_meta_key',
-							'value' => 'test_meta_value_updated',
+							array(
+								'id'    => 0,
+								'key'   => 'test_meta_key',
+								'value' => 'test_meta_value_updated',
+							),
 						),
 					),
-				),
+				)
 			)
 		);
 		$response = $this->server->dispatch( $request );
@@ -1725,17 +1770,20 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Update the fulfillment meta data for the order, with a different user.
 		$request = new WP_REST_Request( 'PUT', '/wc/v3/orders/' . $order_id . '/fulfillments/' . $fulfillment_id . '/metadata' );
-		$request->set_body_params(
-			array(
-				'meta_data' => array(
-					array(
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'meta_data' => array(
 						array(
-							'id'    => 0,
-							'key'   => 'test_meta_key',
-							'value' => 'test_meta_value_updated',
+							array(
+								'id'    => 0,
+								'key'   => 'test_meta_key',
+								'value' => 'test_meta_value_updated',
+							),
 						),
 					),
-				),
+				)
 			)
 		);
 		$response = $this->server->dispatch( $request );
@@ -1772,10 +1820,13 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Delete the fulfillment meta data for the order.
 		$request = new WP_REST_Request( 'DELETE', '/wc/v3/orders/' . $order_id . '/fulfillments/' . $fulfillment_id . '/metadata' );
-		$request->set_body_params(
-			array(
-				'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-			),
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				),
+			)
 		);
 		$response = $this->server->dispatch( $request );
 
@@ -1810,10 +1861,13 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Delete the fulfillment meta data for the order.
 		$request = new WP_REST_Request( 'DELETE', '/wc/v3/orders/' . $order_id . '/fulfillments/' . $fulfillment_id . '/metadata' );
-		$request->set_body_params(
-			array(
-				'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-			),
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				),
+			)
 		);
 		$response = $this->server->dispatch( $request );
 
@@ -1842,10 +1896,13 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Delete the fulfillment meta data for the order with an invalid order ID.
 		$request = new WP_REST_Request( 'DELETE', '/wc/v3/orders/999999/fulfillments/' . $fulfillment_id . '/metadata' );
-		$request->set_body_params(
-			array(
-				'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-			),
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				),
+			)
 		);
 		$response = $this->server->dispatch( $request );
 
@@ -1880,10 +1937,13 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Delete the fulfillment meta data for the order with an invalid fulfillment ID.
 		$request = new WP_REST_Request( 'DELETE', '/wc/v3/orders/' . $order_id . '/fulfillments/999999/metadata' );
-		$request->set_body_params(
-			array(
-				'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-			),
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				),
+			)
 		);
 		$response = $this->server->dispatch( $request );
 
@@ -1923,10 +1983,13 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 
 		// Delete the fulfillment meta data for the order, with a different user.
 		$request = new WP_REST_Request( 'DELETE', '/wc/v3/orders/' . $order_id . '/fulfillments/' . $fulfillment_id . '/metadata' );
-		$request->set_body_params(
-			array(
-				'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-			),
+		$request->set_header( 'content-type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'meta_key' => 'test_meta_key', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				),
+			)
 		);
 		$response = $this->server->dispatch( $request );
 
@@ -1942,22 +2005,5 @@ class OrderFulfillmentsRestControllerTest extends WC_REST_Unit_Test_Case {
 		);
 
 		wp_set_current_user( $current_user->ID );
-	}
-
-
-	/**
-	 * Pretty print the given array.
-	 *
-	 * @param array $data The data to pretty print.
-	 */
-	public function pp( $data ) {
-		// Pretty prints the given array on the command line output.
-		$pretty_print = wp_json_encode(
-			$data,
-			JSON_PRETTY_PRINT
-		);
-
-		echo $pretty_print; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		ob_flush();
 	}
 }
