@@ -14,7 +14,7 @@ use Automattic\WooCommerce\Internal\DataStores\Fulfillments\FulfillmentsDataStor
  *
  * @since 9.0.0
  */
-trait FulfillableEntityTrait {
+abstract class AbstractFulfillmentManager {
 	/**
 	 * Fulfillable ID, which is the identifier of the object with fulfillments. For example, `WC_Order::get_id()` is used for order fulfillments.
 	 *

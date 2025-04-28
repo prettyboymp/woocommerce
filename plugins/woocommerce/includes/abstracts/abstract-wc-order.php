@@ -15,7 +15,6 @@ use Automattic\WooCommerce\Enums\OrderStatus;
 use Automattic\WooCommerce\Enums\ProductTaxStatus;
 use Automattic\WooCommerce\Enums\ProductType;
 use Automattic\WooCommerce\Internal\CostOfGoodsSold\CogsAwareTrait;
-use Automattic\WooCommerce\Internal\Fulfillments\FulfillableEntityTrait;
 use Automattic\WooCommerce\Internal\Orders\PaymentInfo;
 use Automattic\WooCommerce\Proxies\LegacyProxy;
 use Automattic\WooCommerce\Utilities\ArrayUtil;
@@ -32,7 +31,6 @@ require_once WC_ABSPATH . 'includes/legacy/abstract-wc-legacy-order.php';
 abstract class WC_Abstract_Order extends WC_Abstract_Legacy_Order {
 	use WC_Item_Totals;
 	use CogsAwareTrait;
-	use FulfillableEntityTrait;
 
 	/**
 	 * Order Data array. This is the core order data exposed in APIs since 3.0.0.
@@ -2614,44 +2612,5 @@ abstract class WC_Abstract_Order extends WC_Abstract_Legacy_Order {
 		if ( $this->has_cogs() && $this->cogs_is_enabled( __METHOD__ ) ) {
 			$this->set_prop( 'cogs_total_value', $value );
 		}
-	}
-
-	/**
-	 * Get the order key to be used to relate fulfillments to this object.
-	 *
-	 * @return string
-	 */
-	public function get_fulfillable_id(): string {
-		return (string) $this->get_id();
-	}
-
-	/**
-	 * Get the type of the fulfillable object to be used to relate fulfillments to this object.
-	 * Ensures that the trait can be used by multiple types of objects, and ID's don't interfere.
-	 *
-	 * @return string
-	 */
-	public function get_fulfillable_type(): string {
-		return get_class( $this );
-	}
-
-	/**
-	 * Returns the fulfillment status of the order.
-	 *
-	 * @return string
-	 */
-	public function get_fulfillment_status(): string {
-		$meta = $this->get_meta( '_fulfillment_status' );
-		return $meta ? $meta : 'no_fulfillments';
-	}
-
-	/**
-	 * Sets the fulfillment status of the order.
-	 *
-	 * @param string $status The status to set.
-	 */
-	public function set_fulfillment_status( string $status ): void {
-		$this->update_meta_data( '_fulfillment_status', $status );
-		$this->save_meta_data();
 	}
 }
