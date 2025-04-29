@@ -30,22 +30,6 @@ abstract class AbstractFulfillmentManager {
 	abstract public function get_fulfillable_type(): string;
 
 	/**
-	 * Fulfillable status, which is the status of the object with fulfillments. For example, `WC_Order::get_status()` is used for order fulfillments.
-	 *
-	 * @param string $status Fulfillable status.
-	 *
-	 * @var string
-	 */
-	abstract public function set_fulfillment_status( string $status ): void;
-
-	/**
-	 * Fulfillable status, which is the status of the object with fulfillments. For example, `WC_Order::get_status()` is used for order fulfillments.
-	 *
-	 * @var string
-	 */
-	abstract public function get_fulfillment_status(): string;
-
-	/**
 	 * Get fulfillments of an entity.
 	 *
 	 * @return Array<Fulfillment>
@@ -67,7 +51,6 @@ abstract class AbstractFulfillmentManager {
 		wc_get_container()
 			->get( FulfillmentsDataStore::class )
 			->create( $fulfillment );
-		$this->update_order_fulfillment_status();
 	}
 
 	/**
@@ -81,7 +64,6 @@ abstract class AbstractFulfillmentManager {
 		wc_get_container()
 			->get( FulfillmentsDataStore::class )
 			->update( $fulfillment );
-		$this->update_order_fulfillment_status();
 	}
 
 	/**
@@ -95,7 +77,6 @@ abstract class AbstractFulfillmentManager {
 		wc_get_container()
 			->get( FulfillmentsDataStore::class )
 			->delete( $fulfillment );
-		$this->update_order_fulfillment_status();
 	}
 
 	/**
@@ -110,16 +91,13 @@ abstract class AbstractFulfillmentManager {
 		$fulfillment->set_status( $status );
 		$fulfillment->set_is_fulfilled( true );
 		$fulfillment->save();
-		$this->update_order_fulfillment_status();
 	}
 
+
 	/**
-	 * Update the fulfillment status of the entity based on the fulfillments.
-	 *
-	 * This method checks if all fulfillments are fulfilled, if some fulfillments are fulfilled, or if no fulfillments are present.
-	 * It sets the fulfillment status of the entity accordingly.
+	 * Get the fulfillment status of the entity. This acts like a computed property.
 	 */
-	private function update_order_fulfillment_status(): void {
+	public function get_fulfillment_status(): string {
 		$fulfillments     = $this->get_fulfillments();
 		$has_fulfillments = ! empty( $fulfillments );
 		$all_fulfilled    = true;
@@ -135,14 +113,14 @@ abstract class AbstractFulfillmentManager {
 			}
 
 			if ( $all_fulfilled ) {
-				$this->set_fulfillment_status( 'fulfilled' );
+				return 'fulfilled';
 			} elseif ( $some_fulfilled ) {
-				$this->set_fulfillment_status( 'partially_fulfilled' );
+				return 'partially_fulfilled';
 			} else {
-				$this->set_fulfillment_status( 'unfulfilled' );
+				return 'unfulfilled';
 			}
 		} else {
-			$this->set_fulfillment_status( 'no_fulfillments' );
+			return 'no_fulfillments';
 		}
 	}
 }

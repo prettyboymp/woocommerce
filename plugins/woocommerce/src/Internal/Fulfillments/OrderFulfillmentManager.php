@@ -48,25 +48,4 @@ class OrderFulfillmentManager extends AbstractFulfillmentManager {
 	public function get_fulfillable_type(): string {
 		return WC_Order::class;
 	}
-
-
-	/**
-	 * Returns the fulfillment status of the order.
-	 *
-	 * @return string
-	 */
-	public function get_fulfillment_status(): string {
-		$meta = $this->order->get_meta( '_fulfillment_status' );
-		return $meta ? $meta : 'no_fulfillments';
-	}
-
-	/**
-	 * Sets the fulfillment status of the order.
-	 *
-	 * @param string $status The status to set.
-	 */
-	public function set_fulfillment_status( string $status ): void {
-		$this->order->update_meta_data( '_fulfillment_status', $status );
-		$this->order->save_meta_data();
-	}
 }
