@@ -69,9 +69,9 @@ class FulfillmentTest extends \WC_Unit_Test_Case {
 
 		$fulfillment->delete();
 
-		$fresh_fulfillment = new Fulfillment( $fulfillment_id );
-		$this->assertInstanceOf( Fulfillment::class, $fresh_fulfillment );
-		$this->assertNotEquals( null, $fresh_fulfillment->get_date_deleted() );
+		$this->expectException( \Exception::class );
+		$this->expectExceptionMessage( 'Fulfillment not found.' );
+		new Fulfillment( $fulfillment_id );
 	}
 
 	/**

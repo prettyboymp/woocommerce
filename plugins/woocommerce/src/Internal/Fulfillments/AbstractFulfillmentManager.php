@@ -1,6 +1,6 @@
 <?php
 /**
- * Fulfillable trait.
+ * AbstractFulfillmentManager class file.
  */
 
 declare( strict_types=1 );
@@ -10,11 +10,11 @@ namespace Automattic\WooCommerce\Internal\Fulfillments;
 use Automattic\WooCommerce\Internal\DataStores\Fulfillments\FulfillmentsDataStore;
 
 /**
- * This trait is used to mark classes that can be fulfilled.
+ * Abstract fulfillment manager.
  *
  * @since 9.0.0
  */
-trait FulfillableEntityTrait {
+abstract class AbstractFulfillmentManager {
 	/**
 	 * Fulfillable ID, which is the identifier of the object with fulfillments. For example, `WC_Order::get_id()` is used for order fulfillments.
 	 *
