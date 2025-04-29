@@ -2,8 +2,13 @@
  * External dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
-import { createInterpolateElement, useEffect } from '@wordpress/element';
+import {
+	InnerBlocks,
+	InspectorControls,
+	useBlockProps,
+	useInnerBlocksProps,
+} from '@wordpress/block-editor';
+import { createInterpolateElement, useEffect, useRef } from '@wordpress/element';
 import { getAdminLink, getSettingWithCoercion } from '@woocommerce/settings';
 import { isBoolean } from '@woocommerce/types';
 import type { BlockEditProps } from '@wordpress/blocks';
@@ -32,8 +37,6 @@ import { title, description } from './block.json';
 import { BlockAttributes, ImageSizing } from './types';
 import { ImageSizeSettings } from './image-size-settings';
 
-type SaleBadgeAlignProps = 'left' | 'center' | 'right';
-
 const Edit = ( {
 	attributes,
 	setAttributes,
@@ -42,13 +45,19 @@ const Edit = ( {
 	const {
 		showProductLink,
 		imageSizing,
-		showSaleBadge,
-		saleBadgeAlign,
 		width,
 		height,
 		scale,
 	} = attributes;
+
+	const ref = useRef<HTMLDivElement>( null );
+
 	const blockProps = useBlockProps( { style: { width, height } } );
+	const innerBlockProps = useInnerBlocksProps( {
+		className: 'wc-block-components-product-image__inner-container',
+	}, {
+		dropZoneElement: ref.current,
+	} );
 	const isDescendentOfQueryLoop = Number.isFinite( context.queryId );
 	const isBlockTheme = getSettingWithCoercion(
 		'isBlockTheme',
@@ -84,45 +93,6 @@ const Edit = ( {
 							} )
 						}
 					/>
-					<ToggleControl
-						label={ __( 'Show On-Sale Badge', 'woocommerce' ) }
-						help={ __(
-							'Display a “sale” badge if the product is on-sale.',
-							'woocommerce'
-						) }
-						checked={ showSaleBadge }
-						onChange={ () =>
-							setAttributes( {
-								showSaleBadge: ! showSaleBadge,
-							} )
-						}
-					/>
-					{ showSaleBadge && (
-						<ToggleGroupControl
-							label={ __(
-								'Sale Badge Alignment',
-								'woocommerce'
-							) }
-							isBlock
-							value={ saleBadgeAlign }
-							onChange={ ( value: SaleBadgeAlignProps ) =>
-								setAttributes( { saleBadgeAlign: value } )
-							}
-						>
-							<ToggleGroupControlOption
-								value="left"
-								label={ __( 'Left', 'woocommerce' ) }
-							/>
-							<ToggleGroupControlOption
-								value="center"
-								label={ __( 'Center', 'woocommerce' ) }
-							/>
-							<ToggleGroupControlOption
-								value="right"
-								label={ __( 'Right', 'woocommerce' ) }
-							/>
-						</ToggleGroupControl>
-					) }
 					<ToggleGroupControl
 						label={ __( 'Image Sizing', 'woocommerce' ) }
 						isBlock
@@ -164,9 +134,9 @@ const Edit = ( {
 					</ToggleGroupControl>
 				</PanelBody>
 			</InspectorControls>
-			<Disabled>
-				<Block { ...{ ...attributes, ...context } } />
-			</Disabled>
+			<Block { ...{ ...attributes, ...context } }>
+				<div { ...innerBlockProps } />
+			</Block>
 		</div>
 	);
 };

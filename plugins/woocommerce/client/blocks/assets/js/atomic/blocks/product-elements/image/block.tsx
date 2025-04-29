@@ -104,16 +104,17 @@ type Props = BlockAttributes &
 
 export const Block = ( props: Props ): JSX.Element | null => {
 	const {
+		aspectRatio,
+		children,
 		className,
+		height,
 		imageSizing = ImageSizing.SINGLE,
+		saleBadgeAlign = 'right',
+		scale,
 		showProductLink = true,
 		showSaleBadge,
-		saleBadgeAlign = 'right',
-		height,
-		width,
-		scale,
-		aspectRatio,
 		style,
+		width,
 		...restProps
 	} = props;
 	const styleProps = useStyleProps( props );
@@ -123,20 +124,23 @@ export const Block = ( props: Props ): JSX.Element | null => {
 
 	if ( ! product.id ) {
 		return (
-			<div
-				className={ clsx(
-					className,
-					'wc-block-components-product-image',
-					{
-						[ `${ parentClassName }__product-image` ]:
-							parentClassName,
-					},
-					styleProps.className
-				) }
-				style={ styleProps.style }
-			>
-				<ImagePlaceholder />
-			</div>
+			<>
+				<div
+					className={ clsx(
+						className,
+						'wc-block-components-product-image',
+						{
+							[ `${ parentClassName }__product-image` ]:
+								parentClassName,
+						},
+						styleProps.className
+					) }
+					style={ styleProps.style }
+				>
+					<ImagePlaceholder />
+				</div>
+				{ children }
+			</>
 		);
 	}
 	const hasProductImages = !! product.images.length;
@@ -158,42 +162,51 @@ export const Block = ( props: Props ): JSX.Element | null => {
 	};
 
 	return (
-		<div
-			className={ clsx(
-				className,
-				'wc-block-components-product-image',
-				{
-					[ `${ parentClassName }__product-image` ]: parentClassName,
-				},
-				styleProps.className
-			) }
-			style={ styleProps.style }
-		>
-			<ParentComponent { ...( showProductLink && anchorProps ) }>
-				{ !! showSaleBadge && (
-					<ProductSaleBadge
-						align={ saleBadgeAlign }
-						{ ...restProps }
-					/>
+		<>
+			<div
+				className={ clsx(
+					className,
+					'wc-block-components-product-image',
+					{
+						[ `${ parentClassName }__product-image` ]: parentClassName,
+					},
+					styleProps.className
 				) }
-				<Image
-					fallbackAlt={ decodeEntities( product.name ) }
-					image={ image }
-					loaded={ ! isLoading }
-					showFullSize={ imageSizing !== ImageSizing.THUMBNAIL }
-					width={ width }
-					height={ height }
-					scale={ scale }
-					aspectRatio={
-						objectHasProp( style, 'dimensions' ) &&
-						objectHasProp( style.dimensions, 'aspectRatio' ) &&
-						isString( style.dimensions.aspectRatio )
-							? style.dimensions.aspectRatio
-							: aspectRatio
+				style={ styleProps.style }
+			>
+				<ParentComponent { ...( showProductLink && anchorProps ) }>
+					{ 
+						/**
+						 * Sale badge is now supported through the inner blocks. However, for backwards compatibility,
+						 * we still need to show it if the attribute is set.
+						 */
+						!! showSaleBadge && (
+							<ProductSaleBadge
+								align={ saleBadgeAlign }
+								{ ...restProps }
+							/>
+						)
 					}
-				/>
-			</ParentComponent>
-		</div>
+					<Image
+						fallbackAlt={ decodeEntities( product.name ) }
+						image={ image }
+						loaded={ ! isLoading }
+						showFullSize={ imageSizing !== ImageSizing.THUMBNAIL }
+						width={ width }
+						height={ height }
+						scale={ scale }
+						aspectRatio={
+							objectHasProp( style, 'dimensions' ) &&
+							objectHasProp( style.dimensions, 'aspectRatio' ) &&
+							isString( style.dimensions.aspectRatio )
+								? style.dimensions.aspectRatio
+								: aspectRatio
+						}
+					/>
+				</ParentComponent>
+			</div>
+			{ children }
+		</>
 	);
 };
 
