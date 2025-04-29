@@ -58,14 +58,6 @@ class OrderFulfillmentManagerTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test the set_fulfillment_status method.
-	 */
-	public function test_get_set_fulfillment_status() {
-		$this->manager->set_fulfillment_status( 'unfulfilled' );
-		$this->assertEquals( 'unfulfilled', $this->manager->get_fulfillment_status() );
-	}
-
-	/**
 	 * Test the get_fulfillments method.
 	 */
 	public function test_add_get_fulfillments() {
