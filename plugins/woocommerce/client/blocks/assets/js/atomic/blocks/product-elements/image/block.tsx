@@ -108,6 +108,7 @@ export const Block = ( props: Props ): JSX.Element | null => {
 		children,
 		className,
 		height,
+		image,
 		imageSizing = ImageSizing.SINGLE,
 		saleBadgeAlign = 'right',
 		scale,
@@ -122,7 +123,9 @@ export const Block = ( props: Props ): JSX.Element | null => {
 	const { product, isLoading } = useProductDataContext();
 	const { dispatchStoreEvent } = useStoreEvents();
 
-	if ( ! product.id ) {
+	const hasImageSrc = !!image?.src;
+
+	if ( ! hasImageSrc && ! product?.id ) {
 		return (
 			<>
 				<div
@@ -143,22 +146,42 @@ export const Block = ( props: Props ): JSX.Element | null => {
 			</>
 		);
 	}
-	const hasProductImages = !! product.images.length;
-	const image = hasProductImages ? product.images[ 0 ] : null;
-	const ParentComponent = showProductLink ? 'a' : Fragment;
-	const anchorLabel = sprintf(
-		/* translators: %s is referring to the product name */
-		__( 'Link to %s', 'woocommerce' ),
-		product.name
-	);
+
+	let imageToShow: ImageProps['image'] = null;
+	let altText = '';
+
+	if ( hasImageSrc ) {
+		imageToShow = { 
+			alt: '',
+			id: image.id,
+			name: '',
+			sizes: image.sizes,
+			src: image.src,
+			srcset: image.srcset, 
+			thumbnail: image.src,
+		};
+		altText = 'Product Image Block';
+	} else if ( product?.id ) {
+		const hasProductImages = !! product.images.length;
+		imageToShow = hasProductImages ? product.images[ 0 ] : null;
+		altText = imageToShow?.alt || decodeEntities( product.name );
+	}
+	
+	const ParentComponent = ( hasImageSrc || ! showProductLink ) ? 'a' : Fragment;
+	const anchorLabel = !hasImageSrc && product?.name ? sprintf(
+			__( 'Link to %s', 'woocommerce' ),
+			product.name
+		) : '';
 	const anchorProps = {
-		href: product.permalink,
-		...( ! hasProductImages && { 'aria-label': anchorLabel } ),
-		onClick: () => {
-			dispatchStoreEvent( 'product-view-link', {
-				product,
-			} );
-		},
+		href: showProductLink ? product?.permalink : undefined,
+		...( ! imageToShow && showProductLink && { 'aria-label': anchorLabel } ),
+		...( showProductLink && {
+			onClick: () => {
+				dispatchStoreEvent( 'product-view-link', {
+					product,
+				} );
+			},
+		} ),
 	};
 
 	return (
@@ -180,7 +203,7 @@ export const Block = ( props: Props ): JSX.Element | null => {
 						 * Sale badge is now supported through the inner blocks. However, for backwards compatibility,
 						 * we still need to show it if the attribute is set.
 						 */
-						!! showSaleBadge && (
+						! hasImageSrc && !! showSaleBadge && (
 							<ProductSaleBadge
 								align={ saleBadgeAlign }
 								{ ...restProps }
@@ -188,9 +211,9 @@ export const Block = ( props: Props ): JSX.Element | null => {
 						)
 					}
 					<Image
-						fallbackAlt={ decodeEntities( product.name ) }
-						image={ image }
-						loaded={ ! isLoading }
+						fallbackAlt={ altText }
+						image={ imageToShow }
+						loaded={ !isLoading || hasImageSrc }
 						showFullSize={ imageSizing !== ImageSizing.THUMBNAIL }
 						width={ width }
 						height={ height }

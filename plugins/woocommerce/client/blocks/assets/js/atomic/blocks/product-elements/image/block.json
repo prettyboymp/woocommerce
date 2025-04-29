@@ -8,6 +8,10 @@
 		"showSaleBadge": { "type": "boolean", "default": false },
 		"saleBadgeAlign": { "type": "string", "default": "right" },
 		"imageSizing": { "type": "string", "default": "single" },
+		"image": {
+			"type": "object",
+			"default": null
+		},
 		"productId": { "type": "number", "default": 0 },
 		"isDescendentOfQueryLoop": { "type": "boolean", "default": false },
 		"isDescendentOfSingleProductBlock": {

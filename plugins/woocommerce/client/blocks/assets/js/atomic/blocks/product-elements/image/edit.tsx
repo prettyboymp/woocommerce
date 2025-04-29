@@ -3,7 +3,6 @@
  */
 import { __ } from '@wordpress/i18n';
 import {
-	InnerBlocks,
 	InspectorControls,
 	useBlockProps,
 	useInnerBlocksProps,
@@ -45,6 +44,7 @@ const Edit = ( {
 	const {
 		showProductLink,
 		imageSizing,
+		image,
 		width,
 		height,
 		scale,
@@ -80,19 +80,21 @@ const Edit = ( {
 					setAttributes={ setAttributes }
 				/>
 				<PanelBody title={ __( 'Content', 'woocommerce' ) }>
-					<ToggleControl
-						label={ __( 'Link to Product Page', 'woocommerce' ) }
-						help={ __(
-							'Links the image to the single product listing.',
-							'woocommerce'
-						) }
-						checked={ showProductLink }
-						onChange={ () =>
-							setAttributes( {
-								showProductLink: ! showProductLink,
-							} )
-						}
-					/>
+					{ ! image?.src && (
+						<ToggleControl
+							label={ __( 'Link to Product Page', 'woocommerce' ) }
+							help={ __(
+								'Links the image to the single product listing.',
+								'woocommerce'
+							) }
+							checked={ showProductLink }
+							onChange={ () =>
+								setAttributes( {
+									showProductLink: ! showProductLink,
+								} )
+							}
+						/>
+					) }
 					<ToggleGroupControl
 						label={ __( 'Image Sizing', 'woocommerce' ) }
 						isBlock

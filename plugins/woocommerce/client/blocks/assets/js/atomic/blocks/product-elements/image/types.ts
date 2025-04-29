@@ -3,6 +3,13 @@ export enum ImageSizing {
 	THUMBNAIL = 'thumbnail',
 }
 
+export interface ImageDetails {
+	id: number;
+	src: string;
+	srcset?: string;
+	sizes?: string;
+}
+
 export interface BlockAttributes {
 	// The product ID.
 	productId: number;
@@ -28,4 +35,6 @@ export interface BlockAttributes {
 	scale: 'cover' | 'contain' | 'fill';
 	// Aspect ratio of the image.
 	aspectRatio: string;
+	// Image object.
+	image: ImageDetails | null;
 }
