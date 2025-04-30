@@ -88,7 +88,7 @@ interface CanMakePaymentArgument {
 }
 ```
 
-If you need data that is not available in the parameter received by the callback you can consider [exposing your data in the Store API](../../../plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-add-data.md).
+If you need data that is not available in the parameter received by the callback you can consider [exposing your data in the Store API](https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-add-data.md).
 
 
 ## Filtering payment methods using requirements

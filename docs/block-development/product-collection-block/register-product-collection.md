@@ -337,4 +337,4 @@ __experimentalRegisterProductCollection({
 
 ---
 
-**Tip:** You can also take a look at how we are defining our core collections at [plugins/woocommerce/client/blocks/assets/js/blocks/product-collection/collections](../../plugins/woocommerce/client/blocks/assets/js/blocks/product-collection/collections/) directory. Our core collections will also evolve over time.
+**Tip:** You can also take a look at how we are defining our core collections at [plugins/woocommerce/client/blocks/assets/js/blocks/product-collection/collections](https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/assets/js/blocks/product-collection/collections/) directory. Our core collections will also evolve over time.

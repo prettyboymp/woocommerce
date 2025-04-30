@@ -13,7 +13,7 @@ Interested in joining the Woo contributor community? The links in this doc summa
 The WooCommerce core plugin code can be found in our [monorepo](https://github.com/woocommerce/woocommerce). Here you can contribute to: 
 
 - [WooCommerce Core Plugin](https://github.com/woocommerce/woocommerce/tree/trunk/plugins/woocommerce)
-- [WooCommerce Blocks](../../plugins/woocommerce/client/blocks) 
+- [WooCommerce Blocks](https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks) 
 
 ### Code of Conduct
 

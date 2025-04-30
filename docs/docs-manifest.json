@@ -41,7 +41,7 @@
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/block-theme-development/css-styling.md",
           "id": "55b3452119141753ee1eaeee5f8d471ab362945b",
           "links": {
-            "../../plugins/woocommerce/client/blocks/docs/contributors/coding-guidelines.md": "0c96d913674b73e535c91471ad39276545723b57"
+            "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/docs/contributors/coding-guidelines.md": "0c96d913674b73e535c91471ad39276545723b57"
           }
         },
         {
@@ -133,9 +133,9 @@
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/cart-and-checkout-blocks/overview-of-data-flow.md",
           "id": "d2d8cf26967438f16815b129da855324be7a7ef8",
           "links": {
-            "../../plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-add-data.md": "f0f7c1486ad86dc0c46b8f85588bd1ef1386c8fd",
-            "../../plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-add-custom-fields.md": "fba50e6ac461e18590b331446c3488d171cb8fdc",
-            "../../plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-update-cart.md": "557b63b486de93afd69d1eb15b79ebd442f3672d"
+            "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-add-data.md": "f0f7c1486ad86dc0c46b8f85588bd1ef1386c8fd",
+            "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-add-custom-fields.md": "fba50e6ac461e18590b331446c3488d171cb8fdc",
+            "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-update-cart.md": "557b63b486de93afd69d1eb15b79ebd442f3672d"
           }
         },
         {
@@ -166,7 +166,7 @@
           "id": "041787aca25af363a5eff3e710bd669cc8aebc4b",
           "links": {
             "./slot-fills.md": "e388101586765dd9aca752d66d667d74951a1504",
-            "../../plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-update-cart.md": "557b63b486de93afd69d1eb15b79ebd442f3672d",
+            "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-update-cart.md": "557b63b486de93afd69d1eb15b79ebd442f3672d",
             "./removing-checkout-fields.md": "030247059754260bce6285cfb352a4a733f1f677"
           }
         },
@@ -179,10 +179,10 @@
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/cart-and-checkout-blocks/extensibility-getting-started.md",
           "id": "7a379c2d6d96f15fe234a707d19ebdc20f8e9dd3",
           "links": {
-            "../../plugins/woocommerce/client/blocks/packages/checkout/filter-registry/README.md": "128716c563e163805d3b8ac4473f80ceebcaba3e",
-            "../../plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/data-store/": "d255d1735820bd5268f86601f80e4ace015d143b",
-            "../../plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/hooks/hook-alternatives.md": "0316ea1803658554031fbf0799996403ebb4ce83",
-            "../../plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api": "f19c11d5db482c95272f85ef6e1913680726e17f"
+            "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/packages/checkout/filter-registry/README.md": "128716c563e163805d3b8ac4473f80ceebcaba3e",
+            "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/data-store/": "d255d1735820bd5268f86601f80e4ace015d143b",
+            "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/hooks/hook-alternatives.md": "0316ea1803658554031fbf0799996403ebb4ce83",
+            "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api": "f19c11d5db482c95272f85ef6e1913680726e17f"
           }
         },
         {
@@ -203,9 +203,9 @@
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/cart-and-checkout-blocks/available-slot-fills.md",
           "id": "c7ac16eee5540b06b6db928f5d03282ff177e84e",
           "links": {
-            "../../plugins/woocommerce/client/blocks/packages/checkout/slot/README.md": "f6b0b5f923e2ed9f7556d2aadbf900b6d31945f7",
+            "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/packages/checkout/slot/README.md": "f6b0b5f923e2ed9f7556d2aadbf900b6d31945f7",
             "./slot-fills.md": "e388101586765dd9aca752d66d667d74951a1504",
-            "../../plugins/woocommerce/client/blocks/docs/internal-developers/blocks/feature-flags-and-experimental-interfaces.md": "7ed9c2c2708d7960aa35ad3ba9e0e069f1addb83"
+            "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/docs/internal-developers/blocks/feature-flags-and-experimental-interfaces.md": "7ed9c2c2708d7960aa35ad3ba9e0e069f1addb83"
           }
         },
         {
@@ -220,7 +220,7 @@
       ],
       "categories": [
         {
-          "content": "\nThis document lists the filters that are currently available to extensions and offers usage information for each one of them. Information on registering filters can be found on the [Checkout - Filter Registry](../../../plugins/woocommerce/client/blocks/packages/checkout/filter-registry/README.md) page.\n\n## Cart Line Items filters\n\nThe following [Cart Line Items filters](https://developer.woocommerce.com/docs/cart-and-checkout-filters-cart-line-items/) are available:\n\n-   `cartItemClass`\n-   `cartItemPrice`\n-   `itemName`\n-   `saleBadgePriceFormat`\n-   `showRemoveItemLink`\n-   `subtotalPriceFormat`\n\nThe following screenshot shows which parts the individual filters affect:\n\n![Cart Line Items](https://woocommerce.com/wp-content/uploads/2023/10/Screenshot-2023-10-26-at-13.12.33.png)\n\n## Order Summary Items filters\n\nThe following [Order Summary Items filters](https://developer.woocommerce.com/docs/cart-and-checkout-filters-order-summary-items/) are available:\n\n-   `cartItemClass`\n-   `cartItemPrice`\n-   `itemName`\n-   `subtotalPriceFormat`\n\nThe following screenshot shows which parts the individual filters affect:\n\n![Order Summary Items](https://woocommerce.com/wp-content/uploads/2023/10/Screenshot-2023-10-26-at-16.29.45.png)\n\n## Totals Footer Item filter\n\nThe following [Totals Footer Item filter](https://developer.woocommerce.com/docs/cart-and-checkout-filters-totals-footer-item/) is available:\n\n-   `totalLabel`\n-   `totalValue`\n\n## Checkout and place order button filters\n\nThe following [Checkout and place order button filters](https://developer.woocommerce.com/docs/cart-and-checkout-filters-checkout-and-place-order-button/) are available:\n\n-   `proceedToCheckoutButtonLabel`\n-   `proceedToCheckoutButtonLink`\n-   `placeOrderButtonLabel`\n\n## Coupon filters\n\nThe following [Coupon filters](https://developer.woocommerce.com/docs/cart-and-checkout-filters-coupons/) are available:\n\n-   `coupons`\n-   `showApplyCouponNotice`\n-   `showRemoveCouponNotice`\n\n## Additional Cart and Checkout inner block types filter\n\nThe following [Additional Cart and Checkout inner block types filter](https://developer.woocommerce.com/docs/cart-and-checkout-filters-inner-block-types/) is available:\n\n-   `additionalCartCheckoutInnerBlockTypes`\n\n## Combined filters\n\nFilters can also be combined. The following example shows how to combine some of the available filters.\n\n```tsx\nconst { registerCheckoutFilters } = window.wc.blocksCheckout;\n\nconst isOrderSummaryContext = ( args ) => args?.context === 'summary';\n\nconst modifyCartItemClass = ( defaultValue, extensions, args ) => {\n\tif ( isOrderSummaryContext( args ) ) {\n\t\treturn 'my-custom-class';\n\t}\n\treturn defaultValue;\n};\n\nconst modifyCartItemPrice = ( defaultValue, extensions, args ) => {\n\tif ( isOrderSummaryContext( args ) ) {\n\t\treturn '&lt;price/&gt; for all items';\n\t}\n\treturn defaultValue;\n};\n\nconst modifyItemName = ( defaultValue, extensions, args ) => {\n\tif ( isOrderSummaryContext( args ) ) {\n\t\treturn `${ defaultValue }`;\n\t}\n\treturn defaultValue;\n};\n\nconst modifySubtotalPriceFormat = ( defaultValue, extensions, args ) => {\n\tif ( isOrderSummaryContext( args ) ) {\n\t\treturn '&lt;price/&gt; per item';\n\t}\n\treturn defaultValue;\n};\n\nregisterCheckoutFilters( 'example-extension', {\n\tcartItemClass: modifyCartItemClass,\n\tcartItemPrice: modifyCartItemPrice,\n\titemName: modifyItemName,\n\tsubtotalPriceFormat: modifySubtotalPriceFormat,\n} );\n```\n\n## Troubleshooting\n\nIf you are logged in to the store as an administrator, you should be shown an error like this if your filter is not\nworking correctly. The error will also be shown in your console.\n\n![Troubleshooting](https://woocommerce.com/wp-content/uploads/2023/10/Screenshot-2023-10-30-at-10.52.53.png)\n",
+          "content": "\nThis document lists the filters that are currently available to extensions and offers usage information for each one of them. Information on registering filters can be found on the [Checkout - Filter Registry](https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/packages/checkout/filter-registry/README.md) page.\n\n## Cart Line Items filters\n\nThe following [Cart Line Items filters](https://developer.woocommerce.com/docs/cart-and-checkout-filters-cart-line-items/) are available:\n\n-   `cartItemClass`\n-   `cartItemPrice`\n-   `itemName`\n-   `saleBadgePriceFormat`\n-   `showRemoveItemLink`\n-   `subtotalPriceFormat`\n\nThe following screenshot shows which parts the individual filters affect:\n\n![Cart Line Items](https://woocommerce.com/wp-content/uploads/2023/10/Screenshot-2023-10-26-at-13.12.33.png)\n\n## Order Summary Items filters\n\nThe following [Order Summary Items filters](https://developer.woocommerce.com/docs/cart-and-checkout-filters-order-summary-items/) are available:\n\n-   `cartItemClass`\n-   `cartItemPrice`\n-   `itemName`\n-   `subtotalPriceFormat`\n\nThe following screenshot shows which parts the individual filters affect:\n\n![Order Summary Items](https://woocommerce.com/wp-content/uploads/2023/10/Screenshot-2023-10-26-at-16.29.45.png)\n\n## Totals Footer Item filter\n\nThe following [Totals Footer Item filter](https://developer.woocommerce.com/docs/cart-and-checkout-filters-totals-footer-item/) is available:\n\n-   `totalLabel`\n-   `totalValue`\n\n## Checkout and place order button filters\n\nThe following [Checkout and place order button filters](https://developer.woocommerce.com/docs/cart-and-checkout-filters-checkout-and-place-order-button/) are available:\n\n-   `proceedToCheckoutButtonLabel`\n-   `proceedToCheckoutButtonLink`\n-   `placeOrderButtonLabel`\n\n## Coupon filters\n\nThe following [Coupon filters](https://developer.woocommerce.com/docs/cart-and-checkout-filters-coupons/) are available:\n\n-   `coupons`\n-   `showApplyCouponNotice`\n-   `showRemoveCouponNotice`\n\n## Additional Cart and Checkout inner block types filter\n\nThe following [Additional Cart and Checkout inner block types filter](https://developer.woocommerce.com/docs/cart-and-checkout-filters-inner-block-types/) is available:\n\n-   `additionalCartCheckoutInnerBlockTypes`\n\n## Combined filters\n\nFilters can also be combined. The following example shows how to combine some of the available filters.\n\n```tsx\nconst { registerCheckoutFilters } = window.wc.blocksCheckout;\n\nconst isOrderSummaryContext = ( args ) => args?.context === 'summary';\n\nconst modifyCartItemClass = ( defaultValue, extensions, args ) => {\n\tif ( isOrderSummaryContext( args ) ) {\n\t\treturn 'my-custom-class';\n\t}\n\treturn defaultValue;\n};\n\nconst modifyCartItemPrice = ( defaultValue, extensions, args ) => {\n\tif ( isOrderSummaryContext( args ) ) {\n\t\treturn '&lt;price/&gt; for all items';\n\t}\n\treturn defaultValue;\n};\n\nconst modifyItemName = ( defaultValue, extensions, args ) => {\n\tif ( isOrderSummaryContext( args ) ) {\n\t\treturn `${ defaultValue }`;\n\t}\n\treturn defaultValue;\n};\n\nconst modifySubtotalPriceFormat = ( defaultValue, extensions, args ) => {\n\tif ( isOrderSummaryContext( args ) ) {\n\t\treturn '&lt;price/&gt; per item';\n\t}\n\treturn defaultValue;\n};\n\nregisterCheckoutFilters( 'example-extension', {\n\tcartItemClass: modifyCartItemClass,\n\tcartItemPrice: modifyCartItemPrice,\n\titemName: modifyItemName,\n\tsubtotalPriceFormat: modifySubtotalPriceFormat,\n} );\n```\n\n## Troubleshooting\n\nIf you are logged in to the store as an administrator, you should be shown an error like this if your filter is not\nworking correctly. The error will also be shown in your console.\n\n![Troubleshooting](https://woocommerce.com/wp-content/uploads/2023/10/Screenshot-2023-10-30-at-10.52.53.png)\n",
           "category_slug": "cart-and-checkout-available-filters",
           "category_title": "Available Filters",
           "posts": [
@@ -313,7 +313,7 @@
               "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/cart-and-checkout-blocks/checkout-payment-methods/payment-method-integration.md",
               "id": "c9a763b6976ecf03aeb961577c17c31f1ac7c420",
               "links": {
-                "../../../plugins/woocommerce/client/blocks/assets/js/types/type-defs/payment-method-interface.ts": "5834ce177e13b88f738377653d39e8990098873d",
+                "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/assets/js/types/type-defs/payment-method-interface.ts": "5834ce177e13b88f738377653d39e8990098873d",
                 "./checkout-flow-and-events.md": "499384cbb48ed96a2e12653cd68bd82d123a20a1",
                 "../../payments/payment-gateway-api.md": "b337203996650b567f91c70306e1010d6f1ae552"
               }
@@ -327,7 +327,7 @@
               "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/cart-and-checkout-blocks/checkout-payment-methods/filtering-payment-methods.md",
               "id": "5c9ff65767116f51e9ec4de26794e6e4e743ffa3",
               "links": {
-                "../../../plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-add-data.md": "f0f7c1486ad86dc0c46b8f85588bd1ef1386c8fd",
+                "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-add-data.md": "f0f7c1486ad86dc0c46b8f85588bd1ef1386c8fd",
                 "./payment-method-integration.md": "c9a763b6976ecf03aeb961577c17c31f1ac7c420"
               }
             },
@@ -340,9 +340,9 @@
               "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/cart-and-checkout-blocks/checkout-payment-methods/checkout-flow-and-events.md",
               "id": "499384cbb48ed96a2e12653cd68bd82d123a20a1",
               "links": {
-                "../../../plugins/woocommerce/client/blocks/docs/internal-developers/block-client-apis/checkout/checkout-api.md": "80f904d6304fd0d6a4cd2801f7538c1f107dd692",
+                "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/docs/internal-developers/block-client-apis/checkout/checkout-api.md": "80f904d6304fd0d6a4cd2801f7538c1f107dd692",
                 "./payment-method-integration.md": "c9a763b6976ecf03aeb961577c17c31f1ac7c420",
-                "../../../plugins/woocommerce/client/blocks/assets/js/settings/shared/default-fields.ts": "3c6a510e51535612783e2ba7429b345eee706b53"
+                "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/assets/js/settings/shared/default-fields.ts": "3c6a510e51535612783e2ba7429b345eee706b53"
               }
             }
           ],
@@ -374,7 +374,7 @@
               "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/cart-and-checkout-blocks/hooks/hook-alternatives.md",
               "id": "8eed024a999bde3db20e86556b9dd0efaba814bd",
               "links": {
-                "../../../plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/hooks/hook-alternatives.md": "0316ea1803658554031fbf0799996403ebb4ce83"
+                "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/hooks/hook-alternatives.md": "0316ea1803658554031fbf0799996403ebb4ce83"
               }
             }
           ],
@@ -596,7 +596,7 @@
       "categories": []
     },
     {
-      "content": "\nInterested in joining the Woo contributor community? The links in this doc summarize and direct you to the order of operations you will need to make your first contribution. If you are a seasoned WooCommerce developer, feel free to skip ahead and utilize the template links, or the reference docs and guides below.\n\n## Contributing to WooCommerce Core\n\nThe WooCommerce core plugin code can be found in our [monorepo](https://github.com/woocommerce/woocommerce). Here you can contribute to: \n\n- [WooCommerce Core Plugin](https://github.com/woocommerce/woocommerce/tree/trunk/plugins/woocommerce)\n- [WooCommerce Blocks](../../plugins/woocommerce/client/blocks) \n\n### Code of Conduct\n\nContributing to an open source project requires cooperation amongst individuals and organizations all working to make our project a stable and safe place to build and ask questions. Please thoroughly read our [Code of Conduct](https://github.com/woocommerce/woocommerce/blob/trunk/SECURITY.md) to get familiar with our standards and processes.\n\n### Contributor Guidelines\n\nOur [contributor guidelines](https://github.com/woocommerce/woocommerce/blob/trunk/.github/CONTRIBUTING.md) layout the first steps to contributing.\n\n- [Prerequisites and developer tools to get started](https://github.com/woocommerce/woocommerce/blob/trunk/README.md#getting-started)\n- [PNPM commands, plugin development environment packages, and troubleshooting](https://github.com/woocommerce/woocommerce/blob/trunk/DEVELOPMENT.md)\n- [Coding standards, E2E testing links](https://github.com/woocommerce/woocommerce/blob/trunk/.github/CONTRIBUTING.md) \n\n### Templates, Bug Reports, and Feature Requests\n\n- [Pull Request template](https://github.com/woocommerce/woocommerce/blob/trunk/.github/PULL_REQUEST_TEMPLATE.md)\n- [Core Issue template](https://github.com/woocommerce/woocommerce/blob/trunk/.github/ISSUE_TEMPLATE.md)\n- [Bug Report template](https://github.com/woocommerce/woocommerce/blob/trunk/.github/ISSUE_TEMPLATE/1-bug-report.yml)\n- [Enhancement template](https://github.com/woocommerce/woocommerce/blob/trunk/.github/ISSUE_TEMPLATE/2-enhancement.yml)\n- [Feature requests](https://woocommerce.com/feature-requests/woocommerce/)\n\n### Security\n\nSecurity and safety for data management are incredibly important to us at Woo. Please check out the [Automattic security policy](https://automattic.com/security/) to learn about our foundational requirements.\n\nPlease report any vulnerabilities or security issues by reading through Woo's security policy [here](https://github.com/woocommerce/woocommerce/blob/trunk/SECURITY.md).\n",
+      "content": "\nInterested in joining the Woo contributor community? The links in this doc summarize and direct you to the order of operations you will need to make your first contribution. If you are a seasoned WooCommerce developer, feel free to skip ahead and utilize the template links, or the reference docs and guides below.\n\n## Contributing to WooCommerce Core\n\nThe WooCommerce core plugin code can be found in our [monorepo](https://github.com/woocommerce/woocommerce). Here you can contribute to: \n\n- [WooCommerce Core Plugin](https://github.com/woocommerce/woocommerce/tree/trunk/plugins/woocommerce)\n- [WooCommerce Blocks](https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks) \n\n### Code of Conduct\n\nContributing to an open source project requires cooperation amongst individuals and organizations all working to make our project a stable and safe place to build and ask questions. Please thoroughly read our [Code of Conduct](https://github.com/woocommerce/woocommerce/blob/trunk/SECURITY.md) to get familiar with our standards and processes.\n\n### Contributor Guidelines\n\nOur [contributor guidelines](https://github.com/woocommerce/woocommerce/blob/trunk/.github/CONTRIBUTING.md) layout the first steps to contributing.\n\n- [Prerequisites and developer tools to get started](https://github.com/woocommerce/woocommerce/blob/trunk/README.md#getting-started)\n- [PNPM commands, plugin development environment packages, and troubleshooting](https://github.com/woocommerce/woocommerce/blob/trunk/DEVELOPMENT.md)\n- [Coding standards, E2E testing links](https://github.com/woocommerce/woocommerce/blob/trunk/.github/CONTRIBUTING.md) \n\n### Templates, Bug Reports, and Feature Requests\n\n- [Pull Request template](https://github.com/woocommerce/woocommerce/blob/trunk/.github/PULL_REQUEST_TEMPLATE.md)\n- [Core Issue template](https://github.com/woocommerce/woocommerce/blob/trunk/.github/ISSUE_TEMPLATE.md)\n- [Bug Report template](https://github.com/woocommerce/woocommerce/blob/trunk/.github/ISSUE_TEMPLATE/1-bug-report.yml)\n- [Enhancement template](https://github.com/woocommerce/woocommerce/blob/trunk/.github/ISSUE_TEMPLATE/2-enhancement.yml)\n- [Feature requests](https://woocommerce.com/feature-requests/woocommerce/)\n\n### Security\n\nSecurity and safety for data management are incredibly important to us at Woo. Please check out the [Automattic security policy](https://automattic.com/security/) to learn about our foundational requirements.\n\nPlease report any vulnerabilities or security issues by reading through Woo's security policy [here](https://github.com/woocommerce/woocommerce/blob/trunk/SECURITY.md).\n",
       "category_slug": "contributing",
       "category_title": "Contribute to Woo",
       "posts": [
@@ -1230,7 +1230,7 @@
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/product-collection-block/register-product-collection.md",
           "id": "3bf26fc7c56ae6e6a56e1171f750f5204fcfcece",
           "links": {
-            "../../plugins/woocommerce/client/blocks/assets/js/blocks/product-collection/collections/": "08c26aaec93b1fe79c756f9908ade7012df5f2d1"
+            "https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/client/blocks/assets/js/blocks/product-collection/collections/": "08c26aaec93b1fe79c756f9908ade7012df5f2d1"
           }
         },
         {

@@ -18,16 +18,16 @@ Take a moment to familiarize yourself with our [Developer Resources](https://dev
 
 Once you're ready to move forward, consider one of the following:
 
-- [Tools for low-code development](getting-started/developer-tools.md)
-- [Building your first extension](extension-development/building-your-first-extension.md)
-- [How to design a simple extension](extension-development/how-to-design-a-simple-extension.md)
+- [Tools for low-code development](/docs/getting-started/getting-started/developer-tools.md)
+- [Building your first extension](/docs/getting-started/extension-development/building-your-first-extension.md)
+- [How to design a simple extension](/docs/getting-started/extension-development/how-to-design-a-simple-extension.md)
 
 ## Contributions
 
 The WooCommerce ecosystem thrives on community contributions. Whether it's improving documentation, reporting bugs, or contributing code, we greatly appreciate every contribution from our community. 
 
 - To contribute to **the core WooCommerce project**, check out our [Contributing guide](https://github.com/woocommerce/woocommerce/blob/trunk/.github/CONTRIBUTING.md).
-- To contribute to **documentation** please refer to the [documentation style guide](contributing-docs/style-guide.md).
+- To contribute to **documentation** please refer to the [documentation style guide](/docs/contributor-guides/contributing-docs/style-guide.md).
 
 ## Support
 
