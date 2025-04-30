@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
+use Automattic\WooCommerce\Blocks\Utils\ProductGalleryUtils;
+use WP_Block;
+
 /**
  * ProductGalleryLargeImage class.
  */
@@ -31,6 +34,18 @@ class ProductGalleryLargeImage extends AbstractBlock {
 	 */
 	protected function get_block_type_uses_context() {
 		return [ 'postId', 'hoverZoom', 'fullScreenOnClick' ];
+	}
+
+	/**
+	 * Initialize this block type.
+	 *
+	 * - Hook into WP lifecycle.
+	 * - Register the block with WordPress.
+	 * - Hook into pre_render_block to update the query.
+	 */
+	protected function initialize() {
+		add_filter( 'block_type_metadata_settings', array( $this, 'add_block_type_metadata_settings' ), 10, 2 );
+		parent::initialize();
 	}
 
 	/**
@@ -71,7 +86,7 @@ class ProductGalleryLargeImage extends AbstractBlock {
 			return '';
 		}
 
-		$images_html = $this->get_main_images_html( $block->context, $post_id );
+		$images_html = $this->get_main_images_html( $block->context, $block, $product );
 		wp_enqueue_script_module( $this->get_full_block_name() );
 
 		$processor = new \WP_HTML_Tag_Processor( $content );
@@ -102,8 +117,10 @@ class ProductGalleryLargeImage extends AbstractBlock {
 	 *
 	 * @return array
 	 */
-	private function get_main_images_html( $context ) {
+	private function get_main_images_html( $context, $block, $product ) {
 		$base_classes = 'wc-block-woocommerce-product-gallery-large-image__image';
+
+		$images = ProductGalleryUtils::get_product_gallery_image_data( $product );
 
 		$directives      = $this->get_directives( $context );
 		$directives_html = array_reduce(
@@ -121,14 +138,28 @@ class ProductGalleryLargeImage extends AbstractBlock {
 			$base_classes .= ' wc-block-woocommerce-product-gallery-large-image__image--hoverZoom';
 		}
 
+		// Get an instance of the Product Image block.
+		$product_image_block = $block->inner_blocks[0]->parsed_block;
+		$next_prev_arrows    = $block->inner_blocks[1]->parsed_block;
+
 		ob_start();
 		?>
 			<ul class="wc-block-product-gallery-large-image__container" tabindex="-1">
-				<template data-wp-each--image="state.processedImageData" data-wp-each-key="context.image.id">
-					<?php // No need to use wp_kses on $directives_html because this markup is built internally. ?>
-					<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<?php foreach ( $images['images'] as $image ) : ?>
 					<li class="wc-block-product-gallery-large-image__wrapper" <?php echo $directives_html; ?>>
-						<img
+						<?php
+							$block_content = (
+								new WP_Block(
+									$product_image_block,
+									array(
+										'imageId' => $image['id'],
+										'postId'  => $context['postId'],
+									)
+								)
+							)->render( array( 'dynamic' => true ) );
+							echo $block_content;
+						?>
+						<!-- <img
 							class="<?php echo esc_attr( $base_classes ); ?>"
 							data-wp-bind--src="context.image.src"
 							data-wp-bind--srcset="context.image.srcset"
@@ -142,10 +173,22 @@ class ProductGalleryLargeImage extends AbstractBlock {
 							data-wp-on--touchend="actions.onTouchEnd"
 							loading="lazy"
 							alt=""
-						/>
+						/> -->
 					</li>
-				</template>
+				<?php endforeach; ?>
 			</ul>
+			<?php
+				$block_content = (
+					new WP_Block(
+						$next_prev_arrows,
+						array(
+							'imageId' => $image['id'],
+							'postId'  => $context['postId'],
+						)
+					)
+				)->render( array( 'dynamic' => true ) );
+				echo $block_content;
+			?>
 		<?php
 		$template = ob_get_clean();
 
@@ -211,5 +254,20 @@ class ProductGalleryLargeImage extends AbstractBlock {
 	 */
 	protected function get_block_type_script( $key = null ) {
 		return null;
+	}
+
+		/**
+		 * Product Template renders inner blocks manually so we need to skip default
+		 * rendering routine for its inner blocks
+		 *
+		 * @param array $settings Array of determined settings for registering a block type.
+		 * @param array $metadata Metadata provided for registering a block type.
+		 * @return array
+		 */
+	public function add_block_type_metadata_settings( $settings, $metadata ) {
+		if ( ! empty( $metadata['name'] ) && 'woocommerce/product-gallery-large-image' === $metadata['name'] ) {
+			$settings['skip_inner_blocks'] = true;
+		}
+			return $settings;
 	}
 }

@@ -33,7 +33,7 @@ class ProductImage extends AbstractBlock {
 	 * Register the context.
 	 */
 	protected function get_block_type_uses_context() {
-		return [ 'query', 'queryId', 'postId' ];
+		return [ 'query', 'queryId', 'postId', 'imageId' ];
 	}
 
 	/**
@@ -45,14 +45,14 @@ class ProductImage extends AbstractBlock {
 	private function parse_attributes( $attributes ) {
 		// These should match what's set in JS `registerBlockType`.
 		$defaults = array(
-			'showProductLink'         => true,
-			'showSaleBadge'           => false,
-			'saleBadgeAlign'          => 'right',
-			'imageSizing'             => 'single',
-			'productId'               => 'number',
-			'isDescendentOfQueryLoop' => 'false',
+			'showProductLink'                  => true,
+			'showSaleBadge'                    => false,
+			'saleBadgeAlign'                   => 'right',
+			'imageSizing'                      => 'single',
+			'productId'                        => 'number',
+			'isDescendentOfQueryLoop'          => 'false',
 			'isDescendentOfSingleProductBlock' => 'false',
-			'scale'                   => 'cover',
+			'scale'                            => 'cover',
 		);
 
 		return wp_parse_args( $attributes, $defaults );
@@ -102,7 +102,7 @@ class ProductImage extends AbstractBlock {
 		$product_permalink = $product->get_permalink();
 
 		$is_link        = isset( $attributes['showProductLink'] ) ? $attributes['showProductLink'] : true;
-		$href_attribute = $is_link ? sprintf( 'href="%s"', esc_url( $product_permalink ) ) : 'href="#" onclick="return false;"' ;
+		$href_attribute = $is_link ? sprintf( 'href="%s"', esc_url( $product_permalink ) ) : 'href="#" onclick="return false;"';
 		$wrapper_style  = ! $is_link ? 'pointer-events: none; cursor: default;' : '';
 		$directive      = $is_link ? 'data-wp-on--click="woocommerce/product-collection::actions.viewProduct"' : '';
 
@@ -208,45 +208,48 @@ class ProductImage extends AbstractBlock {
 	 * @return string Rendered block type output.
 	 */
 	protected function render( $attributes, $content, $block ) {
-		$parsed_attributes = $this->parse_attributes( $attributes );
+		$parsed_attributes  = $this->parse_attributes( $attributes );
 		$classes_and_styles = StyleAttributesUtils::get_classes_and_styles_by_attributes( $attributes, array(), array( 'extra_classes' ) );
-		$post_id = isset( $block->context['postId'] ) ? $block->context['postId'] : '';
-		
-		$has_image_src = isset( $attributes['image'] ) &&  is_array( $attributes['image'] ) && ! empty( $attributes['image']['src'] );
+		$post_id            = isset( $block->context['postId'] ) ? $block->context['postId'] : '';
+
+		$has_image_id = isset( $block->context['imageId'] );
 
 		$product = null; // Initialize product as null
 
-		if ( $has_image_src ) {
-			$image_attr = $attributes['image'];
-			$image_id   = isset( $image_attr['id'] ) ? (int) $image_attr['id'] : 0;
-			$alt_text   = $image_id ? get_post_meta( $image_id, '_wp_attachment_image_alt', true ) : '';
+		if ( $has_image_id ) {
+			$product = wc_get_product( $post_id );
+			$image_id = isset( $block->context['imageId'] ) ? (int) $block->context['imageId'] : 0;
+			$alt_text = $image_id ? get_post_meta( $image_id, '_wp_attachment_image_alt', true ) : '';
 
 			$image_style = 'max-width:none;';
 			// Add style attributes from block settings (height, width, scale, aspectRatio)
-			if ( ! empty( $attributes['height'] ) ) { $image_style .= sprintf( 'height:%s;', esc_attr( $attributes['height'] ) ); }
-			if ( ! empty( $attributes['width'] ) ) { $image_style .= sprintf( 'width:%s;', esc_attr( $attributes['width'] ) ); }
-			if ( ! empty( $attributes['scale'] ) ) { $image_style .= sprintf( 'object-fit:%s;', esc_attr( $attributes['scale'] ) ); }
+			if ( ! empty( $attributes['height'] ) ) {
+				$image_style .= sprintf( 'height:%s;', esc_attr( $attributes['height'] ) ); }
+			if ( ! empty( $attributes['width'] ) ) {
+				$image_style .= sprintf( 'width:%s;', esc_attr( $attributes['width'] ) ); }
+			if ( ! empty( $attributes['scale'] ) ) {
+				$image_style .= sprintf( 'object-fit:%s;', esc_attr( $attributes['scale'] ) ); }
 			if ( ! empty( $attributes['style']['dimensions']['aspectRatio'] ) ) {
 				$image_style .= sprintf( 'aspect-ratio:%s;', esc_attr( $attributes['style']['dimensions']['aspectRatio'] ) );
 			} elseif ( ! empty( $attributes['aspectRatio'] ) ) {
 				$image_style .= sprintf( 'aspect-ratio:%s;', esc_attr( $attributes['aspectRatio'] ) );
 			}
-			if ( ! empty( $attributes['style']['dimensions']['minHeight'] ) ) { 
-				$image_style .= sprintf( 'min-height:%s;', esc_attr( $attributes['style']['dimensions']['minHeight'] ) ); 
+			if ( ! empty( $attributes['style']['dimensions']['minHeight'] ) ) {
+				$image_style .= sprintf( 'min-height:%s;', esc_attr( $attributes['style']['dimensions']['minHeight'] ) );
 			}
 
 			$product_image_html = sprintf(
-				'<img src="%1$s" alt="%2$s" %3$s %4$s style="%5$s" data-image-id="%6$s" data-testid="product-image" loading="lazy" decoding="async" />',
-				esc_url( $image_attr['src'] ),
+				'<img src="%1$s" alt="%2$s" srcset="%3$s" sizes="%4$s" style="%5$s" data-image-id="%6$s" data-testid="product-image" loading="lazy" decoding="async" />',
+				esc_attr( wp_get_attachment_image_src( $image_id, 'full' )[0] ),
 				esc_attr( $alt_text ),
-				isset( $image_attr['srcset'] ) ? sprintf( 'srcset="%s"', esc_attr( $image_attr['srcset'] ) ) : '',
-				isset( $image_attr['sizes'] ) ? sprintf( 'sizes="%s"', esc_attr( $image_attr['sizes'] ) ) : '',
+				esc_attr( wp_get_attachment_image_srcset( $image_id, 'full' ) ),
+				esc_attr( wp_get_attachment_image_sizes( $image_id, 'full' ) ),
 				esc_attr( $image_style ),
 				esc_attr( $image_id )
 			);
 
 			// Force is_link to false as we don't have product context for the permalink
-			$attributes['showProductLink'] = false; 
+			$attributes['showProductLink'] = false;
 			// The On Sale Badge is only supported as an inner block when using an image src
 			$on_sale_badge_html = '';
 
@@ -260,7 +263,7 @@ class ProductImage extends AbstractBlock {
 			}
 		}
 
-		$classes = implode(
+		$classes            = implode(
 			' ',
 			array_filter(
 				array(
@@ -277,17 +280,17 @@ class ProductImage extends AbstractBlock {
 		);
 
 		$inner_content = $this->render_anchor(
-			$product,
-			$on_sale_badge_html,
-			$product_image_html,
-			$attributes,
-			$content
+		$product,
+		$on_sale_badge_html,
+		$product_image_html,
+		$attributes,
+		$content
 		);
 
 		return sprintf(
-			'<div %1$s>%2$s</div>',
-			$wrapper_attributes,
-			$inner_content
+		'<div %1$s>%2$s</div>',
+		$wrapper_attributes,
+		$inner_content
 		);
 	}
 }
