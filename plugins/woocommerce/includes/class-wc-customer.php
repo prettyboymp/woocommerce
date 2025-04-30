@@ -278,7 +278,7 @@ class WC_Customer extends WC_Legacy_Customer {
 	 * @return bool Whether the customer has a full shipping address (address_1, city, state, postcode, country).
 	 * Only required fields are checked.
 	 */
-	public function has_full_shipping_address() {
+	public function has_full_shipping_address( $fields_to_check = null ) {
 		// These are the important fields required to get the shipping rates. Note that while we're respecting the filters
 		// for the shipping calculator below (city, postcode, state), we're not respecting the filter for the country field.
 		// The country field is always required as a bare minimum for shipping.
