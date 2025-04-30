@@ -142,7 +142,9 @@ test.describe( 'registerProductBlockType registers', () => {
 			'site-editor.php?postType=wp_template&activeView=WooCommerce'
 		);
 
-		const singleProductTemplate = page.getByLabel( 'Single Product' );
+		const singleProductTemplate = page.getByRole( 'button', {
+			name: 'Single Product',
+		} );
 
 		await expect( singleProductTemplate ).toBeVisible();
 
