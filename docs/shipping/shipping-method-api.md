@@ -1,8 +1,10 @@
 ---
 post_title: Shipping method API
-menu_title: Shipping method API
-tags: reference
+sidebar_label: Shipping method API
+tags: [reference]
 ---
+
+# Shipping method API
 
 WooCommerce has a Shipping Method API which plugins can use to add their own rates. This article will take you through the steps to creating a new shipping method based on the core Flat Rate method that interacts with the Shipping API.
 

@@ -1,8 +1,10 @@
 ---
 post_title: A large store's guide to enable HPOS on WooCommerce
-menu_title: Enable HPOS for large stores
-tags: how-to
+sidebar_label: Enable HPOS for large stores
+tags: [how-to]
 ---
+
+# A large store's guide to enable HPOS on WooCommerce
 
 Do you run a high-volume WooCommerce store? Are you about to embark on the task to enable High Performance Order Storage (HPOS) on said store? As we move more and more high-volume store to HPOS, we decided to document the guidelines for those of you who may be faced with this task.
 

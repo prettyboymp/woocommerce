@@ -1,7 +1,9 @@
 ---
 post_title: Product editor development handbook
-menu_title: Development handbook
+sidebar_label: Development handbook
 ---
+
+# Product editor development handbook
 
 **Important:** WooCommerce is shifting focus to work on a new beta of the Product Editor Experience, v3. [Read more on our Developer Blog](https://developer.woocommerce.com/2024/11/06/whats-next-in-the-product-editor/).
 

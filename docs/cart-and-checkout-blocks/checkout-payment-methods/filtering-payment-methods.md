@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout - Filtering payment methods in the Checkout block
-menu_title: Filtering Payment Methods
-tags: how-to
+sidebar_label: Filtering Payment Methods
+tags: [how-to]
 ---
+
+# Filtering payment methods in the Checkout block
 
 <!-- markdownlint-disable MD024 -->
 

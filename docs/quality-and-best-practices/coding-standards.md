@@ -1,8 +1,10 @@
 ---
 post_title: WooCommerce coding standards
-menu_title: Coding standards
-tags: reference
+sidebar_label: Coding standards
+tags: [reference]
 ---
+
+# WooCommerce coding standards
 
 Adhering to WooCommerce coding standards is essential for maintaining high code quality, ensuring compatibility, and facilitating easier maintenance and updates. This document outlines the recommended coding practices for developers working within the WooCommerce ecosystem, including the use of hooks, function prefixing, translatable texts, and code structure.
 

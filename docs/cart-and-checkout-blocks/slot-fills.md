@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout - Slot and fill
-menu_title: Slot and Fill
-tags: reference
+sidebar_label: Slot and Fill
+tags: [reference]
 ---
+
+# Slot and fill
 
 ## The problem
 

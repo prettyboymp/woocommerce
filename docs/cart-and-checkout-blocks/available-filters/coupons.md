@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout Filters - Coupons
-menu_title: Coupons
-tags: reference
+sidebar_label: Coupons
+tags: [reference]
 ---
+
+# Coupons
 
 <!-- markdownlint-disable MD024 -->
 

@@ -1,7 +1,9 @@
 ---
 post_title: WooCommerce Theme Guidelines - Demos and Sample Content
-menu_title: Demos and Sample Content
+sidebar_label: Demos and Sample Content
 ---
+
+# WooCommerce Theme Guidelines - Demos and Sample Content
 
 Upon submission theme authors must provide a way for the theme to be showcased and tested. The sample content/demo should refrain from using custom graphics/assets that will not be present in the deliverables to avoid merchant confusion and broken expectations (examples: using logos, illustrations). When creating a theme for a specific vertical theme authors should consider using sample content that aligns with the vertical.
 

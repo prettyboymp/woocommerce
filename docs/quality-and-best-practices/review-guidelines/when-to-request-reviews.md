@@ -1,7 +1,9 @@
 ---
 post_title: When to request WooCommerce extension reviews
-menu_title: When to request reviews
+sidebar_label: When to request reviews
 ---
+
+# When to request WooCommerce extension reviews
 
 The best approach to increasing our top-star reviews is to identify key moments in the merchant's journey, when they are more likely to leave a review and actively request for it.
 

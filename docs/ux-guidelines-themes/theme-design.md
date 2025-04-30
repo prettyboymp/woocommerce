@@ -1,7 +1,9 @@
 ---
 post_title: Theme Design Guidelines - Branding
-menu_title: Branding
+sidebar_label: Branding
 ---
+
+# Theme Design Guidelines - Branding
 
 High-quality design is an important aspect of an online store, and that is driven by the theme design and content. The design of the theme should be simple, consistent, uncluttered, memorable, intuitive, efficient, and functional. When designing a new theme for WooCommerce special attention should be given to:
 

@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout Filters - Totals footer item
-menu_title: Totals Footer Item
-tags: reference
+sidebar_label: Totals Footer Item
+tags: [reference]
 ---
+
+# Totals footer item
 
 <!-- markdownlint-disable MD024 -->
 

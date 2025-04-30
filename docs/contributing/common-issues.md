@@ -1,8 +1,10 @@
 ---
 post_title: Common issues
-menu_title: Common issues
-tags: reference
+sidebar_label: Common issues
+tags: [reference]
 ---
+
+# Common issues
 
 This page aims to document a comprehensive list of known issues, commonly encountered problems, and their solutions or workarounds. If you have encountered an issue that is not mentioned here and should be, please don't hesitate to add to the list.
 

@@ -4,6 +4,8 @@ category_slug: extensibility-in-blocks
 post_title: Extensibility in blocks
 ---
 
+# Extensibility in blocks
+
 These documents are all dealing with extensibility in the various WooCommerce Blocks.
 
 ## Imports and dependency extraction
@@ -20,7 +22,7 @@ However, if you're using `@woocommerce/dependency-extraction-webpack-plugin` for
 import { registerCheckoutFilters } from '@woocommerce/blocks-checkout';
 ```
 
-See <https://www.npmjs.com/package/@woocommerce/dependency-extraction-webpack-plugin> for more information.
+See [@woocommerce/dependency-extraction-webpack-plugin](https://www.npmjs.com/package/@woocommerce/dependency-extraction-webpack-plugin) for more information.
 
 ## Hooks (actions and filters)
 

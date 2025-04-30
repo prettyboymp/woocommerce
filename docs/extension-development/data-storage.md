@@ -1,8 +1,10 @@
 ---
 post_title: Data storage primer
-menu_title: Data storage
-tags: reference
+sidebar_label: Data storage
+tags: [reference]
 ---
+
+# Data storage primer
 
 When developing for WordPress and WooCommerce, it's important to consider the nature and permanence of your data. This will help you decide the best way to store it. Here's a quick primer:
 

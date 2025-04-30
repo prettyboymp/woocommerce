@@ -1,7 +1,9 @@
 ---
 post_title: Product Editor Guidelines - Top Bar Extensions (future feature)
-menu_title: Top Bar Extensions
+sidebar_label: Top Bar Extensions
 ---
+
+# Product Editor Guidelines - Top Bar Extensions (future feature)
 
 Top bar extensions offer supplementary experiences **not vital** to the critical product creation flows. They're secondary, meaning that they shouldn't contain information that may impact the product's overall quality or completeness.
 

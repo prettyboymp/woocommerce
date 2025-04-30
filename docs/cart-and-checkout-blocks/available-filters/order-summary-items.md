@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout Filters - Order summary items
-menu_title: Order Summary Items
-tags: reference
+sidebar_label: Order Summary Items
+tags: [reference]
 ---
+
+# Order summary items
 <!-- markdownlint-disable MD024 -->
 
 The following Order Summary Items filters are available:

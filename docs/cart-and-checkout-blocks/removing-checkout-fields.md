@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout - Removing checkout fields
-menu_title: Removing checkout fields
-tags: reference
+sidebar_label: Removing checkout fields
+tags: [reference]
 ---
+
+# Removing checkout fields
 <!-- markdownlint-disable MD041 -->
 
 If you're trying to extend the new Checkout block, you might notice the previous `checkout_fields` isn't working. This is intentional as we want to offer more curated extensibility paths. With that said, one of the most common requests we get is how to disable Checkout fields for certain order types. This is not something we encourage, but we are sharing the details due to how commonly requested it is.

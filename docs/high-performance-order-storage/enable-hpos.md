@@ -1,8 +1,10 @@
 ---
 post_title: How to enable High Performance Order Storage
-menu_title: Enable HPOS
-tags: how-to
+sidebar_label: Enable HPOS
+tags: [how-to]
 ---
+
+# How to enable High Performance Order Storage
 
 From WooCommerce 8.2, released on October 2023, HPOS is enabled by default for new installations. Existing stores can switch to the "High-Performance Order Storage" from "WordPress Posts Storage" by following the below steps.
 

@@ -1,8 +1,10 @@
 ---
 post_title: How to Prevent Data Leaks in WooCommerce
-menu_title: Prevent Data Leaks
-tags: how-to
+sidebar_label: Prevent Data Leaks
+tags: [how-to]
 ---
+
+# How to Prevent Data Leaks in WooCommerce
 
 Data leaks can expose sensitive information and compromise the security of a WooCommerce site. One common source of data leaks is direct access to PHP files. This tutorial will show you how to prevent these kinds of data leaks.
 

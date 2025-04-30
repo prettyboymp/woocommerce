@@ -1,7 +1,9 @@
 ---
 post_title: WooCommerce Extension Guidelines - Notices
-menu_title: Notices
+sidebar_label: Notices
 ---
+
+# WooCommerce Extension Guidelines - Notices
 
 Use notices primarily to provide user feedback in response to an action. Avoid using notices to communicate offers or announcements. Don't apply brand colors, fonts, or illustrations to your notices.
 

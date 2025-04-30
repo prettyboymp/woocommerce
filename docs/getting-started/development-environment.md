@@ -1,8 +1,10 @@
 ---
 post_title: Setting up your development environment
-menu_title: Development environment setup
-tags: tutorial, setup
+sidebar_label: Development environment setup
+tags: [tutorial, setup]
 ---
+
+# Setting up your development environment
 
 ## Introduction
 

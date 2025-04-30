@@ -1,7 +1,9 @@
 ---
 post_title: WooCommerce Extension Guidelines - Settings
-menu_title: Settings
+sidebar_label: Settings
 ---
+
+# WooCommerce Extension Guidelines - Settings
 
 **Make extension settings easy to understand.** Only include settings options that are crucial to the overall functionality of the product.
 

@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout - Legacy hooks
-menu_title: Legacy Hooks
-tags: reference
+sidebar_label: Legacy Hooks
+tags: [reference]
 ---
+
+# Legacy hooks
 
 Below are the hooks that exist in WooCommerce core and that were brough over to WooCommerce Blocks.
 

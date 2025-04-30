@@ -1,8 +1,10 @@
 ---
 post_title: CSS styling for themes
-menu_title: CSS Styling for Themes
-tags: reference
+sidebar_label: CSS Styling for Themes
+tags: [reference]
 ---
+
+# CSS styling for themes
 
 ## Block and component class names
 

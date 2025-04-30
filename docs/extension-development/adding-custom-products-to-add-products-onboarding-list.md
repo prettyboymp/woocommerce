@@ -1,8 +1,10 @@
 ---
 post_title: How to add custom product types to Add Products onboarding list
-menu_title: Add custom product types to Add Products onboarding list
-tags: how-to
+sidebar_label: Add custom product types to Add Products onboarding list
+tags: [how-to]
 ---
+
+# How to add custom product types to Add Products onboarding list
 
 ## Introduction
 

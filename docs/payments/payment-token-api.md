@@ -1,8 +1,10 @@
 ---
 post_title: WooCommerce Payment Token API
-menu_title: Payment Token API
-tags: reference
+sidebar_label: Payment Token API
+tags: [reference]
 ---
+
+# WooCommerce Payment Token API
 
 WooCommerce 2.6 introduced an API for storing and managing payment tokens for gateways. Users can also manage these tokens from their account settings and choose from saved payment tokens on checkout.
 

@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout - DOM events
-menu_title: DOM Events
-tags: reference
+sidebar_label: DOM Events
+tags: [reference]
 ---
+
+# DOM events
 
 Some blocks need to react to certain events in order to display the most up to date data or behave in a certain way. That's the case of the Cart block, for example, that must listen to 'add to cart' events in order to update the cart contents; or the Mini-Cart block, that gets opened every time a product is added to the cart.
 

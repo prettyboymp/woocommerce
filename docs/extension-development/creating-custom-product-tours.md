@@ -1,8 +1,10 @@
 ---
 post_title: How to create custom product tours
-menu_title: How to create custom product tours
-tags: how-to
+sidebar_label: How to create custom product tours
+tags: [how-to]
 ---
+
+# How to create custom product tours
 
 ## Introduction
 

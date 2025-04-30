@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout Filters - Cart line items
-menu_title: Cart Line Items
-tags: reference
+sidebar_label: Cart Line Items
+tags: [reference]
 ---
+
+# Cart line items
 
 <!-- markdownlint-disable MD024 -->
 

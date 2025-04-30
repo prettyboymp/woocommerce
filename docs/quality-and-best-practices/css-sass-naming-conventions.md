@@ -2,6 +2,8 @@
 post_title: CSS/Sass naming conventions
 ---
 
+# CSS/Sass naming conventions
+
 ## Introduction
 
 Our guidelines are based on those used in [Calypso](https://github.com/Automattic/wp-calypso), which itself follows the [BEM methodology](https://getbem.com/).

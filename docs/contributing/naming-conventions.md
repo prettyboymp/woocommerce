@@ -1,8 +1,10 @@
 ---
 post_title: Naming conventions
-menu_title: Naming conventions
-tags: reference
+sidebar_label: Naming conventions
+tags: [reference]
 ---
+
+# Naming conventions
 
 ## PHP
 

@@ -1,8 +1,10 @@
 ---
 post_title: Troubleshooting WooCommerce Endpoints
-menu_title: Troubleshooting Endpoints
-tags: how-to
+sidebar_label: Troubleshooting Endpoints
+tags: [how-to]
 ---
+
+# Troubleshooting WooCommerce Endpoints
 
 This document outlines common troubleshooting steps for [WooCommerce Endpoints](./woocommerce-endpoints.md). 
 

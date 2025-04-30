@@ -1,7 +1,9 @@
 ---
 post_title: User Experience Guidelines - Payment Button Style
-menu_title: Payment Button Style
+sidebar_label: Payment Button Style
 ---
+
+# User Experience Guidelines - Payment Button Style
 
 Use the appropriate button style depending on the site theme.
 

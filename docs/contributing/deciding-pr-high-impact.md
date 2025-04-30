@@ -1,8 +1,10 @@
 ---
 post_title: How to assess the impact of a pull request
-menu_title: Assessing PR impact
-tags: how-to
+sidebar_label: Assessing PR impact
+tags: [how-to]
 ---
+
+# How to assess the impact of a pull request
 
 Deciding if a Pull Request should be declared High-Impact is a complex task. To achieve it, we need to assess and estimate the impact that the changes introduced in the Pull Request have in WooCommerce, which is usually a subjective task and sometimes inaccurate, due to the huge knowledge it demands of the WooCommerce product details, technical details and even customers issues history.
 

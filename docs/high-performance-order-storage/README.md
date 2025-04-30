@@ -4,6 +4,8 @@ category_slug: hpos
 post_title: High Performance Order Storage (HPOS)
 ---
 
+# High Performance Order Storage (HPOS)
+
 WooCommerce has traditionally stored store orders and related order information (like refunds) as custom WordPress post types or post meta records. This comes with performance issues.
 
 [High-Performance Order Storage (HPOS)](https://developer.woocommerce.com/2022/09/14/high-performance-order-storage-progress-report/) also previously known as "Custom Order Tables" is a solution that provides an easy-to-understand and solid database structure - specifically designed for eCommerce needs. It uses the WooCommerce CRUD design to store order data in custom tables - optimized for WooCommerce queries with minimal impact on the store's performance.

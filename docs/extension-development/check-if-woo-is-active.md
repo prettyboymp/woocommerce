@@ -1,8 +1,10 @@
 ---
 post_title: How to check if WooCommerce is active
-menu_title: Check if WooCommerce is active
-tags: how-to
+sidebar_label: Check if WooCommerce is active
+tags: [how-to]
 ---
+
+# How to check if WooCommerce is active
 
 When developing for WooCommerce, ensuring that WooCommerce is installed and active before your code runs is crucial. This prevents errors related to missing WooCommerce functions or classes.
 

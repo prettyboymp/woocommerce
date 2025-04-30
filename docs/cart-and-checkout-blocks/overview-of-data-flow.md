@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout - Overview of data flow between client and server
-menu_title: Data flow overview
-tags: reference
+sidebar_label: Data flow overview
+tags: [reference]
 ---
+
+# Overview of data flow between client and server
 
 <!-- markdownlint-disable MD041 -->
 

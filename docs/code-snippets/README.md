@@ -4,6 +4,8 @@ category_slug: code-snippets
 post_title: Code Snippets
 ---
 
+# Code Snippets
+
 # Using the Code Snippets Plugin for WooCommerce Customizations
 
 ## What is a Code Snippet?  

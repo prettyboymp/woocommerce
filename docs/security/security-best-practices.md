@@ -1,8 +1,10 @@
 ---
 post_title: WooCommerce security best practices
-menu_title: Security best practices
-tags: reference
+sidebar_label: Security best practices
+tags: [reference]
 ---
+
+# WooCommerce security best practices
 
 ## Introduction to Security Practices
 

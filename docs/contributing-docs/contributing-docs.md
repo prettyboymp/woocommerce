@@ -1,7 +1,9 @@
 ---
 post_title: Contributing Technical Documentation
-menu_title: Contributing Docs
+sidebar_label: Contributing Docs
 ---
+
+# Contributing Technical Documentation
 
 WooCommerce's documentation lives in the [WooCommerce monorepo](https://github.com/woocommerce/woocommerce) alongside the project's code. Specifically, the technical documentation that appears on this site can be found in the [/docs](https://github.com/woocommerce/woocommerce/tree/trunk/docs) folder of the monorepo. Therefore, contributing technical documentation to WooCommerce is very similar to contributing code.
 
@@ -50,6 +52,8 @@ We use [Front Matter](https://jekyllrb.com/docs/front-matter/) to set metadata a
 ---
 post_title: Your Post Title Goes Here
 ---
+
+# Your Post Title Goes Here
 ```
 
 Optionally, you can set additional metadata. The following fields are supported:
@@ -57,9 +61,11 @@ Optionally, you can set additional metadata. The following fields are supported:
 ```yaml
 ---
 post_title: Your Post Title Goes Here
-menu_title: Short Title Goes Here
-tags: tag1, tag2, tag3
+sidebar_label: Short Title Goes Here
+tags: [tag1, tag2, tag3]
 ---
+
+# Your Post Title Goes Here
 ```
 
 #### Tagging Content Types
@@ -98,7 +104,7 @@ Similarly to pages, a category's metadata is set using Front Matter. At the top 
 ---
 category_title: Your Category Name
 category_slug: this-should-match-your-folders-name
-menu_title: This should match your category_title
+sidebar_label: This should match your category_title
 ---
 ```
 
@@ -132,4 +138,4 @@ If you're a technical contributor who is able to regenerate the manifest, we req
 
 * Emojis are not supported.
 * Avoid copy pasting content from editors such as Google docs. For example, quotation-mark characters in these editors may not translate properly when ingested by our plugin. 
-* You may want to references HTML like content, however, our plugin is set up to strip non-allowlisted HTML elements. You may use an [HTML named references](https://developer.mozilla.org/en-US/docs/Glossary/Character_reference) to create an HTML like tag, by using the less-than (<) and greater-than (>) symbol named references. 
+* You may want to references HTML like content, however, our plugin is set up to strip non-allowlisted HTML elements. You may use an [HTML named references](https://developer.mozilla.org/en-US/docs/Glossary/Character_reference) to create an HTML like tag, by using the less-than (&lt;) and greater-than (&gt;) symbol named references. 

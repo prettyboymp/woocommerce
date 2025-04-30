@@ -1,8 +1,10 @@
 ---
 post_title: WooCommerce grammar, punctuation and capitalization guide
-menu_title: Grammar, punctuation and capitalization
-tags: reference
+sidebar_label: Grammar, punctuation and capitalization
+tags: [reference]
 ---
+
+# WooCommerce grammar, punctuation and capitalization guide
 
 Following grammar, punctuation and style guidelines helps keep our presentation consistent. Users have a better experience if they know what to expect and where to find the information they need.
 

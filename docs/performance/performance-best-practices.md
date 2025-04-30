@@ -1,7 +1,7 @@
 ---
 post_title: WooCommerce performance best practices
-menu_title: Performance best practices
-tags: reference
+sidebar_label: Performance best practices
+tags: [reference]
 ---
 
 # Performance Best Practices for WooCommerce Extensions

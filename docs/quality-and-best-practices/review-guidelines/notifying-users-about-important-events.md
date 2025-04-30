@@ -1,7 +1,9 @@
 ---
 post_title: Notifying users about bug fixes and feature requests
-menu_title: Notifying users about bug fixes and feature requests
+sidebar_label: Notifying users about bug fixes and feature requests
 ---
+
+# Notifying users about bug fixes and feature requests
 
 A bug or a missing feature can be a showstopper for merchants. Bugs that pile up or popular features that are not implemented can lead to negative reviews and/or merchants churning and looking at a competitive solution.
 

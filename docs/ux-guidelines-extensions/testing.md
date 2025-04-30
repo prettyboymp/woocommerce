@@ -1,7 +1,9 @@
 ---
 post_title: WooCommerce Extension Guidelines - Testing
-menu_title: Testing
+sidebar_label: Testing
 ---
+
+# WooCommerce Extension Guidelines - Testing
 
 Users must be able to perform all actions of the functionality provided. This can be achieved by running user tests.
 

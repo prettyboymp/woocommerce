@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout - Checkout flow and events
-menu_title: Checkout Flow and Events
-tags: reference
+sidebar_label: Checkout Flow and Events
+tags: [reference]
 ---
+
+# Checkout flow and events
 
 This document gives an overview of the flow for the checkout in the WooCommerce checkout block, and some general architectural overviews.
 

@@ -1,8 +1,10 @@
 ---
 post_title: How to design a simple extension
-menu_title: Design a simple extension
-tags: how-to
+sidebar_label: Design a simple extension
+tags: [how-to]
 ---
+
+# How to design a simple extension
 
 ## Introduction
 

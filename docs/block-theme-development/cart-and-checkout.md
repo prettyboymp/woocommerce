@@ -1,8 +1,10 @@
 ---
 post_title: Cart and checkout blocks theming 
-menu_title: Cart and Checkout Blocks Theming 
-tags: reference
+sidebar_label: Cart and Checkout Blocks Theming 
+tags: [reference]
 ---
+
+# Cart and checkout blocks theming 
 
 > [!IMPORTANT]
 > We strongly discourage writing CSS code based on existing block class names and prioritize using global styles when possible. We especially discourage writing CSS selectors that rely on a specific block being a descendant of another one, as users can move blocks around freely, so they are prone to breaking. Similar to WordPress itself, we consider the HTML structure within components, blocks, and block templates to be "private", and subject to further change in the future, so using CSS to target the internals of a block or a block template is _not recommended or supported_.

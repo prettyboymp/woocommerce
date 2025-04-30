@@ -1,8 +1,10 @@
 ---
 post_title: Support and documentation for WooCommerce extensions
-menu_title: Support and documentation
-tags: reference
+sidebar_label: Support and documentation
+tags: [reference]
 ---
+
+# Support and documentation for WooCommerce extensions
 
 Effective support and comprehensive documentation are fundamental to the success of any WooCommerce extension. They not only enhance the user experience but also facilitate easier maintenance and development. This document outlines the best practices for creating documentation, providing support, and establishing feedback mechanisms.
 

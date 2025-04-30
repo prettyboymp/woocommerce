@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout - How the checkout block processes an order
-menu_title: Processing an Order
-tags: reference
+sidebar_label: Processing an Order
+tags: [reference]
 ---
+
+# How the checkout block processes an order
 
 This document will shed some light on the inner workings of the Checkout flow. More specifically, what happens after a user hits the "Place Order" button.
 

@@ -4,6 +4,8 @@ category_slug: user-experience-extensions
 post_title: Extension Guidelines
 ---
 
+# Extension Guidelines
+
 This section covers general guidelines, and best practices to follow in order to ensure your product experience aligns with WooCommerce for ease of use, seamless integration, and strong adoption.
 
 We strongly recommend you review the current [WooCommerce setup experience](https://woocommerce.com/documentation/plugins/woocommerce/getting-started/) to get familiar with the user experience and taxonomy.

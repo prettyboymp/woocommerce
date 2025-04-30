@@ -1,8 +1,10 @@
 ---
 post_title: Classes in WooCommerce
-menu_title: Classes in WooCommerce
-tags: reference
+sidebar_label: Classes in WooCommerce
+tags: [reference]
 ---
+
+# Classes in WooCommerce
 
 ## List of Classes in WooCommerce
 

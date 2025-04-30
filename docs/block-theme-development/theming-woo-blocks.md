@@ -1,8 +1,10 @@
 ---
 post_title: Theming for Woo blocks
-menu_title: Theming for Woo Blocks
-tags: reference
+sidebar_label: Theming for Woo Blocks
+tags: [reference]
 ---
+
+# Theming for Woo blocks
 
 This page includes documentation about theming WooCommerce blocks and block themes.
 

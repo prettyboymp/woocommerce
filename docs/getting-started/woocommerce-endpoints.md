@@ -1,7 +1,9 @@
 ---
 post_title: Understanding WooCommerce Endpoints
-menu_title: WooCommerce Endpoints
+sidebar_label: WooCommerce Endpoints
 ---
+
+# Understanding WooCommerce Endpoints
 
 Endpoints are an extra part in the website URL that is detected to show different content when present.
 

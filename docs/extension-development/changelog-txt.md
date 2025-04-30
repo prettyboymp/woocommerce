@@ -1,7 +1,9 @@
 ---
 post_title: Formatting for Changelog.txt
-menu_title: Changelog.txt
+sidebar_label: Changelog.txt
 ---
+
+# Formatting for Changelog.txt
 
 ## The Changelog.txt file
 

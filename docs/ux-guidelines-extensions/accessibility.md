@@ -1,7 +1,9 @@
 ---
 post_title: WooCommerce Extension Guidelines - Accessibility
-menu_title: Accessibility
+sidebar_label: Accessibility
 ---
+
+# WooCommerce Extension Guidelines - Accessibility
 
 Your extensions must meet the [WordPress Accessibility Coding Standards](https://developer.wordpress.org/coding-standards/wordpress-coding-standards/accessibility/) 
 

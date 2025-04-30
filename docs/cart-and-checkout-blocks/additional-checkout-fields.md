@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout - Additional checkout fields
-menu_title: Additional Checkout Fields
-tags: reference
+sidebar_label: Additional Checkout Fields
+tags: [reference]
 ---
+
+# Additional checkout fields
 
 A common use-case for developers and merchants is to add a new field to the Checkout form to collect additional data about a customer or their order.
 

@@ -4,6 +4,8 @@ category_slug: contributing
 post_title: Contribute to Woo
 ---
 
+# Contribute to Woo
+
 Interested in joining the Woo contributor community? The links in this doc summarize and direct you to the order of operations you will need to make your first contribution. If you are a seasoned WooCommerce developer, feel free to skip ahead and utilize the template links, or the reference docs and guides below.
 
 ## Contributing to WooCommerce Core

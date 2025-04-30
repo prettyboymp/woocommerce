@@ -1,8 +1,10 @@
 ---
 post_title: Image sizing for theme developers
-menu_title: Image sizing
-tags: reference
+sidebar_label: Image sizing
+tags: [reference]
 ---
+
+# Image sizing for theme developers
 
 **Note:** this document was created for use when developing classic themes (as opposed to block themes). Check this other document for [block theme development](../block-theme-development/theming-woo-blocks.md).
 

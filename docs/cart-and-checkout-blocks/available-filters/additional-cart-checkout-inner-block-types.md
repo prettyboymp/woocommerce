@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout Filters - Inner block types
-menu_title: Inner Block Types
-tags: reference
+sidebar_label: Inner Block Types
+tags: [reference]
 ---
+
+# Inner block types
 
 The following Additional Cart and Checkout inner block types filter is available:
 

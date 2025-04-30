@@ -1,8 +1,10 @@
 ---
 post_title: Tools for low-code development
-menu_title: Low-code tools
-tags: reference
+sidebar_label: Low-code tools
+tags: [reference]
 ---
+
+# Tools for low-code development
 
 ## Introduction
 

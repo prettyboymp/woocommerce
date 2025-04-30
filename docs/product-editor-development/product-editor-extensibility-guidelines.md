@@ -1,7 +1,9 @@
 ---
 post_title: Product editor extensibility guidelines
-menu_title: Extensibility guidelines
+sidebar_label: Extensibility guidelines
 ---
+
+# Product editor extensibility guidelines
 
 ## Form Extensibility
 

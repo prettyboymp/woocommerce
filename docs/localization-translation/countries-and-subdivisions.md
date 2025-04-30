@@ -1,8 +1,10 @@
 ---
 post_title: Updating Countries and Subdivisions
-menu_title: Countries and Subdivisions
-tags: how-to
+sidebar_label: Countries and Subdivisions
+tags: [how-to]
 ---
+
+# Updating Countries and Subdivisions
 
 WooCommerce comes complete with a comprehensive list of countries and subdivisions (such as provinces or states) that are used in various parts of the user interface.
 

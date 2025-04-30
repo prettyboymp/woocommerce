@@ -1,7 +1,9 @@
 ---
 post_title: WooCommerce extension development best practices
-menu_title: Best Practices
+sidebar_label: Best Practices
 ---
+
+# WooCommerce extension development best practices
 
 Want to create a plugin to extend WooCommerce? You're in the right place.
 

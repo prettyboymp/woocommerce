@@ -1,8 +1,10 @@
 ---
 post_title: How to build your first extension
-menu_title: Build your first extension
-tags: how-to
+sidebar_label: Build your first extension
+tags: [how-to]
 ---
+
+# How to build your first extension
 ## Introduction
 
 This guide will teach you how to use [create-woo-extension](https://www.npmjs.com/package/@woocommerce/create-woo-extension) to scaffold a WooCommerce extension. There are various benefits to using create-woo-extension over manually creating one from scratch, including:

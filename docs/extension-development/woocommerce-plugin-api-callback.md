@@ -1,8 +1,10 @@
 ---
 post_title: WooCommerce plugin API callbacks
-menu_title: Plugin API callbacks
-tags: reference
+sidebar_label: Plugin API callbacks
+tags: [reference]
 ---
+
+# WooCommerce plugin API callbacks
 
 ## Overview
 

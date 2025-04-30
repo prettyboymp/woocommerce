@@ -1,8 +1,10 @@
 ---
 post_title: Example WordPress plugin header comment for WooCommerce extensions
-menu_title: Plugin header comments
-tags: reference
+sidebar_label: Plugin header comments
+tags: [reference]
 ---
+
+# Example WordPress plugin header comment for WooCommerce extensions
 
 This is a WordPress plugin header comment. It's used to provide WordPress with metadata about a plugin. 
 

@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout Filters - Checkout and place order button
-menu_title: Checkout and Place Order Button
-tags: reference
+sidebar_label: Checkout and Place Order Button
+tags: [reference]
 ---
+
+# Checkout and place order button
 <!-- markdownlint-disable MD024 -->
 
 The following Checkout and place order button filters are available:

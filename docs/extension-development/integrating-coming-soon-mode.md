@@ -1,7 +1,9 @@
 ---
 post_title: Integrating with coming soon mode
-tags: how-to, coming-soon
+tags: [how-to, coming-soon]
 ---
+
+# Integrating with coming soon mode
 
 This guide provides examples for third-party developers and hosting providers on how to integrate their systems with WooCommerce's coming soon mode. For more details, please read the [developer blog post](https://developer.woocommerce.com/2024/06/18/introducing-coming-soon-mode/). For site visibility settings, please refer to the [admin documentation](https://woocommerce.com/document/configuring-woocommerce-settings/coming-soon-mode/).
 

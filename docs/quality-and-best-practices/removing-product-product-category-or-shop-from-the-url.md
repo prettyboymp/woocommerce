@@ -1,8 +1,10 @@
 ---
 post_title: Understanding the risks of removing URL bases in WooCommerce
-menu_title: Risks of removing URL bases
-tags: reference
+sidebar_label: Risks of removing URL bases
+tags: [reference]
 ---
+
+# Understanding the risks of removing URL bases in WooCommerce
 
 ## In sum
 

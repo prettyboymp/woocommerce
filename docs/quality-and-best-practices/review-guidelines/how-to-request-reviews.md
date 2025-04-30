@@ -1,7 +1,9 @@
 ---
 post_title: How to request WooCommerce extension reviews
-menu_title: Requesting reviews
+sidebar_label: Requesting reviews
 ---
+
+# How to request WooCommerce extension reviews
 
 ## Methods of requesting reviews
 

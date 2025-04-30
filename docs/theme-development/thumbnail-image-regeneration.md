@@ -1,7 +1,9 @@
 ---
 post_title: Thumbnail image regeneration
-tags: reference
+tags: [reference]
 ---
+
+# Thumbnail image regeneration
 
 WooCommerce 3.3 introduced thumbnail regeneration functionality. In the past when image size settings were changed you would need to install an external plugin and then have it regenerate all WordPress image thumbnails before the changes would be visible.
 

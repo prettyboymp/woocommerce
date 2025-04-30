@@ -2,6 +2,8 @@
 post_title: Logging in WooCommerce
 ---
 
+# Logging in WooCommerce
+
 WooCommerce has its own robust system for logging, which can be used for debugging during development, catching errors on production, or even sending notifications when specific events occur. By default, WooCommerce uses this logger to record errors, warnings, and other notices that may be useful for troubleshooting problems with a store. Many extensions for WooCommerce also make use of the logger for similar purposes.
 
 ## Viewing logs

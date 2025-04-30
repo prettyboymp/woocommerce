@@ -1,7 +1,9 @@
 ---
 post_title: Utilizing your support team to respond to feedback
-menu_title: Utilizing your support team
+sidebar_label: Utilizing your support team
 ---
+
+# Utilizing your support team to respond to feedback
 
 Your support team is usually the primary contact point of merchants when they contact you. Tickets and chats are the best tools we have to converse with merchants, understand pain-points about our software, listen to their feedback and analyze their feature requests. Collectively, support teams have a great understanding of the products and how people use them. This information is essential to be transferred over to product and engineering teams.
 

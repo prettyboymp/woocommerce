@@ -1,7 +1,9 @@
 ---
 post_title: WooCommerce Theme Guidelines - Customization
-menu_title: Customization
+sidebar_label: Customization
 ---
+
+# WooCommerce Theme Guidelines - Customization
 
 > This page of the guidelines applies to development of non-block themes only. For more specific guidance on development of block themes, refer to the [WordPress Developer's Guide to Block Themes](https://learn.wordpress.org/course/a-developers-guide-to-block-themes-part-1/).
 

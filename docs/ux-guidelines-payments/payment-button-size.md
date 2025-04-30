@@ -1,7 +1,9 @@
 ---
 post_title: User Experience Guidelines - Payment Button Size and Anatomy
-menu_title: Payment Button Size
+sidebar_label: Payment Button Size
 ---
+
+# User Experience Guidelines - Payment Button Size and Anatomy
 
 Payment buttons must be consistent in visual appearance to other buttons in the shopper experience.
 

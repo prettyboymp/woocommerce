@@ -1,7 +1,9 @@
 ---
 post_title: Beta Testing
-tags: how-to
+tags: [how-to]
 ---
+
+# Beta Testing
 
 Beta testing is vital to ensuring our releases are as bug free as possible and to ensure we hear user feedback before putting changes live. Anyone can beta test; shop owners, plugin developers, theme developers, translators, any and all help is welcome.
 

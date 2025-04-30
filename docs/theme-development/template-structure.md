@@ -2,6 +2,8 @@
 post_title: Template structure & Overriding templates via a theme
 ---
 
+# Template structure & Overriding templates via a theme
+
 ---
 
 **NOTE** This document makes reference to classic themes which use PHP templates. If you are working on a block theme with HTML templates, [please check the Theming docs for block themes](../block-theme-development/theming-woo-blocks.md).

@@ -1,7 +1,9 @@
 ---
 post_title: User Experience Guidelines - Payments Onboarding and Setup
-menu_title: Payments Onboarding and Setup
+sidebar_label: Payments Onboarding and Setup
 ---
+
+# User Experience Guidelines - Payments Onboarding and Setup
 
 ## Payments onboarding
 

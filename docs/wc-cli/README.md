@@ -4,6 +4,8 @@ category_slug: wc-cli
 post_title: WooCommerce CLI Overview
 ---
 
+# WooCommerce CLI Overview
+
 ## Introduction to WooCommerce CLI
 
 WooCommerce CLI (WC-CLI) offers an efficient way to manage WooCommerce (WC) stores via the command line. This tool is a part of WC from version 3.0.0 onwards and leverages the capabilities of the WC REST API. This means that most tasks achievable through the REST API can also be performed via the command line.

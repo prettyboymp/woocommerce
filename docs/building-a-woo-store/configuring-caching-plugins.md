@@ -1,8 +1,10 @@
 ---
 post_title: How to configure caching plugins for WooCommerce
-menu_title: Configure caching plugins
-tags: how-to
+sidebar_label: Configure caching plugins
+tags: [how-to]
 ---
+
+# How to configure caching plugins for WooCommerce
 
 ## Excluding Pages from the Cache
 

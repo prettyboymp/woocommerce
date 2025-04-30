@@ -1,8 +1,10 @@
 ---
 post_title: Cart and Checkout - Frequently Asked Questions
-menu_title: Frequently Asked Questions
-tags: reference
+sidebar_label: Frequently Asked Questions
+tags: [reference]
 ---
+
+# Frequently Asked Questions
 <!-- markdownlint-disable MD041 -->
 
 This document aims to answer some of the frequently asked questions we see from developers extending WooCommerce Blocks.

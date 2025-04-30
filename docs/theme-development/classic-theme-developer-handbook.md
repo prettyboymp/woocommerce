@@ -1,7 +1,9 @@
 ---
 post_title: Classic theme development handbook
-menu_title: Classic theme development
+sidebar_label: Classic theme development
 ---
+
+# Classic theme development handbook
 
 ---
 

@@ -2,6 +2,8 @@
 post_title: Settings API
 ---
 
+# Settings API
+
 The WooCommerce Settings API is used by extensions to display, save, and load settings. The best way to make use of the API in your extension is to create a class that extends the `WC_Settings_API` class:
 
 ```php

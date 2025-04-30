@@ -1,8 +1,10 @@
 ---
 post_title: Compatibility and interoperability for WooCommerce extensions
-menu_title: Compatibility best practices
-tags: reference
+sidebar_label: Compatibility best practices
+tags: [reference]
 ---
+
+# Compatibility and interoperability for WooCommerce extensions
 
 Ensuring your WooCommerce extension is compatible and interoperable with the core platform, various components, and other extensions is fundamental to providing a seamless experience for users. This document covers the importance of compatibility, the process for self-declared compatibility checks, manual testing for compatibility issues, and troubleshooting common problems.
 

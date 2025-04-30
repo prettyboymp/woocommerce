@@ -1,8 +1,10 @@
 ---
 post_title: Maintaining and updating WooCommerce extensions
-menu_title: Maintainability and updates
-tags: reference
+sidebar_label: Maintainability and updates
+tags: [reference]
 ---
+
+# Maintaining and updating WooCommerce extensions
 
 Maintaining and updating WooCommerce extensions is crucial for ensuring they remain compatible, secure, and functional within the ever-evolving WordPress ecosystem. This document outlines best practices for ensuring easy maintainability, adhering to update frequency and process, and conducting manual update checks.
 

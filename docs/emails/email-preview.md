@@ -1,7 +1,9 @@
 ---
 post_title: Email Preview Integration
-menu_title: Email Preview Integration
+sidebar_label: Email Preview Integration
 ---
+
+# Email Preview Integration
 
 <!-- markdownlint-disable MD024 -->
 

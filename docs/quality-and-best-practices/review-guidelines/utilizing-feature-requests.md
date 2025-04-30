@@ -1,7 +1,9 @@
 ---
 post_title: Utilizing WooCommerce extension feature requests
-menu_title: Utilizing feature requests
+sidebar_label: Utilizing feature requests
 ---
+
+# Utilizing WooCommerce extension feature requests
 
 It is important to keep track of all feature requests, and have some sort of system of record where anyone can see what kind of feedback the product is receiving over time. 
 
