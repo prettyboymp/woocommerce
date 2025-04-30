@@ -1634,7 +1634,29 @@ class WC_Cart extends WC_Legacy_Cart {
 		if ( 'yes' === get_option( 'woocommerce_shipping_cost_requires_address' ) ) {
 			$customer = $this->get_customer();
 
-			if ( ! $customer instanceof \WC_Customer || ! $customer->has_full_shipping_address() ) {
+			$fields_to_check = null;
+			if ( 'shortcode' === $this->cart_context ) {
+				$fields_to_check = WC()->checkout()->get_checkout_fields( 'shipping' );
+				if ( null === $fields_to_check ) {
+					$fields_to_check = array();
+				}
+
+				// Filter $fields_to_check to only include fields that are required for shipping.
+				$fields_to_check = array_filter(
+					$fields_to_check,
+					function ( $field ) {
+						return isset( $field['required'] ) && true === wc_string_to_bool( $field['required'] );
+					}
+				);
+
+				foreach ( $fields_to_check as $key => $value ) {
+					$new_key                     = str_replace( 'shipping_', '', $key );
+					$fields_to_check[ $new_key ] = $value;
+					unset( $fields_to_check[ $key ] );
+				}
+			}
+
+			if ( ! $customer instanceof \WC_Customer || ! $customer->has_full_shipping_address( $fields_to_check ) ) {
 				return false;
 			}
 		}
