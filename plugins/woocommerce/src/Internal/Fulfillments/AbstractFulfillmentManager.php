@@ -92,35 +92,4 @@ abstract class AbstractFulfillmentManager {
 		$fulfillment->set_is_fulfilled( true );
 		$fulfillment->save();
 	}
-
-
-	/**
-	 * Get the fulfillment status of the entity. This acts like a computed property.
-	 */
-	public function get_fulfillment_status(): string {
-		$fulfillments     = $this->get_fulfillments();
-		$has_fulfillments = ! empty( $fulfillments );
-		$all_fulfilled    = true;
-		$some_fulfilled   = false;
-
-		if ( $has_fulfillments ) {
-			foreach ( $fulfillments as $fulfillment ) {
-				if ( ! $fulfillment->get_is_fulfilled() ) {
-					$all_fulfilled = false;
-				} else {
-					$some_fulfilled = true;
-				}
-			}
-
-			if ( $all_fulfilled ) {
-				return 'fulfilled';
-			} elseif ( $some_fulfilled ) {
-				return 'partially_fulfilled';
-			} else {
-				return 'unfulfilled';
-			}
-		} else {
-			return 'no_fulfillments';
-		}
-	}
 }

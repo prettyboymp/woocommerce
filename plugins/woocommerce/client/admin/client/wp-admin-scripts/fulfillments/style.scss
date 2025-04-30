@@ -1,0 +1,80 @@
+.woocommerce-fulfillment-drawer {
+	position: absolute;
+	inset: 0;
+	top: 0;
+	left: auto;
+	height: calc(100vh - 32px);
+	z-index: 9999;
+	pointer-events: none;
+
+	.drawer-panel {
+		position: absolute;
+		right: 0;
+		top: 0;
+		width: 480px;
+		height: 100%;
+		background: #fff;
+		padding: 0;
+		pointer-events: auto;
+		border-left: 1px solid #dddddd;
+
+		.drawer-header {
+			padding: 16px 20px;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			gap: 4px;
+			border-top: 1px solid #dddddd;
+			border-bottom: 1px solid #dddddd;
+
+			.drawer-header-title {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-between;
+				flex-grow: 1;
+				h2 {
+					margin: 0;
+					font-size: 15px;
+					line-height: 20px;
+					font-weight: 500;
+					color: #070707;
+				}
+				.close-button {
+					background: transparent;
+					border: 0px solid transparent;
+					cursor: pointer;
+					font-size: 20px;
+					line-height: 16px;
+					width: 16px;
+					height: 16px;
+					padding: 0;
+					font-weight: 200;
+				}
+			}
+			p {
+				font-size: 11px;
+				line-height: 16px;
+				font-weight: 400;
+				color: #757575;
+				margin: 0;
+			}
+		}
+	}
+}
+
+a.fulfillments-trigger {
+	user-select: none;
+	&:focus {
+		outline: none !important;
+		box-shadow: none !important;
+	}
+}
+
+tr.type-shop_order.is-selected {
+	background-color: #3858e914;
+	th.check-column {
+		border-left: 3px solid #3858e9;
+		padding-left: calc(1em - 3px) !important;
+	}
+}
