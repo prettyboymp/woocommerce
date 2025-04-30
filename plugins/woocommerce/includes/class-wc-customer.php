@@ -322,28 +322,36 @@ class WC_Customer extends WC_Legacy_Customer {
 			$shipping_address['postcode'] = $this->get_shipping_postcode();
 		}
 
-		$address_fields = WC()->countries->get_country_locale();
-		$locale_key     = ! empty( $shipping_address['country'] ) && array_key_exists( $shipping_address['country'], $address_fields ) ? $shipping_address['country'] : 'default';
-		$default_locale = $address_fields['default'];
-		$country_locale = $address_fields[ $locale_key ] ?? array();
+		// At this point, $shipping_address is the "default" set of normally "required" address keys, city, state, country, and postcode.
+		// If $fields_to_check is an array of fields, we should override $shipping_address with those keys.
+		// If $fields_to_check is NOT an array, we can continue with $shipping_address and get the values from locale.
+		if ( is_array( $fields_to_check ) ) {
+			$shipping_address = array_intersect_key( $shipping_address, $fields_to_check );
+		} else {
+			$address_fields  = WC()->countries->get_country_locale();
+			$locale_key      = ! empty( $shipping_address['country'] ) && array_key_exists( $shipping_address['country'], $address_fields ) ? $shipping_address['country'] : 'default';
+			$default_locale  = $address_fields['default'];
+			$country_locale  = $address_fields[ $locale_key ] ?? array();
+			$required_fields = array();
 
-		/**
-		 * Checks all shipping address fields against the country's locale settings.
-		 *
-		 * If there's a `required` setting for the field in the country-specific locale, that setting is used, otherwise
-		 * the default locale's setting is used. If the default locale doesn't have a setting either, the field is
-		 * considered optional and therefore valid, even if empty.
-		 */
-		foreach ( $shipping_address as $key => $value ) {
-			// Skip further checks if the field has a value. From this point on $value is empty.
-			if ( ! empty( $value ) ) {
-				continue;
+			// Loop over each field that is normally required and compare it against the locale, if it's overridden in a
+			// country, use that one, otherwise use the default locale.
+			foreach ( $shipping_address as $key => $value ) {
+				$locale_to_check = isset( $country_locale[ $key ]['required'] ) ? $country_locale : $default_locale;
+				if (
+					isset( $locale_to_check[ $key ]['required'] ) &&
+					true === wc_string_to_bool( $locale_to_check[ $key ]['required'] )
+				) {
+					$required_fields[ $key ] = $value;
+				}
 			}
+			$shipping_address = array_intersect_key( $shipping_address, $required_fields );
+		}
 
-			$locale_to_check = isset( $country_locale[ $key ]['required'] ) ? $country_locale : $default_locale;
-
-			// If the locale requires the field return false.
-			if ( isset( $locale_to_check[ $key ]['required'] ) && true === wc_string_to_bool( $locale_to_check[ $key ]['required'] ) ) {
+		// Now, $shipping_address contains all required fields we want to check,
+		// so we can just check if they have values.
+		foreach ( $shipping_address as $value ) {
+			if ( empty( $value ) ) {
 				return false;
 			}
 		}
