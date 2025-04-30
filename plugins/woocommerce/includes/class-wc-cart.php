@@ -1487,7 +1487,7 @@ class WC_Cart extends WC_Legacy_Cart {
 		$this->shipping_methods        = array();
 		$this->has_calculated_shipping = false;
 
-		if ( ! $this->needs_shipping() || ! $this->show_shipping() ) {
+		if ( ! $this->needs_shipping() ) {
 			return $this->shipping_methods;
 		}
 
