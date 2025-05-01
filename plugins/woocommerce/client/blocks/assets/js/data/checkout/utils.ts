@@ -25,7 +25,6 @@ import { select } from '@wordpress/data';
 import type {
 	ContactForm,
 	ContactFormValues,
-	FormFields,
 	OrderForm,
 	OrderFormValues,
 } from '@woocommerce/settings';
