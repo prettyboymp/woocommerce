@@ -238,6 +238,26 @@ export const getPaymentResultFromCheckoutResponse = (
 	return paymentResult;
 };
 
+export const hasValidationError = (
+	fieldKey: keyof ContactForm | keyof OrderForm
+) => {
+	let prefix = '';
+	if ( CONTACT_FORM_KEYS.includes( fieldKey as keyof ContactForm ) ) {
+		prefix = 'contact_';
+	} else if ( ORDER_FORM_KEYS.includes( fieldKey as keyof OrderForm ) ) {
+		prefix = 'order_';
+	} else {
+		return false;
+	}
+	const error = select( validationStore ).getValidationError(
+		`${ prefix }${ fieldKey }`
+	);
+	if ( error ) {
+		return true;
+	}
+	return false;
+};
+
 export const validateAdditionalFields = (
 	additionalFields: OrderFormValues
 ): boolean => {
