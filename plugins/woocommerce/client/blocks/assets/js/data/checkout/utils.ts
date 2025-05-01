@@ -244,7 +244,9 @@ export const getPaymentResultFromCheckoutResponse = (
 	return paymentResult;
 };
 
-export const hasValidationError = ( fieldKey: string ) => {
+export const hasValidationError = (
+	fieldKey: keyof ContactForm | keyof OrderForm
+) => {
 	let prefix = '';
 	if ( CONTACT_FORM_KEYS.includes( fieldKey as keyof ContactForm ) ) {
 		prefix = 'contact_';
@@ -263,7 +265,7 @@ export const hasValidationError = ( fieldKey: string ) => {
 };
 
 export const validateAdditionalFields = (
-	additionalFields: AdditionalValues
+	additionalFields: OrderFormValues | ContactFormValues
 ): boolean => {
 	// Early return if no additional fields to validate
 	if ( Object.keys( additionalFields ).length === 0 ) {
@@ -271,8 +273,10 @@ export const validateAdditionalFields = (
 	}
 
 	// Check each additional field for validation errors
-	// The validation store prefixes ads a prefix depending on the field location
-	for ( const fieldKey of Object.keys( additionalFields ) ) {
+	// The validation store adds a prefix depending on the field location
+	for ( const fieldKey of Object.keys( additionalFields ) as Array<
+		keyof ContactForm | keyof OrderForm
+	> ) {
 		if ( hasValidationError( fieldKey ) ) {
 			return false;
 		}

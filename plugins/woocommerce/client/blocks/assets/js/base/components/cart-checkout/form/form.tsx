@@ -131,7 +131,11 @@ const Form = <
 					inputRef?.setErrorMessage( '' );
 				}
 			} );
-			dispatch( validationStore ).clearValidationErrors( errorsToClear );
+			if ( errorsToClear.length ) {
+				dispatch( validationStore ).clearValidationErrors(
+					errorsToClear
+				);
+			}
 		}
 	}, [ errors, previousErrors, addressType, values ] );
 
