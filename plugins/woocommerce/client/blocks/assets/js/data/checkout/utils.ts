@@ -22,7 +22,7 @@ import {
 } from '@wordpress/data/build-types/types';
 import { checkoutStore } from '@woocommerce/block-data';
 import { select } from '@wordpress/data';
-import type { AdditionalValues, ContactForm } from '@woocommerce/settings';
+import type { OrderFormValues, ContactForm } from '@woocommerce/settings';
 
 /**
  * Internal dependencies
@@ -239,7 +239,7 @@ export const getPaymentResultFromCheckoutResponse = (
 };
 
 export const validateAdditionalFields = (
-	additionalFields: AdditionalValues
+	additionalFields: OrderFormValues
 ): boolean => {
 	// Early return if no additional fields to validate
 	if ( Object.keys( additionalFields ).length === 0 ) {
@@ -253,7 +253,7 @@ export const validateAdditionalFields = (
 		if ( CONTACT_FORM_KEYS.includes( fieldKey as keyof ContactForm ) ) {
 			prefix = 'contact_';
 		} else if (
-			ORDER_FORM_KEYS.includes( fieldKey as keyof AdditionalValues )
+			ORDER_FORM_KEYS.includes( fieldKey as keyof OrderFormValues )
 		) {
 			prefix = 'order_';
 		} else {
