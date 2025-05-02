@@ -33,11 +33,6 @@
 					},
 					"typography": {
 						"fontSize": "var(--wp--preset--font-size--small)"
-					},
-					"border": {
-						"width": "1px",
-						"style": "solid",
-						"radius": "2px"
 					}
 				}
 			}
