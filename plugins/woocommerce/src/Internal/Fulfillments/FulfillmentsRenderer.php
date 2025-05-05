@@ -1,6 +1,6 @@
 <?php
 /**
- * WooCommerce Fulfillments Admin.
+ * WooCommerce order fulfillments renderer script.
  */
 
 declare( strict_types=1 );
@@ -12,12 +12,13 @@ use Automattic\WooCommerce\Internal\DataStores\Fulfillments\FulfillmentsDataStor
 use WC_Order;
 
 /**
- * FulfillmentsAdmin class.
+ * FulfillmentsRenderer class.
  */
 class FulfillmentsRenderer {
 
 	/**
-	 * Fulfillments cache.
+	 * Fulfillments cache, that holds the fulfillments for each order to eliminate
+	 * fetching fulfillment records of an order on each column render.
 	 *
 	 * @var array
 	 */
@@ -27,19 +28,23 @@ class FulfillmentsRenderer {
 	 * CLass constructor.
 	 */
 	public function __construct() {
-		add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'add_fulfillment_status_column' ) );
-		add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this, 'render_fulfillment_status_column' ), 10, 2 );
+		// Hook into column definitions and add the new fulfillment columns.
+		add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'add_fulfillment_columns' ) );
+		// Hook into the column rendering and render the new fulfillment columns.
+		add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this, 'render_fulfillment_column_row_data' ), 10, 2 );
+		// Hook into the admin footer to add the fulfillment drawer slot, which the React component will mount on.
 		add_action( 'admin_footer', array( $this, 'render_fulfillment_drawer_slot' ) );
+		// Hook into the admin enqueue scripts to load the fulfillment drawer component.
 		add_action( 'admin_enqueue_scripts', array( $this, 'load_components' ) );
 	}
 
 	/**
-	 * Add the fulfillment status column to the orders page.
+	 * Add the fulfillment related columns to the orders table, after the order_status column.
 	 *
 	 * @param array $columns The columns in the orders page.
 	 * @return array The modified columns.
 	 */
-	public function add_fulfillment_status_column( $columns ) {
+	public function add_fulfillment_columns( $columns ) {
 		$new_columns = array();
 		foreach ( $columns as $column_name => $column_info ) {
 			$new_columns[ $column_name ] = $column_info;
@@ -60,33 +65,38 @@ class FulfillmentsRenderer {
 	 * @param string   $column_name The name of the column.
 	 * @param WC_Order $order The order object.
 	 */
-	public function render_fulfillment_status_column( string $column_name, WC_Order $order ) {
+	public function render_fulfillment_column_row_data( string $column_name, WC_Order $order ) {
+		// Check if we've already fetched the fulfillments for this order.
 		$fulfillments = $this->fulfillments_cache[ $order->get_id() ] ?? null;
+
+		// If not, fetch them and cache them.
 		if ( null === $fulfillments ) {
-			$manager                                      = wc_get_container()->get( FulfillmentsDataStore::class );
-			$fulfillments                                 = $manager->read_fulfillments( WC_Order::class, '' . $order->get_id() );
+			$data_store                                   = wc_get_container()->get( FulfillmentsDataStore::class );
+			$fulfillments                                 = $data_store->read_fulfillments( WC_Order::class, '' . $order->get_id() );
 			$this->fulfillments_cache[ $order->get_id() ] = $fulfillments;
 		}
+
+		// Render the column data based on the column name.
 		switch ( $column_name ) {
 			case 'fulfillment_status':
-				$this->render_fulfillment_status( $order, $fulfillments );
+				$this->render_fulfillment_status_column_row_data( $order, $fulfillments );
 				break;
 			case 'shipment_tracking':
-				$this->render_shipment_tracking_column( $order, $fulfillments );
+				$this->render_shipment_tracking_column_row_data( $order, $fulfillments );
 				break;
 			case 'shipment_provider':
-				$this->render_shipment_provider_column( $order, $fulfillments );
+				$this->render_shipment_provider_column_row_data( $order, $fulfillments );
 				break;
 		}
 	}
 
 	/**
-	 * Render the fulfillment status column.
+	 * Render the fulfillment status column row data.
 	 *
 	 * @param WC_Order      $order The order object.
 	 * @param Fulfillment[] $fulfillments The fulfillments.
 	 */
-	private function render_fulfillment_status( WC_Order $order, array $fulfillments ) {
+	private function render_fulfillment_status_column_row_data( WC_Order $order, array $fulfillments ) {
 		$order_fulfillment_status = $this->get_fulfillment_status( $fulfillments );
 		switch ( $order_fulfillment_status ) {
 			case 'no_fulfillments':
@@ -110,12 +120,12 @@ class FulfillmentsRenderer {
 	}
 
 	/**
-	 * Render the shipment tracking column.
+	 * Render the shipment tracking column row data.
 	 *
 	 * @param WC_Order $order The order object.
 	 * @param array    $fulfillments The fulfillments.
 	 */
-	private function render_shipment_tracking_column( WC_Order $order, array $fulfillments ) {
+	private function render_shipment_tracking_column_row_data( WC_Order $order, array $fulfillments ) {
 		$providers = array();
 		foreach ( $fulfillments as $fulfillment ) {
 			$providers[] = $fulfillment->get_meta( '_shipping_provider' ) ?? null;
@@ -138,12 +148,12 @@ class FulfillmentsRenderer {
 	}
 
 	/**
-	 * Render the shipment provider column.
+	 * Render the shipment provider column row data.
 	 *
 	 * @param WC_Order $order The order object.
 	 * @param array    $fulfillments The fulfillments.
 	 */
-	private function render_shipment_provider_column( WC_Order $order, array $fulfillments ) {
+	private function render_shipment_provider_column_row_data( WC_Order $order, array $fulfillments ) {
 		$tracking = array();
 		foreach ( $fulfillments as $fulfillment ) {
 			$tracking[] = $fulfillment->get_meta( '_tracking_number' ) ?? null;
@@ -166,7 +176,9 @@ class FulfillmentsRenderer {
 	}
 
 	/**
-	 * Get the fulfillment status of the entity. This acts like a computed property.
+	 * Get the fulfillment status of the entity. This runs like a computed property, where
+	 * it checks the fulfillment status of each fulfillment attached to the order,
+	 * and computes the overall fulfillment status of the order.
 	 *
 	 * @param array $fulfillments The fulfillments.
 	 *
@@ -202,7 +214,7 @@ class FulfillmentsRenderer {
 	 * Render the fulfillment drawer.
 	 */
 	public function render_fulfillment_drawer_slot() {
-		if ( get_current_screen()->id !== 'woocommerce_page_wc-orders' ) {
+		if ( ! $this->should_render_fulfillment_drawer() ) {
 			return;
 		}
 		?>
@@ -214,10 +226,19 @@ class FulfillmentsRenderer {
 	 * Loads the payment method promotions scripts and styles.
 	 */
 	public static function load_components() {
-		if ( get_current_screen()->id !== 'woocommerce_page_wc-orders' ) {
+		if ( ! self::should_render_fulfillment_drawer() ) {
 			return;
 		}
 		WCAdminAssets::register_style( 'fulfillments', 'style', array( 'wp-components' ) );
 		WCAdminAssets::register_script( 'wp-admin-scripts', 'fulfillments', true );
+	}
+
+	/**
+	 * Check if the fulfillment drawer should be rendered.
+	 *
+	 * @return bool True if the fulfillment drawer should be rendered, false otherwise.
+	 */
+	private function should_render_fulfillment_drawer(): bool {
+		return get_current_screen()->id === 'woocommerce_page_wc-orders';
 	}
 }
