@@ -1,0 +1,165 @@
+<?php declare( strict_types=1 );
+
+namespace Automattic\WooCommerce\Tests\Internal\Fulfillments;
+
+use Automattic\WooCommerce\Internal\Fulfillments\Fulfillment;
+use Automattic\WooCommerce\Tests\Internal\Fulfillments\Helpers\FulfillmentsHelper;
+
+/**
+ * Tests for Fulfillment object.
+ */
+class FulfillmentTest extends \WC_Unit_Test_Case {
+	/**
+	 * Test that the Fulfillment object can be created.
+	 */
+	public function test_fulfillment_object() {
+		$fulfillment = new Fulfillment();
+		$this->assertInstanceOf( Fulfillment::class, $fulfillment );
+	}
+
+	/**
+	 * Test that the Fulfillment object can be created with an ID.
+	 */
+	public function test_fulfillment_object_with_id_fetches_data_and_metadata() {
+		$db_fulfillment = FulfillmentsHelper::create_fulfillment();
+		$fulfillment    = new Fulfillment( $db_fulfillment->get_id() );
+
+		$this->assertInstanceOf( Fulfillment::class, $fulfillment );
+		$this->assertEquals( $db_fulfillment->get_id(), $fulfillment->get_id() );
+		$this->assertEquals( $db_fulfillment->get_entity_type(), $fulfillment->get_entity_type() );
+		$this->assertEquals( $db_fulfillment->get_entity_id(), $fulfillment->get_entity_id() );
+		$this->assertEquals( $db_fulfillment->get_date_updated(), $fulfillment->get_date_updated() );
+		$this->assertEquals( $db_fulfillment->get_date_deleted(), $fulfillment->get_date_deleted() );
+		$this->assertEquals( $db_fulfillment->get_items(), $fulfillment->get_items() );
+		$this->assertEquals( $db_fulfillment->get_meta_data(), $fulfillment->get_meta_data() );
+	}
+
+	/**
+	 * Test that Fulfillment object can be updated.
+	 */
+	public function test_fulfillment_object_update() {
+		$fulfillment = FulfillmentsHelper::create_fulfillment(
+			array(
+				'entity_type' => 'order-fulfillment',
+				'entity_id'   => 123,
+			)
+		);
+
+		$fulfillment->set_entity_type( 'updated-entity-type' );
+		$fulfillment->set_entity_id( '456' );
+		$fulfillment->save();
+
+		$this->assertEquals( 'updated-entity-type', $fulfillment->get_entity_type() );
+		$this->assertEquals( 456, $fulfillment->get_entity_id() );
+	}
+
+	/**
+	 * Test that Fulfillment object can be soft deleted.
+	 */
+	public function test_fulfillment_object_soft_delete() {
+		$fulfillment = FulfillmentsHelper::create_fulfillment(
+			array(
+				'entity_type' => 'order-fulfillment',
+				'entity_id'   => 123,
+			)
+		);
+
+		$fulfillment_id = $fulfillment->get_id();
+		$this->assertNotEquals( 0, $fulfillment_id );
+
+		$fulfillment->delete();
+
+		$this->expectException( \Exception::class );
+		$this->expectExceptionMessage( 'Fulfillment not found.' );
+		new Fulfillment( $fulfillment_id );
+	}
+
+	/**
+	 * Test that Fulfillment object can be created with items.
+	 */
+	public function test_fulfillment_object_with_items() {
+		$fulfillment = FulfillmentsHelper::create_fulfillment(
+			array(
+				'entity_type' => 'order-fulfillment',
+				'entity_id'   => 123,
+			)
+		);
+
+		$items = array(
+			array(
+				'item_id' => 1,
+				'qty'     => 2,
+			),
+			array(
+				'item_id' => 2,
+				'qty'     => 3,
+			),
+		);
+
+		$fulfillment->set_items( $items );
+		$fulfillment->save();
+
+		$fresh_fulfillment = new Fulfillment( $fulfillment->get_id() );
+		$this->assertInstanceOf( Fulfillment::class, $fresh_fulfillment );
+		$this->assertEquals( $fulfillment->get_id(), $fresh_fulfillment->get_id() );
+
+		$this->assertEquals( $items, $fresh_fulfillment->get_items() );
+	}
+
+	/**
+	 * Test that Fulfillment object can be created with metadata.
+	 */
+	public function test_fulfillment_object_with_metadata() {
+		$fulfillment = FulfillmentsHelper::create_fulfillment(
+			array(
+				'entity_type' => 'order-fulfillment',
+				'entity_id'   => 123,
+			)
+		);
+
+		$fulfillment->add_meta_data( 'test_meta_key', 'test_meta_value', true );
+		$fulfillment->save();
+
+		$this->assertEquals( 'test_meta_value', $fulfillment->get_meta( 'test_meta_key' ) );
+	}
+
+	/**
+	 * Test that metadata can be updated.
+	 */
+	public function test_fulfillment_object_update_metadata() {
+		$fulfillment = FulfillmentsHelper::create_fulfillment(
+			array(
+				'entity_type' => 'order-fulfillment',
+				'entity_id'   => 123,
+			)
+		);
+
+		$fulfillment->add_meta_data( 'test_meta_key', 'test_meta_value', true );
+		$fulfillment->save();
+
+		$fulfillment->update_meta_data( 'test_meta_key', 'updated_meta_value' );
+		$fulfillment->save();
+
+		$this->assertEquals( 'updated_meta_value', $fulfillment->get_meta( 'test_meta_key' ) );
+	}
+
+	/**
+	 * Test that metadata can be deleted.
+	 */
+	public function test_fulfillment_object_delete_metadata() {
+		$fulfillment = FulfillmentsHelper::create_fulfillment(
+			array(
+				'entity_type' => 'order-fulfillment',
+				'entity_id'   => 123,
+			)
+		);
+
+		$fulfillment->add_meta_data( 'test_meta_key', 'test_meta_value', true );
+		$fulfillment->save();
+
+		$fulfillment->delete_meta_data( 'test_meta_key' );
+		$fulfillment->save();
+
+		$this->assertEquals( '', $fulfillment->get_meta( 'test_meta_key' ) );
+	}
+}
