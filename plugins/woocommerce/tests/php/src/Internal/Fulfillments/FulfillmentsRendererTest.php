@@ -121,8 +121,21 @@ class FulfillmentsRendererTest extends \WC_Unit_Test_Case {
 	/**
 	 * Test the render_fulfillment_drawer_slot method.
 	 */
+	public function test_render_fulfillment_drawer_slot_doesnt_render_without_current_screen() {
+		$renderer = new FulfillmentsRenderer();
+		set_current_screen( null );
+		ob_start();
+		$renderer->render_fulfillment_drawer_slot();
+		$output = ob_get_clean();
+		$this->assertStringNotContainsString( '<div id="wc_order_fulfillments_panel_container"></div>', $output );
+	}
+
+	/**
+	 * Test the render_fulfillment_drawer_slot method.
+	 */
 	public function test_render_fulfillment_drawer_slot_doesnt_render_on_other_pages() {
 		$renderer = new FulfillmentsRenderer();
+		set_current_screen( 'dashboard' );
 		ob_start();
 		$renderer->render_fulfillment_drawer_slot();
 		$output = ob_get_clean();

@@ -239,6 +239,10 @@ class FulfillmentsRenderer {
 	 * @return bool True if the fulfillment drawer should be rendered, false otherwise.
 	 */
 	private function should_render_fulfillment_drawer(): bool {
-		return get_current_screen()->id === 'woocommerce_page_wc-orders';
+		$current_screen = get_current_screen();
+		if ( ! $current_screen || ! $current_screen->id ) {
+			return false;
+		}
+		return 'woocommerce_page_wc-orders' === $current_screen->id;
 	}
 }
