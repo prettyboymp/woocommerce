@@ -15,7 +15,7 @@ use Automattic\WooCommerce\Internal\EmailEditor\PersonalizationTagManager;
 use Automattic\WooCommerce\Internal\EmailEditor\TransactionalEmailPersonalizer;
 use Automattic\WooCommerce\Internal\EmailEditor\WooContentProcessor;
 use Automattic\WooCommerce\Internal\EmailEditor\WCTransactionalEmails\WCTransactionalEmails;
-
+use Automattic\WooCommerce\Internal\Admin\Emails\EmailListingRestController;
 /**
  * Service provider for the EmailEditor namespace.
  */
@@ -38,6 +38,7 @@ class EmailEditorServiceProvider extends AbstractInterfaceServiceProvider {
 		WCTransactionalEmails::class,
 		EmailApiController::class,
 		TransactionalEmailPersonalizer::class,
+		EmailListingRestController::class,
 	);
 
 	/**
@@ -55,5 +56,6 @@ class EmailEditorServiceProvider extends AbstractInterfaceServiceProvider {
 		$this->share( TemplateApiController::class );
 		$this->share( EmailApiController::class );
 		$this->share( TransactionalEmailPersonalizer::class );
+		$this->share_with_implements_tags( EmailListingRestController::class );
 	}
 }
