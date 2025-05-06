@@ -6,6 +6,7 @@ import { Button, Modal } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { store as noticesStore } from '@wordpress/notices';
+import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -25,6 +26,12 @@ export function TrashModal( {
 	const { getLastEntityDeleteError } = useSelect( coreStore );
 	const { deleteEntityRecord } = useDispatch( coreStore );
 	const { createErrorNotice } = useDispatch( noticesStore );
+
+	const shouldPermanentlyDelete = applyFilters(
+		'woocommerce_email_editor_trash_modal_should_permanently_delete',
+		false
+	) as boolean;
+
 	const closeCallback = () => {
 		onClose();
 	};
@@ -34,7 +41,7 @@ export function TrashModal( {
 			'postType',
 			editorCurrentPostType,
 			postId as unknown as string,
-			{},
+			{ force: shouldPermanentlyDelete },
 			{ throwOnError: false }
 		);
 		if ( success ) {
@@ -49,12 +56,21 @@ export function TrashModal( {
 			if ( lastError?.code === 410 ) {
 				onRemove();
 			} else {
-				const errorMessage = lastError?.message
-					? ( lastError.message as string )
-					: __(
-							'An error occurred while moving the email to the trash.',
-							'woocommerce'
-					  );
+				let errorMessage: string;
+				if ( lastError?.message ) {
+					errorMessage = lastError.message as string;
+				} else if ( shouldPermanentlyDelete ) {
+					errorMessage = __(
+						'An error occurred while deleting the email.',
+						'woocommerce'
+					);
+				} else {
+					errorMessage = __(
+						'An error occurred while moving the email to the trash.',
+						'woocommerce'
+					);
+				}
+
 				recordEvent( 'trash_modal_move_to_trash_error', {
 					errorMessage,
 				} );
@@ -69,7 +85,11 @@ export function TrashModal( {
 	return (
 		<Modal
 			className="woocommerce-move-to-trash-modal"
-			title={ __( 'Move to trash', 'woocommerce' ) }
+			title={
+				shouldPermanentlyDelete
+					? __( 'Delete email', 'woocommerce' )
+					: __( 'Move to trash', 'woocommerce' )
+			}
 			onRequestClose={ () => {
 				closeCallback();
 				recordEvent( 'trash_modal_closed' );
@@ -77,10 +97,15 @@ export function TrashModal( {
 			focusOnMount
 		>
 			<p>
-				{ __(
-					'Are you sure you want to move this email to trash?',
-					'woocommerce'
-				) }
+				{ shouldPermanentlyDelete
+					? __(
+							"Are you sure you want to delete this email? You won't be able to recover it.",
+							'woocommerce'
+					  )
+					: __(
+							'Are you sure you want to move this email to the trash? You can restore it later.',
+							'woocommerce'
+					  ) }
 			</p>
 			<div className="woocommerce-send-preview-modal-footer">
 				<Button
@@ -93,7 +118,9 @@ export function TrashModal( {
 					{ __( 'Cancel', 'woocommerce' ) }
 				</Button>
 				<Button variant="primary" onClick={ trashCallback }>
-					{ __( 'Move to trash', 'woocommerce' ) }
+					{ shouldPermanentlyDelete
+						? __( 'Delete email', 'woocommerce' )
+						: __( 'Move to trash', 'woocommerce' ) }
 				</Button>
 			</div>
 		</Modal>

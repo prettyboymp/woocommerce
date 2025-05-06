@@ -9,6 +9,7 @@ import { useEntityProp } from '@wordpress/core-data';
 import { __, _x } from '@wordpress/i18n';
 import { PreferenceToggleMenuItem } from '@wordpress/preferences';
 import { useSelect, useDispatch } from '@wordpress/data';
+import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -39,6 +40,11 @@ export function MoreMenu(): JSX.Element {
 	const goToListings = () => {
 		window.location.href = urls.listings;
 	};
+
+	const shouldPermanentlyDelete = applyFilters(
+		'woocommerce_email_editor_trash_modal_should_permanently_delete',
+		false
+	) as boolean;
 
 	return (
 		<>
@@ -155,7 +161,9 @@ export function MoreMenu(): JSX.Element {
 									} }
 									isDestructive
 								>
-									{ __( 'Move to trash', 'woocommerce' ) }
+									{ shouldPermanentlyDelete
+										? __( 'Delete email', 'woocommerce' )
+										: __( 'Move to trash', 'woocommerce' ) }
 								</MenuItem>
 							) }
 						</MenuGroup>
