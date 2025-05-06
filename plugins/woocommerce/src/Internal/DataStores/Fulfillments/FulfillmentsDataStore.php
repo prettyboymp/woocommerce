@@ -446,4 +446,14 @@ class FulfillmentsDataStore extends \WC_Data_Store_WP implements \WC_Object_Data
 			}
 		}
 	}
+
+	/**
+	 * Return list of internal meta keys.
+	 *
+	 * @since 3.2.0
+	 * @return array
+	 */
+	public function get_internal_meta_keys() {
+		return array();
+	}
 }
