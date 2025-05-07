@@ -12,11 +12,17 @@ export type AvailableVariation = {
 
 export type Context = {
 	productId: number;
+	groupedProductIds: number[];
 	variation: CartVariationItem[];
 	availableVariations: AvailableVariation[];
 	quantity: number;
 	tempQuantity: number;
 };
+
+interface GroupedCartItem {
+	id: number;
+	quantity: number;
+}
 
 // Stores are locked to prevent 3PD usage until the API is stable.
 const universalLock =
@@ -146,24 +152,70 @@ const addToCartWithOptionsStore = store(
 				// woocommerce store is public.
 				yield import( '@woocommerce/stores/woocommerce/cart' );
 
-				const { actions } = store< WooCommerce >(
-					'woocommerce',
-					{},
-					{ lock: universalLock }
-				);
-
-				const { productId, quantity, variation } =
+				const { productId, quantity, variation, groupedProductIds } =
 					getContext< Context >();
-				const product = wooState.cart?.items.find(
-					( item ) => item.id === productId
-				);
-				const currentQuantity = product?.quantity || 0;
 
-				yield actions.addCartItem( {
-					id: productId,
-					quantity: currentQuantity + quantity,
-					variation,
-				} );
+				if ( groupedProductIds.length > 0 ) {
+					// Handle grouped products
+					const form = event.target as HTMLFormElement;
+					const quantityInputs = form.querySelectorAll(
+						'.input-text.qty.text'
+					);
+					const addedItems: GroupedCartItem[] = [];
+
+					quantityInputs.forEach( ( input, index ) => {
+						const inputElement = input as HTMLInputElement;
+						const childProductId = groupedProductIds[ index ] || 0;
+						const childQuantity = parseInt(
+							inputElement.value,
+							10
+						);
+
+						if ( childQuantity > 0 ) {
+							addedItems.push( {
+								id: childProductId,
+								quantity: childQuantity,
+							} );
+						}
+					} );
+
+					if ( addedItems.length === 0 ) {
+						// Todo: Show error if no items selected
+						return;
+					}
+
+					const { actions } = store< WooCommerce >(
+						'woocommerce',
+						{},
+						{ lock: universalLock }
+					);
+
+					// Add each child product to cart
+					for ( const item of addedItems ) {
+						yield actions.addCartItem( {
+							id: item.id,
+							quantity: item.quantity,
+						} );
+					}
+				} else {
+					// Handle all other product types
+					const product = wooState.cart?.items.find(
+						( item ) => item.id === productId
+					);
+					const currentQuantity = product?.quantity || 0;
+
+					const { actions } = store< WooCommerce >(
+						'woocommerce',
+						{},
+						{ lock: universalLock }
+					);
+
+					yield actions.addCartItem( {
+						id: productId,
+						quantity: currentQuantity + quantity,
+						variation,
+					} );
+				}
 			},
 		},
 	},
