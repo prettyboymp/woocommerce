@@ -19,7 +19,6 @@ import { isString, objectHasProp } from '@woocommerce/types';
 /**
  * Internal dependencies
  */
-import ProductSaleBadge from '../sale-badge/block';
 import './style.scss';
 import { BlockAttributes, ImageSizing } from './types';
 
@@ -113,7 +112,6 @@ export const Block = ( props: Props ): JSX.Element | null => {
 		showProductLink = true,
 		style,
 		width,
-		...restProps
 	} = props;
 	const styleProps = useStyleProps( props );
 	const { parentClassName } = useInnerBlockLayoutContext();
