@@ -34,27 +34,21 @@ const config: Config = {
     [
       'classic',
       {
+        blog: false,
+        pages: false,
         docs: {
           sidebarPath: './sidebars.ts',
+          path: '../',
+          exclude: [
+            '_docu-tools/**',
+            '**/_docu-tools/**',
+            '**/node_modules/**',
+            '**/src/**'
+          ],
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-        },
-        blog: {
-          showReadingTime: true,
-          feedOptions: {
-            type: ['rss', 'atom'],
-            xslt: true,
-          },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-          // Useful options to enforce blogging best practices
-          onInlineTags: 'warn',
-          onInlineAuthors: 'warn',
-          onUntruncatedBlogPosts: 'warn',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -74,11 +68,6 @@ const config: Config = {
       },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
-          position: 'left',
-        },
-        {
           href: 'https://github.com/woocommerce/woocommerce/docs',
           label: 'GitHub',
           position: 'right',
@@ -90,12 +79,6 @@ const config: Config = {
       links: [
         {
           title: 'Docs',
-          items: [
-            {
-              label: 'Tutorial',
-              to: '/docs/intro',
-            },
-          ],
         },
         {
           title: 'Community',
@@ -117,10 +100,6 @@ const config: Config = {
         {
           title: 'More',
           items: [
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
             {
               label: 'GitHub',
               href: 'https://github.com/facebook/docusaurus',
