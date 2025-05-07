@@ -147,6 +147,51 @@ class PTKClientTest extends \WP_UnitTestCase {
 		remove_filter( 'pre_http_request', array( $this, 'return_request_failed' ) );
 	}
 
+		/**
+		 * Test fetch_patterns returns an array of patterns when the request is successful.
+		 */
+	public function test_fetch_patterns_returns_an_array_of_patterns_when_the_request_is_successful_with_invalid_payload() {
+		add_filter(
+			'pre_http_request',
+			function () {
+				return array(
+					'body'     => '[
+                        {
+                            "ID": 14870,
+                            "site_id": 174455321,
+                            "title": "Review: A quote with scattered images",
+                            "name": "review-a-quote-with-scattered-images",
+                            "html": "<!-- /wp:spacer -->",
+                            "categories": {
+                                "testimonials": {
+                                    "slug": null,
+                                    "title": null,
+                                    "description": null
+                                }
+                            }
+                        },
+						{
+                            "ID": 14870,
+                            "site_id": 174455321,
+                            "title": "Review: A quote with scattered images",
+                            "name": "review-a-quote-with-scattered-images",
+                            "html": "<!-- /wp:spacer -->",
+                            "categories": null,
+                        }
+                    ]',
+					'response' => array(
+						'code' => 200,
+					),
+				);
+			},
+		);
+
+		$response = $this->client->fetch_patterns();
+		$this->assertErrorResponse( $response, 'Wrong response received from the Patterns Toolkit API: try again later.' );
+
+		remove_filter( 'pre_http_request', array( $this, 'return_request_failed' ) );
+	}
+
 	/**
 	 * Asserts that the response is an error with the expected error code and message.
 	 *
