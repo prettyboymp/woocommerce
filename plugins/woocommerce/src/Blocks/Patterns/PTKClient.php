@@ -30,37 +30,40 @@ class PTKClient {
 			'items'    => [
 				'type'       => 'object',
 				'properties' => [
-					'ID'         => [
+					'ID'           => [
 						'type' => 'integer',
 					],
-					'site_id'    => [
+					'site_id'      => [
 						'type' => 'integer',
 					],
-					'title'      => [
+					'title'        => [
 						'type' => 'string',
 					],
-					'name'       => [
+					'name'         => [
 						'type' => 'string',
 					],
-					'html'       => [
+					'html'         => [
 						'type' => 'string',
 					],
-					'categories' => [
+					'categories'   => [
 						'type'                 => 'object',
 						'additionalProperties' => [
 							'type'       => 'object',
 							'properties' => [
-								'slug'        => [
+								'slug'  => [
 									'type' => 'string',
 								],
-								'title'       => [
-									'type' => 'string',
-								],
-								'description' => [
+								'title' => [
 									'type' => 'string',
 								],
 							],
-							'required'   => [ 'slug', 'title', 'description' ],
+							'required'   => [ 'slug', 'title' ],
+						],
+					],
+					'dependencies' => [
+						'type'  => 'array',
+						'items' => [
+							'type' => 'string',
 						],
 					],
 				],
