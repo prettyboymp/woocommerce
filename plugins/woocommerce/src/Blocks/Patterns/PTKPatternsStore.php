@@ -115,7 +115,7 @@ class PTKPatternsStore {
 		$patterns = get_transient( self::TRANSIENT_NAME );
 
 		// Only if the transient is not set, we schedule fetching the patterns from the PTK.
-		if ( false === $patterns || ! $this->ptk_client->is_valid_ptk_patterns( $patterns ) ) {
+		if ( false === $patterns || ! $this->ptk_client->is_valid_schema( $patterns ) ) {
 			$this->schedule_fetch_patterns();
 			return array();
 		}
