@@ -223,6 +223,7 @@
 	border: 1px solid #e0e0e0;
 	border-radius: 4px;
 	background-color: #fff;
+	margin-bottom: 12px;
 
 	.woocommerce-fulfillment-shipment-form-header {
 		padding: 16px 16px 16px 24px;
@@ -374,6 +375,51 @@
 			}
 		}
 	}
+}
+
+.woocommerce-fulfillment-notification-form {
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	background-color: #fff;
+	padding: 16px 24px;
+	display: flex;
+	gap: 8px;
+	flex-direction: column;
+
+	.woocommerce-fulfillment-notification-form-header {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		justify-content: space-between;
+		h3 {
+			flex: 1;
+			font-size: 13px;
+			line-height: 20px;
+			font-weight: 500;
+			color: #1e1e1e;
+			margin: 0;
+			padding: 0 !important;
+		}
+		.components-toggle-control .components-h-stack {
+			gap: 0;
+		}
+	}
+
+	.woocommerce-fulfillment-notification-form-content {
+		font-size: 11px;
+		line-height: 16px;
+		font-weight: 400;
+		color: var(--wc-admin-subtext, #767676);
+	}
+}
+
+.woocommerce-fulfillment-item-actions {
+	justify-content: flex-end;
+	display: flex;
+	flex-direction: row;
+	gap: 12px;
+	align-items: center;
+	padding: 20px 0;
 }
 
 a.fulfillments-trigger {

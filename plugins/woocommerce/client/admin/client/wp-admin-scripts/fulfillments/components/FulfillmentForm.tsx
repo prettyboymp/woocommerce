@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useSelect } from '@wordpress/data';
 import moment from 'moment';
 import { Link } from '@woocommerce/components';
-import { CheckboxControl } from '@wordpress/components';
+import { Button, CheckboxControl } from '@wordpress/components';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -16,6 +16,7 @@ import FulfillmentItem from './FulfillmentItem';
 import { LineItem } from '../data/types';
 import ShipmentForm from './ShipmentForm';
 import { useFulfillmentFormContext } from '../context/FulfillmentFormContext';
+import CustomerNotificationBox from './CustomerNotificationBox';
 
 interface FormProps {
 	orderId: number;
@@ -157,6 +158,15 @@ const FulfillmentForm: React.FC< FormProps > = ( { orderId, onClose } ) => {
 					) ) }
 				</ul>
 				<ShipmentForm />
+				<CustomerNotificationBox />
+				<div className="woocommerce-fulfillment-item-actions">
+					<Button variant="secondary">
+						{ __( 'Save as draft', 'woocommerce' ) }
+					</Button>
+					<Button variant="primary">
+						{ __( 'Fulfill items', 'woocommerce' ) }
+					</Button>
+				</div>
 			</div>
 		</>
 	);
