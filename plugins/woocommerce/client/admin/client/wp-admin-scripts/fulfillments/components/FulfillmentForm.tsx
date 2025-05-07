@@ -104,29 +104,46 @@ const FulfillmentForm: React.FC< FormProps > = ( { orderId, onClose } ) => {
 						__nextHasNoMarginBottom
 					/>
 					{ selectedItems.length > 0 && (
-						<>
-							<label
-								htmlFor="fulfillment-item-bulk-select"
-								className="woocommerce-fulfillment-item-bulk-select-label"
-							>
-								{ sprintf(
-									/* translators: %s: number of selected items */
-									_n(
-										'%s selected',
-										'%s selected',
-										selectedItems.length,
-										'woocommerce'
-									),
-									selectedItems.length
-								) }
-							</label>
-							<Link
-								href="#"
-								className="woocommerce-fulfillment-item-bulk-select-link"
-							>
-								{ __( 'Clear selection', 'woocommerce' ) }
-							</Link>
-						</>
+						<div className="woocommerce-fulfillment-item-bulk-select-label">
+							{ sprintf(
+								/* translators: %s: number of selected items */
+								_n(
+									'%s selected',
+									'%s selected',
+									selectedItems.length,
+									'woocommerce'
+								),
+								selectedItems.length
+							) }
+						</div>
+					) }
+					{ itemsCount > selectedItems.length && (
+						<Link
+							href="#"
+							className="woocommerce-fulfillment-item-bulk-select-link"
+							onClick={ ( event ) => {
+								event.preventDefault();
+								selectAllItems();
+							} }
+						>
+							{ sprintf(
+								/* translators: %s: number of items in the order */
+								__( 'Select all (%s)', 'woocommerce' ),
+								itemsCount
+							) }
+						</Link>
+					) }
+					{ selectedItems.length > 0 && (
+						<Link
+							href="#"
+							className="woocommerce-fulfillment-item-bulk-select-link"
+							onClick={ ( event ) => {
+								event.preventDefault();
+								clearSelectedItems();
+							} }
+						>
+							{ __( 'Clear selection', 'woocommerce' ) }
+						</Link>
 					) }
 				</div>
 				<ul className="woocommerce-fulfillment-item-list">
