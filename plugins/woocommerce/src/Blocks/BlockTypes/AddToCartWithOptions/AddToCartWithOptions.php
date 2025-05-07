@@ -177,20 +177,18 @@ class AddToCartWithOptions extends AbstractBlock {
 				$context['availableVariations'] = $product->get_available_variations();
 			}
 
-			$wrapper_attributes = array(
-				'data-wp-interactive'       => 'woocommerce/add-to-cart-with-options',
-				'data-wp-context'           => wp_json_encode(
-					$context,
-					JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
-				),
-				'data-wp-on--submit'        => 'actions.handleSubmit',
-				'data-wp-class--is-invalid' => '!state.isFormValid',
-				'class'                     => $classes,
-				'style'                     => esc_attr( $classes_and_styles['styles'] ),
-			);
-
 			$wrapper_attributes = get_block_wrapper_attributes(
-				$wrapper_attributes
+				array(
+					'data-wp-interactive'       => 'woocommerce/add-to-cart-with-options',
+					'data-wp-context'           => wp_json_encode(
+						$context,
+						JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
+					),
+					'data-wp-on--submit'        => 'actions.handleSubmit',
+					'data-wp-class--is-invalid' => '!state.isFormValid',
+					'class'                     => $classes,
+					'style'                     => esc_attr( $classes_and_styles['styles'] ),
+				)
 			);
 
 			$hooks_before = '';
