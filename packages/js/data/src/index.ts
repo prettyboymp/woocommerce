@@ -103,6 +103,7 @@ export {
 	getReportTableData,
 	getReportTableQuery,
 	getReportChartData,
+	getAllReportDefinitions,
 	getTooltipValueFormat,
 } from './reports/utils';
 

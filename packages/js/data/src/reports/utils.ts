@@ -568,6 +568,12 @@ export function getReportTableQuery(
 	};
 }
 
+export function getAllReportDefinitions() {
+	const { getAllReportDefinitions: getAllReportDefinitionsSelector } =
+		WPSelect( store );
+	return getAllReportDefinitionsSelector();
+}
+
 /**
  * Returns table data needed to render a report page.
  *
