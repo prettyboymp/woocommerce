@@ -67,6 +67,8 @@ export default function ShipmentForm() {
 										onChange={ ( value ) => {
 											setTrackingNumber( value );
 										} }
+										__next40pxDefaultSize
+										__nextHasNoMarginBottom
 									/>
 									<Button
 										variant="secondary"

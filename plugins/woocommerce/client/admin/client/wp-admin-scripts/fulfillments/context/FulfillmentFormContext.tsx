@@ -10,9 +10,9 @@ import { LineItem } from '../data/types';
 
 interface FulfillmentFormContextProps {
 	items: LineItem[];
-	setItems: React.Dispatch< React.SetStateAction< LineItem[] > >;
-	selectedItems: LineItem[];
-	toggleItem: ( item: LineItem ) => void;
+	setItems: ( items: LineItem[] ) => void;
+	selectedItems: ItemState[];
+	toggleItem: ( key: string, checked: boolean ) => void;
 	clearSelectedItems: () => void;
 	selectAllItems: () => void;
 }
@@ -39,32 +39,96 @@ export const useFulfillmentFormContext = () => {
 	return context;
 };
 
+type ItemState = {
+	id: string;
+	item: LineItem;
+	checked: boolean;
+};
+
 export const FulfillmentFormProvider = ( {
 	children,
 }: {
 	children: React.ReactNode;
 } ) => {
-	const [ items, setItems ] = React.useState< LineItem[] >( [] );
-	const [ selectedItems, setSelectedItems ] = React.useState< LineItem[] >(
-		[]
-	);
+	const [ itemsBuffer, setItemsBuffer ] = React.useState< LineItem[] >( [] );
+	const [ itemsMap, setItemsMap ] = React.useState<
+		Record< string, ItemState >
+	>( {} );
 
-	const toggleItem = ( item: LineItem ) => {
-		setSelectedItems( ( prevItems ) => {
-			if ( prevItems.includes( item ) ) {
-				return prevItems.filter( ( i ) => i !== item );
+	const items = React.useMemo< LineItem[] >( () => {
+		return itemsBuffer;
+	}, [ itemsBuffer ] );
+
+	const setItems = React.useCallback( ( newItems: LineItem[] ) => {
+		setItemsBuffer( newItems );
+		newItems.map( ( item ) => {
+			if ( item.quantity > 1 ) {
+				for ( let i = 0; i < item.quantity; i++ ) {
+					const itemState: ItemState = {
+						id: `${ item.id }-${ i }`,
+						item,
+						checked: true,
+					};
+					setItemsMap( ( prev ) => ( {
+						...prev,
+						[ itemState.id ]: itemState,
+					} ) );
+				}
+			} else {
+				const itemState: ItemState = {
+					id: String( item.id ),
+					item,
+					checked: true,
+				};
+				setItemsMap( ( prev ) => ( {
+					...prev,
+					[ item.id ]: itemState,
+				} ) );
 			}
-			return [ ...prevItems, item ];
+			return item;
 		} );
+	}, [] );
+
+	const toggleItem = ( key: string, checked: boolean ) => {
+		const newItemsMap = { ...itemsMap };
+		if ( newItemsMap[ key ] ) {
+			newItemsMap[ key ].checked = checked;
+		} else {
+			const matchingKeys = Object.keys( itemsMap ).filter( ( mapKey ) =>
+				itemsMap[ mapKey ].id.startsWith( key + '-' )
+			);
+			if ( matchingKeys.length > 0 ) {
+				for ( let i = 0; i < matchingKeys.length; i++ ) {
+					newItemsMap[ matchingKeys[ i ] ] = {
+						id: matchingKeys[ i ],
+						item: itemsMap[ matchingKeys[ i ] ].item,
+						checked,
+					};
+				}
+			}
+		}
+		setItemsMap( newItemsMap );
 	};
 
 	const clearSelectedItems = () => {
-		setSelectedItems( [] );
+		const newItemsMap = { ...itemsMap };
+		Object.keys( newItemsMap ).forEach( ( key ) => {
+			newItemsMap[ key ].checked = false;
+		} );
+		setItemsMap( newItemsMap );
 	};
 
 	const selectAllItems = () => {
-		setSelectedItems( items );
+		const newItemsMap = { ...itemsMap };
+		Object.keys( newItemsMap ).forEach( ( key ) => {
+			newItemsMap[ key ].checked = true;
+		} );
+		setItemsMap( newItemsMap );
 	};
+
+	const selectedItems = React.useMemo( () => {
+		return Object.values( itemsMap ).filter( ( item ) => item.checked );
+	}, [ itemsMap ] );
 
 	return (
 		<FulfillmentFormContextValue.Provider

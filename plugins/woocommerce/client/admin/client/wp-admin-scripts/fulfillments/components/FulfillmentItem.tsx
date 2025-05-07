@@ -14,7 +14,7 @@ import { range } from 'lodash';
  * Internal dependencies
  */
 import { LineItem } from '../data/types';
-import { getAdminSetting } from '~/utils/admin-settings';
+import { useFulfillmentFormContext } from '../context/FulfillmentFormContext';
 
 type FulfillmentItemProps = {
 	item: LineItem;
@@ -25,13 +25,12 @@ export default function FulfillmentItem( {
 	item,
 	currency,
 }: FulfillmentItemProps ) {
-	const [ checked, setChecked ] = useState( true );
+	const { toggleItem, selectedItems } = useFulfillmentFormContext();
 	const [ itemExpanded, setItemExpanded ] = useState( false );
 
 	const currencyContext = useContext( CurrencyContext );
 
 	const storeCurrency = currencyContext.getCurrencyConfig();
-	const { currencySymbols = {} } = getAdminSetting( 'onboarding', {} );
 
 	const getFormattedItemTotal = (
 		total: number | string,
@@ -45,7 +44,9 @@ export default function FulfillmentItem( {
 		if ( storeCurrency && storeCurrency.code === orderCurrencyCode ) {
 			return currencyContext.formatAmount( total );
 		}
-		const symbol = currencySymbols[ orderCurrencyCode ];
+
+		// TODO: Find a way to get the currency symbols from the store.
+		const symbol = false;
 
 		if ( ! symbol ) {
 			// This should never happen, but if it does, we'll just show the currency code.
@@ -63,6 +64,32 @@ export default function FulfillmentItem( {
 		} ).formatAmount( total );
 	};
 
+	const calculateCheckedState = ( id: string, quantity: number ): boolean => {
+		if ( id.includes( '-' ) ) {
+			return selectedItems.some(
+				( itemToCheck ) => itemToCheck.id === id && itemToCheck.checked
+			);
+		}
+		if ( quantity > 1 ) {
+			const itemCount = selectedItems.filter( ( itemToCheck ) =>
+				itemToCheck.id.startsWith( id + '-' )
+			).length;
+			return quantity === itemCount;
+		}
+
+		return selectedItems.some(
+			( itemToCheck ) => itemToCheck.id === id && itemToCheck.checked
+		);
+	};
+
+	const calculateDeterminateState = ( id: string ): boolean => {
+		const itemCount = selectedItems.filter( ( itemToCheck ) =>
+			itemToCheck.id.startsWith( id + '-' )
+		).length;
+		const itemQuantity = item.quantity;
+		return itemCount > 0 && itemCount < itemQuantity;
+	};
+
 	return (
 		<>
 			<div
@@ -76,10 +103,16 @@ export default function FulfillmentItem( {
 						id={ `fulfillment-item-${ item.id }` }
 						name={ `fulfillment-item-${ item.id }` }
 						value={ item.id }
-						checked={ checked }
+						checked={ calculateCheckedState(
+							String( item.id ),
+							item.quantity
+						) }
 						onChange={ ( value ) => {
-							setChecked( value );
+							toggleItem( String( item.id ), value );
 						} }
+						indeterminate={ calculateDeterminateState(
+							String( item.id )
+						) }
 						__nextHasNoMarginBottom
 					/>
 				</div>
@@ -137,9 +170,15 @@ export default function FulfillmentItem( {
 									id={ `fulfillment-item-${ item.id }` }
 									name={ `fulfillment-item-${ item.id }` }
 									value={ item.id }
-									checked={ checked }
+									checked={ calculateCheckedState(
+										String( item.id ) + '-' + index,
+										item.quantity
+									) }
 									onChange={ ( value ) => {
-										setChecked( value );
+										toggleItem(
+											String( item.id ) + '-' + index,
+											value
+										);
 									} }
 									__nextHasNoMarginBottom
 								/>
