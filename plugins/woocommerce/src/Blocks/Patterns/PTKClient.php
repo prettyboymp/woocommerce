@@ -116,7 +116,7 @@ class PTKClient {
 
 		$decoded_body = json_decode( $body, true );
 
-		$is_pattern_payload_valid = $this->is_valid_ptk_patterns( $decoded_body );
+		$is_pattern_payload_valid = $this->is_valid_schema( $decoded_body );
 
 		if ( ! $is_pattern_payload_valid ) {
 			return new WP_Error(
@@ -134,7 +134,7 @@ class PTKClient {
 	 * @param array $patterns The patterns to validate.
 	 * @return bool
 	 */
-	public function is_valid_ptk_patterns( array $patterns ) {
+	public function is_valid_schema( array $patterns ) {
 		$is_pattern_payload_valid = rest_validate_value_from_schema( $patterns, $this->schema );
 
 		return ! is_wp_error( $is_pattern_payload_valid );
