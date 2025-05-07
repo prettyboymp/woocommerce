@@ -484,7 +484,7 @@ function wc_is_file_valid_csv( $file, $check_path = true ) {
 	 */
 	$check_import_file_path = apply_filters( 'woocommerce_csv_importer_check_import_file_path', true, $file );
 
-	if ( $check_path && $check_import_file_path && false !== stripos( $file, '://' ) ) {
+	if ( $check_path && $check_import_file_path && false !== stripos( $file, 'file://' ) ) {
 		return false;
 	}
 
@@ -501,8 +501,12 @@ function wc_is_file_valid_csv( $file, $check_path = true ) {
 			'txt' => 'text/plain',
 		)
 	);
-
+	
+	// $file = 's3://joshuaflow/test.csv';
 	$filetype = wp_check_filetype( $file, $valid_filetypes );
+
+	// error_log( 'filetype' );
+	// error_log( print_r($filetype,true) );
 
 	if ( in_array( $filetype['type'], $valid_filetypes, true ) ) {
 		return true;
