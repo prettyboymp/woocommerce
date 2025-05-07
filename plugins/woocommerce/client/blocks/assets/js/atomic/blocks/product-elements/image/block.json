@@ -24,7 +24,11 @@
 			"clientNavigation": true
 		},
 		"html": false,
-		"layout": true,
+		"layout": {
+			"default": {
+				"type": "flex"
+			}
+		},
 		"__experimentalBorder": {
 			"radius": true,
 			"__experimentalSkipSerialization": true
