@@ -26,55 +26,51 @@ class PTKClient {
 	 */
 	public function __construct() {
 		$this->schema = [
-			'type'     => 'array',
-			'items'    => [
+			'type'  => 'array',
+			'items' => [
 				'type'       => 'object',
 				'properties' => [
-					'ID'           => [
-						'type' => 'integer',
+					'ID'         => [
+						'type'     => 'integer',
+						'required' => true,
 					],
-					'site_id'      => [
-						'type' => 'integer',
+					'site_id'    => [
+						'type'     => 'integer',
+						'required' => true,
 					],
-					'title'        => [
-						'type' => 'string',
+					'title'      => [
+						'type'     => 'string',
+						'required' => true,
 					],
-					'name'         => [
-						'type' => 'string',
+					'name'       => [
+						'type'     => 'string',
+						'required' => true,
 					],
-					'html'         => [
-						'type' => 'string',
+					'html'       => [
+						'type'     => 'string',
+						'required' => true,
 					],
-					'categories'   => [
+					'categories' => [
 						'type'                 => 'object',
 						'additionalProperties' => [
 							'type'       => 'object',
 							'properties' => [
-								'slug'  => [
-									'type' => 'string',
+								'slug'        => [
+									'type'     => 'string',
+									'required' => true,
 								],
-								'title' => [
-									'type' => 'string',
+								'title'       => [
+									'type'     => 'string',
+									'required' => true,
+								],
+								'description' => [
+									'type'     => 'string',
+									'required' => true,
 								],
 							],
-							'required'   => [ 'slug', 'title' ],
-						],
-					],
-					'dependencies' => [
-						'type'  => 'array',
-						'items' => [
-							'type' => 'string',
 						],
 					],
 				],
-			],
-			'required' => [
-				'ID',
-				'site_id',
-				'title',
-				'name',
-				'html',
-				'categories',
 			],
 		];
 	}
