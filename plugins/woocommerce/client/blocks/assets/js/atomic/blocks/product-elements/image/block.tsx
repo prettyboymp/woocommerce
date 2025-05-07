@@ -109,10 +109,8 @@ export const Block = ( props: Props ): JSX.Element | null => {
 		className,
 		height,
 		imageSizing = ImageSizing.SINGLE,
-		saleBadgeAlign = 'right',
 		scale,
 		showProductLink = true,
-		showSaleBadge,
 		style,
 		width,
 		...restProps
@@ -168,25 +166,14 @@ export const Block = ( props: Props ): JSX.Element | null => {
 					className,
 					'wc-block-components-product-image',
 					{
-						[ `${ parentClassName }__product-image` ]: parentClassName,
+						[ `${ parentClassName }__product-image` ]:
+							parentClassName,
 					},
 					styleProps.className
 				) }
 				style={ styleProps.style }
 			>
 				<ParentComponent { ...( showProductLink && anchorProps ) }>
-					{ 
-						/**
-						 * Sale badge is now supported through the inner blocks. However, for backwards compatibility,
-						 * we still need to show it if the attribute is set.
-						 */
-						!! showSaleBadge && (
-							<ProductSaleBadge
-								align={ saleBadgeAlign }
-								{ ...restProps }
-							/>
-						)
-					}
 					<Image
 						fallbackAlt={ decodeEntities( product.name ) }
 						image={ image }

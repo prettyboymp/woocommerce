@@ -12,7 +12,7 @@ import { useEffect } from '@wordpress/element';
 import Block from './block';
 import type { BlockAttributes } from './types';
 import { useIsDescendentOfSingleProductTemplate } from '../shared/use-is-descendent-of-single-product-template';
-import { useIsDescendentOfSingleProductBlock } from "../shared/use-is-descendent-of-single-product-block";
+import { useIsDescendentOfSingleProductBlock } from '../shared/use-is-descendent-of-single-product-block';
 
 const Edit = ( {
 	attributes,
@@ -30,10 +30,11 @@ const Edit = ( {
 	const { isDescendentOfSingleProductTemplate } =
 		useIsDescendentOfSingleProductTemplate();
 
-	const { isDescendentOfSingleProductBlock } = useIsDescendentOfSingleProductBlock( {
-		blockClientId: blockProps?.id,
-	} );
-	
+	const { isDescendentOfSingleProductBlock } =
+		useIsDescendentOfSingleProductBlock( {
+			blockClientId: blockProps?.id,
+		} );
+
 	useEffect(
 		() =>
 			setAttributes( {

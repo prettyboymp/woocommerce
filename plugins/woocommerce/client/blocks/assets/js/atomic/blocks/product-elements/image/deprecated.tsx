@@ -1,13 +1,19 @@
+/**
+ * External dependencies
+ */
 import clsx from 'clsx';
 import { createBlock } from '@wordpress/blocks';
 
+/**
+ * Internal dependencies
+ */
 import metadata from './block.json';
 import { BlockAttributesV1 } from './types';
 
-// In v2, we removed the `showSaleBadge` attribute and converted it to an inner block. 
+// In v2, we removed the `showSaleBadge` attribute and converted it to an inner block.
 const v1 = {
 	attributes: {
-    ...metadata.attributes,
+		...metadata.attributes,
 		showSaleBadge: {
 			type: 'boolean',
 			default: true,
@@ -27,24 +33,35 @@ const v1 = {
 
 		return <div className={ clsx( 'is-loading', attributes.className ) } />;
 	},
-	isEligible: ( attributes: BlockAttributesV1 ) => attributes.showSaleBadge !== undefined,
+	isEligible: ( attributes: BlockAttributesV1 ) =>
+		attributes.showSaleBadge !== undefined,
 	migrate: ( attributes: BlockAttributesV1 ) => {
 		const { showSaleBadge, saleBadgeAlign, ...rest } = attributes;
 		if ( ! showSaleBadge ) {
 			return [ rest ];
 		}
 
-    const layoutProps = { 
-      justifyContent: saleBadgeAlign === 'left' ? 'flex-start' : saleBadgeAlign === 'center' ? 'center' : 'flex-end',
-      type: 'flex'
-    };
+		let justifyContent = 'flex-end';
+		if ( saleBadgeAlign === 'left' ) {
+			justifyContent = 'flex-start';
+		} else if ( saleBadgeAlign === 'center' ) {
+			justifyContent = 'center';
+		}
 
-    rest.layout = layoutProps;
+		const layoutProps = {
+			justifyContent,
+			type: 'flex',
+		};
+
+		const newAttributes = {
+			...rest,
+			layout: layoutProps,
+		};
 
 		return [
-      rest,
-      [ createBlock( 'woocommerce/product-sale-badge' ) ]
-    ];
+			newAttributes,
+			[ createBlock( 'woocommerce/product-sale-badge' ) ],
+		];
 	},
 };
 

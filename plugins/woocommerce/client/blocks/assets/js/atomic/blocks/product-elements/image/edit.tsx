@@ -3,18 +3,20 @@
  */
 import { __ } from '@wordpress/i18n';
 import {
-	InnerBlocks,
 	InspectorControls,
 	useBlockProps,
 	useInnerBlocksProps,
 } from '@wordpress/block-editor';
-import { createInterpolateElement, useEffect, useRef } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useEffect,
+	useRef,
+} from '@wordpress/element';
 import { getAdminLink, getSettingWithCoercion } from '@woocommerce/settings';
 import { isBoolean } from '@woocommerce/types';
 import type { BlockEditProps } from '@wordpress/blocks';
 import { ProductQueryContext as Context } from '@woocommerce/blocks/product-query/types';
 import {
-	Disabled,
 	PanelBody,
 	ToggleControl,
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -43,26 +45,24 @@ const Edit = ( {
 	setAttributes,
 	context,
 }: BlockEditProps< BlockAttributes > & { context: Context } ): JSX.Element => {
-	const {
-		showProductLink,
-		imageSizing,
-		width,
-		height,
-		scale,
-	} = attributes;
+	const { showProductLink, imageSizing, width, height, scale } = attributes;
 
-	const ref = useRef<HTMLDivElement>( null );
+	const ref = useRef< HTMLDivElement >( null );
 
 	const blockProps = useBlockProps( { style: { width, height } } );
-	const innerBlockProps = useInnerBlocksProps( {
-		className: 'wc-block-components-product-image__inner-container',
-	}, {
-		dropZoneElement: ref.current,
-	} );
+	const innerBlockProps = useInnerBlocksProps(
+		{
+			className: 'wc-block-components-product-image__inner-container',
+		},
+		{
+			dropZoneElement: ref.current,
+		}
+	);
 	const isDescendentOfQueryLoop = Number.isFinite( context.queryId );
-	const {isDescendentOfSingleProductBlock } = useIsDescendentOfSingleProductBlock( {
-		blockClientId: blockProps?.id,
-	} );
+	const { isDescendentOfSingleProductBlock } =
+		useIsDescendentOfSingleProductBlock( {
+			blockClientId: blockProps?.id,
+		} );
 	const isBlockTheme = getSettingWithCoercion(
 		'isBlockTheme',
 		false,
