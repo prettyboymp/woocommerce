@@ -26,8 +26,8 @@ class PTKClient {
 	 */
 	public function __construct() {
 		$this->schema = [
-			'type'  => 'array',
-			'items' => [
+			'type'     => 'array',
+			'items'    => [
 				'type'       => 'object',
 				'properties' => [
 					'ID'         => [
@@ -48,32 +48,27 @@ class PTKClient {
 					'categories' => [
 						'type'       => 'object',
 						'properties' => [
-							'hero' => [
-								'type'       => 'object',
-								'properties' => [
-									'slug'        => [
-										'type' => 'string',
-									],
-									'title'       => [
-										'type' => 'string',
-									],
-									'description' => [
-										'type' => 'string',
-									],
-								],
-								'required'   => [ 'slug', 'title', 'description' ],
+							'slug'        => [
+								'type' => 'string',
+							],
+							'title'       => [
+								'type' => 'string',
+							],
+							'description' => [
+								'type' => 'string',
 							],
 						],
+						'required'   => [ 'slug', 'title', 'description' ],
 					],
 				],
-				'required'   => [
-					'ID',
-					'site_id',
-					'title',
-					'name',
-					'html',
-					'categories',
-				],
+			],
+			'required' => [
+				'ID',
+				'site_id',
+				'title',
+				'name',
+				'html',
+				'categories',
 			],
 		];
 	}
