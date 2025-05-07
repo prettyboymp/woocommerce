@@ -116,9 +116,9 @@ class PTKClient {
 
 		$decoded_body = json_decode( $body, true );
 
-		$is_pattern_payload_valid = rest_validate_value_from_schema( $decoded_body, $this->schema );
+		$is_pattern_payload_valid = $this->is_valid_ptk_patterns( $decoded_body );
 
-		if ( is_wp_error( $is_pattern_payload_valid ) ) {
+		if ( ! $is_pattern_payload_valid ) {
 			return new WP_Error(
 				'patterns_toolkit_api_error',
 				__( 'Wrong response received from the Patterns Toolkit API: try again later.', 'woocommerce' )
