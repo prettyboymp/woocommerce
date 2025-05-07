@@ -8,11 +8,14 @@ import type { CartVariationItem } from '@woocommerce/types';
 
 export type AvailableVariation = {
 	attributes: Record< string, string >;
+	variation_id: number;
 };
 
 export type Context = {
 	productId: number;
+	productType: string;
 	variation: CartVariationItem[];
+	variationId: number | null;
 	availableVariations: AvailableVariation[];
 	quantity: number;
 	tempQuantity: number;
@@ -66,6 +69,46 @@ const getInputData = ( event: HTMLElementEvent< HTMLButtonElement > ) => {
 	};
 };
 
+const getMatchedVariation = (
+	availableVariations: AvailableVariation[],
+	variation: CartVariationItem[]
+) => {
+	if (
+		! Array.isArray( availableVariations ) ||
+		! Array.isArray( variation ) ||
+		availableVariations.length === 0 ||
+		variation.length === 0
+	) {
+		return null;
+	}
+	return availableVariations.find( ( availableVariation ) => {
+		return Object.entries( availableVariation.attributes ).every(
+			( [ attributeName, attributeValue ] ) => {
+				const attributeMatched = variation.some(
+					( variationAttribute ) => {
+						const formattedVariationAttribute =
+							'attribute_' +
+							variationAttribute.attribute.toLowerCase();
+
+						const isSameAttribute =
+							formattedVariationAttribute === attributeName;
+						if ( ! isSameAttribute ) {
+							return false;
+						}
+
+						return (
+							variationAttribute.value === attributeValue ||
+							( variationAttribute.value &&
+								attributeValue === '' )
+						);
+					}
+				);
+
+				return attributeMatched;
+			}
+		);
+	} );
+};
 const dispatchChangeEvent = ( inputElement: HTMLInputElement ) => {
 	const event = new Event( 'change' );
 	inputElement.dispatchEvent( event );
@@ -74,6 +117,20 @@ const dispatchChangeEvent = ( inputElement: HTMLInputElement ) => {
 const addToCartWithOptionsStore = store(
 	'woocommerce/add-to-cart-with-options',
 	{
+		state: {
+			get isFormValid() {
+				const { productType, availableVariations, variation } =
+					getContext< Context >();
+				if ( productType !== 'variable' ) {
+					return true;
+				}
+				const matchedVariation = getMatchedVariation(
+					availableVariations,
+					variation
+				);
+				return !! matchedVariation;
+			},
+		},
 		actions: {
 			setQuantity( value: number ) {
 				const context = getContext< Context >();
