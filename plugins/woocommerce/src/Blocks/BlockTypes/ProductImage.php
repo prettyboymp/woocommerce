@@ -66,6 +66,7 @@ class ProductImage extends AbstractBlock {
 	private function render_on_sale_badge( $product, $attributes ) {
 		if (
 			! $product->is_on_sale()
+			|| ! isset( $attributes['showSaleBadge'] )
 			|| ( isset( $attributes['showSaleBadge'] ) && false === $attributes['showSaleBadge'] )
 		) {
 			return '';

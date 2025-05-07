@@ -32,6 +32,7 @@ import {
  */
 import Block from './block';
 import withProductSelector from '../shared/with-product-selector';
+import { useIsDescendentOfSingleProductBlock } from '../shared/use-is-descendent-of-single-product-block';
 import { BLOCK_ICON as icon } from './constants';
 import { title, description } from './block.json';
 import { BlockAttributes, ImageSizing } from './types';
@@ -59,6 +60,9 @@ const Edit = ( {
 		dropZoneElement: ref.current,
 	} );
 	const isDescendentOfQueryLoop = Number.isFinite( context.queryId );
+	const {isDescendentOfSingleProductBlock } = useIsDescendentOfSingleProductBlock( {
+		blockClientId: blockProps?.id,
+	} );
 	const isBlockTheme = getSettingWithCoercion(
 		'isBlockTheme',
 		false,
@@ -66,8 +70,16 @@ const Edit = ( {
 	);
 
 	useEffect(
-		() => setAttributes( { isDescendentOfQueryLoop } ),
-		[ setAttributes, isDescendentOfQueryLoop ]
+		() =>
+			setAttributes( {
+				isDescendentOfQueryLoop,
+				isDescendentOfSingleProductBlock,
+			} ),
+		[
+			isDescendentOfQueryLoop,
+			isDescendentOfSingleProductBlock,
+			setAttributes,
+		]
 	);
 
 	return (
