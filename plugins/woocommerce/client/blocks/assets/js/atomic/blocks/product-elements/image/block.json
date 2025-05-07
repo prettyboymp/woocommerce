@@ -27,7 +27,8 @@
 				"type": "flex",
 				"orientation": "horizontal"
 			},
-			"allowOrientation": false
+			"allowOrientation": false,
+			"allowVerticalAlignment": false
 		},
 		"__experimentalBorder": {
 			"radius": true,

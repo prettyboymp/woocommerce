@@ -53,6 +53,10 @@
 	}
 }
 
+.editor-styles-wrapper .wc-block-components-product-image__inner-container {
+	justify-content: flex-start;
+}
+
 .is-loading .wc-block-components-product-image {
 	@include placeholder($include-border-radius: false);
 	width: auto;
@@ -65,7 +69,6 @@
 		display: flex;
 		flex-direction: column;
 		padding: $gap-small;
-		pointer-events: none;
 		position: absolute;
 		bottom: 0;
 		left: 0;
