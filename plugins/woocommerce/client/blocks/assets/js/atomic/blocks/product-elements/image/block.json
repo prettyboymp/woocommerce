@@ -5,8 +5,6 @@
 	"category": "woocommerce-product-elements",
 	"attributes": {
 		"showProductLink": { "type": "boolean", "default": true },
-		"showSaleBadge": { "type": "boolean", "default": false },
-		"saleBadgeAlign": { "type": "string", "default": "right" },
 		"imageSizing": { "type": "string", "default": "single" },
 		"productId": { "type": "number", "default": 0 },
 		"isDescendentOfQueryLoop": { "type": "boolean", "default": false },
@@ -26,8 +24,10 @@
 		"html": false,
 		"layout": {
 			"default": {
-				"type": "flex"
-			}
+				"type": "flex",
+				"orientation": "horizontal"
+			},
+			"allowOrientation": false
 		},
 		"__experimentalBorder": {
 			"radius": true,

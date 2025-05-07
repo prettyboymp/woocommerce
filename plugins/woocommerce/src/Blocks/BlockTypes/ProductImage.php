@@ -46,8 +46,6 @@ class ProductImage extends AbstractBlock {
 		// These should match what's set in JS `registerBlockType`.
 		$defaults = array(
 			'showProductLink'         => true,
-			'showSaleBadge'           => false,
-			'saleBadgeAlign'          => 'right',
 			'imageSizing'             => 'single',
 			'productId'               => 'number',
 			'isDescendentOfQueryLoop' => 'false',
@@ -66,7 +64,10 @@ class ProductImage extends AbstractBlock {
 	 * @return string
 	 */
 	private function render_on_sale_badge( $product, $attributes ) {
-		if ( ! $product->is_on_sale() || false === $attributes['showSaleBadge'] ) {
+		if (
+			! $product->is_on_sale()
+			|| ( isset( $attributes['showSaleBadge'] ) && false === $attributes['showSaleBadge'] )
+		) {
 			return '';
 		}
 
@@ -74,12 +75,12 @@ class ProductImage extends AbstractBlock {
 
 		$on_sale_badge = sprintf(
 			'
-		<div class="wc-block-components-product-sale-badge wc-block-components-product-sale-badge--align-%s wc-block-grid__product-onsale %s" style="%s">
+		<div class="wc-block-components-product-sale-badge %s wc-block-grid__product-onsale %s" style="%s">
 			<span aria-hidden="true">%s</span>
 			<span class="screen-reader-text">%s</span>
 		</div>
 	',
-			esc_attr( $attributes['saleBadgeAlign'] ),
+			isset( $attributes['saleBadgeAlign'] ) ? 'wc-block-components-product-sale-badge--align-' . esc_attr( $attributes['saleBadgeAlign'] ) : '',
 			isset( $font_size['class'] ) ? esc_attr( $font_size['class'] ) : '',
 			isset( $font_size['style'] ) ? esc_attr( $font_size['style'] ) : '',
 			esc_html__( 'Sale', 'woocommerce' ),
