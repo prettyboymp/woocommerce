@@ -1,9 +1,15 @@
 /**
  * External dependencies
  */
-import { Button, CheckboxControl, TextControl } from '@wordpress/components';
+import { CheckboxControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useState } from 'react';
+
+/**
+ * Internal dependencies
+ */
+import ShipmentTrackingNumberForm from './ShipmentTrackingNumberForm';
+import ShipmentManualEntryForm from './ShipmentManualEntryForm';
 
 const TruckIcon = () => (
 	<svg
@@ -25,6 +31,9 @@ const TruckIcon = () => (
 export default function ShipmentForm() {
 	const [ selectedOption, setSelectedOption ] = useState( 'tracking-number' );
 	const [ trackingNumber, setTrackingNumber ] = useState( '' );
+	const [ trackingUrl, setTrackingUrl ] = useState( '' );
+	const [ shipmentProvider, setShipmentProvider ] = useState( '' );
+
 	return (
 		<div className="woocommerce-fulfillment-shipment-form">
 			<div className="woocommerce-fulfillment-shipment-form-header">
@@ -45,38 +54,10 @@ export default function ShipmentForm() {
 						__nextHasNoMarginBottom
 					/>
 					{ selectedOption === 'tracking-number' && (
-						<>
-							<p className="woocommerce-fulfillment-description">
-								{ __(
-									'Provide the shipment tracking number to find the shipment provider and tracking URL.',
-									'woocommerce'
-								) }
-							</p>
-							<div className="woocommerce-fulfillment-input-container">
-								<h4>
-									{ __( 'Tracking Number', 'woocommerce' ) }
-								</h4>
-								<div className="woocommerce-fulfillment-input-group">
-									<TextControl
-										type="text"
-										placeholder={ __(
-											'Enter tracking number',
-											'woocommerce'
-										) }
-										value={ trackingNumber }
-										onChange={ ( value ) => {
-											setTrackingNumber( value );
-										} }
-										__next40pxDefaultSize
-										__nextHasNoMarginBottom
-									/>
-									<Button
-										variant="secondary"
-										text="Find info"
-									/>
-								</div>
-							</div>
-						</>
+						<ShipmentTrackingNumberForm
+							trackingNumber={ trackingNumber }
+							setTrackingNumber={ setTrackingNumber }
+						/>
 					) }
 				</div>
 				<div className="woocommerce-fulfillment-shipment-information-option-manual-entry">
@@ -90,6 +71,16 @@ export default function ShipmentForm() {
 						label={ __( 'Enter manually', 'woocommerce' ) }
 						__nextHasNoMarginBottom
 					/>
+					{ selectedOption === 'manual-entry' && (
+						<ShipmentManualEntryForm
+							trackingNumber={ trackingNumber }
+							setTrackingNumber={ setTrackingNumber }
+							trackingUrl={ trackingUrl }
+							setTrackingUrl={ setTrackingUrl }
+							shipmentProvider={ shipmentProvider }
+							setShipmentProvider={ setShipmentProvider }
+						/>
+					) }
 				</div>
 				<div className="woocommerce-fulfillment-shipment-information-option-no-info">
 					<CheckboxControl

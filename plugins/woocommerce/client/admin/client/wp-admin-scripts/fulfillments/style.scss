@@ -5,7 +5,7 @@
 	left: auto;
 	height: calc(100vh - 32px);
 	z-index: 9999;
-	width: 481px;
+	width: 401px;
 	pointer-events: none;
 	overflow: hidden;
 
@@ -13,7 +13,7 @@
 		position: absolute;
 		right: 0;
 		top: 0;
-		width: 480px;
+		width: 400px;
 		height: 100%;
 		background: #fff;
 		padding: 0;
@@ -21,6 +21,7 @@
 		border-left: 1px solid #ddd !important;
 		transform: translateX(100%);
 		transition: transform 0.3s ease-in-out;
+		overflow-y: auto;
 
 		&.is-open {
 			pointer-events: auto;
@@ -246,7 +247,7 @@
 		.woocommerce-fulfillment-shipment-information-option-no-info {
 			display: flex;
 			flex-direction: column;
-			padding: 16px 0;
+			padding: 20px 0;
 			gap: 16px;
 			width: 100%;
 			align-items: center;
@@ -260,8 +261,13 @@
 			}
 		}
 
+		.woocommerce-fulfillment-shipment-information-option-tracking-number {
+			padding: 12px 0 20px 0;
+		}
+
 		.woocommerce-fulfillment-shipment-information-option-no-info {
 			border-bottom: 0;
+			padding: 20px 0 12px 0;
 		}
 
 		.woocommerce-fulfillment-description {
@@ -294,6 +300,18 @@
 				width: 100%;
 				align-items: center;
 				justify-content: flex-start;
+				position: relative;
+
+				& > div {
+					flex: 1;
+				}
+
+				.woocommerce-fulfillment-shipment-provider-search-icon {
+					position: absolute;
+					right: 14px;
+					top: 12px;
+				}
+
 				.components-base-control {
 					flex: 1;
 					.components-base-control__field {
@@ -315,6 +333,42 @@
 						font-size: 11px;
 						line-height: 16px;
 						font-weight: 400;
+					}
+				}
+				.components-combobox-control__suggestions-container {
+					.components-form-token-field__suggestions-list li {
+						padding: 0 16px;
+						.woocommerce-fulfillment-shipping-provider-list-item {
+							display: flex;
+							flex-direction: row;
+							gap: 8px;
+							align-items: center;
+							justify-content: flex-start;
+							padding: 8px 0;
+
+							&.woocommerce-fulfillment-shipping-provider-list-item-other {
+								border-top: 1px solid #e0e0e0;
+							}
+
+							.woocommerce-fulfillment-shipping-provider-list-item-icon {
+								width: 16px;
+								height: 16px;
+								display: flex;
+								align-items: center;
+								justify-content: center;
+
+								img {
+									width: 16px;
+									height: 16px;
+								}
+							}
+							.woocommerce-fulfillment-shipping-provider-list-item-label {
+								flex: 1;
+								font-size: 13px;
+								line-height: 20px;
+								font-weight: 400;
+							}
+						}
 					}
 				}
 			}
