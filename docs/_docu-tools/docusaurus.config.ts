@@ -41,9 +41,6 @@ const config: Config = {
           path: '../',
           exclude: [
             '_docu-tools/**',
-            '**/_docu-tools/**',
-            '**/node_modules/**',
-            '**/src/**'
           ],
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
@@ -68,7 +65,7 @@ const config: Config = {
       },
       items: [
         {
-          href: 'https://github.com/woocommerce/woocommerce/docs',
+          href: 'https://github.com/woocommerce/woocommerce/tree/trunk/docs',
           label: 'GitHub',
           position: 'right',
         },
