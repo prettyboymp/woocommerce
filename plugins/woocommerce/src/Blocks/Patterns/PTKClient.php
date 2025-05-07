@@ -46,19 +46,22 @@ class PTKClient {
 						'type' => 'string',
 					],
 					'categories' => [
-						'type'       => 'object',
-						'properties' => [
-							'slug'        => [
-								'type' => 'string',
+						'type'                 => 'object',
+						'additionalProperties' => [
+							'type'       => 'object',
+							'properties' => [
+								'slug'        => [
+									'type' => 'string',
+								],
+								'title'       => [
+									'type' => 'string',
+								],
+								'description' => [
+									'type' => 'string',
+								],
 							],
-							'title'       => [
-								'type' => 'string',
-							],
-							'description' => [
-								'type' => 'string',
-							],
+							'required'   => [ 'slug', 'title', 'description' ],
 						],
-						'required'   => [ 'slug', 'title', 'description' ],
 					],
 				],
 			],
@@ -134,7 +137,7 @@ class PTKClient {
 	 * @param array $patterns The patterns to validate.
 	 * @return bool
 	 */
-	public function is_valid_schema( array $patterns ) {
+	public function is_valid_schema( $patterns ) {
 		$is_pattern_payload_valid = rest_validate_value_from_schema( $patterns, $this->schema );
 
 		return ! is_wp_error( $is_pattern_payload_valid );
