@@ -31,7 +31,6 @@ export const DEFAULT_INNER_BLOCKS: InnerBlockTemplate[] = [
 					[
 						'woocommerce/product-image',
 						{
-							showSaleBadge: false,
 							isDescendentOfSingleProductBlock: true,
 							imageSizing: ImageSizing.SINGLE,
 						},
