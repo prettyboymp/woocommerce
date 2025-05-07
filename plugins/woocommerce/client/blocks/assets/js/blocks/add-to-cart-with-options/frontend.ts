@@ -14,7 +14,7 @@ export type AvailableVariation = {
 export type Context = {
 	productId: number;
 	productType: string;
-	variation: CartVariationItem[];
+	selectedAttributes: CartVariationItem[];
 	variationId: number | null;
 	availableVariations: AvailableVariation[];
 	quantity: number;
@@ -71,20 +71,20 @@ const getInputData = ( event: HTMLElementEvent< HTMLButtonElement > ) => {
 
 const getMatchedVariation = (
 	availableVariations: AvailableVariation[],
-	variation: CartVariationItem[]
+	selectedAttributes: CartVariationItem[]
 ) => {
 	if (
 		! Array.isArray( availableVariations ) ||
-		! Array.isArray( variation ) ||
+		! Array.isArray( selectedAttributes ) ||
 		availableVariations.length === 0 ||
-		variation.length === 0
+		selectedAttributes.length === 0
 	) {
 		return null;
 	}
 	return availableVariations.find( ( availableVariation ) => {
 		return Object.entries( availableVariation.attributes ).every(
 			( [ attributeName, attributeValue ] ) => {
-				const attributeMatched = variation.some(
+				const attributeMatched = selectedAttributes.some(
 					( variationAttribute ) => {
 						const formattedVariationAttribute =
 							'attribute_' +
@@ -119,14 +119,14 @@ const addToCartWithOptionsStore = store(
 	{
 		state: {
 			get isFormValid() {
-				const { productType, availableVariations, variation } =
+				const { productType, availableVariations, selectedAttributes } =
 					getContext< Context >();
 				if ( productType !== 'variable' ) {
 					return true;
 				}
 				const matchedVariation = getMatchedVariation(
 					availableVariations,
-					variation
+					selectedAttributes
 				);
 				return !! matchedVariation;
 			},
@@ -137,29 +137,31 @@ const addToCartWithOptionsStore = store(
 				context.quantity = value;
 			},
 			setAttribute( attribute: string, value: string ) {
-				const context = getContext< Context >();
-				const index = context.variation.findIndex(
-					( variation ) => variation.attribute === attribute
+				const { selectedAttributes } = getContext< Context >();
+				const index = selectedAttributes.findIndex(
+					( selectedAttribute ) =>
+						selectedAttribute.attribute === attribute
 				);
 				if ( index >= 0 ) {
-					context.variation[ index ] = {
+					selectedAttributes[ index ] = {
 						attribute,
 						value,
 					};
 				} else {
-					context.variation.push( {
+					selectedAttributes.push( {
 						attribute,
 						value,
 					} );
 				}
 			},
 			removeAttribute( attribute: string ) {
-				const context = getContext< Context >();
-				const index = context.variation.findIndex(
-					( variation ) => variation.attribute === attribute
+				const { selectedAttributes } = getContext< Context >();
+				const index = selectedAttributes.findIndex(
+					( selectedAttribute ) =>
+						selectedAttribute.attribute === attribute
 				);
 				if ( index >= 0 ) {
-					context.variation.splice( index, 1 );
+					selectedAttributes.splice( index, 1 );
 				}
 			},
 			increaseQuantity: (
@@ -209,7 +211,7 @@ const addToCartWithOptionsStore = store(
 					{ lock: universalLock }
 				);
 
-				const { productId, quantity, variation } =
+				const { productId, quantity, selectedAttributes } =
 					getContext< Context >();
 				const product = wooState.cart?.items.find(
 					( item ) => item.id === productId
@@ -219,7 +221,7 @@ const addToCartWithOptionsStore = store(
 				yield actions.addCartItem( {
 					id: productId,
 					quantity: currentQuantity + quantity,
-					variation,
+					variation: selectedAttributes,
 				} );
 			},
 		},
