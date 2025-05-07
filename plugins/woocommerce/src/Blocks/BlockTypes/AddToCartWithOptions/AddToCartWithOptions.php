@@ -173,7 +173,7 @@ class AddToCartWithOptions extends AbstractBlock {
 			);
 
 			if ( $product->is_type( 'variable' ) ) {
-				$context['variation']           = array();
+				$context['selectedAttributes']  = array();
 				$context['availableVariations'] = $product->get_available_variations();
 			}
 
