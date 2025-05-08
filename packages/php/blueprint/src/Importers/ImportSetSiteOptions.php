@@ -36,6 +36,7 @@ class ImportSetSiteOptions implements StepProcessor {
 		'cron',
 		'rewrite_rules',
 		'wp_user_roles',
+		'woocommerce_feature_blueprint_enabled',
 	);
 
 
