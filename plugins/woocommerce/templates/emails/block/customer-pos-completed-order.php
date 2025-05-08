@@ -47,7 +47,6 @@ defined( 'ABSPATH' ) || exit;
 <!-- /wp:woo/email-content -->
 
 <!-- wp:paragraph -->
-<!-- wp:paragraph -->
 <p><?php echo esc_html( '<!--[woocommerce/pos-store-address]-->' ); ?></p>
 <!-- /wp:paragraph -->
 
