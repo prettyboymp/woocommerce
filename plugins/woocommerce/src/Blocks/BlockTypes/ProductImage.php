@@ -45,12 +45,12 @@ class ProductImage extends AbstractBlock {
 	private function parse_attributes( $attributes ) {
 		// These should match what's set in JS `registerBlockType`.
 		$defaults = array(
-			'showProductLink'         => true,
-			'imageSizing'             => 'single',
-			'productId'               => 'number',
-			'isDescendentOfQueryLoop' => 'false',
+			'showProductLink'                  => true,
+			'imageSizing'                      => 'single',
+			'productId'                        => 'number',
+			'isDescendentOfQueryLoop'          => 'false',
 			'isDescendentOfSingleProductBlock' => 'false',
-			'scale'                   => 'cover',
+			'scale'                            => 'cover',
 		);
 
 		return wp_parse_args( $attributes, $defaults );
@@ -104,7 +104,7 @@ class ProductImage extends AbstractBlock {
 		$product_permalink = $product->get_permalink();
 
 		$is_link        = isset( $attributes['showProductLink'] ) ? $attributes['showProductLink'] : true;
-		$href_attribute = $is_link ? sprintf( 'href="%s"', esc_url( $product_permalink ) ) : 'href="#" onclick="return false;"' ;
+		$href_attribute = $is_link ? sprintf( 'href="%s"', esc_url( $product_permalink ) ) : 'href="#" onclick="return false;"';
 		$wrapper_style  = ! $is_link ? 'pointer-events: none; cursor: default;' : '';
 		$directive      = $is_link ? 'data-wp-on--click="woocommerce/product-collection::actions.viewProduct"' : '';
 

@@ -22,14 +22,6 @@
 			"clientNavigation": true
 		},
 		"html": false,
-		"layout": {
-			"default": {
-				"type": "flex",
-				"orientation": "horizontal"
-			},
-			"allowOrientation": false,
-			"allowVerticalAlignment": false
-		},
 		"__experimentalBorder": {
 			"radius": true,
 			"__experimentalSkipSerialization": true
