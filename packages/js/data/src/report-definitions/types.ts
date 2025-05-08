@@ -1,34 +1,24 @@
 export interface ReportQueryArgOption {
 	value: string;
-	label: string; // Localized label
+	label: string;
 }
 
 export interface ReportQueryArg {
 	required?: boolean;
-	description?: string; // Localized description
+	description?: string;
 	type: 'string' | 'array' | 'boolean' | 'number';
 	format?: 'YYYY-MM-DD' | string;
 	options?: ReportQueryArgOption[] | string[];
-	defaultValue?:
-		| string
-		| number
-		| boolean
-		| string[]
-		| number[]
-		| boolean[]
-		| null;
 }
 
 export interface ReportDefinition {
-	report: string; // e.g., 'revenue', 'products'
-	title: string; // Localized, e.g., __( 'Revenue', 'woocommerce' )
-	path: string; // e.g., '/wp-admin/admin.php?page=wc-admin&path=%2Fanalytics%2Frevenue'
+	report: string;
+	title: string;
+	path: string;
 	queryArgs: {
 		[ key: string ]: ReportQueryArg;
 	};
 }
-
-export type AllReportDefinitions = ReportDefinition[];
 
 export interface ReportSpecificConfig {
 	title?: string;

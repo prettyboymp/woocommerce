@@ -252,6 +252,7 @@ export default () => {
 	// This is to enable access to all of the report information and configs outside of the WooCommerce extension.
 	// In an ideal world, instead of saving this into a store, we could just export the reports object directly in a package.
 	// Unfortunately, we would need to do more of a refactor to achieve that, since all the config files are stored in the main WooCommerce plugin.
+	// Another limitation here is that the info is only available on WooCommerce Analytics pages at the moment.
 	filteredReports.forEach( ( { report, config } ) => {
 		dispatch( REPORTS_STORE_NAME ).setReportConfig( report, config );
 	} );

@@ -66,6 +66,13 @@ export const getReportStatsError = (
 	return state.statErrors[ resourceName ] || false;
 };
 
+/**
+ * Get the report config for a given report slug.
+ *
+ * @param state      - The report state.
+ * @param reportSlug - The slug of the report to get the config for.
+ * @return The report config for the given report slug.
+ */
 export const getReportConfig = (
 	state: ReportState,
 	reportSlug: string
@@ -73,13 +80,21 @@ export const getReportConfig = (
 	return state.config && state.config[ reportSlug ];
 };
 
-export const getReportDefinition = (
+/**
+ * Build the report config for a given report slug.
+ * It merges the common query args with the report-specific ones coming from the config files.
+ *
+ * @param state      - The report state.
+ * @param reportSlug - The slug of the report to build the config for.
+ * @return The report config for the given report slug.
+ */
+const buildReportConfig = (
 	state: ReportState,
 	reportSlug: string
 ): ReportDefinition | undefined => {
-	const staticConfig = getReportConfig( state, reportSlug );
+	const config = getReportConfig( state, reportSlug );
 
-	if ( ! staticConfig ) {
+	if ( ! config ) {
 		return undefined;
 	}
 
@@ -95,16 +110,15 @@ export const getReportDefinition = (
 		orderby: {
 			...commonArgs.orderbyArg,
 			options:
-				staticConfig.charts?.map( ( c ) => ( {
+				config.charts?.map( ( c ) => ( {
 					value: c.orderby || c.key,
 					label: c.label,
 				} ) ) || [],
-			// defaultValue: could come from staticConfig or a convention
 		},
 		search: commonArgs.searchArg,
 	};
 
-	if ( staticConfig.charts ) {
+	if ( config.charts ) {
 		queryArgs.chart = {
 			required: true, // Or based on behavior
 			type: 'string',
@@ -112,37 +126,37 @@ export const getReportDefinition = (
 				'Select the chart to display for this report.',
 				'woocommerce'
 			),
-			options: staticConfig.charts.map( ( c ) => ( {
+			options: config.charts.map( ( c ) => ( {
 				value: c.key,
 				label: c.label,
 			} ) ),
-			// defaultValue: could come from staticConfig or a convention
 		};
 	}
 
-	// TODO: Incorporate advancedFilters and filters from staticConfig into queryArgs
-	// This might involve defining how these filter structures map to ReportQueryArg definitions.
-
 	const reportTitle =
-		staticConfig.title ||
+		config.title ||
 		reportSlug.charAt( 0 ).toUpperCase() + reportSlug.slice( 1 );
 
 	return {
 		report: reportSlug,
-		title: reportTitle, // Ensure this is localized if not from staticConfig.title
+		title: reportTitle,
 		path: `/wp-admin/admin.php?page=wc-admin&path=%2Fanalytics%2F${ reportSlug }`,
 		queryArgs,
 	};
 };
 
-export const getAllReportDefinitions = (
-	state: ReportState
-): ReportDefinition[] => {
+/**
+ * Get all the reports.
+ *
+ * @param state - The report state.
+ * @return All the reports.
+ */
+export const getAllReports = ( state: ReportState ): ReportDefinition[] => {
 	if ( ! state.config ) {
 		return [];
 	}
 	const reportSlugs = Object.keys( state.config );
 	return reportSlugs
-		.map( ( slug ) => getReportDefinition( state, slug ) )
+		.map( ( slug ) => buildReportConfig( state, slug ) )
 		.filter( ( def ): def is ReportDefinition => def !== undefined );
 };

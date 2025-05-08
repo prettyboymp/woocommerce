@@ -72,7 +72,6 @@ export const orderArg: ReportQueryArg = {
 		{ value: 'asc', label: __( 'Ascending', 'woocommerce' ) },
 		{ value: 'desc', label: __( 'Descending', 'woocommerce' ) },
 	],
-	defaultValue: 'desc',
 	description: __(
 		'Order of results (ascending or descending).',
 		'woocommerce'
@@ -83,15 +82,13 @@ export const orderbyArg: ReportQueryArg = {
 	required: false,
 	type: 'string',
 	description: __( 'Field to order results by.', 'woocommerce' ),
-	options: [], // Initially empty, to be populated by report-specific definitions
+	options: [], // Populated by report-specific definitions
 };
 
-// TODO: Review if these are used.
 export const pageArg: ReportQueryArg = {
 	required: false,
 	type: 'number',
 	description: __( 'Page number for paginated results.', 'woocommerce' ),
-	defaultValue: 1,
 };
 
 export const perPageArg: ReportQueryArg = {
@@ -101,7 +98,6 @@ export const perPageArg: ReportQueryArg = {
 		'Number of items per page for paginated results.',
 		'woocommerce'
 	),
-	defaultValue: 25, // Example, consider QUERY_DEFAULTS.per_page from @woocommerce/data constants
 };
 
 export const searchArg: ReportQueryArg = {
