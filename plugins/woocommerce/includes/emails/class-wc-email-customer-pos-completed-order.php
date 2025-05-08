@@ -11,6 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Automattic\WooCommerce\Internal\Email\OrderPriceFormatter;
 use Automattic\WooCommerce\Internal\Orders\PointOfSaleOrderUtil;
+use Automattic\WooCommerce\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
+use Automattic\WooCommerce\Internal\EmailEditor\PersonalizationTags\PointOfSaleTagsProvider;
 
 if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 
@@ -51,6 +53,21 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 				: __( 'Order complete emails are sent to customers when their POS orders are marked completed.', 'woocommerce' );
 
 			$this->manual = true;
+
+			// Register POS personalization tags for block email editor.
+			add_filter( 'woocommerce_email_editor_register_personalization_tags', array( $this, 'register_pos_personalization_tags' ) );
+		}
+
+		/**
+		 * Register POS personalization tags with the registry for block email editor.
+		 *
+		 * @param Personalization_Tags_Registry $registry The personalization tags registry.
+		 * @return Personalization_Tags_Registry
+		 */
+		public function register_pos_personalization_tags( Personalization_Tags_Registry $registry ) {
+			$pos_tags_provider = new PointOfSaleTagsProvider();
+			$pos_tags_provider->register_tags( $registry );
+			return $registry;
 		}
 
 		/**
