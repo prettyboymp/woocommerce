@@ -16,7 +16,8 @@ import FulfillmentItem from './FulfillmentItem';
 import { LineItem } from '../data/types';
 import ShipmentForm from './ShipmentForm';
 import { useFulfillmentFormContext } from '../context/FulfillmentFormContext';
-import CustomerNotificationBox from './CustomerNotificationBox';
+import CustomerNotificationBox from './CustomerNotificationForm';
+import { ShipmentFormProvider } from '../context/ShipmentFormContext';
 
 interface FormProps {
 	orderId: number;
@@ -157,7 +158,9 @@ const FulfillmentForm: React.FC< FormProps > = ( { orderId, onClose } ) => {
 						</li>
 					) ) }
 				</ul>
-				<ShipmentForm />
+				<ShipmentFormProvider>
+					<ShipmentForm />
+				</ShipmentFormProvider>
 				<CustomerNotificationBox />
 				<div className="woocommerce-fulfillment-item-actions">
 					<Button variant="secondary">

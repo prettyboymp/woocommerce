@@ -8,6 +8,7 @@ import React from 'react';
  */
 import { FulfillmentFormProvider } from '../context/FulfillmentFormContext';
 import FulfillmentForm from './FulfillmentForm';
+import { ErrorBoundary } from '~/error-boundary';
 
 interface Props {
 	isOpen: boolean;
@@ -29,12 +30,14 @@ const FulfillmentDrawer: React.FC< Props > = ( {
 				].join( ' ' ) }
 			>
 				{ orderId && (
-					<FulfillmentFormProvider>
-						<FulfillmentForm
-							orderId={ orderId }
-							onClose={ onClose }
-						/>
-					</FulfillmentFormProvider>
+					<ErrorBoundary>
+						<FulfillmentFormProvider>
+							<FulfillmentForm
+								orderId={ orderId }
+								onClose={ onClose }
+							/>
+						</FulfillmentFormProvider>
+					</ErrorBoundary>
 				) }
 			</div>
 		</div>

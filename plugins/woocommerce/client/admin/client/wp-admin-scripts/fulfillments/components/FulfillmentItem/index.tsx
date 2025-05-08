@@ -13,8 +13,8 @@ import { range } from 'lodash';
 /**
  * Internal dependencies
  */
-import { LineItem } from '../data/types';
-import { useFulfillmentFormContext } from '../context/FulfillmentFormContext';
+import { LineItem } from '../../data/types';
+import { useFulfillmentFormContext } from '../../context/FulfillmentFormContext';
 
 type FulfillmentItemProps = {
 	item: LineItem;

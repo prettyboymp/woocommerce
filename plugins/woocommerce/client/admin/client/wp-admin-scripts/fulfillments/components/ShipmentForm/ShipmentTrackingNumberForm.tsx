@@ -8,16 +8,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useShipmentFormContext } from '../../context/ShipmentFormContext';
 
-type ShipmentTrackingNumberFormProps = {
-	trackingNumber: string;
-	setTrackingNumber: ( trackingNumber: string ) => void;
-};
-
-export default function ShipmentTrackingNumberForm( {
-	trackingNumber,
-	setTrackingNumber,
-}: ShipmentTrackingNumberFormProps ) {
+export default function ShipmentTrackingNumberForm() {
+	const { trackingNumber, setTrackingNumber } = useShipmentFormContext();
 	return (
 		<>
 			<p className="woocommerce-fulfillment-description">

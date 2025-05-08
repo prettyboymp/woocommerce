@@ -30,9 +30,6 @@ const TruckIcon = () => (
 
 export default function ShipmentForm() {
 	const [ selectedOption, setSelectedOption ] = useState( 'tracking-number' );
-	const [ trackingNumber, setTrackingNumber ] = useState( '' );
-	const [ trackingUrl, setTrackingUrl ] = useState( '' );
-	const [ shipmentProvider, setShipmentProvider ] = useState( '' );
 
 	return (
 		<div className="woocommerce-fulfillment-shipment-form">
@@ -54,10 +51,7 @@ export default function ShipmentForm() {
 						__nextHasNoMarginBottom
 					/>
 					{ selectedOption === 'tracking-number' && (
-						<ShipmentTrackingNumberForm
-							trackingNumber={ trackingNumber }
-							setTrackingNumber={ setTrackingNumber }
-						/>
+						<ShipmentTrackingNumberForm />
 					) }
 				</div>
 				<div className="woocommerce-fulfillment-shipment-information-option-manual-entry">
@@ -72,14 +66,7 @@ export default function ShipmentForm() {
 						__nextHasNoMarginBottom
 					/>
 					{ selectedOption === 'manual-entry' && (
-						<ShipmentManualEntryForm
-							trackingNumber={ trackingNumber }
-							setTrackingNumber={ setTrackingNumber }
-							trackingUrl={ trackingUrl }
-							setTrackingUrl={ setTrackingUrl }
-							shipmentProvider={ shipmentProvider }
-							setShipmentProvider={ setShipmentProvider }
-						/>
+						<ShipmentManualEntryForm />
 					) }
 				</div>
 				<div className="woocommerce-fulfillment-shipment-information-option-no-info">
