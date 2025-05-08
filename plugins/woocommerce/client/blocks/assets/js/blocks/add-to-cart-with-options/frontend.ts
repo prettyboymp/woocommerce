@@ -119,8 +119,9 @@ const addToCartWithOptionsStore = store(
 	{
 		state: {
 			get isFormValid() {
+				const context = getContext< Context >();
 				const { productType, availableVariations, selectedAttributes } =
-					getContext< Context >();
+					context;
 				if ( productType !== 'variable' ) {
 					return true;
 				}
@@ -128,7 +129,15 @@ const addToCartWithOptionsStore = store(
 					availableVariations,
 					selectedAttributes
 				);
+				context.variationId = matchedVariation?.variation_id || null;
 				return !! matchedVariation;
+			},
+			get productOrVariationId() {
+				const context = getContext< Context >();
+
+				return context.productType === 'variable'
+					? context.variationId
+					: context.productId;
 			},
 		},
 		actions: {

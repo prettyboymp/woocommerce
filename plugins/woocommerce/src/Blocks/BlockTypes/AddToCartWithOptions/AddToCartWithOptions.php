@@ -166,6 +166,14 @@ class AddToCartWithOptions extends AbstractBlock {
 			 */
 			$default_quantity = apply_filters( 'woocommerce_add_to_cart_quantity', 1, $product->get_id() );
 
+			wp_interactivity_state(
+				'woocommerce/add-to-cart-with-options',
+				array(
+					'isFormValid'          => ! $product->is_type( 'variable' ),
+					'productOrVariationId' => $product->get_id(),
+				)
+			);
+
 			$context = array(
 				'productId'   => $product->get_id(),
 				'productType' => $product->get_type(),
@@ -173,6 +181,7 @@ class AddToCartWithOptions extends AbstractBlock {
 			);
 
 			if ( $product->is_type( 'variable' ) ) {
+				$context['variationId']         = null;
 				$context['selectedAttributes']  = array();
 				$context['availableVariations'] = $product->get_available_variations();
 			}
