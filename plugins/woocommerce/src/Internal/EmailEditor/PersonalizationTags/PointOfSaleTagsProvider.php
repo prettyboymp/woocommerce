@@ -75,4 +75,4 @@ class PointOfSaleTagsProvider extends AbstractTagProvider {
 			)
 		);
 	}
-} 
+}

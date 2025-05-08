@@ -48,7 +48,7 @@ defined( 'ABSPATH' ) || exit;
 
 <!-- wp:paragraph -->
 <!-- wp:paragraph -->
-<p><?php echo esc_html( '<!--[woocommerce/pos-store-address]-->' );?></p>
+<p><?php echo esc_html( '<!--[woocommerce/pos-store-address]-->' ); ?></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -56,7 +56,7 @@ defined( 'ABSPATH' ) || exit;
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p><?php echo esc_html( '<!--[woocommerce/order-number]-->' );?></p>
+<p><?php echo esc_html( '<!--[woocommerce/order-number]-->' ); ?></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
