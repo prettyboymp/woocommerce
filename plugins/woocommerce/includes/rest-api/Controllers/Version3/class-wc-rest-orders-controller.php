@@ -41,6 +41,8 @@ class WC_REST_Orders_Controller extends WC_REST_Orders_V2_Controller {
 	 * @return bool
 	 */
 	protected function calculate_coupons( $request, $order ) {
+		//throw new WC_REST_Exception( 'woocommerce_rest_invalid_coupon', __( 'No me da la gana.', 'woocommerce' ), 400 );
+
 		if ( ! isset( $request['coupon_lines'] ) ) {
 			return false;
 		}
@@ -253,63 +255,79 @@ class WC_REST_Orders_Controller extends WC_REST_Orders_V2_Controller {
 	 * @return WC_Data|WP_Error
 	 */
 	protected function save_object( $request, $creating = false ) {
+		$calculating_coupons = false;
+		$object = null;
 		try {
-			$object = $this->prepare_object_for_database( $request, $creating );
+			$object = $this->prepare_object_for_database($request, $creating);
 
-			if ( is_wp_error( $object ) ) {
+			if (is_wp_error($object)) {
 				return $object;
 			}
 
 			// Make sure gateways are loaded so hooks from gateways fire on save/create.
 			WC()->payment_gateways();
 
-			if ( ! is_null( $request['customer_id'] ) && 0 !== $request['customer_id'] ) {
+			if (!is_null($request['customer_id']) && 0 !== $request['customer_id']) {
 				// Make sure customer exists.
-				if ( false === get_user_by( 'id', $request['customer_id'] ) ) {
-					throw new WC_REST_Exception( 'woocommerce_rest_invalid_customer_id', __( 'Customer ID is invalid.', 'woocommerce' ), 400 );
+				if (false === get_user_by('id', $request['customer_id'])) {
+					throw new WC_REST_Exception('woocommerce_rest_invalid_customer_id', __('Customer ID is invalid.', 'woocommerce'), 400);
 				}
 
 				// Make sure customer is part of blog.
-				if ( is_multisite() && ! is_user_member_of_blog( $request['customer_id'] ) ) {
-					add_user_to_blog( get_current_blog_id(), $request['customer_id'], 'customer' );
+				if (is_multisite() && !is_user_member_of_blog($request['customer_id'])) {
+					add_user_to_blog(get_current_blog_id(), $request['customer_id'], 'customer');
 				}
 			}
 
-			if ( $creating ) {
-				$object->set_created_via( ! empty( $request['created_via'] ) ? sanitize_text_field( wp_unslash( $request['created_via'] ) ) : 'rest-api' );
-				$object->set_prices_include_tax( 'yes' === get_option( 'woocommerce_prices_include_tax' ) );
+			if ($creating) {
+				$object->set_created_via(!empty($request['created_via']) ? sanitize_text_field(wp_unslash($request['created_via'])) : 'rest-api');
+				$object->set_prices_include_tax('yes' === get_option('woocommerce_prices_include_tax'));
 				$object->save();
 				$object->calculate_totals();
 			} else {
 				// If items have changed, recalculate order totals.
-				if ( isset( $request['billing'] ) || isset( $request['shipping'] ) || isset( $request['line_items'] ) || isset( $request['shipping_lines'] ) || isset( $request['fee_lines'] ) || isset( $request['coupon_lines'] ) ) {
-					$object->calculate_totals( true );
+				if (isset($request['billing']) || isset($request['shipping']) || isset($request['line_items']) || isset($request['shipping_lines']) || isset($request['fee_lines']) || isset($request['coupon_lines'])) {
+					$object->calculate_totals(true);
 				}
 			}
 
 			// Set coupons.
-			$this->calculate_coupons( $request, $object );
+			$calculating_coupons = true;
+			$this->calculate_coupons($request, $object);
+			$calculating_coupons = false;
 
 			// Set status.
-			if ( ! empty( $request['status'] ) ) {
-				$manual_update = isset( $request['manual_update'] ) ? $request['manual_update'] : false;
-				$object->set_status( $request['status'], '', $manual_update );
+			if (!empty($request['status'])) {
+				$manual_update = isset($request['manual_update']) ? $request['manual_update'] : false;
+				$object->set_status($request['status'], '', $manual_update);
 			}
 
 			$object->save();
 
 			// Actions for after the order is saved.
-			if ( true === $request['set_paid'] ) {
-				if ( $creating || $object->needs_payment() ) {
-					$object->payment_complete( $request['transaction_id'] );
+			if (true === $request['set_paid']) {
+				if ($creating || $object->needs_payment()) {
+					$object->payment_complete($request['transaction_id']);
 				}
 			}
 
-			return $this->get_object( $object->get_id() );
-		} catch ( WC_Data_Exception $e ) {
-			return new WP_Error( $e->getErrorCode(), $e->getMessage(), $e->getErrorData() );
-		} catch ( WC_REST_Exception $e ) {
-			return new WP_Error( $e->getErrorCode(), $e->getMessage(), array( 'status' => $e->getCode() ) );
+			return $this->get_object($object->get_id());
+		} catch (Exception $e) {
+            if($e instanceof WC_REST_Exception) {
+                $data = array( 'status' => $e->getCode() );
+            }
+            elseif($e instanceof WC_Data_Exception) {
+				$data = $e->getErrorData();
+			}
+			else {
+				throw $e;
+			}
+
+			if($creating && $calculating_coupons && $object && $object->get_id()) {
+				$data['new_order_id'] = $object->get_id();
+			}
+
+			return new WP_Error( $e->getErrorCode(), $e->getMessage(), $data );
 		}
 	}
 
