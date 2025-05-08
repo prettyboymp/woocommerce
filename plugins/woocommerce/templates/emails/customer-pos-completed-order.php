@@ -31,24 +31,19 @@ $email_improvements_enabled = FeaturesUtil::feature_is_enabled( 'email_improveme
  */
 do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
-<?php echo $email_improvements_enabled ? '<div class="email-introduction">' : ''; ?>
+<div class="email-introduction">
 <p>
 <?php
 if ( ! empty( $order->get_billing_first_name() ) ) {
 	/* translators: %s: Customer first name */
 	printf( esc_html__( 'Hi %s,', 'woocommerce' ), esc_html( $order->get_billing_first_name() ) );
 } else {
-	printf( esc_html__( 'Hi,', 'woocommerce' ) );
+	printf( esc_html__( 'Hi there,', 'woocommerce' ) );
 }
 ?>
 </p>
-<?php if ( $email_improvements_enabled ) : ?>
-	<p><?php esc_html_e( 'We’ve successfully processed your order, and it’s on its way to you.', 'woocommerce' ); ?></p>
-	<p><?php esc_html_e( 'Here’s a reminder of what you’ve ordered:', 'woocommerce' ); ?></p>
-<?php else : ?>
-	<p><?php esc_html_e( 'We have finished processing your order.', 'woocommerce' ); ?></p>
-<?php endif; ?>
-<?php echo $email_improvements_enabled ? '</div>' : ''; ?>
+<p><?php esc_html_e( 'Here’s a reminder of what you’ve ordered:', 'woocommerce' ); ?></p>
+</div>
 
 <?php
 

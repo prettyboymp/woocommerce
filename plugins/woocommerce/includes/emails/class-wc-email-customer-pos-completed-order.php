@@ -103,9 +103,7 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 		 * @return string
 		 */
 		public function get_default_heading() {
-			return $this->email_improvements_enabled
-				? __( 'Good things are heading your way!', 'woocommerce' )
-				: __( 'Thanks for shopping with us', 'woocommerce' );
+			return __( 'Thank you for your in-store purchase', 'woocommerce' );
 		}
 
 		/**
@@ -155,18 +153,6 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 			);
 			$this->remove_pos_customizations();
 			return $content;
-		}
-
-		/**
-		 * Default content to show below main email content.
-		 *
-		 * @since 3.7.0
-		 * @return string
-		 */
-		public function get_default_additional_content() {
-			return $this->email_improvements_enabled
-				? __( 'Thanks again! If you need any help with your order, please contact us at {store_email}.', 'woocommerce' )
-				: __( 'Thanks for shopping with us.', 'woocommerce' );
 		}
 
 		/**
