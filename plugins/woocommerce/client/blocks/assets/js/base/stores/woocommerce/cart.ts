@@ -90,7 +90,7 @@ const { state, actions } = store< Store >(
 
 				// Optimistically updates the number of items in the cart.
 				if ( item ) {
-					item.quantity = quantity;
+					item.quantity += quantity;
 					if ( item.key )
 						quantityChanges.cartItemsPendingQuantity = [ item.key ];
 				} else {
