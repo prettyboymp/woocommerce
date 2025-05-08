@@ -197,7 +197,7 @@ class ProductButton extends AbstractBlock {
 					array(
 						'data-product_id'  => $product->get_id(),
 						'data-product_sku' => $product->get_sku(),
-						'aria-label'       => $is_descendant_of_add_to_cart_form ? $product->add_to_cart_description() : null,
+						'aria-label'       => ! $is_descendant_of_add_to_cart_form ? $product->add_to_cart_description() : null,
 					),
 				),
 			),
