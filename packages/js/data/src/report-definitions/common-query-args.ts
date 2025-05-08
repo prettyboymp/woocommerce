@@ -17,18 +17,16 @@ export const periodArg: ReportQueryArg = {
 		value: p.value,
 		label: p.label,
 	} ) ),
-	defaultValue: 'month',
 };
 
 export const compareArg: ReportQueryArg = {
-	required: false,
+	required: true, // not really required, but otherwise the period query arg doesn't work, so let's pretend until we fix it in WooCommerce.
 	type: 'string',
 	description: __(
 		'Compare the current period to a previous period or the same period last year.',
 		'woocommerce'
 	),
 	options: periods.map( ( p ) => ( { value: p.value, label: p.label } ) ),
-	defaultValue: 'previous_year',
 };
 
 export const intervalArg: ReportQueryArg = {
@@ -45,7 +43,6 @@ export const intervalArg: ReportQueryArg = {
 		{ value: 'quarter', label: __( 'Quarter', 'woocommerce' ) },
 		{ value: 'year', label: __( 'Year', 'woocommerce' ) },
 	],
-	defaultValue: 'day',
 };
 
 export const afterArg: ReportQueryArg = {
@@ -89,6 +86,7 @@ export const orderbyArg: ReportQueryArg = {
 	options: [], // Initially empty, to be populated by report-specific definitions
 };
 
+// TODO: Review if these are used.
 export const pageArg: ReportQueryArg = {
 	required: false,
 	type: 'number',

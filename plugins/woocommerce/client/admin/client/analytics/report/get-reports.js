@@ -249,7 +249,12 @@ export default () => {
 	 */
 	const filteredReports = applyFilters( REPORTS_FILTER, reports );
 
+	// This is to enable access to all of the report information and configs outside of the WooCommerce extension.
+	// In an ideal world, instead of saving this into a store, we could just export the reports object directly in a package.
+	// Unfortunately, we would need to do more of a refactor to achieve that, since all the config files are stored in the main WooCommerce plugin.
 	filteredReports.forEach( ( { report, config } ) => {
 		dispatch( REPORTS_STORE_NAME ).setReportConfig( report, config );
 	} );
+
+	return filteredReports;
 };
