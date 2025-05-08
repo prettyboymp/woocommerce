@@ -91,9 +91,9 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 		 * @return string
 		 */
 		public function get_default_subject() {
-			return $this->email_improvements_enabled
-				? __( 'Your order from {site_title} is on its way!', 'woocommerce' )
-				: __( 'Your {site_title} order is now complete', 'woocommerce' );
+			$store_name = $this->get_pos_store_name();
+			/* translators: %1$s: Order number, %2$s: Store name */
+			return sprintf( __( 'Your in-store purchase #%1$s at %2$s', 'woocommerce' ), '{order_number}', esc_html( $store_name ) );
 		}
 
 		/**
@@ -118,12 +118,17 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 			$content = wc_get_template_html(
 				$this->template_html,
 				array(
-					'order'              => $this->object,
-					'email_heading'      => $this->get_heading(),
-					'additional_content' => $this->get_additional_content(),
-					'sent_to_admin'      => false,
-					'plain_text'         => false,
-					'email'              => $this,
+					'order'                     => $this->object,
+					'email_heading'             => $this->get_heading(),
+					'additional_content'        => $this->get_additional_content(),
+					'pos_store_name'            => $this->get_pos_store_name(),
+					'pos_store_email'           => $this->get_pos_store_email(),
+					'pos_store_phone_number'    => $this->get_pos_store_phone_number(),
+					'pos_store_address'         => $this->get_pos_store_address(),
+					'pos_refund_returns_policy' => $this->get_pos_refund_returns_policy(),
+					'sent_to_admin'             => false,
+					'plain_text'                => false,
+					'email'                     => $this,
 				)
 			);
 			$this->remove_pos_customizations();
@@ -239,6 +244,61 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 			}
 			$valid_template_classes[] = get_class( $this );
 			return $valid_template_classes;
+		}
+
+		/**
+		 * Get the store name from POS settings.
+		 *
+		 * @return string
+		 */
+		private function get_pos_store_name() {
+			return $this->format_string(
+				get_option( 'woocommerce_pos_store_name' )
+			);
+		}
+
+		/**
+		 * Get the store email from POS settings.
+		 *
+		 * @return string
+		 */
+		private function get_pos_store_email() {
+			return $this->format_string(
+				get_option( 'woocommerce_pos_store_email' )
+			);
+		}
+
+		/**
+		 * Get the store phone number from POS settings.
+		 *
+		 * @return string
+		 */
+		private function get_pos_store_phone_number() {
+			return $this->format_string(
+				get_option( 'woocommerce_pos_store_phone' )
+			);
+		}
+
+		/**
+		 * Get the store address from POS settings.
+		 *
+		 * @return string
+		 */
+		private function get_pos_store_address() {
+			return $this->format_string(
+				get_option( 'woocommerce_pos_store_address' )
+			);
+		}
+
+		/**
+		 * Get the refund and returns policy from POS settings.
+		 *
+		 * @return string
+		 */
+		private function get_pos_refund_returns_policy() {
+			return $this->format_string(
+				get_option( 'woocommerce_pos_refund_returns_policy' )
+			);
 		}
 	}
 

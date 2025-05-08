@@ -89,6 +89,34 @@ if ( $additional_content ) {
 }
 
 /**
+ * Show store information - store details are set in the Point of Sale settings.
+ */
+if ( ! empty( $pos_store_email ) || ! empty( $pos_store_phone_number ) || ! empty( $pos_store_address ) ) {
+	echo '<div class="pos-store-information">';
+	echo '<h2>' . esc_html( $pos_store_name ) . '</h2>';
+	if ( ! empty( $pos_store_email ) ) {
+		echo '<p>' . esc_html( $pos_store_email ) . '</p>';
+	}
+	if ( ! empty( $pos_store_phone_number ) ) {
+		echo '<p>' . esc_html( $pos_store_phone_number ) . '</p>';
+	}
+	if ( ! empty( $pos_store_address ) ) {
+		echo wp_kses_post( wpautop( wptexturize( $pos_store_address ) ) );
+	}
+	echo '</div>';
+}
+
+/**
+ * Show refund & returns policy - this is set in the Point of Sale settings.
+ */
+if ( ! empty( $pos_refund_returns_policy ) ) {
+	echo '<div class="refund-returns-policy">';
+	echo '<h2>' . esc_html__( 'Refund & Returns Policy', 'woocommerce' ) . '</h2>';
+	echo wp_kses_post( wpautop( wptexturize( $pos_refund_returns_policy ) ) );
+	echo '</div>';
+}
+
+/**
  * Output the email footer
  *
  * @since 4.0.0
