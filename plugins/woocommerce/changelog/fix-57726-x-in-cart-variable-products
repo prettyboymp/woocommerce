@@ -1,0 +1,4 @@
+Significance: patch
+Type: fix
+
+Make 'X in cart' button text work for variable products in the Blockified Add to Cart with Options block
