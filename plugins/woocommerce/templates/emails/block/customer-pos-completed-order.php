@@ -47,10 +47,18 @@ defined( 'ABSPATH' ) || exit;
 <!-- /wp:woo/email-content -->
 
 <!-- wp:paragraph -->
-<p> 
-<?php
-/* translators: %s: Store admin email */
-	printf( esc_html__( 'Thanks again! If you need any help with your order, please contact us at %s.', 'woocommerce' ), '<!--[woocommerce/store-email]-->' );
-?>
-	</p>
+<!-- wp:paragraph -->
+<p><?php echo esc_html( '<!--[woocommerce/pos-store-address]-->' );?></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><!--[woocommerce/pos-store-address]--></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><?php echo esc_html( '<!--[woocommerce/order-number]-->' );?></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><!--[woocommerce/order-number]--></p>
 <!-- /wp:paragraph -->
