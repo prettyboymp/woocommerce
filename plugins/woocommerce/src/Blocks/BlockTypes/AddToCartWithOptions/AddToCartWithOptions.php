@@ -183,7 +183,17 @@ class AddToCartWithOptions extends AbstractBlock {
 			if ( $product->is_type( 'variable' ) ) {
 				$context['variationId']         = null;
 				$context['selectedAttributes']  = array();
-				$context['availableVariations'] = $product->get_available_variations();
+				$available_variations           = $product->get_available_variations();
+				$available_variations_data      = array_map(
+					function ( $variation ) {
+						return array(
+							'variation_id' => $variation['variation_id'],
+							'attributes'   => $variation['attributes'],
+						);
+					},
+					$available_variations
+				);
+				$context['availableVariations'] = $available_variations_data;
 			}
 
 			$wrapper_attributes = get_block_wrapper_attributes(
