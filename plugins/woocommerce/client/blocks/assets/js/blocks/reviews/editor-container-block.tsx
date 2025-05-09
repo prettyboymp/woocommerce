@@ -39,10 +39,6 @@ const EditorContainerBlock = ( {
 		! showReviewImage &&
 		! showProductName;
 
-	const blockProps = useBlockProps( {
-		className: getBlockClassName( attributes ),
-	} );
-
 	if ( isAllContentHidden ) {
 		return (
 			<Placeholder icon={ icon } label={ name }>
@@ -55,7 +51,7 @@ const EditorContainerBlock = ( {
 	}
 
 	return (
-		<div { ...blockProps }>
+		<>
 			<EditorBlock
 				attributes={ attributes }
 				categoryIds={ categoryIds }
@@ -68,7 +64,7 @@ const EditorContainerBlock = ( {
 				productId={ productId }
 				reviewsToDisplay={ reviewsOnPageLoad }
 			/>
-		</div>
+		</>
 	);
 };
 

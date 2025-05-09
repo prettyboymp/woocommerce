@@ -8,7 +8,6 @@ import {
 	PanelBody,
 	Placeholder,
 	ToggleControl,
-	withSpokenMessages,
 } from '@wordpress/components';
 import ProductCategoryControl from '@woocommerce/editor-components/product-category-control';
 import { Icon, commentContent } from '@wordpress/icons';
@@ -147,4 +146,4 @@ const ReviewsByCategoryEditor = ( {
 	);
 };
 
-export default withSpokenMessages( ReviewsByCategoryEditor );
+export default ReviewsByCategoryEditor;
