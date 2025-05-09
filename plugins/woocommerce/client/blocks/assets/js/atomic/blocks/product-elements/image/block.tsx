@@ -105,9 +105,23 @@ type Props = BlockAttributes &
 // props.product is not listed in the BlockAttributes explicitly,
 // but it is implicitly passed from the All Products block.
 // This is what distinguishes this block from the other usage of the Product Image component.
-const isInAllProductsBlock = ( props: Props ) => {
+const displayLegacySaleBadge = ( props: Props ) => {
 	const { product } = props;
-	return ! isEmpty( product );
+	const isInAllProducts = ! isEmpty( product );
+
+	if ( isInAllProducts ) {
+		// If the All Products block is pristine, it doesn't have a showSaleBadge attribute
+		// but it was `true` by default.
+		const trueByDefault = props.showSaleBadge === undefined;
+
+		// If the All Products block was edited, it will have a showSaleBadge attribute
+		// that we should respect.
+		const trueAfterEdit = props.showSaleBadge === true;
+
+		return trueByDefault || trueAfterEdit;
+	}
+
+	return false;
 };
 
 export const Block = ( props: Props ): JSX.Element | null => {
@@ -118,15 +132,12 @@ export const Block = ( props: Props ): JSX.Element | null => {
 		height,
 		imageSizing = ImageSizing.SINGLE,
 		scale,
-		saleBadgeAlign = 'right',
 		showProductLink = true,
-		showSaleBadge,
 		style,
 		width,
 		...restProps
 	} = props;
 	const styleProps = useStyleProps( props );
-	const inAllProducts = isInAllProductsBlock( props );
 	const { parentClassName } = useInnerBlockLayoutContext();
 	const { product, isLoading } = useProductDataContext();
 	const { dispatchStoreEvent } = useStoreEvents();
@@ -184,9 +195,10 @@ export const Block = ( props: Props ): JSX.Element | null => {
 				) }
 				style={ styleProps.style }
 			>
-				{ inAllProducts && !! showSaleBadge && (
+				{ /* For backwards compatibility in All Products blocks. */ }
+				{ displayLegacySaleBadge( props ) && (
 					<ProductSaleBadge
-						align={ saleBadgeAlign }
+						align={ props.saleBadgeAlign || 'right' }
 						{ ...restProps }
 					/>
 				) }
