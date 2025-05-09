@@ -33,14 +33,6 @@ const v1 = {
 
 		return <div className={ clsx( 'is-loading', attributes.className ) } />;
 	},
-	isEligible: ( ...args ) => {
-		console.log( args );
-		if ( args[ 0 ].showSaleBadge === undefined ) {
-			return true;
-		}
-
-		return true;
-	},
 	migrate: ( attributes: BlockAttributesV1 ) => {
 		const { showSaleBadge, saleBadgeAlign, ...rest } = attributes;
 		console.log( 'migration starts', attributes );
