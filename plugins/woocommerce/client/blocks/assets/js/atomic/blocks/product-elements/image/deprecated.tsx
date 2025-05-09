@@ -33,18 +33,13 @@ const v1 = {
 
 		return <div className={ clsx( 'is-loading', attributes.className ) } />;
 	},
-	isEligible: ( attributes: BlockAttributesV1 ) => {
-		console.log( attributes );
-		// Non-All Products cases.
-		if ( attributes.showSaleBadge !== undefined ) {
+	isEligible: ( ...args ) => {
+		console.log( args );
+		if ( args[ 0 ].showSaleBadge === undefined ) {
 			return true;
 		}
 
-		// All Products case.
-		return (
-			Object.keys( attributes ).length === 1 &&
-			'imageSizing' in attributes
-		);
+		return true;
 	},
 	migrate: ( attributes: BlockAttributesV1 ) => {
 		const { showSaleBadge, saleBadgeAlign, ...rest } = attributes;
