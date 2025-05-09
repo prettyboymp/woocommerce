@@ -33,10 +33,22 @@ const v1 = {
 
 		return <div className={ clsx( 'is-loading', attributes.className ) } />;
 	},
-	isEligible: ( attributes: BlockAttributesV1 ) =>
-		attributes.showSaleBadge !== undefined,
+	isEligible: ( attributes: BlockAttributesV1 ) => {
+		console.log( attributes );
+		// Non-All Products cases.
+		if ( attributes.showSaleBadge !== undefined ) {
+			return true;
+		}
+
+		// All Products case.
+		return (
+			Object.keys( attributes ).length === 1 &&
+			'imageSizing' in attributes
+		);
+	},
 	migrate: ( attributes: BlockAttributesV1 ) => {
 		const { showSaleBadge, saleBadgeAlign, ...rest } = attributes;
+		console.log( 'migration starts', attributes );
 		if ( ! showSaleBadge ) {
 			return [ rest ];
 		}
@@ -58,6 +70,7 @@ const v1 = {
 			layout: layoutProps,
 		};
 
+		console.log( 'migration ends', newAttributes );
 		return [
 			newAttributes,
 			[ createBlock( 'woocommerce/product-sale-badge' ) ],
