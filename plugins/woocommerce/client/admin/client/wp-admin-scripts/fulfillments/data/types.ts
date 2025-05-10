@@ -129,3 +129,20 @@ export interface ShippingLineMetaDatum {
 	display_key: string;
 	display_value: string;
 }
+
+export interface Fulfillment {
+	id?: number;
+	fulfillment_id?: number;
+	entity_type: string;
+	entity_id: string;
+	status: string;
+	is_fulfilled: boolean;
+	date_updated?: Date;
+	meta_data: MetaDatum[];
+}
+
+export interface MetaDatum {
+	id: number;
+	key: string;
+	value: string | number | boolean | object | null;
+}

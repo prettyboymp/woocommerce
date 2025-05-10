@@ -3,7 +3,6 @@
  */
 import { ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useState } from 'react';
 
 /**
  * Internal dependencies
@@ -26,8 +25,13 @@ const EnvelopeIcon = () => (
 	</svg>
 );
 
-export default function CustomerNotificationBox() {
-	const [ isChecked, setChecked ] = useState( true );
+export default function CustomerNotificationBox( {
+	value,
+	setValue,
+}: {
+	value: boolean;
+	setValue: ( value: boolean ) => void;
+} ) {
 	return (
 		<div className="woocommerce-fulfillment-notification-form">
 			<div className="woocommerce-fulfillment-notification-form-header">
@@ -35,10 +39,10 @@ export default function CustomerNotificationBox() {
 				<h3>{ __( 'Customer notification', 'woocommerce' ) }</h3>
 				<ToggleControl
 					__nextHasNoMarginBottom
-					checked={ isChecked }
+					checked={ value }
 					label={ null }
-					onChange={ ( value ) => {
-						setChecked( value );
+					onChange={ ( checked ) => {
+						setValue( checked );
 					} }
 				/>
 			</div>

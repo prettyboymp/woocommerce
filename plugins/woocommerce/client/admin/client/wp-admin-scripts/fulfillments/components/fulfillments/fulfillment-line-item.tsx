@@ -14,18 +14,24 @@ import { range } from 'lodash';
  * Internal dependencies
  */
 import { LineItem } from '../../data/types';
-import { useFulfillmentFormContext } from '../../context/FulfillmentFormContext';
 
 type FulfillmentItemProps = {
 	item: LineItem;
 	currency: string;
+	editMode: boolean;
+	toggleItem: ( id: string, checked: boolean ) => void;
+	isChecked: ( id: string ) => boolean;
+	isIndeterminate: ( id: string ) => boolean;
 };
 
-export default function FulfillmentItem( {
+export default function FulfillmentLineItem( {
 	item,
 	currency,
+	editMode,
+	toggleItem,
+	isChecked,
+	isIndeterminate,
 }: FulfillmentItemProps ) {
-	const { toggleItem, selectedItems } = useFulfillmentFormContext();
 	const [ itemExpanded, setItemExpanded ] = useState( false );
 
 	const currencyContext = useContext( CurrencyContext );
@@ -64,32 +70,6 @@ export default function FulfillmentItem( {
 		} ).formatAmount( total );
 	};
 
-	const calculateCheckedState = ( id: string, quantity: number ): boolean => {
-		if ( id.includes( '-' ) ) {
-			return selectedItems.some(
-				( itemToCheck ) => itemToCheck.id === id && itemToCheck.checked
-			);
-		}
-		if ( quantity > 1 ) {
-			const itemCount = selectedItems.filter( ( itemToCheck ) =>
-				itemToCheck.id.startsWith( id + '-' )
-			).length;
-			return quantity === itemCount;
-		}
-
-		return selectedItems.some(
-			( itemToCheck ) => itemToCheck.id === id && itemToCheck.checked
-		);
-	};
-
-	const calculateDeterminateState = ( id: string ): boolean => {
-		const itemCount = selectedItems.filter( ( itemToCheck ) =>
-			itemToCheck.id.startsWith( id + '-' )
-		).length;
-		const itemQuantity = item.quantity;
-		return itemCount > 0 && itemCount < itemQuantity;
-	};
-
 	return (
 		<>
 			<div
@@ -98,25 +78,24 @@ export default function FulfillmentItem( {
 					itemExpanded ? 'woocommerce-fulfillment-item-expanded' : '',
 				].join( ' ' ) }
 			>
-				<div className="woocommerce-fulfillment-item-checkbox">
-					<CheckboxControl
-						id={ `fulfillment-item-${ item.id }` }
-						name={ `fulfillment-item-${ item.id }` }
-						value={ item.id }
-						checked={ calculateCheckedState(
-							String( item.id ),
-							item.quantity
-						) }
-						onChange={ ( value ) => {
-							toggleItem( String( item.id ), value );
-						} }
-						indeterminate={ calculateDeterminateState(
-							String( item.id )
-						) }
-						__nextHasNoMarginBottom
-					/>
-				</div>
-				{ item.quantity > 1 && (
+				{ editMode && (
+					<div className="woocommerce-fulfillment-item-checkbox">
+						<CheckboxControl
+							id={ `fulfillment-item-${ item.id }` }
+							name={ `fulfillment-item-${ item.id }` }
+							value={ item.id }
+							checked={ isChecked( String( item.id ) ) }
+							onChange={ ( value ) => {
+								toggleItem( String( item.id ), value );
+							} }
+							indeterminate={ isIndeterminate(
+								String( item.id )
+							) }
+							__nextHasNoMarginBottom
+						/>
+					</div>
+				) }
+				{ editMode && item.quantity > 1 && (
 					<Icon
 						icon={
 							itemExpanded ? 'arrow-up-alt2' : 'arrow-right-alt2'
@@ -158,31 +137,32 @@ export default function FulfillmentItem( {
 					{ getFormattedItemTotal( item.total, currency ) }
 				</div>
 			</div>
-			{ itemExpanded && (
+			{ editMode && itemExpanded && (
 				<div className="woocommerce-fulfillment-item-expansion">
 					{ range( item.quantity ).map( ( index ) => (
 						<div
 							key={ 'fulfillment-item-expansion-' + index }
 							className="woocommerce-fulfillment-item-expansion-row"
 						>
-							<div className="woocommerce-fulfillment-item-checkbox">
-								<CheckboxControl
-									id={ `fulfillment-item-${ item.id }` }
-									name={ `fulfillment-item-${ item.id }` }
-									value={ item.id }
-									checked={ calculateCheckedState(
-										String( item.id ) + '-' + index,
-										item.quantity
-									) }
-									onChange={ ( value ) => {
-										toggleItem(
-											String( item.id ) + '-' + index,
-											value
-										);
-									} }
-									__nextHasNoMarginBottom
-								/>
-							</div>
+							{ editMode && (
+								<div className="woocommerce-fulfillment-item-checkbox">
+									<CheckboxControl
+										id={ `fulfillment-item-${ item.id }` }
+										name={ `fulfillment-item-${ item.id }` }
+										value={ item.id }
+										checked={ isChecked(
+											String( item.id ) + '-' + index
+										) }
+										onChange={ ( value ) => {
+											toggleItem(
+												String( item.id ) + '-' + index,
+												value
+											);
+										} }
+										__nextHasNoMarginBottom
+									/>
+								</div>
+							) }
 							<div className="woocommerce-fulfillment-item-title">
 								<div className="woocommerce-fulfillment-item-image-container">
 									<img

@@ -8,8 +8,8 @@ import { useState } from 'react';
 /**
  * Internal dependencies
  */
-import ShipmentTrackingNumberForm from './ShipmentTrackingNumberForm';
-import ShipmentManualEntryForm from './ShipmentManualEntryForm';
+import ShipmentTrackingNumberForm from './shipment-tracking-number-form';
+import ShipmentManualEntryForm from './shipment-manual-entry-form';
 
 const TruckIcon = () => (
 	<svg

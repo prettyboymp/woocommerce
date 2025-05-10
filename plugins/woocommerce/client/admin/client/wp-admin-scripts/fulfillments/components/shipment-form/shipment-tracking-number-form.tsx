@@ -8,7 +8,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useShipmentFormContext } from '../../context/ShipmentFormContext';
+import { useShipmentFormContext } from '../../context/shipment-form-context';
 
 export default function ShipmentTrackingNumberForm() {
 	const { trackingNumber, setTrackingNumber } = useShipmentFormContext();

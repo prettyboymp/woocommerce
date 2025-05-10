@@ -1,91 +1,234 @@
 /**
  * External dependencies
  */
-
 import apiFetch from '@wordpress/api-fetch';
 import { createReduxStore, register } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
-import { Order } from './types';
+import { Order, Fulfillment } from './types';
 
 export const STORE_NAME = 'order/fulfillments';
 
-// --- Default State
-const DEFAULT_STATE: {
-	orderMap: Record< number, Order >;
-	loadingMap: Record< number, boolean >;
-	errorMap: Record< number, string | null >;
-} = {
+const actionTypes = {
+	SET_ORDER: 'SET_ORDER',
+	SET_LOADING: 'SET_LOADING',
+	SET_ERROR: 'SET_ERROR',
+	SET_FULFILLMENTS: 'SET_FULFILLMENTS',
+	SET_FULFILLMENT: 'SET_FULFILLMENT',
+	DELETE_FULFILLMENT: 'DELETE_FULFILLMENT',
+} as const;
+
+interface OrderState {
+	order: Order | null;
+	fulfillments: Fulfillment[];
+	loading: boolean;
+	error: string | null;
+}
+
+const DEFAULT_STATE: { orderMap: Record< string, OrderState > } = {
 	orderMap: {},
-	loadingMap: {},
-	errorMap: {},
 };
 
-// --- Actions
-const actions = {
+const getInitialOrderState = (): OrderState => ( {
+	order: null,
+	fulfillments: [],
+	loading: false,
+	error: null,
+} );
+
+// --- Internal Action Creators
+const internalActions = {
 	setOrder( orderId: number, order: Order ) {
-		return {
-			type: 'SET_ORDER' as const,
-			orderId,
-			order,
-		};
+		return { type: actionTypes.SET_ORDER, orderId, order };
 	},
-
 	setLoading( orderId: number, isLoading: boolean ) {
+		return { type: actionTypes.SET_LOADING, orderId, isLoading };
+	},
+	setError( orderId: number, error: string | null ) {
+		return { type: actionTypes.SET_ERROR, orderId, error };
+	},
+	setFulfillments( orderId: number, fulfillments: Fulfillment[] ) {
+		return { type: actionTypes.SET_FULFILLMENTS, orderId, fulfillments };
+	},
+	setFulfillment(
+		orderId: number,
+		fulfillmentId: number,
+		fulfillment: Fulfillment
+	) {
 		return {
-			type: 'SET_LOADING' as const,
+			type: actionTypes.SET_FULFILLMENT,
 			orderId,
-			isLoading,
+			fulfillmentId,
+			fulfillment,
+		};
+	},
+	deleteFulfillment( orderId: number, fulfillmentId: number ) {
+		return { type: actionTypes.DELETE_FULFILLMENT, orderId, fulfillmentId };
+	},
+};
+
+// --- Public Async Actions
+const publicActions = {
+	saveFulfillment( orderId: number, fulfillment: Fulfillment ) {
+		return async ( { dispatch }: { dispatch: typeof actions } ) => {
+			dispatch.setLoading( orderId, true );
+			dispatch.setError( orderId, null );
+			try {
+				const saved = ( await apiFetch( {
+					path: `/wc/v3/orders/${ orderId }/fulfillments`,
+					method: 'POST',
+					data: fulfillment,
+				} ) ) as { id: number; fulfillment: Fulfillment };
+				dispatch.setFulfillment(
+					orderId,
+					saved.id ?? 0,
+					saved.fulfillment
+				);
+			} catch ( error: unknown ) {
+				dispatch.setError(
+					orderId,
+					error instanceof Error
+						? error.message
+						: 'Failed to save fulfillment'
+				);
+			} finally {
+				dispatch.setLoading( orderId, false );
+			}
 		};
 	},
 
-	setError( orderId: number, error: string | null ) {
-		return {
-			type: 'SET_ERROR' as const,
-			orderId,
-			error,
+	updateFulfillment( orderId: number, fulfillment: Fulfillment ) {
+		return async ( { dispatch }: { dispatch: typeof actions } ) => {
+			dispatch.setLoading( orderId, true );
+			dispatch.setError( orderId, null );
+			try {
+				const updated = ( await apiFetch( {
+					path: `/wc/v3/orders/${ orderId }/fulfillments/${ fulfillment.id }`,
+					method: 'PUT',
+					data: fulfillment,
+				} ) ) as { id: number; fulfillment: Fulfillment };
+				dispatch.setFulfillment(
+					orderId,
+					updated.id ?? 0,
+					updated.fulfillment
+				);
+			} catch ( error: unknown ) {
+				dispatch.setError(
+					orderId,
+					error instanceof Error
+						? error.message
+						: 'Failed to update fulfillment'
+				);
+			} finally {
+				dispatch.setLoading( orderId, false );
+			}
 		};
 	},
+
+	deleteFulfillmentRemote( orderId: number, fulfillmentId: number ) {
+		return async ( { dispatch }: { dispatch: typeof actions } ) => {
+			dispatch.setLoading( orderId, true );
+			dispatch.setError( orderId, null );
+			try {
+				await apiFetch( {
+					path: `/wc/v3/orders/${ orderId }/fulfillments/${ fulfillmentId }`,
+					method: 'DELETE',
+				} );
+				dispatch.deleteFulfillment( orderId, fulfillmentId );
+			} catch ( error: unknown ) {
+				dispatch.setError(
+					orderId,
+					error instanceof Error
+						? error.message
+						: 'Failed to delete fulfillment'
+				);
+			} finally {
+				dispatch.setLoading( orderId, false );
+			}
+		};
+	},
+};
+
+const actions = {
+	...internalActions,
+	...publicActions,
 };
 
 type Action = ReturnType<
-	| typeof actions.setOrder
-	| typeof actions.setLoading
-	| typeof actions.setError
+	( typeof internalActions )[ keyof typeof internalActions ]
 >;
 
 // --- Reducer
 function reducer( state = DEFAULT_STATE, action: Action ) {
+	const prev = state.orderMap[ action.orderId ] || getInitialOrderState();
+
 	switch ( action.type ) {
-		case 'SET_ORDER':
+		case actionTypes.SET_ORDER:
 			return {
 				...state,
 				orderMap: {
 					...state.orderMap,
-					[ action.orderId ]: action.order,
+					[ action.orderId ]: { ...prev, order: action.order },
 				},
 			};
-
-		case 'SET_LOADING':
+		case actionTypes.SET_LOADING:
 			return {
 				...state,
-				loadingMap: {
-					...state.loadingMap,
-					[ action.orderId ]: action.isLoading,
+				orderMap: {
+					...state.orderMap,
+					[ action.orderId ]: { ...prev, loading: action.isLoading },
 				},
 			};
-
-		case 'SET_ERROR':
+		case actionTypes.SET_ERROR:
 			return {
 				...state,
-				errorMap: {
-					...state.errorMap,
-					[ action.orderId ]: action.error,
+				orderMap: {
+					...state.orderMap,
+					[ action.orderId ]: { ...prev, error: action.error },
 				},
 			};
-
+		case actionTypes.SET_FULFILLMENTS:
+			return {
+				...state,
+				orderMap: {
+					...state.orderMap,
+					[ action.orderId ]: {
+						...prev,
+						fulfillments: action.fulfillments,
+					},
+				},
+			};
+		case actionTypes.SET_FULFILLMENT:
+			return {
+				...state,
+				orderMap: {
+					...state.orderMap,
+					[ action.orderId ]: {
+						...prev,
+						fulfillments: [
+							...prev.fulfillments.filter(
+								( f ) => f.id !== action.fulfillmentId
+							),
+							action.fulfillment,
+						],
+					},
+				},
+			};
+		case actionTypes.DELETE_FULFILLMENT:
+			return {
+				...state,
+				orderMap: {
+					...state.orderMap,
+					[ action.orderId ]: {
+						...prev,
+						fulfillments: prev.fulfillments.filter(
+							( f ) => f.id !== action.fulfillmentId
+						),
+					},
+				},
+			};
 		default:
 			return state;
 	}
@@ -93,16 +236,31 @@ function reducer( state = DEFAULT_STATE, action: Action ) {
 
 // --- Selectors
 const selectors = {
+	getState( state: typeof DEFAULT_STATE ) {
+		return state;
+	},
 	getOrder( state: typeof DEFAULT_STATE, orderId: number ) {
-		return state.orderMap[ orderId ] || null;
+		return state.orderMap[ orderId ]?.order;
 	},
-
-	isOrderLoading( state: typeof DEFAULT_STATE, orderId: number ) {
-		return !! state.loadingMap[ orderId ];
+	isLoading( state: typeof DEFAULT_STATE, orderId: number ) {
+		return !! state.orderMap[ orderId ]?.loading;
 	},
-
-	getOrderError( state: typeof DEFAULT_STATE, orderId: number ) {
-		return state.errorMap[ orderId ] || null;
+	getError( state: typeof DEFAULT_STATE, orderId: number ) {
+		return state.orderMap[ orderId ]?.error || null;
+	},
+	readFulfillments( state: typeof DEFAULT_STATE, orderId: number ) {
+		return state.orderMap[ orderId ]?.fulfillments || [];
+	},
+	readFulfillment(
+		state: typeof DEFAULT_STATE,
+		orderId: number,
+		fulfillmentId: number
+	) {
+		return (
+			state.orderMap[ orderId ]?.fulfillments?.find(
+				( f ) => f.id === fulfillmentId
+			) || null
+		);
 	},
 };
 
@@ -113,17 +271,38 @@ const resolvers = {
 		async ( { dispatch }: { dispatch: typeof actions } ) => {
 			dispatch.setLoading( orderId, true );
 			dispatch.setError( orderId, null );
-
 			try {
 				const order: Order = await apiFetch( {
 					path: `/wc/v3/orders/${ orderId }`,
-					method: 'GET',
 				} );
 				dispatch.setOrder( orderId, order );
-			} catch ( error ) {
+			} catch ( error: unknown ) {
 				dispatch.setError(
 					orderId,
-					( error as any ).message || 'Failed to load order' // eslint-disable-line @typescript-eslint/no-explicit-any
+					error instanceof Error
+						? error.message
+						: 'Failed to load order'
+				);
+			} finally {
+				dispatch.setLoading( orderId, false );
+			}
+		},
+	readFulfillments:
+		( orderId: number ) =>
+		async ( { dispatch }: { dispatch: typeof actions } ) => {
+			dispatch.setLoading( orderId, true );
+			dispatch.setError( orderId, null );
+			try {
+				const { fulfillments } = ( await apiFetch( {
+					path: `/wc/v3/orders/${ orderId }/fulfillments`,
+				} ) ) as { fulfillments: Fulfillment[] };
+				dispatch.setFulfillments( orderId, fulfillments );
+			} catch ( error: unknown ) {
+				dispatch.setError(
+					orderId,
+					error instanceof Error
+						? error.message
+						: 'Failed to load fulfillments'
 				);
 			} finally {
 				dispatch.setLoading( orderId, false );
@@ -132,8 +311,7 @@ const resolvers = {
 };
 
 // --- Store Registration
-
-const store = createReduxStore( STORE_NAME, {
+export const store = createReduxStore( STORE_NAME, {
 	reducer,
 	actions,
 	selectors,
@@ -141,5 +319,3 @@ const store = createReduxStore( STORE_NAME, {
 } );
 
 register( store );
-
-export const FulfillmentStore = store;

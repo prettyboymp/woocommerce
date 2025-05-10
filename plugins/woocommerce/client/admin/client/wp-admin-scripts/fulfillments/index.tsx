@@ -7,7 +7,7 @@ import { createRoot } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import FulfillmentDrawer from './components/FullfillmentDrawer';
+import FulfillmentDrawer from './components/fulfillment-drawer/fulfillment-drawer';
 import './style.scss';
 
 function FulfillmentsController() {
