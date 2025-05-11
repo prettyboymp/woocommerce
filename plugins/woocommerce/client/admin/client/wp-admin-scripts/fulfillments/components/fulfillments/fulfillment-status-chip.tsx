@@ -10,7 +10,7 @@ export default function FulfillmentStatusChip( {
 } ) {
 	return (
 		<div
-			className={ `woocommerce-fulfillment-status-badge wocommerce-fulfillment-status-badge-${ fulfillment.status }` }
+			className={ `woocommerce-fulfillment-status-badge woocommerce-fulfillment-status-badge__${ fulfillment.status }` }
 		>
 			{ /* TODO: Find a way to convert this to a human readable string. */ }
 			{ fulfillment.status }

@@ -17,6 +17,7 @@ import { LineItem } from '../../data/types';
 
 type FulfillmentItemProps = {
 	item: LineItem;
+	quantity: number;
 	currency: string;
 	editMode: boolean;
 	toggleItem: ( id: string, checked: boolean ) => void;
@@ -26,6 +27,7 @@ type FulfillmentItemProps = {
 
 export default function FulfillmentLineItem( {
 	item,
+	quantity,
 	currency,
 	editMode,
 	toggleItem,
@@ -81,8 +83,6 @@ export default function FulfillmentLineItem( {
 				{ editMode && (
 					<div className="woocommerce-fulfillment-item-checkbox">
 						<CheckboxControl
-							id={ `fulfillment-item-${ item.id }` }
-							name={ `fulfillment-item-${ item.id }` }
 							value={ item.id }
 							checked={ isChecked( String( item.id ) ) }
 							onChange={ ( value ) => {
@@ -95,7 +95,7 @@ export default function FulfillmentLineItem( {
 						/>
 					</div>
 				) }
-				{ editMode && item.quantity > 1 && (
+				{ editMode && quantity > 1 && (
 					<Icon
 						icon={
 							itemExpanded ? 'arrow-up-alt2' : 'arrow-right-alt2'
@@ -110,7 +110,6 @@ export default function FulfillmentLineItem( {
 					<div className="woocommerce-fulfillment-item-image-container">
 						<img
 							src={ item.image.src }
-							id={ item.image.id }
 							alt={ item.name }
 							width={ 32 }
 							height={ 32 }
@@ -128,9 +127,9 @@ export default function FulfillmentLineItem( {
 						) }
 					</div>
 				</div>
-				{ item.quantity > 1 && (
+				{ quantity > 1 && (
 					<div className="woocommerce-fulfillment-item-quantity">
-						{ 'x' + item.quantity }
+						{ 'x' + quantity }
 					</div>
 				) }
 				<div className="woocommerce-fulfillment-item-price">
@@ -139,7 +138,7 @@ export default function FulfillmentLineItem( {
 			</div>
 			{ editMode && itemExpanded && (
 				<div className="woocommerce-fulfillment-item-expansion">
-					{ range( item.quantity ).map( ( index ) => (
+					{ range( quantity ).map( ( index ) => (
 						<div
 							key={ 'fulfillment-item-expansion-' + index }
 							className="woocommerce-fulfillment-item-expansion-row"
@@ -147,9 +146,8 @@ export default function FulfillmentLineItem( {
 							{ editMode && (
 								<div className="woocommerce-fulfillment-item-checkbox">
 									<CheckboxControl
-										id={ `fulfillment-item-${ item.id }` }
-										name={ `fulfillment-item-${ item.id }` }
-										value={ item.id }
+										name={ `fulfillment-item-${ item.id }-${ index }` }
+										value={ item.id + '-' + index }
 										checked={ isChecked(
 											String( item.id ) + '-' + index
 										) }
@@ -167,7 +165,6 @@ export default function FulfillmentLineItem( {
 								<div className="woocommerce-fulfillment-item-image-container">
 									<img
 										src={ item.image.src }
-										id={ item.image.id }
 										alt={ item.name }
 										width={ 32 }
 										height={ 32 }
@@ -187,7 +184,7 @@ export default function FulfillmentLineItem( {
 							</div>
 							<div className="woocommerce-fulfillment-item-price">
 								{ getFormattedItemTotal(
-									parseInt( item.total, 10 ) / item.quantity,
+									parseInt( item.total, 10 ) / quantity,
 									currency
 								) }
 							</div>

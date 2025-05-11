@@ -3,7 +3,6 @@
  */
 import { Button, Icon } from '@wordpress/components';
 import { useState } from 'react';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -20,6 +19,13 @@ import ShipmentForm from '../shipment-form';
 import CustomerNotificationBox from '../customer-notification-form';
 import { FulfillmentProvider } from '../../context/fulfillment-context';
 import ItemSelector from './item-selector';
+import ShipmentInfoEditor from '../shipment-form/editor';
+import MetadataViewer from '../metadata-viewer';
+import EditFulfillmentButton from '../buttons/edit-fulfillment-button';
+import FulfillItemsButton from '../buttons/fulfill-items-button';
+import CancelLink from '../buttons/cancel-link';
+import RemoveButton from '../buttons/remove-button';
+import UpdateButton from '../buttons/update-button';
 
 interface FulfillmentEditorProps {
 	index: number;
@@ -59,6 +65,9 @@ export default function FulfillmentEditor( {
 		itemsNotInAnyFulfillment
 	);
 
+	const [ formItems, setFormItems ] =
+		useState< ItemQuantity[] >( itemsInFulfillment );
+
 	return (
 		<div className="woocommerce-fulfillment-stored-fulfillment-list-item">
 			<div className="woocommerce-fulfillment-stored-fulfillment-list-item-header">
@@ -70,7 +79,7 @@ export default function FulfillmentEditor( {
 					onClick={ ! expanded ? onExpand : onCollapse }
 				>
 					<Icon
-						icon={ expanded ? 'arrow-down-alt2' : 'arrow-up-alt2' }
+						icon={ expanded ? 'arrow-up-alt2' : 'arrow-down-alt2' }
 						size={ 16 }
 					/>
 				</Button>
@@ -78,9 +87,7 @@ export default function FulfillmentEditor( {
 			{ expanded && (
 				<>
 					<ItemSelector
-						items={
-							editMode ? selectableItems : itemsInFulfillment
-						}
+						items={ formItems }
 						setSelectedItems={ setSelectedItems }
 						currency={ order.currency }
 						editMode={ editMode }
@@ -88,53 +95,45 @@ export default function FulfillmentEditor( {
 					{ editMode && (
 						<>
 							<ShipmentForm />
-							<CustomerNotificationBox
-								value={ notifyCustomer }
-								setValue={ setNotifyCustomer }
-							/>
 						</>
 					) }
-					{ ! editMode && <div> Taha Paksu was here </div> }
+					{ ! editMode && (
+						<>
+							<ShipmentInfoEditor />
+							<MetadataViewer fulfillment={ fulfillment } />
+						</>
+					) }
+					<CustomerNotificationBox
+						value={ notifyCustomer }
+						setValue={ setNotifyCustomer }
+					/>
 					<FulfillmentProvider
 						orderId={ order.id }
 						selectedItems={ selectedItems }
 						notifyCustomer={ false }
 					>
 						<div className="woocommerce-fulfillment-item-actions">
-							{ editMode ? (
-								<Button
-									__next40pxDefaultSize
-									size="small"
-									onClick={ () => {
-										setEditMode( false );
-									} }
-									className="woocommerce-fulfillment-item-actions-cancel"
-								>
-									{ __( 'Cancel', 'woocommerce' ) }
-								</Button>
+							{ ! editMode ? (
+								<>
+									<EditFulfillmentButton
+										onClick={ () => {
+											setEditMode( true );
+											setFormItems( selectableItems );
+										} }
+									/>
+									<FulfillItemsButton />
+								</>
 							) : (
-								<Button
-									__next40pxDefaultSize
-									size="small"
-									onClick={ () => {
-										setEditMode( true );
-									} }
-									className="woocommerce-fulfillment-item-actions-edit"
-								>
-									{ __( 'Edit', 'woocommerce' ) }
-								</Button>
-							) }
-							{ editMode && (
-								<Button
-									__next40pxDefaultSize
-									size="small"
-									onClick={ () => {
-										setEditMode( false );
-									} }
-									className="woocommerce-fulfillment-item-actions-save"
-								>
-									{ __( 'Save', 'woocommerce' ) }
-								</Button>
+								<>
+									<CancelLink
+										onClick={ () => {
+											setFormItems( itemsInFulfillment );
+											setEditMode( false );
+										} }
+									/>
+									<RemoveButton />
+									<UpdateButton />
+								</>
 							) }
 						</div>
 					</FulfillmentProvider>

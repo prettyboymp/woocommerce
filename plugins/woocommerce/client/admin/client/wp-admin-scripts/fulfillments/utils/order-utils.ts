@@ -184,7 +184,7 @@ export const unspreadItems = ( items: ItemQuantity[] ): ItemQuantity[] => {
 	items.forEach( ( item ) => {
 		const itemId = item.item_id.split( '-' )[ 0 ];
 		if ( itemMap[ itemId ] ) {
-			itemMap[ itemId ].qty += 1;
+			itemMap[ itemId ].qty++;
 		} else {
 			itemMap[ itemId ] = {
 				...item,

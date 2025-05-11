@@ -4,7 +4,7 @@
 import { CheckboxControl } from '@wordpress/components';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Link } from '@woocommerce/components';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 /**
  * Internal dependencies
@@ -30,14 +30,21 @@ export default function ItemSelector( {
 	editMode,
 	currency,
 }: ItemSelectorProps ) {
-	const [ itemsBuffer, setItemsBuffer ] = useState< ItemQuantity[] >(
-		areItemsSpread( items ) ? items : spreadItems( items )
-	);
+	const [ itemsBuffer, setItemsBuffer ] = useState< ItemQuantity[] >( [] );
+	const [ prevItems, setPrevItems ] = useState< ItemQuantity[] >( [] );
+
+	// Update the items buffer when the items prop change.
+	if ( items !== prevItems ) {
+		setItemsBuffer(
+			areItemsSpread( items ) ? items : spreadItems( items )
+		);
+		setPrevItems( items );
+	}
+
 	const itemsCount = itemsBuffer.length;
-	const selectedItemsCount = useMemo(
-		() => itemsBuffer.filter( ( item ) => item.checked ).length,
-		[ itemsBuffer ]
-	);
+	const selectedItemsCount = itemsBuffer.filter(
+		( item ) => item.checked
+	).length;
 
 	const clearSelectedItems = () => {
 		setItemsBuffer(
@@ -108,6 +115,7 @@ export default function ItemSelector( {
 		return false;
 	};
 
+	// Update the selected items with a callback prop (output) when the items buffer change.
 	useEffect( () => {
 		setSelectedItems(
 			unspreadItems( itemsBuffer.filter( ( item ) => item.checked ) )
@@ -126,8 +134,6 @@ export default function ItemSelector( {
 								selectAllItems();
 							}
 						} }
-						id="fulfillment-item-bulk-select"
-						name="fulfillment-item-bulk-select"
 						checked={ selectedItemsCount === itemsCount }
 						indeterminate={
 							selectedItemsCount > 0 &&
@@ -137,7 +143,7 @@ export default function ItemSelector( {
 					/>
 				) }
 				{ selectedItemsCount > 0 && (
-					<div className="woocommerce-fulfillment-item-bulk-select-label">
+					<div className="woocommerce-fulfillment-item-bulk-select__label">
 						{ sprintf(
 							/* translators: %s: number of selected items */
 							_n(
@@ -153,7 +159,7 @@ export default function ItemSelector( {
 				{ editMode && itemsCount > selectedItemsCount && (
 					<Link
 						href="#"
-						className="woocommerce-fulfillment-item-bulk-select-link"
+						className="woocommerce-fulfillment-item-bulk-select__link"
 						onClick={ ( event ) => {
 							event.preventDefault();
 							selectAllItems();
@@ -169,7 +175,7 @@ export default function ItemSelector( {
 				{ editMode && selectedItemsCount > 0 && (
 					<Link
 						href="#"
-						className="woocommerce-fulfillment-item-bulk-select-link"
+						className="woocommerce-fulfillment-item-bulk-select__link"
 						onClick={ ( event ) => {
 							event.preventDefault();
 							clearSelectedItems();
@@ -184,6 +190,7 @@ export default function ItemSelector( {
 					<li key={ item.item_id }>
 						<FulfillmentLineItem
 							item={ item.item }
+							quantity={ item.qty }
 							editMode={ editMode }
 							currency={ currency }
 							toggleItem={ handleToggleItem }

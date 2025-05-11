@@ -7,15 +7,14 @@ import { LoadingPlaceholder } from '@automattic/components';
 /**
  * Internal dependencies
  */
-import { Order } from '../../data/types';
+import { useFulfillmentDrawerContext } from '../../context/drawer-context';
 
 export default function FulfillmentsDrawerHeader( {
-	order,
 	onClose,
 }: {
-	order: Order;
 	onClose: () => void;
 } ) {
+	const { order } = useFulfillmentDrawerContext();
 	if ( ! order ) {
 		return <LoadingPlaceholder />;
 	}

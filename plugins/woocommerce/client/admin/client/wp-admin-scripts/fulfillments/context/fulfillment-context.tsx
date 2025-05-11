@@ -8,7 +8,7 @@ import React, { createContext, useEffect } from 'react';
  */
 import { Fulfillment } from '../data/types';
 import { useShipmentFormContext } from './shipment-form-context';
-import { ItemQuantity, unspreadItems } from '../utils/order-utils';
+import { ItemQuantity } from '../utils/order-utils';
 
 const WC_ORDER_CLASS = 'WC_Order';
 
@@ -68,25 +68,25 @@ export const FulfillmentProvider = ( {
 			meta_data: [
 				{
 					id: 0,
-					key: 'tracking_number',
+					key: '_tracking_number',
 					value: trackingNumber,
 				},
 				{
 					id: 0,
-					key: 'tracking_url',
+					key: '_tracking_url',
 					value: trackingUrl,
 				},
 				{
 					id: 0,
-					key: 'shipment_provider',
+					key: '_shipment_provider',
 					value: shipmentProvider,
 				},
 				{
 					id: 0,
 					key: '_items',
-					value: unspreadItems( selectedItems ).map( ( item ) => {
+					value: selectedItems.map( ( item ) => {
 						return {
-							item_id: item.item_id,
+							item_id: parseInt( item.item_id, 10 ),
 							qty: item.qty,
 						};
 					} ),
