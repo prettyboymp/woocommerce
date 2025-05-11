@@ -36,7 +36,7 @@
 			justify-content: space-between;
 			gap: 4px;
 
-			.drawer-header-title {
+			.drawer-header__title {
 				display: flex;
 				flex-direction: row;
 				align-items: center;
@@ -52,7 +52,7 @@
 					margin: 0;
 				}
 
-				.close-button {
+				.drawer-header__close-button {
 					background: transparent;
 					border: 0 solid transparent;
 					cursor: pointer;
@@ -579,7 +579,7 @@ a.fulfillments-trigger {
 	line-height: 16px;
 
 	svg {
-		fill: #3858e9;
+		fill: #2271b1;
 	}
 
 	&:hover {
@@ -596,6 +596,7 @@ a.fulfillments-trigger {
 		flex-direction: row;
 		flex-wrap: nowrap;
 		align-items: center;
+		justify-content: space-between;
 		gap: 8px;
 	}
 }

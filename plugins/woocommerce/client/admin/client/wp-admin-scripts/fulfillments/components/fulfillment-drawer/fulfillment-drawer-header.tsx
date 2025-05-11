@@ -22,14 +22,17 @@ export default function FulfillmentsDrawerHeader( {
 	return (
 		order && (
 			<div className="drawer-header">
-				<div className="drawer-header-title">
+				<div className="drawer-header__title">
 					<h2>
 						#{ order.id }{ ' ' }
 						{ order.billing.first_name +
 							' ' +
 							order.billing.last_name }
 					</h2>
-					<button className="close-button" onClick={ onClose }>
+					<button
+						className="drawer-header__close-button"
+						onClick={ onClose }
+					>
 						×
 					</button>
 				</div>

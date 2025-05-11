@@ -7,46 +7,54 @@ import { createRoot } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import FulfillmentDrawer from './components/fulfillment-drawer/fulfillment-drawer';
 import './style.scss';
+import FulfillmentDrawer from './components/fulfillment-drawer/fulfillment-drawer';
 
 function FulfillmentsController() {
-	const [ openOrderId, setOpenOrderId ] = useState< number | null >( null );
+	const [ isOpen, setIsOpen ] = useState( false );
+	const [ orderId, setOrderId ] = useState< number | null >( null );
+
+	const deselectOrderRow = () => {
+		document.querySelectorAll( '.type-shop_order' ).forEach( ( row ) => {
+			row.classList.remove( 'is-selected' );
+		} );
+	};
+
+	const selectOrderRow = ( button: HTMLButtonElement ) => {
+		const targetRow = button.closest( 'tr' );
+		deselectOrderRow();
+		targetRow?.classList.add( 'is-selected' );
+	};
 
 	useLayoutEffect( () => {
-		const triggers = document.querySelectorAll(
-			'.fulfillments-trigger'
-		) as NodeListOf< HTMLElement >;
-		triggers.forEach( ( trigger ) => {
-			const id = parseInt( trigger.dataset.orderId || '', 10 );
-			if ( id ) {
-				trigger.addEventListener( 'click', ( e ) => {
+		document.body.addEventListener( 'click', ( e ) => {
+			const target = e.target as HTMLElement;
+			if ( target.closest( '.fulfillments-trigger' ) ) {
+				const button = target.closest(
+					'.fulfillments-trigger'
+				) as HTMLButtonElement;
+				const id = parseInt( button.dataset.orderId || '', 10 );
+				if ( id ) {
 					e.preventDefault();
 					e.stopPropagation();
-					const targetRow = trigger.closest( 'tr' );
-					document
-						.querySelectorAll( '.type-shop_order' )
-						.forEach( ( row ) => {
-							row.classList.remove( 'is-selected' );
-						} );
-					targetRow?.classList.add( 'is-selected' );
-					setOpenOrderId( id );
-				} );
+					selectOrderRow( button );
+					setOrderId( id );
+					setIsOpen( true );
+				}
 			}
 		} );
 	}, [] ); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
 		<FulfillmentDrawer
-			isOpen={ openOrderId !== null }
-			orderId={ openOrderId }
+			isOpen={ isOpen }
+			orderId={ orderId }
 			onClose={ () => {
-				document
-					.querySelectorAll( '.type-shop_order' )
-					.forEach( ( row ) => {
-						row.classList.remove( 'is-selected' );
-					} );
-				setOpenOrderId( null );
+				deselectOrderRow();
+				setIsOpen( false );
+				setTimeout( () => {
+					setOrderId( null );
+				}, 300 );
 			} }
 		/>
 	);
