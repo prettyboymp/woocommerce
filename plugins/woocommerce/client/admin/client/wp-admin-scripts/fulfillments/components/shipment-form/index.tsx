@@ -30,6 +30,7 @@ const TruckIcon = () => (
 
 export default function ShipmentForm() {
 	const [ selectedOption, setSelectedOption ] = useState( 'tracking-number' );
+	const randomRadioGroupName = `woocommerce-fulfillment-shipment-form-${ Math.random() }`;
 
 	return (
 		<div className="woocommerce-fulfillment-shipment-form">
@@ -42,7 +43,8 @@ export default function ShipmentForm() {
 				<div className="woocommerce-fulfillment-shipment-information-option-tracking-number">
 					<CheckboxControl
 						type="radio"
-						name="tracking-number"
+						name={ randomRadioGroupName }
+						value={ 'tracking-number' }
 						checked={ selectedOption === 'tracking-number' }
 						onChange={ ( value ) =>
 							value && setSelectedOption( 'tracking-number' )
@@ -57,7 +59,8 @@ export default function ShipmentForm() {
 				<div className="woocommerce-fulfillment-shipment-information-option-manual-entry">
 					<CheckboxControl
 						type="radio"
-						name="manual-entry"
+						name={ randomRadioGroupName }
+						value={ 'manual-entry' }
 						checked={ selectedOption === 'manual-entry' }
 						onChange={ ( value ) =>
 							value && setSelectedOption( 'manual-entry' )
@@ -72,7 +75,8 @@ export default function ShipmentForm() {
 				<div className="woocommerce-fulfillment-shipment-information-option-no-info">
 					<CheckboxControl
 						type="radio"
-						name="no-info"
+						name={ randomRadioGroupName }
+						value={ 'no-info' }
 						checked={ selectedOption === 'no-info' }
 						onChange={ ( value ) =>
 							value && setSelectedOption( 'no-info' )

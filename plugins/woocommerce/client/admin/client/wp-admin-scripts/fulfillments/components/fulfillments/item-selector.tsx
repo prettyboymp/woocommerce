@@ -5,6 +5,7 @@ import { CheckboxControl } from '@wordpress/components';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Link } from '@woocommerce/components';
 import { useEffect, useState } from 'react';
+import { isEqual } from 'lodash';
 
 /**
  * Internal dependencies
@@ -34,7 +35,7 @@ export default function ItemSelector( {
 	const [ prevItems, setPrevItems ] = useState< ItemQuantity[] >( [] );
 
 	// Update the items buffer when the items prop change.
-	if ( items !== prevItems ) {
+	if ( ! isEqual( items, prevItems ) ) {
 		setItemsBuffer(
 			areItemsSpread( items ) ? items : spreadItems( items )
 		);

@@ -24,7 +24,8 @@ import { useFulfillmentDrawerContext } from '../../context/drawer-context';
 import { ShipmentFormProvider } from '../../context/shipment-form-context';
 
 const NewFulfillmentForm: React.FC = () => {
-	const { order, fulfillments, openSection } = useFulfillmentDrawerContext();
+	const { order, fulfillments /*, openSection */ } =
+		useFulfillmentDrawerContext();
 	const remainingItems = getItemsNotInAnyFulfillment(
 		fulfillments,
 		order ?? ( { line_items: [] as LineItem[] } as Order )
@@ -49,7 +50,8 @@ const NewFulfillmentForm: React.FC = () => {
 					? __( 'Order Items', 'woocommerce' )
 					: __( 'Pending Items', 'woocommerce' ) }
 			</h3>
-			{ openSection === 'order' && (
+			{
+				/* openSection === 'order' && (*/
 				<>
 					<ItemSelector
 						items={ remainingItems }
@@ -76,7 +78,8 @@ const NewFulfillmentForm: React.FC = () => {
 						</FulfillmentProvider>
 					</ShipmentFormProvider>
 				</>
-			) }
+				/*)*/
+			}
 		</div>
 	);
 };
