@@ -3,6 +3,12 @@
  */
 import React from 'react';
 
+/**
+ * Internal dependencies
+ */
+import { ErrorBoundary } from '~/error-boundary';
+import FulfillmentsDrawerHeader from './fulfillment-drawer-header';
+
 interface Props {
 	isOpen: boolean;
 	onClose: () => void;
@@ -22,18 +28,15 @@ const FulfillmentDrawer: React.FC< Props > = ( {
 					isOpen ? 'is-open' : 'is-closed',
 				].join( ' ' ) }
 			>
-				<div className="drawer-header">
-					<div className="drawer-header-title">
-						<h2>#{ orderId } Michael Jones</h2>
-						<button className="close-button" onClick={ onClose }>
-							×
-						</button>
+				<ErrorBoundary>
+					<FulfillmentsDrawerHeader
+						orderId={ orderId }
+						onClose={ onClose }
+					/>
+					<div className="drawer-content">
+						{ /* TODO: Add content here */ }
 					</div>
-					<p>February 19, 2020, 6:22pm</p>
-				</div>
-				<div className="drawer-content">
-					{ /* TODO: Add content here */ }
-				</div>
+				</ErrorBoundary>
 			</div>
 		</div>
 	);
