@@ -63,9 +63,9 @@ class GroupedProductSelectorItemLabel extends AbstractBlock {
 
 		if ( $should_render_as_label ) {
 			return sprintf(
-				'<label %1$s for="%2$s">%3$s</label>',
+				'<label %1$s for="grouped-product-%2$s">%3$s</label>',
 				$wrapper_attributes,
-				esc_attr( 'grouped-product-' . $product->get_id() ),
+				esc_attr( $product->get_id() ),
 				esc_html( $title )
 			);
 		}
@@ -76,4 +76,4 @@ class GroupedProductSelectorItemLabel extends AbstractBlock {
 			esc_html( $title )
 		);
 	}
-} 
+}
