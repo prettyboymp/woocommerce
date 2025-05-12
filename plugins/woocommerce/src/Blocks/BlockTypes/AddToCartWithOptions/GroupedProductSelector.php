@@ -32,6 +32,8 @@ class GroupedProductSelector extends AbstractBlock {
 		global $product;
 
 		if ( $product instanceof \WC_Product && $product->is_type( 'grouped' ) ) {
+			// Set context for child blocks
+			$block->context['woocommerce/isDescendantOfGroupedProductSelector'] = true;
 			return $content;
 		}
 

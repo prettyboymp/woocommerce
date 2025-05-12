@@ -38,21 +38,17 @@ class GroupedProductSelectorItemLabel extends AbstractBlock {
 			return '';
 		}
 
-		$product = wc_get_product( $block->context['postId'] );
-		if ( ! $product instanceof \WC_Product ) {
-			return '';
-		}
-
 		$classes_and_styles = StyleAttributesUtils::get_classes_and_styles_by_attributes( $attributes );
 
-		// Check if there's an input block in the parent block's content
-		$has_input = false;
-		if ( isset( $block->parent ) && isset( $block->parent->parsed_block['innerBlocks'] ) ) {
-			foreach ( $block->parent->parsed_block['innerBlocks'] as $inner_block ) {
-				if ( 'woocommerce/add-to-cart-with-options-grouped-product-selector-item-cta' === $inner_block['blockName'] ) {
-					$has_input = true;
-					break;
-				}
+		// Check if we should render as a label based on the same logic as the CTA block
+		$should_render_as_label = false;
+		if ( isset( $block->context['postId'] ) ) {
+			if ( $product ) {
+				// If product is purchasable, doesn't have options, and is in stock
+				// AND either is sold individually (checkbox) or not (quantity selector)
+				$should_render_as_label = $product->is_purchasable() 
+					&& ! $product->has_options() 
+					&& $product->is_in_stock();
 			}
 		}
 
@@ -65,7 +61,7 @@ class GroupedProductSelectorItemLabel extends AbstractBlock {
 
 		$title = $product->get_title();
 
-		if ( $has_input ) {
+		if ( $should_render_as_label ) {
 			return sprintf(
 				'<label %1$s for="%2$s">%3$s</label>',
 				$wrapper_attributes,
