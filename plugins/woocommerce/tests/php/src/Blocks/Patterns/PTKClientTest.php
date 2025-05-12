@@ -171,8 +171,8 @@ class PTKClientTest extends \WP_UnitTestCase {
                             }
                         },
 						{
-                            "ID": 14870,
-                            "site_id": 174455321,
+                            "ID": 14871,
+                            "site_id": 174455322,
                             "title": "Review: A quote with scattered images",
                             "name": "review-a-quote-with-scattered-images",
                             "html": "<!-- /wp:spacer -->",
@@ -216,8 +216,8 @@ class PTKClientTest extends \WP_UnitTestCase {
                             }
                         }
 						{
-                            "ID": 14870,
-                            "site_id": 174455321,
+                            "ID": 14871,
+                            "site_id": 174455322,
                             "title": "Review: A quote with scattered images",
                             "name": "review-a-quote-with-scattered-images",
                             "html": "<!-- /wp:spacer -->",
