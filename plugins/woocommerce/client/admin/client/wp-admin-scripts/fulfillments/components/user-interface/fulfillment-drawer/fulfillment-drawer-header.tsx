@@ -7,7 +7,7 @@ import { LoadingPlaceholder } from '@automattic/components';
 /**
  * Internal dependencies
  */
-import { useFulfillmentDrawerContext } from '../../context/drawer-context';
+import { useFulfillmentDrawerContext } from '../../../context/drawer-context';
 
 export default function FulfillmentsDrawerHeader( {
 	onClose,

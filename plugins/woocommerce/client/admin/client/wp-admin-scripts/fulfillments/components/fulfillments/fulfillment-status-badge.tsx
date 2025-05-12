@@ -3,7 +3,7 @@
  */
 import { Fulfillment } from '../../data/types';
 
-export default function FulfillmentStatusChip( {
+export default function FulfillmentStatusBadge( {
 	fulfillment,
 }: {
 	fulfillment: Fulfillment;

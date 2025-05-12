@@ -3,6 +3,12 @@
  */
 import React, { createContext } from 'react';
 
+/**
+ * Internal dependencies
+ */
+import { Fulfillment } from '../data/types';
+import { getFulfillmentMeta } from '../utils/fulfillment-utils';
+
 interface ShipmentFormContextProps {
 	trackingNumber: string;
 	setTrackingNumber: ( trackingNumber: string ) => void;
@@ -10,6 +16,8 @@ interface ShipmentFormContextProps {
 	setShipmentProvider: ( shipmentProvider: string ) => void;
 	trackingUrl: string;
 	setTrackingUrl: ( trackingUrl: string ) => void;
+	providerName: string;
+	setProviderName: ( providerName: string ) => void;
 }
 
 const defaultContextProps: ShipmentFormContextProps = {
@@ -19,6 +27,8 @@ const defaultContextProps: ShipmentFormContextProps = {
 	setShipmentProvider: () => {},
 	trackingUrl: '',
 	setTrackingUrl: () => {},
+	providerName: '',
+	setProviderName: () => {},
 };
 
 const ShipmentFormContextValue =
@@ -35,13 +45,25 @@ export const useShipmentFormContext = () => {
 };
 
 export const ShipmentFormProvider = ( {
+	fulfillment = null,
 	children,
 }: {
+	fulfillment?: Fulfillment | null;
 	children: React.ReactNode;
 } ) => {
-	const [ trackingNumber, setTrackingNumber ] = React.useState( '' );
-	const [ shipmentProvider, setShipmentProvider ] = React.useState( '' );
-	const [ trackingUrl, setTrackingUrl ] = React.useState( '' );
+	const [ trackingNumber, setTrackingNumber ] = React.useState(
+		getFulfillmentMeta( fulfillment, '_tracking_number', '' )
+	);
+	const [ shipmentProvider, setShipmentProvider ] = React.useState(
+		getFulfillmentMeta( fulfillment, '_shipment_provider', '' )
+	);
+	const [ trackingUrl, setTrackingUrl ] = React.useState(
+		getFulfillmentMeta( fulfillment, '_tracking_url', '' )
+	);
+
+	const [ providerName, setProviderName ] = React.useState(
+		getFulfillmentMeta( fulfillment, '_provider_name', '' )
+	);
 
 	return (
 		<ShipmentFormContextValue.Provider
@@ -52,6 +74,8 @@ export const ShipmentFormProvider = ( {
 				setShipmentProvider,
 				trackingUrl,
 				setTrackingUrl,
+				providerName,
+				setProviderName,
 			} }
 		>
 			{ children }

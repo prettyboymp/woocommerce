@@ -20,11 +20,16 @@ export default function FulfillItemsButton() {
 			return;
 		}
 		fulfillment.is_fulfilled = true;
+		fulfillment.status = 'fulfilled';
 		saveFulfillment( orderId, fulfillment );
 	};
 
 	return (
-		<Button variant="primary" onClick={ handleFulfillItems }>
+		<Button
+			variant="primary"
+			onClick={ handleFulfillItems }
+			__next40pxDefaultSize
+		>
 			{ __( 'Fulfill items', 'woocommerce' ) }
 		</Button>
 	);

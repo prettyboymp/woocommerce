@@ -10,21 +10,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useShipmentFormContext } from '../../context/shipment-form-context';
 import ShipmentProviders from '../../data/shipment-providers';
-
-const SearchIcon = () => (
-	<svg
-		width="12"
-		height="12"
-		viewBox="0 0 12 12"
-		fill="none"
-		xmlns="http://www.w3.org/2000/svg"
-	>
-		<path
-			d="M6.75 0.75C4.275 0.75 2.25 2.775 2.25 5.25C2.25 6.3 2.625 7.275 3.225 8.025L0.375 10.875L1.2 11.7L4.05 8.85C4.8 9.45 5.775 9.825 6.825 9.825C9.3 9.825 11.325 7.8 11.325 5.325C11.325 2.85 9.225 0.75 6.75 0.75ZM6.75 8.625C4.875 8.625 3.375 7.125 3.375 5.25C3.375 3.375 4.875 1.875 6.75 1.875C8.625 1.875 10.125 3.375 10.125 5.25C10.125 7.125 8.625 8.625 6.75 8.625Z"
-			fill="#1E1E1E"
-		/>
-	</svg>
-);
+import { SearchIcon } from '../../utils/icons';
 
 const ShippingProviderListItem = ( {
 	item,
@@ -57,6 +43,8 @@ export default function ShipmentManualEntryForm() {
 		setTrackingNumber,
 		shipmentProvider,
 		setShipmentProvider,
+		providerName,
+		setProviderName,
 		trackingUrl,
 		setTrackingUrl,
 	} = useShipmentFormContext();
@@ -108,6 +96,26 @@ export default function ShipmentManualEntryForm() {
 					</div>
 				</div>
 			</div>
+			{ shipmentProvider === 'other' && (
+				<div className="woocommerce-fulfillment-input-container">
+					<h4>{ __( 'Name', 'woocommerce' ) }</h4>
+					<div className="woocommerce-fulfillment-input-group">
+						<TextControl
+							type="text"
+							placeholder={ __(
+								'Enter provider name',
+								'woocommerce'
+							) }
+							value={ providerName }
+							onChange={ ( value: string ) => {
+								setProviderName( value );
+							} }
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+					</div>
+				</div>
+			) }
 			<div className="woocommerce-fulfillment-input-container">
 				<h4>{ __( 'Tracking URL', 'woocommerce' ) }</h4>
 				<div className="woocommerce-fulfillment-input-group">

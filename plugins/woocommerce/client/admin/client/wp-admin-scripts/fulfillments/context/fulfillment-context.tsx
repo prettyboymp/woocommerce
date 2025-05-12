@@ -61,6 +61,8 @@ export const FulfillmentProvider = ( {
 			return;
 		}
 		_setFulfillment( {
+			id: fulfillment?.id ?? undefined,
+			fulfillment_id: fulfillment?.fulfillment_id ?? undefined,
 			entity_id: String( orderId ),
 			entity_type: WC_ORDER_CLASS,
 			is_fulfilled: false,

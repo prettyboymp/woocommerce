@@ -11,20 +11,24 @@ import { useDispatch } from '@wordpress/data';
 import { useFulfillmentContext } from '../../context/fulfillment-context';
 import { store as FulfillmentStore } from '../../data/store';
 
-export default function RemoveButton() {
+export default function UpdateButton() {
 	const { orderId, fulfillment } = useFulfillmentContext();
-	const { deleteFulfillment } = useDispatch( FulfillmentStore );
+	const { updateFulfillment } = useDispatch( FulfillmentStore );
 
-	const handleFulfillItems = () => {
-		if ( ! fulfillment || ! fulfillment.id ) {
+	const handleUpdateFulfillment = () => {
+		if ( ! fulfillment ) {
 			return;
 		}
-		deleteFulfillment( orderId, fulfillment.id );
+		updateFulfillment( orderId, fulfillment );
 	};
 
 	return (
-		<Button variant="secondary" onClick={ handleFulfillItems }>
-			{ __( 'Remove', 'woocommerce' ) }
+		<Button
+			variant="primary"
+			onClick={ handleUpdateFulfillment }
+			__next40pxDefaultSize
+		>
+			{ __( 'Update', 'woocommerce' ) }
 		</Button>
 	);
 }

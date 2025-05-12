@@ -3,12 +3,12 @@
  */
 import { Button, Icon } from '@wordpress/components';
 import { useState } from 'react';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Fulfillment, Order } from '../../data/types';
-import FulfillmentStatusChip from './fulfillment-status-chip';
 import {
 	ItemQuantity,
 	combineItems,
@@ -19,13 +19,15 @@ import ShipmentForm from '../shipment-form';
 import CustomerNotificationBox from '../customer-notification-form';
 import { FulfillmentProvider } from '../../context/fulfillment-context';
 import ItemSelector from './item-selector';
-import ShipmentInfoEditor from '../shipment-form/editor';
 import MetadataViewer from '../metadata-viewer';
-import EditFulfillmentButton from '../buttons/edit-fulfillment-button';
-import FulfillItemsButton from '../buttons/fulfill-items-button';
-import CancelLink from '../buttons/cancel-link';
-import RemoveButton from '../buttons/remove-button';
-import UpdateButton from '../buttons/update-button';
+import EditFulfillmentButton from '../action-buttons/edit-fulfillment-button';
+import FulfillItemsButton from '../action-buttons/fulfill-items-button';
+import CancelLink from '../action-buttons/cancel-link';
+import RemoveButton from '../action-buttons/remove-button';
+import UpdateButton from '../action-buttons/update-button';
+import ShipmentViewer from '../shipment-form/shipment-viewer';
+import { ShipmentFormProvider } from '../../context/shipment-form-context';
+import FulfillmentStatusBadge from './fulfillment-status-badge';
 
 interface FulfillmentEditorProps {
 	index: number;
@@ -46,7 +48,7 @@ export default function FulfillmentEditor( {
 	order,
 }: FulfillmentEditorProps ) {
 	const [ editMode, setEditMode ] = useState( false );
-	const [ notifyCustomer, setNotifyCustomer ] = useState( false );
+	const [ notifyCustomer, setNotifyCustomer ] = useState( true );
 	const [ selectedItems, setSelectedItems ] = useState< ItemQuantity[] >(
 		[]
 	);
@@ -68,76 +70,109 @@ export default function FulfillmentEditor( {
 	const [ formItems, setFormItems ] =
 		useState< ItemQuantity[] >( itemsInFulfillment );
 
+	const handleChevronClick = () => {
+		if ( editMode ) return;
+		if ( ! expanded ) {
+			onExpand();
+		} else {
+			onCollapse();
+		}
+	};
+
 	return (
 		<div className="woocommerce-fulfillment-stored-fulfillment-list-item">
-			<div className="woocommerce-fulfillment-stored-fulfillment-list-item-header">
-				<h3>{ `Fulfillment #${ index + 1 }` }</h3>
-				<FulfillmentStatusChip fulfillment={ fulfillment } />
-				<Button
-					__next40pxDefaultSize
-					size="small"
-					onClick={ ! expanded ? onExpand : onCollapse }
-				>
+			<div
+				className="woocommerce-fulfillment-stored-fulfillment-list-item-header"
+				onClick={ handleChevronClick }
+				onKeyUp={ ( event ) => {
+					if ( event.key === 'Enter' ) {
+						handleChevronClick();
+					}
+				} }
+				role="button"
+				tabIndex={ -1 }
+			>
+				<h3>
+					{
+						// eslint-disable-next-line @wordpress/valid-sprintf
+						sprintf(
+							editMode
+								? /* translators: %s: Fulfillment ID */
+								  __( 'Editing fulfillment #%s', 'woocommerce' )
+								: /* translators: %s: Fulfillment ID */
+								  __( 'Fulfillment #%s', 'woocommerce' ),
+							index + 1
+						)
+					}
+				</h3>
+				<FulfillmentStatusBadge fulfillment={ fulfillment } />
+				<Button __next40pxDefaultSize size="small">
 					<Icon
 						icon={ expanded ? 'arrow-up-alt2' : 'arrow-down-alt2' }
 						size={ 16 }
+						color={ editMode ? '#dddddd' : undefined }
 					/>
 				</Button>
 			</div>
 			{ expanded && (
-				<>
+				<div className="woocommerce-fulfillment-stored-fulfillment-list-item-content">
 					<ItemSelector
 						items={ formItems }
 						setSelectedItems={ setSelectedItems }
 						currency={ order.currency }
 						editMode={ editMode }
 					/>
-					{ editMode && (
-						<>
-							<ShipmentForm />
-						</>
-					) }
-					{ ! editMode && (
-						<>
-							<ShipmentInfoEditor />
-							<MetadataViewer fulfillment={ fulfillment } />
-						</>
-					) }
-					<CustomerNotificationBox
-						value={ notifyCustomer }
-						setValue={ setNotifyCustomer }
-					/>
-					<FulfillmentProvider
-						orderId={ order.id }
-						selectedItems={ selectedItems }
-						notifyCustomer={ false }
-					>
-						<div className="woocommerce-fulfillment-item-actions">
-							{ ! editMode ? (
-								<>
-									<EditFulfillmentButton
-										onClick={ () => {
-											setEditMode( true );
-											setFormItems( selectableItems );
-										} }
-									/>
-									<FulfillItemsButton />
-								</>
-							) : (
-								<>
-									<CancelLink
-										onClick={ () => {
-											setFormItems( itemsInFulfillment );
-											setEditMode( false );
-										} }
-									/>
-									<RemoveButton />
-									<UpdateButton />
-								</>
-							) }
-						</div>
-					</FulfillmentProvider>
-				</>
+					<ShipmentFormProvider fulfillment={ fulfillment }>
+						{ editMode && (
+							<>
+								<ShipmentForm />
+							</>
+						) }
+						{ ! editMode && (
+							<>
+								<ShipmentViewer />
+								<MetadataViewer fulfillment={ fulfillment } />
+							</>
+						) }
+						<CustomerNotificationBox
+							value={ notifyCustomer }
+							setValue={ setNotifyCustomer }
+						/>
+						<FulfillmentProvider
+							fulfillment={ fulfillment }
+							orderId={ order.id }
+							selectedItems={ selectedItems }
+							notifyCustomer={ false }
+						>
+							<div className="woocommerce-fulfillment-item-actions">
+								{ ! editMode ? (
+									<>
+										<EditFulfillmentButton
+											onClick={ () => {
+												setEditMode( true );
+												setFormItems( selectableItems );
+											} }
+										/>
+										<FulfillItemsButton />
+									</>
+								) : (
+									<>
+										<CancelLink
+											onClick={ () => {
+												setFormItems(
+													itemsInFulfillment
+												);
+												setEditMode( false );
+											} }
+										/>
+										<RemoveButton />
+										<UpdateButton />
+									</>
+								) }
+							</div>
+						</FulfillmentProvider>
+					</ShipmentFormProvider>
+				</div>
 			) }
 		</div>
 	);

@@ -10,7 +10,7 @@ export default function EditFulfillmentButton( {
 	onClick: () => void;
 } ) {
 	return (
-		<Button variant="secondary" onClick={ onClick }>
+		<Button variant="secondary" onClick={ onClick } __next40pxDefaultSize>
 			{ __( 'Edit fulfillment', 'woocommerce' ) }
 		</Button>
 	);

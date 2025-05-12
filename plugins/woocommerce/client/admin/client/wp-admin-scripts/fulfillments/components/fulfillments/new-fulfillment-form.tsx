@@ -12,8 +12,8 @@ import { LineItem, Order } from '../../data/types';
 import ShipmentForm from '../shipment-form';
 import CustomerNotificationBox from '../customer-notification-form';
 import { FulfillmentProvider } from '../../context/fulfillment-context';
-import SaveAsDraftButton from '../buttons/save-draft-button';
-import FulfillItemsButton from '../buttons/fulfill-items-button';
+import SaveAsDraftButton from '../action-buttons/save-draft-button';
+import FulfillItemsButton from '../action-buttons/fulfill-items-button';
 import {
 	ItemQuantity,
 	getItemsNotInAnyFulfillment,
@@ -24,8 +24,7 @@ import { useFulfillmentDrawerContext } from '../../context/drawer-context';
 import { ShipmentFormProvider } from '../../context/shipment-form-context';
 
 const NewFulfillmentForm: React.FC = () => {
-	const { order, fulfillments /*, openSection */ } =
-		useFulfillmentDrawerContext();
+	const { order, fulfillments, openSection } = useFulfillmentDrawerContext();
 	const remainingItems = getItemsNotInAnyFulfillment(
 		fulfillments,
 		order ?? ( { line_items: [] as LineItem[] } as Order )
@@ -33,7 +32,7 @@ const NewFulfillmentForm: React.FC = () => {
 	const [ selectedItems, setSelectedItems ] = useState< ItemQuantity[] >(
 		spreadItems( remainingItems )
 	);
-	const [ notifyCustomer, setNotifyCustomer ] = useState( false );
+	const [ notifyCustomer, setNotifyCustomer ] = useState( true );
 
 	if ( ! order ) {
 		return <LoadingPlaceholder />;
@@ -45,14 +44,15 @@ const NewFulfillmentForm: React.FC = () => {
 
 	return (
 		<div className="woocommerce-fulfillment-new-fulfillment-form">
-			<h3>
-				{ fulfillments.length === 0
-					? __( 'Order Items', 'woocommerce' )
-					: __( 'Pending Items', 'woocommerce' ) }
-			</h3>
-			{
-				/* openSection === 'order' && (*/
-				<>
+			<div className="woocommerce-fulfillment-new-fulfillment-form__header">
+				<h3>
+					{ fulfillments.length === 0
+						? __( 'Order Items', 'woocommerce' )
+						: __( 'Pending Items', 'woocommerce' ) }
+				</h3>
+			</div>
+			{ openSection && (
+				<div className="woocommerce-fulfillment-new-fulfillment-form__content">
 					<ItemSelector
 						items={ remainingItems }
 						setSelectedItems={ setSelectedItems }
@@ -77,9 +77,8 @@ const NewFulfillmentForm: React.FC = () => {
 							</div>
 						</FulfillmentProvider>
 					</ShipmentFormProvider>
-				</>
-				/*)*/
-			}
+				</div>
+			) }
 		</div>
 	);
 };

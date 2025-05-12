@@ -64,7 +64,7 @@ const internalActions = {
 			fulfillment,
 		};
 	},
-	deleteFulfillment( orderId: number, fulfillmentId: number ) {
+	deleteFulfillmentRecord( orderId: number, fulfillmentId: number ) {
 		return { type: actionTypes.DELETE_FULFILLMENT, orderId, fulfillmentId };
 	},
 };
@@ -80,10 +80,10 @@ const publicActions = {
 					path: `/wc/v3/orders/${ orderId }/fulfillments`,
 					method: 'POST',
 					data: fulfillment,
-				} ) ) as { id: number; fulfillment: Fulfillment };
+				} ) ) as { fulfillment: Fulfillment };
 				dispatch.setFulfillment(
 					orderId,
-					saved.id ?? 0,
+					saved.fulfillment.id ?? 0,
 					saved.fulfillment
 				);
 			} catch ( error: unknown ) {
@@ -108,10 +108,10 @@ const publicActions = {
 					path: `/wc/v3/orders/${ orderId }/fulfillments/${ fulfillment.id }`,
 					method: 'PUT',
 					data: fulfillment,
-				} ) ) as { id: number; fulfillment: Fulfillment };
+				} ) ) as { fulfillment: Fulfillment };
 				dispatch.setFulfillment(
 					orderId,
-					updated.id ?? 0,
+					updated.fulfillment.id ?? 0,
 					updated.fulfillment
 				);
 			} catch ( error: unknown ) {
@@ -127,7 +127,7 @@ const publicActions = {
 		};
 	},
 
-	deleteFulfillmentRemote( orderId: number, fulfillmentId: number ) {
+	deleteFulfillment( orderId: number, fulfillmentId: number ) {
 		return async ( { dispatch }: { dispatch: typeof actions } ) => {
 			dispatch.setLoading( orderId, true );
 			dispatch.setError( orderId, null );
@@ -136,7 +136,7 @@ const publicActions = {
 					path: `/wc/v3/orders/${ orderId }/fulfillments/${ fulfillmentId }`,
 					method: 'DELETE',
 				} );
-				dispatch.deleteFulfillment( orderId, fulfillmentId );
+				dispatch.deleteFulfillmentRecord( orderId, fulfillmentId );
 			} catch ( error: unknown ) {
 				dispatch.setError(
 					orderId,

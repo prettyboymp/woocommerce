@@ -6,11 +6,12 @@ import React from 'react';
 /**
  * Internal dependencies
  */
-import NewFulfillmentForm from '../fulfillments/new-fulfillment-form';
+import NewFulfillmentForm from '../../fulfillments/new-fulfillment-form';
 import { ErrorBoundary } from '~/error-boundary';
-import FulfillmentsList from '../fulfillments/fulfillments-list';
+import FulfillmentsList from '../../fulfillments/fulfillments-list';
 import FulfillmentsDrawerHeader from './fulfillment-drawer-header';
-import { FulfillmentDrawerProvider } from '../../context/drawer-context';
+import { FulfillmentDrawerProvider } from '../../../context/drawer-context';
+import './fulfillment-drawer.scss';
 
 interface Props {
 	isOpen: boolean;

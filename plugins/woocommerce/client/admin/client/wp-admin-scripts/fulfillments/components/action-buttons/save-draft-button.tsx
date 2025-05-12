@@ -11,20 +11,24 @@ import { useDispatch } from '@wordpress/data';
 import { useFulfillmentContext } from '../../context/fulfillment-context';
 import { store as FulfillmentStore } from '../../data/store';
 
-export default function UpdateButton() {
+export default function SaveAsDraftButton() {
 	const { orderId, fulfillment } = useFulfillmentContext();
-	const { updateFulfillment } = useDispatch( FulfillmentStore );
+	const { saveFulfillment } = useDispatch( FulfillmentStore );
 
-	const handleUpdateFulfillment = () => {
+	const handleFulfillItems = () => {
 		if ( ! fulfillment ) {
 			return;
 		}
-		updateFulfillment( orderId, fulfillment );
+		saveFulfillment( orderId, fulfillment );
 	};
 
 	return (
-		<Button variant="primary" onClick={ handleUpdateFulfillment }>
-			{ __( 'Update', 'woocommerce' ) }
+		<Button
+			variant="secondary"
+			onClick={ handleFulfillItems }
+			__next40pxDefaultSize
+		>
+			{ __( 'Save as draft', 'woocommerce' ) }
 		</Button>
 	);
 }

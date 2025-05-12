@@ -124,83 +124,83 @@ export default function ItemSelector( {
 	}, [ setSelectedItems, itemsBuffer ] );
 
 	return (
-		<>
-			<div className="woocommerce-fulfillment-item-bulk-select">
-				{ editMode && (
-					<CheckboxControl
-						onChange={ () => {
-							if ( selectedItemsCount === itemsCount ) {
-								clearSelectedItems();
-							} else {
-								selectAllItems();
+		<ul className="woocommerce-fulfillment-item-list">
+			<li>
+				<div className="woocommerce-fulfillment-item-bulk-select">
+					{ editMode && (
+						<CheckboxControl
+							onChange={ () => {
+								if ( selectedItemsCount === itemsCount ) {
+									clearSelectedItems();
+								} else {
+									selectAllItems();
+								}
+							} }
+							checked={ selectedItemsCount === itemsCount }
+							indeterminate={
+								selectedItemsCount > 0 &&
+								selectedItemsCount < itemsCount
 							}
-						} }
-						checked={ selectedItemsCount === itemsCount }
-						indeterminate={
-							selectedItemsCount > 0 &&
-							selectedItemsCount < itemsCount
-						}
-						__nextHasNoMarginBottom
-					/>
-				) }
-				{ selectedItemsCount > 0 && (
-					<div className="woocommerce-fulfillment-item-bulk-select__label">
-						{ sprintf(
-							/* translators: %s: number of selected items */
-							_n(
-								'%s selected',
-								'%s selected',
-								selectedItemsCount,
-								'woocommerce'
-							),
-							selectedItemsCount
-						) }
-					</div>
-				) }
-				{ editMode && itemsCount > selectedItemsCount && (
-					<Link
-						href="#"
-						className="woocommerce-fulfillment-item-bulk-select__link"
-						onClick={ ( event ) => {
-							event.preventDefault();
-							selectAllItems();
-						} }
-					>
-						{ sprintf(
-							/* translators: %s: number of items in the order */
-							__( 'Select all (%s)', 'woocommerce' ),
-							itemsCount
-						) }
-					</Link>
-				) }
-				{ editMode && selectedItemsCount > 0 && (
-					<Link
-						href="#"
-						className="woocommerce-fulfillment-item-bulk-select__link"
-						onClick={ ( event ) => {
-							event.preventDefault();
-							clearSelectedItems();
-						} }
-					>
-						{ __( 'Clear selection', 'woocommerce' ) }
-					</Link>
-				) }
-			</div>
-			<ul className="woocommerce-fulfillment-item-list">
-				{ items.map( ( item: ItemQuantity ) => (
-					<li key={ item.item_id }>
-						<FulfillmentLineItem
-							item={ item.item }
-							quantity={ item.qty }
-							editMode={ editMode }
-							currency={ currency }
-							toggleItem={ handleToggleItem }
-							isChecked={ isChecked }
-							isIndeterminate={ isIndeterminate }
+							__nextHasNoMarginBottom
 						/>
-					</li>
-				) ) }
-			</ul>
-		</>
+					) }
+					{ selectedItemsCount > 0 && (
+						<div className="woocommerce-fulfillment-item-bulk-select__label">
+							{ sprintf(
+								/* translators: %s: number of selected items */
+								_n(
+									'%s selected',
+									'%s selected',
+									selectedItemsCount,
+									'woocommerce'
+								),
+								selectedItemsCount
+							) }
+						</div>
+					) }
+					{ editMode && itemsCount > selectedItemsCount && (
+						<Link
+							href="#"
+							className="woocommerce-fulfillment-item-bulk-select__link"
+							onClick={ ( event ) => {
+								event.preventDefault();
+								selectAllItems();
+							} }
+						>
+							{ sprintf(
+								/* translators: %s: number of items in the order */
+								__( 'Select all (%s)', 'woocommerce' ),
+								itemsCount
+							) }
+						</Link>
+					) }
+					{ editMode && selectedItemsCount > 0 && (
+						<Link
+							href="#"
+							className="woocommerce-fulfillment-item-bulk-select__link"
+							onClick={ ( event ) => {
+								event.preventDefault();
+								clearSelectedItems();
+							} }
+						>
+							{ __( 'Clear selection', 'woocommerce' ) }
+						</Link>
+					) }
+				</div>
+			</li>
+			{ items.map( ( item: ItemQuantity ) => (
+				<li key={ item.item_id }>
+					<FulfillmentLineItem
+						item={ item.item }
+						quantity={ item.qty }
+						editMode={ editMode }
+						currency={ currency }
+						toggleItem={ handleToggleItem }
+						isChecked={ isChecked }
+						isIndeterminate={ isIndeterminate }
+					/>
+				</li>
+			) ) }
+		</ul>
 	);
 }
