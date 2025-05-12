@@ -8,6 +8,7 @@ declare( strict_types=1 );
 namespace Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders;
 
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AbstractInterfaceServiceProvider;
+use Automattic\WooCommerce\Internal\Fulfillments\FulfillmentsRenderer;
 use Automattic\WooCommerce\Internal\Fulfillments\OrderFulfillmentsRestController;
 
 /**
@@ -23,6 +24,7 @@ class OrderFulfillmentsServiceProvider extends AbstractInterfaceServiceProvider 
 	 * @var array
 	 */
 	protected $provides = array(
+		FulfillmentsRenderer::class,
 		OrderFulfillmentsRestController::class,
 	);
 
@@ -30,6 +32,7 @@ class OrderFulfillmentsServiceProvider extends AbstractInterfaceServiceProvider 
 	 * Register the classes.
 	 */
 	public function register() {
+		$this->share( FulfillmentsRenderer::class );
 		$this->share_with_implements_tags( OrderFulfillmentsRestController::class );
 	}
 }
