@@ -44,3 +44,4 @@
 		}
 	},
 	"usesContext": [ "postId", "postType" ]
+}
