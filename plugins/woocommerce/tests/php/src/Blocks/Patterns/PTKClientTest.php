@@ -176,7 +176,13 @@ class PTKClientTest extends \WP_UnitTestCase {
                             "title": "Review: A quote with scattered images",
                             "name": "review-a-quote-with-scattered-images",
                             "html": "<!-- /wp:spacer -->",
-                            "categories": null,
+                            "categories": {
+                                "testimonials": {
+                                    "slug": null,
+                                    "title": null,
+                                    "description": null
+                                }
+                            }
                         }
                     ]',
 					'response' => array(
