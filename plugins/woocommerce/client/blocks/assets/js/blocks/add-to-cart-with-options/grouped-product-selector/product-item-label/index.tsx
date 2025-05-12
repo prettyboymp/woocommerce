@@ -2,7 +2,7 @@
  * External dependencies
  */
 import { registerBlockType } from '@wordpress/blocks';
-import { Icon, heading } from '@wordpress/icons';
+import { heading } from '@wordpress/icons';
 import { useBlockProps } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
 import type { BlockConfiguration } from '@wordpress/blocks';
@@ -12,12 +12,11 @@ import type { BlockConfiguration } from '@wordpress/blocks';
  */
 import metadata from './block.json';
 import { shouldBlockifiedAddToCartWithOptionsBeRegistered } from '../../utils';
-import './style.scss';
 
 if ( shouldBlockifiedAddToCartWithOptionsBeRegistered ) {
 	registerBlockType( metadata.name, {
 		...metadata,
-		edit: () => {
+		edit: function Edit() {
 			const blockProps = useBlockProps();
 
 			return (
@@ -31,4 +30,4 @@ if ( shouldBlockifiedAddToCartWithOptionsBeRegistered ) {
 		icon: heading,
 		save: () => null,
 	} as unknown as BlockConfiguration );
-} 
+}
