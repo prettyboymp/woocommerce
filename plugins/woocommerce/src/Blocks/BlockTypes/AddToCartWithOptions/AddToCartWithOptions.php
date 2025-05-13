@@ -309,7 +309,16 @@ class AddToCartWithOptions extends AbstractBlock {
 			if ( true || $hooks_before || $hooks_after || 'yes' === $cart_redirect_after_add ) {
 				// If an extension is hoooking into the form, we fall back to a regular HTML form.
 				$form_attributes = array(
-					'action'  => esc_url( apply_filters( 'woocommerce_add_to_cart_form_action', $product->get_permalink() ) ),
+					'action'  => esc_url(
+						/**
+						 * Filter the add to cart form action.
+						 *
+						 * @since 10.0.0
+						 * @param string $permalink The product permalink.
+						 * @return string The add to cart form action.
+						 */
+						apply_filters( 'woocommerce_add_to_cart_form_action', $product->get_permalink() )
+					),
 					'method'  => 'post',
 					'enctype' => 'multipart/form-data',
 				);
