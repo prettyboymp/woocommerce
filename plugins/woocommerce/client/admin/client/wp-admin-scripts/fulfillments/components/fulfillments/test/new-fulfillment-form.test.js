@@ -12,13 +12,6 @@ import { useFulfillmentDrawerContext } from '../../../context/drawer-context';
 jest.mock( '../../../context/drawer-context', () => ( {
 	useFulfillmentDrawerContext: jest.fn(),
 } ) );
-
-jest.mock( '../../shipment-form', () => () => (
-	<div data-testid="shipment-form" />
-) );
-jest.mock( '../../customer-notification-form', () => () => (
-	<div data-testid="customer-notification-box" />
-) );
 jest.mock( '../../action-buttons/save-draft-button', () => () => (
 	<button data-testid="save-draft-button">Save as Draft</button>
 ) );
@@ -77,10 +70,6 @@ describe( 'NewFulfillmentForm', () => {
 
 		expect( screen.getByText( 'Order Items' ) ).toBeInTheDocument();
 		expect( screen.getByTestId( 'item-selector' ) ).toBeInTheDocument();
-		expect( screen.getByTestId( 'shipment-form' ) ).toBeInTheDocument();
-		expect(
-			screen.getByTestId( 'customer-notification-box' )
-		).toBeInTheDocument();
 		expect( screen.getByTestId( 'save-draft-button' ) ).toBeInTheDocument();
 		expect(
 			screen.getByTestId( 'fulfill-items-button' )

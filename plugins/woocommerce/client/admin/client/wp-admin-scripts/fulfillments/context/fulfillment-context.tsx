@@ -7,7 +7,6 @@ import React, { createContext, useEffect } from 'react';
  * Internal dependencies
  */
 import { Fulfillment } from '../data/types';
-import { useShipmentFormContext } from './shipment-form-context';
 import { ItemQuantity } from '../utils/order-utils';
 
 const WC_ORDER_CLASS = 'WC_Order';
@@ -42,18 +41,14 @@ export const FulfillmentProvider = ( {
 	fulfillment,
 	children,
 	selectedItems,
-	notifyCustomer,
 }: {
 	orderId: number;
 	fulfillment?: Fulfillment | null;
 	selectedItems: Array< ItemQuantity >;
-	notifyCustomer: boolean;
 	children: React.ReactNode;
 } ) => {
 	const [ _fulfillment, _setFulfillment ] =
 		React.useState< Fulfillment | null >( fulfillment ?? null );
-	const { trackingNumber, trackingUrl, shipmentProvider } =
-		useShipmentFormContext();
 
 	useEffect( () => {
 		if ( ! orderId || ! selectedItems.length ) {
@@ -62,27 +57,12 @@ export const FulfillmentProvider = ( {
 		}
 		_setFulfillment( {
 			id: fulfillment?.id ?? undefined,
-			fulfillment_id: fulfillment?.fulfillment_id ?? undefined,
+			fulfillment_id: fulfillment?.id ?? undefined,
 			entity_id: String( orderId ),
 			entity_type: WC_ORDER_CLASS,
 			is_fulfilled: false,
 			status: 'unfulfilled',
 			meta_data: [
-				{
-					id: 0,
-					key: '_tracking_number',
-					value: trackingNumber,
-				},
-				{
-					id: 0,
-					key: '_tracking_url',
-					value: trackingUrl,
-				},
-				{
-					id: 0,
-					key: '_shipment_provider',
-					value: shipmentProvider,
-				},
 				{
 					id: 0,
 					key: '_items',
@@ -93,21 +73,9 @@ export const FulfillmentProvider = ( {
 						};
 					} ),
 				},
-				{
-					id: 0,
-					key: '_notify',
-					value: notifyCustomer,
-				},
 			],
 		} as Fulfillment );
-	}, [
-		orderId,
-		trackingNumber,
-		trackingUrl,
-		shipmentProvider,
-		selectedItems,
-		notifyCustomer,
-	] );
+	}, [ orderId, selectedItems, fulfillment?.id ] );
 
 	return (
 		<FulfillmentContextValue.Provider

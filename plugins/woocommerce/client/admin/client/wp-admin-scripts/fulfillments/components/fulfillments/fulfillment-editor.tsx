@@ -15,18 +15,13 @@ import {
 	getItemsFromFulfillment,
 	getItemsNotInAnyFulfillment,
 } from '../../utils/order-utils';
-import ShipmentForm from '../shipment-form';
-import CustomerNotificationBox from '../customer-notification-form';
 import { FulfillmentProvider } from '../../context/fulfillment-context';
 import ItemSelector from './item-selector';
-import MetadataViewer from '../metadata-viewer';
 import EditFulfillmentButton from '../action-buttons/edit-fulfillment-button';
 import FulfillItemsButton from '../action-buttons/fulfill-items-button';
 import CancelLink from '../action-buttons/cancel-link';
 import RemoveButton from '../action-buttons/remove-button';
 import UpdateButton from '../action-buttons/update-button';
-import ShipmentViewer from '../shipment-form/shipment-viewer';
-import { ShipmentFormProvider } from '../../context/shipment-form-context';
 import FulfillmentStatusBadge from './fulfillment-status-badge';
 
 interface FulfillmentEditorProps {
@@ -48,7 +43,6 @@ export default function FulfillmentEditor( {
 	order,
 }: FulfillmentEditorProps ) {
 	const [ editMode, setEditMode ] = useState( false );
-	const [ notifyCustomer, setNotifyCustomer ] = useState( true );
 	const [ selectedItems, setSelectedItems ] = useState< ItemQuantity[] >(
 		[]
 	);
@@ -122,56 +116,37 @@ export default function FulfillmentEditor( {
 						currency={ order.currency }
 						editMode={ editMode }
 					/>
-					<ShipmentFormProvider fulfillment={ fulfillment }>
-						{ editMode && (
-							<>
-								<ShipmentForm />
-							</>
-						) }
-						{ ! editMode && (
-							<>
-								<ShipmentViewer />
-								<MetadataViewer fulfillment={ fulfillment } />
-							</>
-						) }
-						<CustomerNotificationBox
-							value={ notifyCustomer }
-							setValue={ setNotifyCustomer }
-						/>
-						<FulfillmentProvider
-							fulfillment={ fulfillment }
-							orderId={ order.id }
-							selectedItems={ selectedItems }
-							notifyCustomer={ false }
-						>
-							<div className="woocommerce-fulfillment-item-actions">
-								{ ! editMode ? (
-									<>
-										<EditFulfillmentButton
-											onClick={ () => {
-												setEditMode( true );
-												setFormItems( selectableItems );
-											} }
-										/>
-										<FulfillItemsButton />
-									</>
-								) : (
-									<>
-										<CancelLink
-											onClick={ () => {
-												setFormItems(
-													itemsInFulfillment
-												);
-												setEditMode( false );
-											} }
-										/>
-										<RemoveButton />
-										<UpdateButton />
-									</>
-								) }
-							</div>
-						</FulfillmentProvider>
-					</ShipmentFormProvider>
+
+					<FulfillmentProvider
+						fulfillment={ fulfillment }
+						orderId={ order.id }
+						selectedItems={ selectedItems }
+					>
+						<div className="woocommerce-fulfillment-item-actions">
+							{ ! editMode ? (
+								<>
+									<EditFulfillmentButton
+										onClick={ () => {
+											setEditMode( true );
+											setFormItems( selectableItems );
+										} }
+									/>
+									<FulfillItemsButton />
+								</>
+							) : (
+								<>
+									<CancelLink
+										onClick={ () => {
+											setFormItems( itemsInFulfillment );
+											setEditMode( false );
+										} }
+									/>
+									<RemoveButton />
+									<UpdateButton />
+								</>
+							) }
+						</div>
+					</FulfillmentProvider>
 				</div>
 			) }
 		</div>

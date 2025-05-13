@@ -8,8 +8,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { LineItem, Order } from '../../data/types';
-import ShipmentForm from '../shipment-form';
-import CustomerNotificationBox from '../customer-notification-form';
 import { FulfillmentProvider } from '../../context/fulfillment-context';
 import SaveAsDraftButton from '../action-buttons/save-draft-button';
 import FulfillItemsButton from '../action-buttons/fulfill-items-button';
@@ -20,7 +18,6 @@ import {
 } from '../../utils/order-utils';
 import ItemSelector from './item-selector';
 import { useFulfillmentDrawerContext } from '../../context/drawer-context';
-import { ShipmentFormProvider } from '../../context/shipment-form-context';
 
 const NewFulfillmentForm: React.FC = () => {
 	const { order, fulfillments, openSection } = useFulfillmentDrawerContext();
@@ -31,7 +28,6 @@ const NewFulfillmentForm: React.FC = () => {
 	const [ selectedItems, setSelectedItems ] = useState< ItemQuantity[] >(
 		spreadItems( remainingItems )
 	);
-	const [ notifyCustomer, setNotifyCustomer ] = useState( true );
 
 	if ( ! order ) {
 		return null;
@@ -58,24 +54,16 @@ const NewFulfillmentForm: React.FC = () => {
 						currency={ order.currency }
 						editMode={ true }
 					/>
-					<ShipmentFormProvider>
-						<ShipmentForm />
-						<CustomerNotificationBox
-							value={ notifyCustomer }
-							setValue={ setNotifyCustomer }
-						/>
-						<FulfillmentProvider
-							orderId={ order.id }
-							notifyCustomer={ notifyCustomer }
-							selectedItems={ selectedItems }
-							fulfillment={ null }
-						>
-							<div className="woocommerce-fulfillment-item-actions">
-								<SaveAsDraftButton />
-								<FulfillItemsButton />
-							</div>
-						</FulfillmentProvider>
-					</ShipmentFormProvider>
+					<FulfillmentProvider
+						orderId={ order.id }
+						selectedItems={ selectedItems }
+						fulfillment={ null }
+					>
+						<div className="woocommerce-fulfillment-item-actions">
+							<SaveAsDraftButton />
+							<FulfillItemsButton />
+						</div>
+					</FulfillmentProvider>
 				</div>
 			) }
 		</div>

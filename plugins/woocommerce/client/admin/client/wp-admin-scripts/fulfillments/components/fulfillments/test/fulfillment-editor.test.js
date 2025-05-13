@@ -16,19 +16,6 @@ jest.mock( '@wordpress/components', () => ( {
 	),
 	Icon: ( { icon } ) => <span data-testid="icon">{ icon }</span>,
 } ) );
-
-jest.mock( '../../shipment-form', () => () => (
-	<div data-testid="shipment-form" />
-) );
-jest.mock( '../../shipment-form/shipment-viewer', () => () => (
-	<div data-testid="shipment-viewer" />
-) );
-jest.mock( '../../metadata-viewer', () => () => (
-	<div data-testid="metadata-viewer" />
-) );
-jest.mock( '../../customer-notification-form', () => () => (
-	<div data-testid="customer-notification-box" />
-) );
 jest.mock(
 	'../../action-buttons/edit-fulfillment-button',
 	() =>
@@ -161,17 +148,5 @@ describe( 'FulfillmentEditor', () => {
 			)
 		);
 		expect( mockProps.onCollapse ).toHaveBeenCalled();
-	} );
-
-	it( 'renders shipment form in edit mode', () => {
-		render( <FulfillmentEditor { ...mockProps } expanded={ true } /> );
-		fireEvent.click( screen.getByTestId( 'edit-fulfillment-button' ) );
-		expect( screen.getByTestId( 'shipment-form' ) ).toBeInTheDocument();
-	} );
-
-	it( 'renders shipment viewer and metadata viewer in view mode', () => {
-		render( <FulfillmentEditor { ...mockProps } expanded={ true } /> );
-		expect( screen.getByTestId( 'shipment-viewer' ) ).toBeInTheDocument();
-		expect( screen.getByTestId( 'metadata-viewer' ) ).toBeInTheDocument();
 	} );
 } );
