@@ -72,18 +72,15 @@ class ProductImage extends AbstractBlock {
 			return '';
 		}
 
-		$font_size = StyleAttributesUtils::get_font_size_class_and_style( $attributes );
+		$classes_and_styles = StyleAttributesUtils::get_classes_and_styles_by_attributes( $attributes );
 
 		$on_sale_badge = sprintf(
-			'
-		<div class="wc-block-components-product-sale-badge %s wc-block-grid__product-onsale %s" style="%s">
-			<span aria-hidden="true">%s</span>
-			<span class="screen-reader-text">%s</span>
-		</div>
-	',
-			isset( $attributes['saleBadgeAlign'] ) ? 'wc-block-components-product-sale-badge--align-' . esc_attr( $attributes['saleBadgeAlign'] ) : '',
-			isset( $font_size['class'] ) ? esc_attr( $font_size['class'] ) : '',
-			isset( $font_size['style'] ) ? esc_attr( $font_size['style'] ) : '',
+			'<div class="wc-block-components-product-sale-badge wc-block-grid__product-onsale %s" style="%s">
+				<span aria-hidden="true">%s</span>
+				<span class="screen-reader-text">%s</span>
+			</div>',
+			isset( $classes_and_styles['class'] ) ? esc_attr( $classes_and_styles['class'] ) : '',
+			isset( $classes_and_styles['style'] ) ? esc_attr( $classes_and_styles['style'] ) : '',
 			esc_html__( 'Sale', 'woocommerce' ),
 			esc_html__( 'Product on sale', 'woocommerce' )
 		);
@@ -108,21 +105,8 @@ class ProductImage extends AbstractBlock {
 		$wrapper_style  = ! $is_link ? 'pointer-events: none; cursor: default;' : '';
 		$directive      = $is_link ? 'data-wp-on--click="woocommerce/product-collection::actions.viewProduct"' : '';
 
-		$inner_container_classes = 'wc-block-components-product-image__inner-container';
-
-		if ( ! empty( $attributes['layout']['type'] ) ) {
-			$inner_container_classes .= ' is-layout-' . sanitize_key( $attributes['layout']['type'] );
-		}
-		if ( ! empty( $attributes['layout']['justifyContent'] ) ) {
-			$inner_container_classes .= ' is-content-justification-' . sanitize_key( $attributes['layout']['justifyContent'] );
-		}
-		if ( ! empty( $attributes['layout']['orientation'] ) ) {
-			$inner_container_classes .= ' is-' . sanitize_key( $attributes['layout']['orientation'] );
-		}
-
 		$inner_blocks_container = sprintf(
-			'<div class="%s">%s</div>',
-			esc_attr( $inner_container_classes ),
+			'<div class="wc-block-components-product-image__inner-container">%s</div>',
 			$inner_blocks_content
 		);
 
