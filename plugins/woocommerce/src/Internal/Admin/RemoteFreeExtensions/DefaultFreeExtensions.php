@@ -323,7 +323,7 @@ class DefaultFreeExtensions {
 						),
 						'operation' => 'in',
 					),
-					DefaultPaymentGateways::get_rules_for_cbd( false ),
+					self::get_rules_for_cbd( false ),
 				),
 				'is_built_by_wc' => true,
 				'min_wp_version' => '5.9',
@@ -666,6 +666,36 @@ class DefaultFreeExtensions {
 				'DK',
 				'SE',
 			),
+		);
+	}
+
+	/**
+	 * Get default rules for CBD based on given argument.
+	 *
+	 * @param bool $should_have Whether or not the store should have CBD as an industry (true) or not (false).
+	 * @return object Rules to match.
+	 */
+	private static function get_rules_for_cbd( $should_have ) {
+		return (object) array(
+			'type'         => 'option',
+			'transformers' => array(
+				(object) array(
+					'use'       => 'dot_notation',
+					'arguments' => (object) array(
+						'path' => 'industry',
+					),
+				),
+				(object) array(
+					'use'       => 'array_column',
+					'arguments' => (object) array(
+						'key' => 'slug',
+					),
+				),
+			),
+			'option_name'  => 'woocommerce_onboarding_profile',
+			'operation'    => $should_have ? 'contains' : '!contains',
+			'value'        => 'cbd-other-hemp-derived-products',
+			'default'      => array(),
 		);
 	}
 }
