@@ -8,12 +8,15 @@ import type { CartVariationItem } from '@woocommerce/types';
 
 export type AvailableVariation = {
 	attributes: Record< string, string >;
+	variation_id: number;
 };
 
 export type Context = {
 	productId: number;
+	productType: string;
+	selectedAttributes: CartVariationItem[];
+	variationId: number | null;
 	groupedProductIds: number[];
-	variation: CartVariationItem[];
 	availableVariations: AvailableVariation[];
 	quantity: number;
 	tempQuantity: number;
@@ -22,6 +25,7 @@ export type Context = {
 interface GroupedCartItem {
 	id: number;
 	quantity: number;
+	variation: CartVariationItem[];
 }
 
 // Stores are locked to prevent 3PD usage until the API is stable.
@@ -72,6 +76,46 @@ const getInputData = ( event: HTMLElementEvent< HTMLButtonElement > ) => {
 	};
 };
 
+const getMatchedVariation = (
+	availableVariations: AvailableVariation[],
+	selectedAttributes: CartVariationItem[]
+) => {
+	if (
+		! Array.isArray( availableVariations ) ||
+		! Array.isArray( selectedAttributes ) ||
+		availableVariations.length === 0 ||
+		selectedAttributes.length === 0
+	) {
+		return null;
+	}
+	return availableVariations.find( ( availableVariation ) => {
+		return Object.entries( availableVariation.attributes ).every(
+			( [ attributeName, attributeValue ] ) => {
+				const attributeMatched = selectedAttributes.some(
+					( variationAttribute ) => {
+						const formattedVariationAttribute =
+							'attribute_' +
+							variationAttribute.attribute.toLowerCase();
+
+						const isSameAttribute =
+							formattedVariationAttribute === attributeName;
+						if ( ! isSameAttribute ) {
+							return false;
+						}
+
+						return (
+							variationAttribute.value === attributeValue ||
+							( variationAttribute.value &&
+								attributeValue === '' )
+						);
+					}
+				);
+
+				return attributeMatched;
+			}
+		);
+	} );
+};
 const dispatchChangeEvent = ( inputElement: HTMLInputElement ) => {
 	const event = new Event( 'change' );
 	inputElement.dispatchEvent( event );
@@ -80,35 +124,51 @@ const dispatchChangeEvent = ( inputElement: HTMLInputElement ) => {
 const addToCartWithOptionsStore = store(
 	'woocommerce/add-to-cart-with-options',
 	{
+		state: {
+			get isFormValid() {
+				const { productType, availableVariations, selectedAttributes } =
+					getContext< Context >();
+				if ( productType !== 'variable' ) {
+					return true;
+				}
+				const matchedVariation = getMatchedVariation(
+					availableVariations,
+					selectedAttributes
+				);
+				return !! matchedVariation;
+			},
+		},
 		actions: {
 			setQuantity( value: number ) {
 				const context = getContext< Context >();
 				context.quantity = value;
 			},
 			setAttribute( attribute: string, value: string ) {
-				const context = getContext< Context >();
-				const index = context.variation.findIndex(
-					( variation ) => variation.attribute === attribute
+				const { selectedAttributes } = getContext< Context >();
+				const index = selectedAttributes.findIndex(
+					( selectedAttribute ) =>
+						selectedAttribute.attribute === attribute
 				);
 				if ( index >= 0 ) {
-					context.variation[ index ] = {
+					selectedAttributes[ index ] = {
 						attribute,
 						value,
 					};
 				} else {
-					context.variation.push( {
+					selectedAttributes.push( {
 						attribute,
 						value,
 					} );
 				}
 			},
 			removeAttribute( attribute: string ) {
-				const context = getContext< Context >();
-				const index = context.variation.findIndex(
-					( variation ) => variation.attribute === attribute
+				const { selectedAttributes } = getContext< Context >();
+				const index = selectedAttributes.findIndex(
+					( selectedAttribute ) =>
+						selectedAttribute.attribute === attribute
 				);
 				if ( index >= 0 ) {
-					context.variation.splice( index, 1 );
+					selectedAttributes.splice( index, 1 );
 				}
 			},
 			increaseQuantity: (
@@ -152,8 +212,12 @@ const addToCartWithOptionsStore = store(
 				// woocommerce store is public.
 				yield import( '@woocommerce/stores/woocommerce/cart' );
 
-				const { productId, quantity, variation, groupedProductIds } =
-					getContext< Context >();
+				const {
+					productId,
+					quantity,
+					selectedAttributes,
+					groupedProductIds,
+				} = getContext< Context >();
 
 				if ( groupedProductIds.length > 0 ) {
 					// Handle grouped products
@@ -175,12 +239,12 @@ const addToCartWithOptionsStore = store(
 							addedItems.push( {
 								id: childProductId,
 								quantity: childQuantity,
+								variation: selectedAttributes,
 							} );
 						}
 					} );
 
 					if ( addedItems.length === 0 ) {
-						// Todo: Show error if no items selected
 						return;
 					}
 
@@ -192,13 +256,18 @@ const addToCartWithOptionsStore = store(
 
 					// Add each child product to cart
 					for ( const item of addedItems ) {
+						const product = wooState.cart?.items.find(
+							( cartItem ) => cartItem.id === item.id
+						);
+						const currentQuantity = product?.quantity || 0;
+
 						yield actions.addCartItem( {
 							id: item.id,
-							quantity: item.quantity,
+							quantity: currentQuantity + item.quantity,
+							variation: item.variation,
 						} );
 					}
 				} else {
-					// Handle all other product types
 					const product = wooState.cart?.items.find(
 						( item ) => item.id === productId
 					);
@@ -213,7 +282,7 @@ const addToCartWithOptionsStore = store(
 					yield actions.addCartItem( {
 						id: productId,
 						quantity: currentQuantity + quantity,
-						variation,
+						variation: selectedAttributes,
 					} );
 				}
 			},
