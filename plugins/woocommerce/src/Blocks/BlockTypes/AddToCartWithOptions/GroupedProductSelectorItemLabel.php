@@ -6,6 +6,7 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes\AddToCartWithOptions;
 use Automattic\WooCommerce\Blocks\BlockTypes\AbstractBlock;
 use Automattic\WooCommerce\Blocks\BlockTypes\EnableBlockJsonAssetsTrait;
 use Automattic\WooCommerce\Blocks\Utils\StyleAttributesUtils;
+use Automattic\WooCommerce\Blocks\BlockTypes\AddToCartWithOptions\Utils as AddToCartWithOptionsUtils;
 use WP_Block;
 
 /**
@@ -39,19 +40,6 @@ class GroupedProductSelectorItemLabel extends AbstractBlock {
 		}
 
 		$classes_and_styles = StyleAttributesUtils::get_classes_and_styles_by_attributes( $attributes );
-
-		// Check if we should render as a label based on the same logic as the CTA block
-		$should_render_as_label = false;
-		if ( isset( $block->context['postId'] ) ) {
-			if ( $product ) {
-				// If product is purchasable, doesn't have options, and is in stock
-				// AND either is sold individually (checkbox) or not (quantity selector)
-				$should_render_as_label = $product->is_purchasable() 
-					&& ! $product->has_options() 
-					&& $product->is_in_stock();
-			}
-		}
-
 		$wrapper_attributes = get_block_wrapper_attributes(
 			array(
 				'class' => $classes_and_styles['classes'],
@@ -61,19 +49,35 @@ class GroupedProductSelectorItemLabel extends AbstractBlock {
 
 		$title = $product->get_title();
 
-		if ( $should_render_as_label ) {
-			return sprintf(
-				'<label %1$s for="grouped-product-%2$s">%3$s</label>',
-				$wrapper_attributes,
-				esc_attr( $product->get_id() ),
-				esc_html( $title )
-			);
+		if ( isset( $block->context['postId'] ) && $product ) {
+			//Button
+			if ( ! $product->is_purchasable() || $product->has_options() || ! $product->is_in_stock() ) {
+				return sprintf(
+					'<p %1$s>%2$s</p>',
+					$wrapper_attributes,
+					esc_html( $title )
+				);
+			//Checkbox
+			} elseif ( $product->is_sold_individually() ) {
+				return sprintf(
+					'<label %1$s for="%2$s">%3$s</label>',
+					$wrapper_attributes,
+					esc_attr( 'quantity-' . $product->get_id() ),
+					esc_html( $title )
+				);
+			//Quantity Selector
+			} else {
+				$input_id = AddToCartWithOptionsUtils::get_quantity_input_id( $product );
+
+				return sprintf(
+					'<label %1$s for="%2$s">%3$s</label>',
+					$wrapper_attributes,
+					esc_attr( $input_id ),
+					esc_html( $title )
+				);
+			}
 		}
 
-		return sprintf(
-			'<p %1$s>%2$s</p>',
-			$wrapper_attributes,
-			esc_html( $title )
-		);
+		return '';
 	}
 }

@@ -154,4 +154,14 @@ class Utils {
 		// Render with dynamic set to false to prevent calling render_callback.
 		return $new_block->render( array( 'dynamic' => false ) );
 	}
+
+	/**
+	 * Generates a consistent ID for a product's quantity input.
+	 *
+	 * @param \WC_Product $product The product object.
+	 * @return string The generated ID.
+	 */
+	public static function get_quantity_input_id( $product ) {
+		return 'quantity_' . md5( $product->get_id() . '_' . $product->get_name() );
+	}
 }

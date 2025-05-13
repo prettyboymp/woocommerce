@@ -31,10 +31,11 @@ class GroupedProductSelectorItemCTA extends AbstractBlock {
 	 * @return string The HTML markup for the quantity selector.
 	 */
 	private function get_quantity_selector_markup( $product ) {
+		$args = AddToCartWithOptionsUtils::get_quantity_input_args( $product );
+		$args['input_id'] = AddToCartWithOptionsUtils::get_quantity_input_id( $product );
+
 		ob_start();
-
-		woocommerce_quantity_input( AddToCartWithOptionsUtils::get_quantity_input_args( $product ) );
-
+		woocommerce_quantity_input( $args );
 		$quantity_html = ob_get_clean();
 
 		// Modify the quantity input to add stepper buttons.
