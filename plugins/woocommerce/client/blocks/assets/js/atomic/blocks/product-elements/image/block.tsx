@@ -14,7 +14,12 @@ import { withProductDataContext } from '@woocommerce/shared-hocs';
 import { useStoreEvents } from '@woocommerce/base-context/hooks';
 import type { HTMLAttributes } from 'react';
 import { decodeEntities } from '@wordpress/html-entities';
-import { isString, objectHasProp, isEmpty } from '@woocommerce/types';
+import {
+	isString,
+	objectHasProp,
+	isEmpty,
+	ProductResponseItem,
+} from '@woocommerce/types';
 
 /**
  * Internal dependencies
@@ -100,7 +105,9 @@ const Image = ( {
 };
 
 type Props = BlockAttributes &
-	HTMLAttributes< HTMLDivElement > & { style?: Record< string, unknown > };
+	HTMLAttributes< HTMLDivElement > & { style?: Record< string, unknown > } & {
+		product: ProductResponseItem;
+	};
 
 // props.product is not listed in the BlockAttributes explicitly,
 // but it is implicitly passed from the All Products block.

@@ -7,14 +7,14 @@ import { createBlock } from '@wordpress/blocks';
  * Internal dependencies
  */
 import metadata from './block.json';
-import { BlockAttributesV1 } from './types';
+import { BlockAttributes } from './types';
 import save from '../save';
 
 // In v2, we're migrating the `showSaleBadge` attribute to an inner block.
 const v1 = {
 	save,
 	attributes: metadata.attributes,
-	isEligible: ( { showSaleBadge }: BlockAttributesV1 ) => {
+	isEligible: ( { showSaleBadge }: BlockAttributes ) => {
 		// If the block is pristine, it doesn't have a showSaleBadge attribute
 		// but it is `true` by default.
 		const trueByDefault = showSaleBadge === undefined;
@@ -25,7 +25,7 @@ const v1 = {
 
 		return trueByDefault || trueAfterEdit;
 	},
-	migrate: ( attributes: BlockAttributesV1 ) => {
+	migrate: ( attributes: BlockAttributes ) => {
 		const { showSaleBadge, saleBadgeAlign } = attributes;
 
 		// If showSaleBadge is false, it means that the sale badge was explicitly set to false.
