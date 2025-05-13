@@ -33,43 +33,29 @@ class GroupedProductSelectorItemLabel extends AbstractBlock {
 	 * @return string Rendered block output.
 	 */
 	protected function render( $attributes, $content, $block ): string {
-		global $product;
+		$product = AddToCartWithOptionsUtils::get_product_from_context( $block, $GLOBALS['product'] );
+		$markup  = '';
 
-		if ( ! isset( $block->context['postId'] ) ) {
-			return '';
-		}
+		if ( $product ) {
+			$wrapper_attributes = get_block_wrapper_attributes();
+			$title             = $product->get_name();
 
-		$classes_and_styles = StyleAttributesUtils::get_classes_and_styles_by_attributes( $attributes );
-		$wrapper_attributes = get_block_wrapper_attributes(
-			array(
-				'class' => $classes_and_styles['classes'],
-				'style' => $classes_and_styles['styles'],
-			)
-		);
-
-		$title = $product->get_title();
-
-		if ( isset( $block->context['postId'] ) && $product ) {
-			//Button
 			if ( ! $product->is_purchasable() || $product->has_options() || ! $product->is_in_stock() ) {
-				return sprintf(
+				$markup = sprintf(
 					'<div %1$s>%2$s</div>',
 					$wrapper_attributes,
 					esc_html( $title )
 				);
-			//Checkbox
 			} elseif ( $product->is_sold_individually() ) {
-				return sprintf(
+				$markup = sprintf(
 					'<label %1$s for="%2$s">%3$s</label>',
 					$wrapper_attributes,
 					esc_attr( 'quantity-' . $product->get_id() ),
 					esc_html( $title )
 				);
-			//Quantity Selector
 			} else {
 				$input_id = AddToCartWithOptionsUtils::get_quantity_input_id( $product );
-
-				return sprintf(
+				$markup = sprintf(
 					'<label %1$s for="%2$s">%3$s</label>',
 					$wrapper_attributes,
 					esc_attr( $input_id ),
@@ -78,6 +64,6 @@ class GroupedProductSelectorItemLabel extends AbstractBlock {
 			}
 		}
 
-		return '';
+		return $markup;
 	}
 }
