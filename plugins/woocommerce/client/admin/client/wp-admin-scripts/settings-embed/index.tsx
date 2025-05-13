@@ -78,7 +78,6 @@ const renderPaymentsSettings = () => {
 const registerSlotFills = () => {
 	possiblyRenderSettingsSlots();
 	registerTaxSettingsConflictErrorFill();
-	registerPaymentsSettingsBannerFill();
 
 	const features = window.wcAdminFeatures;
 	if ( features?.[ 'launch-your-store' ] === true ) {
