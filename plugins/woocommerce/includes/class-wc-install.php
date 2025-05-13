@@ -1199,6 +1199,9 @@ class WC_Install {
 			'wc-admin-deactivate-plugin',
 			'wc-admin-complete-store-details',
 			'wc-admin-choosing-a-theme',
+			'wc-admin-payments-more-info-needed',
+			'wc-admin-payments-remind-me-later',
+			'wc-admin-woocommerce-payments',
 		);
 
 		/**
