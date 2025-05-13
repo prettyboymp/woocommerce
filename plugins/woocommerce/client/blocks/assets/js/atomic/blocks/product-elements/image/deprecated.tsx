@@ -34,8 +34,8 @@ const v1 = {
 			return [ attributes ];
 		}
 		// Otherwise, it's either:
-		// - explicitly true or
-		// - undefined (which means the default true value should be used).
+		// - true explicitly or
+		// - undefined (implicit true by default).
 
 		return [
 			{
