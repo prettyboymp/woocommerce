@@ -1,7 +1,6 @@
 /**
  * External dependencies
  */
-import clsx from 'clsx';
 import { createBlock } from '@wordpress/blocks';
 
 /**
@@ -9,43 +8,34 @@ import { createBlock } from '@wordpress/blocks';
  */
 import metadata from './block.json';
 import { BlockAttributesV1 } from './types';
+import save from '../save';
+
+const mapAlignToJustifyContent = {
+	left: 'flex-start',
+	center: 'center',
+	right: 'flex-end',
+};
 
 // In v2, we removed the `showSaleBadge` attribute and converted it to an inner block.
 const v1 = {
 	attributes: {
 		...metadata.attributes,
-		showSaleBadge: {
-			type: 'boolean',
-			default: true,
-		},
-		saleBadgeAlign: {
-			type: 'string',
-			default: 'right',
-		},
 	},
-	save( { attributes }: { attributes: BlockAttributesV1 } ) {
-		if (
-			attributes.isDescendentOfQueryLoop ||
-			attributes.isDescendentOfSingleProductBlock
-		) {
-			return null;
-		}
-
-		return <div className={ clsx( 'is-loading', attributes.className ) } />;
-	},
+	save,
 	migrate: ( attributes: BlockAttributesV1 ) => {
-		const { showSaleBadge, saleBadgeAlign, ...rest } = attributes;
+		const { showSaleBadge, saleBadgeAlign } = attributes;
 		console.log( 'migration starts', attributes );
-		if ( ! showSaleBadge ) {
-			return [ rest ];
-		}
 
-		let justifyContent = 'flex-end';
-		if ( saleBadgeAlign === 'left' ) {
-			justifyContent = 'flex-start';
-		} else if ( saleBadgeAlign === 'center' ) {
-			justifyContent = 'center';
+		// If showSaleBadge is false, it means that the sale badge was explicitly set to false.
+		if ( showSaleBadge === false ) {
+			return [ attributes ];
 		}
+		// Otherwise, it's either:
+		// - explicitly true or
+		// - undefined (which means the default true value should be used).
+
+		const justifyContent =
+			mapAlignToJustifyContent[ saleBadgeAlign ] || 'flex-end';
 
 		const layoutProps = {
 			justifyContent,
@@ -53,7 +43,8 @@ const v1 = {
 		};
 
 		const newAttributes = {
-			...rest,
+			...attributes,
+			showSaleBadge: false,
 			layout: layoutProps,
 		};
 
