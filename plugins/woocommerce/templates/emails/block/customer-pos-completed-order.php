@@ -21,36 +21,6 @@ defined( 'ABSPATH' ) || exit;
 
 ?>
 
-<!-- wp:heading -->
-<h2 class="wp-block-heading"> <?php echo esc_html__( 'Good things are heading your way!', 'woocommerce' ); ?> </h2>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph -->
-<p>
-<?php
-	/* translators: %s: Customer first name */
-	printf( esc_html__( 'Hi %s,', 'woocommerce' ), '<!--[woocommerce/shopper-first-name]-->' );
-?>
-</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p> <?php echo esc_html__( 'We’ve successfully processed your order, and it’s on its way to you.', 'woocommerce' ); ?> </p>
-<!-- /wp:paragraph -->
-
-<!-- wp:paragraph -->
-<p> <?php echo esc_html__( 'Here’s a reminder of what you’ve ordered:', 'woocommerce' ); ?> </p>
-<!-- /wp:paragraph -->
-
 <!-- wp:woo/email-content {"lock":{"move":false,"remove":true}} -->
 <div class="wp-block-woo-email-content"> <?php echo esc_html( BlockEmailRenderer::WOO_EMAIL_CONTENT_PLACEHOLDER ); ?> </div>
 <!-- /wp:woo/email-content -->
-
-<!-- wp:paragraph -->
-<p>
-<?php
-/* translators: %s: Store admin email */
-	printf( esc_html__( 'Thanks again! If you need any help with your order, please contact us at %s.', 'woocommerce' ), '<!--[woocommerce/store-email]-->' );
-?>
-	</p>
-<!-- /wp:paragraph -->

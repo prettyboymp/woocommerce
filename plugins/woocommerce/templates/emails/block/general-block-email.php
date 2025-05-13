@@ -12,6 +12,7 @@
 defined( 'ABSPATH' ) || exit;
 
 use Automattic\WooCommerce\Enums\OrderStatus;
+use Automattic\WooCommerce\Internal\Settings\PointOfSaleDefaultSettings;
 
 if ( 'customer_invoice' === $email->id ) :
 	// Customer invoice email
@@ -82,6 +83,30 @@ if ( 'customer_reset_password' === $email->id && isset( $reset_key, $user_id ) )
 	<?php
 endif;
 
+if ( 'customer_pos_completed_order' === $email->id || 'customer_pos_refunded_order' === $email->id ) :
+	?>
+	<!-- wp:paragraph -->
+	<p>
+	<?php
+	if ( ! empty( $order->get_billing_first_name() ) ) {
+		/* translators: %s: Customer first name */
+		printf( esc_html__( 'Hi %s,', 'woocommerce' ), esc_html( $order->get_billing_first_name() ) );
+	} else {
+		echo esc_html__( 'Hi there,', 'woocommerce' );
+	}
+	?>
+	</p>
+	<!-- /wp:paragraph -->
+	<!-- wp:paragraph -->
+	<p>
+	<?php
+		echo esc_html__( 'Here’s a reminder of what you’ve ordered:', 'woocommerce' );
+	?>
+	</p>
+	<!-- /wp:paragraph -->
+	<?php
+endif;
+
 $accounts_related_emails = array(
 	'customer_reset_password',
 	'customer_new_account',
@@ -116,3 +141,55 @@ if ( isset( $order ) && ! in_array( $email->id, $accounts_related_emails, true )
 	 */
 	do_action( 'woocommerce_email_customer_details', $order, $sent_to_admin, $plain_text, $email );
 }
+
+if ( 'customer_pos_completed_order' === $email->id || 'customer_pos_refunded_order' === $email->id ) :
+	if ( ! empty( get_option( 'woocommerce_pos_store_email', PointOfSaleDefaultSettings::get_default_store_email() ) )
+		|| ! empty( get_option( 'woocommerce_pos_store_phone' ) )
+		|| ! empty( get_option( 'woocommerce_pos_store_address', PointOfSaleDefaultSettings::get_default_store_address() ) ) ) :
+		?>
+		<!-- wp:group -->
+		<div class="wp-block-group">
+			<?php if ( ! empty( get_option( 'woocommerce_pos_store_name', PointOfSaleDefaultSettings::get_default_store_name() ) ) ) : ?>
+			<!-- wp:heading {"level":3} -->
+			<h3><?php echo esc_html( get_option( 'woocommerce_pos_store_name', PointOfSaleDefaultSettings::get_default_store_name() ) ); ?></h3>
+			<!-- /wp:heading -->
+			<?php endif; ?>
+
+			<?php if ( ! empty( get_option( 'woocommerce_pos_store_email', PointOfSaleDefaultSettings::get_default_store_email() ) ) ) : ?>
+			<!-- wp:paragraph -->
+			<p><?php echo esc_html( get_option( 'woocommerce_pos_store_email', PointOfSaleDefaultSettings::get_default_store_email() ) ); ?></p>
+			<!-- /wp:paragraph -->
+			<?php endif; ?>
+
+			<?php if ( ! empty( get_option( 'woocommerce_pos_store_phone' ) ) ) : ?>
+			<!-- wp:paragraph -->
+			<p><?php echo esc_html( get_option( 'woocommerce_	pos_store_phone' ) ); ?></p>
+			<!-- /wp:paragraph -->
+			<?php endif; ?>
+
+			<?php if ( ! empty( get_option( 'woocommerce_pos_store_address', PointOfSaleDefaultSettings::get_default_store_address() ) ) ) : ?>
+			<!-- wp:paragraph -->
+			<p><?php echo esc_html( get_option( 'woocommerce_pos_store_address', PointOfSaleDefaultSettings::get_default_store_address() ) ); ?></p>
+			<!-- /wp:paragraph -->
+			<?php endif; ?>
+		</div>
+		<!-- /wp:group -->
+		<?php
+	endif;
+
+	if ( ! empty( get_option( 'woocommerce_pos_refund_returns_policy' ) ) ) :
+		?>
+		<!-- wp:group -->
+		<div class="wp-block-group">
+			<!-- wp:heading {"level":3} -->
+			<h3><?php echo esc_html__( 'Refund & Returns Policy', 'woocommerce' ); ?></h3>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p><?php echo esc_html( get_option( 'woocommerce_pos_refund_returns_policy' ) ); ?></p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
+		<?php
+	endif;
+endif;
