@@ -5,7 +5,6 @@ namespace Automattic\WooCommerce\Blocks\BlockTypes\AddToCartWithOptions;
 
 use Automattic\WooCommerce\Blocks\BlockTypes\AbstractBlock;
 use Automattic\WooCommerce\Blocks\BlockTypes\EnableBlockJsonAssetsTrait;
-use Automattic\WooCommerce\Blocks\BlockTypes\AddToCartWithOptions\Utils as AddToCartWithOptionsUtils;
 
 /**
  * Block type for grouped product selector in add to cart with options.
@@ -33,10 +32,6 @@ class GroupedProductSelector extends AbstractBlock {
 		global $product;
 
 		if ( $product instanceof \WC_Product && $product->is_type( 'grouped' ) ) {
-			// Set context for child blocks.
-			$block->context['woocommerce/isDescendantOfGroupedProductSelector'] = true;
-			// Get the product from the context.
-			$product = AddToCartWithOptionsUtils::get_product_from_context( $block, $GLOBALS['product'] );
 			return $content;
 		}
 
