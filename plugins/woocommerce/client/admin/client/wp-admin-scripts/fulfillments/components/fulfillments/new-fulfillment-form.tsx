@@ -1,7 +1,6 @@
 /**
  * External dependencies
  */
-import { LoadingPlaceholder } from '@automattic/components';
 import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 
@@ -35,7 +34,7 @@ const NewFulfillmentForm: React.FC = () => {
 	const [ notifyCustomer, setNotifyCustomer ] = useState( true );
 
 	if ( ! order ) {
-		return <LoadingPlaceholder />;
+		return null;
 	}
 
 	if ( remainingItems.length === 0 ) {

@@ -5,7 +5,8 @@
 	left: auto;
 	height: calc(100vh - 32px);
 	z-index: 9999;
-	width: 401px;
+	width: calc(27.7778vw + 1px);
+	min-width: 401px;
 	pointer-events: none;
 	overflow: hidden;
 
@@ -13,7 +14,8 @@
 		position: absolute;
 		right: 0;
 		top: 0;
-		width: 400px;
+		width: 27.7778vw;
+		min-width: 400px;
 		height: 100%;
 		background: #fff;
 		padding: 0;

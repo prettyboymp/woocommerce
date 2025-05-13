@@ -2,7 +2,6 @@
  * External dependencies
  */
 import moment from 'moment';
-import { LoadingPlaceholder } from '@automattic/components';
 
 /**
  * Internal dependencies
@@ -16,7 +15,7 @@ export default function FulfillmentsDrawerHeader( {
 } ) {
 	const { order } = useFulfillmentDrawerContext();
 	if ( ! order ) {
-		return <LoadingPlaceholder />;
+		return null;
 	}
 
 	return (

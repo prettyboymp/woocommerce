@@ -2,6 +2,7 @@
  * External dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { isEmpty } from 'lodash';
 
 /**
  * Internal dependencies
@@ -27,8 +28,9 @@ export default function MetaList( {
 						{ meta.label }
 					</div>
 					<div className="woocommerce-fulfillment-meta-list__item-value">
-						{ String( meta.value ) ??
-							__( '(empty)', 'woocommerce' ) }
+						{ isEmpty( String( meta.value ) )
+							? __( '(empty)', 'woocommerce' )
+							: String( meta.value ) }
 					</div>
 				</li>
 			) ) }
