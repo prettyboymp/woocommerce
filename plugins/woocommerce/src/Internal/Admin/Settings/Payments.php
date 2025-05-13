@@ -84,10 +84,11 @@ class Payments {
 				}
 
 				// Change suggestion details to align it with a regular payment gateway.
-				$suggestion['_suggestion_id'] = $suggestion['id'];
-				$suggestion['id']             = $suggestion_order_map_id;
-				$suggestion['_type']          = PaymentProviders::TYPE_SUGGESTION;
-				$suggestion['_order']         = $providers_order_map[ $suggestion_order_map_id ];
+				$suggestion['_suggestion_id']          = $suggestion['id'];
+				$suggestion['_suggestion_category_id'] = $suggestion['category'];
+				$suggestion['id']                      = $suggestion_order_map_id;
+				$suggestion['_type']                   = PaymentProviders::TYPE_SUGGESTION;
+				$suggestion['_order']                  = $providers_order_map[ $suggestion_order_map_id ];
 				unset( $suggestion['_priority'] );
 
 				$payment_providers[] = $suggestion;
