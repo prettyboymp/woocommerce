@@ -24,6 +24,7 @@ import { enhanceButtonBlock } from './core/button';
 import { enhanceButtonsBlock } from './core/buttons';
 import { alterSupportConfiguration } from './core/general-block-support';
 import { enhanceQuoteBlock } from './core/quote';
+import { enhanceSocialLinksBlock } from './core/social-links';
 
 export function initBlocks() {
 	deactivateStackOnMobile();
@@ -42,4 +43,5 @@ export function initBlocks() {
 	activatePersonalizationTagsReplacing();
 	alterSupportConfiguration();
 	registerCoreBlocks();
+	enhanceSocialLinksBlock();
 }
