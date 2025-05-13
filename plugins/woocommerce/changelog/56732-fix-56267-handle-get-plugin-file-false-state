@@ -1,0 +1,4 @@
+Significance: patch
+Type: fix
+Comment: Fix potential Uncaught TypeError in PaymentGateway::get_plugin_file()
+
