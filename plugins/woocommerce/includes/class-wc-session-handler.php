@@ -68,16 +68,12 @@ class WC_Session_Handler extends WC_Session {
 	 * @since 3.3.0
 	 */
 	public function init() {
+		$this->init_session_cookie();
+
 		add_action( 'woocommerce_set_cart_cookies', array( $this, 'set_customer_session_cookie' ), 10 );
 		add_action( 'wp', array( $this, 'maybe_set_customer_session_cookie' ), 99 );
 		add_action( 'shutdown', array( $this, 'save_data' ), 20 );
 		add_action( 'wp_logout', array( $this, 'forget_session' ) );
-
-		if ( did_action( 'wp_loaded' ) ) {
-			$this->init_session_cookie();
-		} else {
-			add_action( 'wp_loaded', array( $this, 'init_session_cookie' ), 9 ); // Use priority 9 run before WC_Cart_Session::get_cart_from_session.
-		}
 
 		if ( ! is_user_logged_in() ) {
 			add_filter( 'nonce_user_logged_out', array( $this, 'maybe_update_nonce_user_logged_out' ), 10, 2 );
@@ -135,8 +131,10 @@ class WC_Session_Handler extends WC_Session {
 	 * @param int $user_id The user ID.
 	 */
 	private function migrate_guest_session_to_user_session( int $user_id ) {
-		$guest_session_id = $this->_customer_id;
-		$user_session_id  = strval( $user_id );
+		$guest_session_id   = $this->_customer_id;
+		$user_session_id    = strval( $user_id );
+		$guest_session_data = (array) $this->_data;
+		$user_session_data  = (array) $this->get_session( $user_session_id, array() );
 
 		/**
 		 * Filters the data to be merged into the user session.
@@ -144,9 +142,15 @@ class WC_Session_Handler extends WC_Session {
 		 * @since 9.10.0
 		 *
 		 * @param array $data The updated session data.
-		 * @param array $user_session_data The user session data that will be overridden.
+		 * @param array $guest_session_data The guest session data.
+		 * @param array $user_session_data The user session data.
 		 */
-		$this->_data        = apply_filters( 'woocommerce_migrate_guest_session_to_user_session', (array) $this->_data, (array) $this->get_session( $user_session_id, array() ) );
+		$this->_data        = apply_filters(
+			'woocommerce_migrate_guest_session_to_user_session',
+			$this->migrate_cart_data( $guest_session_data, $user_session_data ),
+			$guest_session_data,
+			$user_session_data
+		);
 		$this->_customer_id = $user_session_id;
 		$this->_dirty       = true;
 		$this->save_data( $guest_session_id );
@@ -165,6 +169,20 @@ class WC_Session_Handler extends WC_Session {
 		 * @param string $user_session_id The Customer ID that the former session was converted to.
 		 */
 		do_action( 'woocommerce_guest_session_to_user_id', $guest_session_id, $user_session_id );
+	}
+
+	/**
+	 * Merges the cart data from the guest session to the user session.
+	 *
+	 * @param array $data The updated session data.
+	 * @param array $user_session_data The user session data that will be overridden.
+	 * @return array The updated session data.
+	 */
+	private function migrate_cart_data( array $data, array $user_session_data ) {
+		if ( empty( $data['cart'] ) && ! empty( $user_session_data['cart'] ) ) {
+			$data['cart'] = $user_session_data['cart'];
+		}
+		return $data;
 	}
 
 	/**
