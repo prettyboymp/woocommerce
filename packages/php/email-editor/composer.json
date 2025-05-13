@@ -17,7 +17,8 @@
 	},
 	"require": {
 		"php": ">=7.4",
-		"soundasleep/html2text": "^2.1"
+		"soundasleep/html2text": "^2.1",
+		"meyfa/php-svg": "^0.16.1"
 	},
 	"require-dev": {
 		"automattic/jetpack-changelogger": "3.3.0",
