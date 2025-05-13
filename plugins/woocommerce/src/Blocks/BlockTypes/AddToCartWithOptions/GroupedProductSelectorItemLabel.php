@@ -37,7 +37,7 @@ class GroupedProductSelectorItemLabel extends AbstractBlock {
 
 		if ( $product ) {
 			$wrapper_attributes = get_block_wrapper_attributes();
-			$title             = $product->get_name();
+			$title              = $product->get_name();
 
 			if ( ! $product->is_purchasable() || $product->has_options() || ! $product->is_in_stock() ) {
 				$markup = sprintf(
@@ -56,7 +56,7 @@ class GroupedProductSelectorItemLabel extends AbstractBlock {
 			} else {
 				// Checkbox.
 				$input_id = AddToCartWithOptionsUtils::get_quantity_input_id( $product );
-				$markup = sprintf(
+				$markup   = sprintf(
 					'<label %1$s for="%2$s">%3$s</label>',
 					$wrapper_attributes,
 					esc_attr( $input_id ),

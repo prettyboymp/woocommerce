@@ -31,7 +31,7 @@ class GroupedProductSelectorItemCTA extends AbstractBlock {
 	 * @return string The HTML markup for the quantity selector.
 	 */
 	private function get_quantity_selector_markup( $product ) {
-		$args = AddToCartWithOptionsUtils::get_quantity_input_args( $product );
+		$args             = AddToCartWithOptionsUtils::get_quantity_input_args( $product );
 		$args['input_id'] = AddToCartWithOptionsUtils::get_quantity_input_id( $product );
 
 		ob_start();
