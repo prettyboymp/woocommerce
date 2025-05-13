@@ -47,6 +47,7 @@ class GroupedProductSelectorItemLabel extends AbstractBlock {
 					esc_html( $title )
 				);
 			} elseif ( $product->is_sold_individually() ) {
+				// Button.
 				$markup = sprintf(
 					'<label %1$s for="%2$s">%3$s</label>',
 					$wrapper_attributes,
@@ -54,6 +55,7 @@ class GroupedProductSelectorItemLabel extends AbstractBlock {
 					esc_html( $title )
 				);
 			} else {
+				// Checkbox.
 				$input_id = AddToCartWithOptionsUtils::get_quantity_input_id( $product );
 				$markup = sprintf(
 					'<label %1$s for="%2$s">%3$s</label>',

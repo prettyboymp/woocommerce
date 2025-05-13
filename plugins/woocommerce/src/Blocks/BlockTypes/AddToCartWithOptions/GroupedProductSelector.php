@@ -34,6 +34,8 @@ class GroupedProductSelector extends AbstractBlock {
 		if ( $product instanceof \WC_Product && $product->is_type( 'grouped' ) ) {
 			// Set context for child blocks
 			$block->context['woocommerce/isDescendantOfGroupedProductSelector'] = true;
+			// Get the product from the context.
+			$product = AddToCartWithOptionsUtils::get_product_from_context( $block, $GLOBALS['product'] );
 			return $content;
 		}
 

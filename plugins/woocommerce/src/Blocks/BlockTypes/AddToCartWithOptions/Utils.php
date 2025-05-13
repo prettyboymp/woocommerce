@@ -172,7 +172,7 @@ class Utils {
 	 * @return string The quantity input HTML without the label.
 	 */
 	public static function remove_quantity_label( $quantity_html ) {
-		// Remove the label tag and its contents
+		// Remove the label from the quantity input.
 		return preg_replace( '/<label[^>]*>.*?<\/label>/s', '', $quantity_html );
 	}
 }
