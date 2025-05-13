@@ -53,7 +53,7 @@ class GroupedProductSelectorItemLabel extends AbstractBlock {
 			//Button
 			if ( ! $product->is_purchasable() || $product->has_options() || ! $product->is_in_stock() ) {
 				return sprintf(
-					'<p %1$s>%2$s</p>',
+					'<div %1$s>%2$s</div>',
 					$wrapper_attributes,
 					esc_html( $title )
 				);
