@@ -4340,3 +4340,12 @@ function wc_add_aria_label_to_pagination_numbers( $html, $args ) {
 	return $html;
 }
 add_filter( 'paginate_links_output', 'wc_add_aria_label_to_pagination_numbers', 10, 2 );
+
+if ( ! function_exists( 'woocommerce_checkout_address_suggestions_form' ) ) {
+	/**
+	 * Output the address suggestions form for the checkout.
+	 */
+	function woocommerce_checkout_address_suggestions_form() {
+		wc_get_template( 'checkout/address-suggestions.php' );
+	}
+}

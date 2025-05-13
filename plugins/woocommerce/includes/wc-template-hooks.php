@@ -324,3 +324,13 @@ add_action( 'woocommerce_before_reset_password_form', 'woocommerce_output_all_no
  * Hooked blocks.
  */
 add_action( 'after_switch_theme', 'wc_after_switch_theme', 10, 2 );
+
+/**
+ * Checkout Form
+ *
+ * @see woocommerce_checkout_login_form()
+ * @see woocommerce_checkout_coupon_form()
+ * @see woocommerce_order_review()
+ * @see woocommerce_checkout_payment()
+ */
+add_action( 'woocommerce_after_checkout_billing_form', 'woocommerce_checkout_address_suggestions_form', 10 );
