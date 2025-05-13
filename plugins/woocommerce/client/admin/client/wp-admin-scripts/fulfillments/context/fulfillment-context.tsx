@@ -51,7 +51,7 @@ export const FulfillmentProvider = ( {
 		React.useState< Fulfillment | null >( fulfillment ?? null );
 
 	useEffect( () => {
-		if ( ! orderId || ! selectedItems.length ) {
+		if ( ! orderId ) {
 			_setFulfillment( null );
 			return;
 		}

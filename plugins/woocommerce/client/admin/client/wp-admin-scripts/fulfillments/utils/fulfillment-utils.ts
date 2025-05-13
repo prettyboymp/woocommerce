@@ -1,18 +1,28 @@
 /**
  * Internal dependencies
  */
-import { Fulfillment } from '../data/types';
+import { Fulfillment, FulfillmentItem } from '../data/types';
 
-export function getFulfillmentMeta(
+export function getFulfillmentMeta< T >(
 	fulfillment: Fulfillment | null,
 	metaKey: string,
-	defaultValue = ''
+	defaultValue: T
 ) {
 	if ( ! fulfillment ) {
 		return defaultValue;
 	}
 	const meta = fulfillment.meta_data.find(
 		( _meta ) => _meta.key === metaKey
-	)?.value;
-	return meta ? ( meta as string ) : defaultValue;
+	)?.value as T;
+	return meta ? meta : defaultValue;
+}
+
+export function getFulfillmentItems(
+	fulfillment: Fulfillment
+): Array< FulfillmentItem > {
+	return getFulfillmentMeta< Array< FulfillmentItem > >(
+		fulfillment,
+		'_items',
+		[]
+	) as Array< FulfillmentItem >;
 }

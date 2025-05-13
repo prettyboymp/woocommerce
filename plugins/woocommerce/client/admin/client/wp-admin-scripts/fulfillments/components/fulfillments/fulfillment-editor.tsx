@@ -23,6 +23,8 @@ import CancelLink from '../action-buttons/cancel-link';
 import RemoveButton from '../action-buttons/remove-button';
 import UpdateButton from '../action-buttons/update-button';
 import FulfillmentStatusBadge from './fulfillment-status-badge';
+import ErrorLabel from '../user-interface/error-label';
+import { useFulfillmentDrawerContext } from '../../context/drawer-context';
 
 interface FulfillmentEditorProps {
 	index: number;
@@ -32,6 +34,7 @@ interface FulfillmentEditorProps {
 	fulfillment: Fulfillment;
 	fulfillments: Fulfillment[];
 	order: Order;
+	disabled?: boolean;
 }
 export default function FulfillmentEditor( {
 	index,
@@ -41,11 +44,14 @@ export default function FulfillmentEditor( {
 	fulfillment,
 	fulfillments,
 	order,
+	disabled = false,
 }: FulfillmentEditorProps ) {
 	const [ editMode, setEditMode ] = useState( false );
+	const { setIsEditing } = useFulfillmentDrawerContext();
 	const [ selectedItems, setSelectedItems ] = useState< ItemQuantity[] >(
 		[]
 	);
+	const [ error, setError ] = useState< string | null >( null );
 	const itemsInFulfillment = getItemsFromFulfillment(
 		order,
 		fulfillment,
@@ -74,7 +80,14 @@ export default function FulfillmentEditor( {
 	};
 
 	return (
-		<div className="woocommerce-fulfillment-stored-fulfillment-list-item">
+		<div
+			className={ [
+				'woocommerce-fulfillment-stored-fulfillment-list-item',
+				disabled
+					? 'woocommerce-fulfillment-stored-fulfillment-list-item__disabled'
+					: '',
+			].join( ' ' ) }
+		>
 			<div
 				className="woocommerce-fulfillment-stored-fulfillment-list-item-header"
 				onClick={ handleChevronClick }
@@ -110,6 +123,7 @@ export default function FulfillmentEditor( {
 			</div>
 			{ expanded && (
 				<div className="woocommerce-fulfillment-stored-fulfillment-list-item-content">
+					{ error && <ErrorLabel error={ error } /> }
 					<ItemSelector
 						items={ formItems }
 						setSelectedItems={ setSelectedItems }
@@ -128,21 +142,32 @@ export default function FulfillmentEditor( {
 									<EditFulfillmentButton
 										onClick={ () => {
 											setEditMode( true );
+											setIsEditing( true );
 											setFormItems( selectableItems );
 										} }
 									/>
-									<FulfillItemsButton />
+									<FulfillItemsButton setError={ setError } />
 								</>
 							) : (
 								<>
 									<CancelLink
 										onClick={ () => {
+											setError( null );
 											setFormItems( itemsInFulfillment );
+											setIsEditing( false );
 											setEditMode( false );
 										} }
 									/>
-									<RemoveButton />
-									<UpdateButton />
+									<RemoveButton
+										setError={ ( message ) =>
+											setError( message )
+										}
+									/>
+									<UpdateButton
+										setError={ ( message ) =>
+											setError( message )
+										}
+									/>
 								</>
 							) }
 						</div>

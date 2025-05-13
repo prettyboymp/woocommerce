@@ -17,6 +17,8 @@ interface FulfillmentDrawerContextProps {
 	setOrder: ( order: Order | null ) => void;
 	openSection: string;
 	setOpenSection: ( section: string ) => void;
+	isEditing: boolean;
+	setIsEditing: ( isEditing: boolean ) => void;
 }
 
 const defaultContextProps: FulfillmentDrawerContextProps = {
@@ -26,6 +28,8 @@ const defaultContextProps: FulfillmentDrawerContextProps = {
 	setOrder: () => {},
 	openSection: '',
 	setOpenSection: () => {},
+	isEditing: false,
+	setIsEditing: () => {},
 };
 
 const FulfillmentDrawerContextValue =
@@ -49,6 +53,7 @@ export const FulfillmentDrawerProvider = ( {
 	children: React.ReactNode;
 } ) => {
 	const [ openSection, setOpenSection ] = useState( 'order' );
+	const [ isEditing, setIsEditing ] = useState( false );
 	const [ fulfillments, setFulfillments ] = useState< Fulfillment[] >();
 	const [ order, setOrder ] = useState< Order | null >();
 
@@ -84,6 +89,8 @@ export const FulfillmentDrawerProvider = ( {
 				setOrder,
 				openSection,
 				setOpenSection,
+				isEditing,
+				setIsEditing,
 			} }
 		>
 			{ isLoading ? 'Loading order...' : children }

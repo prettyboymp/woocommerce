@@ -5,6 +5,10 @@
 .woocommerce-fulfillment-new-fulfillment-form {
 	display: flex;
 	flex-direction: column;
+	&.woocommerce-fulfillment-new-fulfillment-form__disabled {
+		opacity: 30%;
+		pointer-events: none !important;
+	}
 	.woocommerce-fulfillment-new-fulfillment-form__header {
 		padding: 16px 20px;
 		display: flex;
@@ -329,6 +333,11 @@
 		justify-content: center;
 		border-bottom: 1px solid #e0e0e0;
 
+		&.woocommerce-fulfillment-stored-fulfillment-list-item__disabled {
+			opacity: 30%;
+			pointer-events: none !important;
+		}
+
 		.woocommerce-fulfillment-stored-fulfillment-list-item-header {
 			display: flex;
 			flex-direction: row;
@@ -396,17 +405,16 @@
 	display: flex;
 	flex-direction: row;
 	align-items: flex-start;
-	justify-content: center;
+	gap: 4px;
 	& &__icon {
 		width: 16px;
 		height: 16px;
-		margin-right: 8px;
 		svg {
-			path[fill] {
-				fill: var(--wc-red, #cc1818) !important;
-			}
-			path[stroke] {
+			path[stroke-width] {
 				stroke: var(--wc-red, #cc1818) !important;
+			}
+			path:not([stroke-width]) {
+				fill: var(--wc-red, #cc1818) !important;
 			}
 		}
 	}
@@ -414,6 +422,8 @@
 		font-size: 12px;
 		line-height: 16px;
 		font-weight: 400;
+		letter-spacing: 0%;
+		vertical-align: middle;
 		color: var(--wc-red, #cc1818) !important;
 	}
 }

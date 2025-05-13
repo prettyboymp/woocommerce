@@ -146,3 +146,8 @@ export interface MetaDatum {
 	key: string;
 	value: string | number | boolean | object | null;
 }
+
+export interface FulfillmentItem {
+	item_id: number;
+	qty: number;
+}

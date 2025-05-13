@@ -23,13 +23,18 @@ jest.mock( '../../../context/fulfillment-context', () => ( {
 	useFulfillmentContext: jest.fn(),
 } ) );
 
+const setError = jest.fn();
+
 describe( 'RemoveButton component', () => {
 	beforeEach( () => {
 		// Reset mocks
 		jest.clearAllMocks();
 
 		// Default mock implementations
-		useDispatch.mockReturnValue( { deleteFulfillment: jest.fn() } );
+		useDispatch.mockReturnValue( {
+			deleteFulfillment: jest.fn(),
+		} );
+
 		useFulfillmentContext.mockReturnValue( {
 			orderId: 123,
 			fulfillment: { id: 456 },
@@ -37,12 +42,12 @@ describe( 'RemoveButton component', () => {
 	} );
 
 	it( 'should render button with correct text', () => {
-		render( <RemoveButton /> );
+		render( <RemoveButton setError={ setError } /> );
 		expect( screen.getByText( 'Remove' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should call deleteFulfillment when button is clicked', () => {
-		const mockDeleteFulfillment = jest.fn();
+	it( 'should call deleteFulfillment when button is clicked', async () => {
+		const mockDeleteFulfillment = jest.fn( () => Promise.resolve() );
 		useDispatch.mockReturnValue( {
 			deleteFulfillment: mockDeleteFulfillment,
 		} );
@@ -52,10 +57,11 @@ describe( 'RemoveButton component', () => {
 			fulfillment: { id: 456 },
 		} );
 
-		render( <RemoveButton /> );
+		render( <RemoveButton setError={ setError } /> );
+
 		fireEvent.click( screen.getByText( 'Remove' ) );
 
-		expect( mockDeleteFulfillment ).toHaveBeenCalledWith( 123, 456 );
+		expect( await mockDeleteFulfillment ).toHaveBeenCalledWith( 123, 456 );
 	} );
 
 	it( 'should not call deleteFulfillment when fulfillment is undefined', () => {
@@ -69,7 +75,8 @@ describe( 'RemoveButton component', () => {
 			fulfillment: undefined,
 		} );
 
-		render( <RemoveButton /> );
+		render( <RemoveButton setError={ setError } /> );
+
 		fireEvent.click( screen.getByText( 'Remove' ) );
 
 		expect( mockDeleteFulfillment ).not.toHaveBeenCalled();
@@ -88,7 +95,7 @@ describe( 'RemoveButton component', () => {
 			},
 		} );
 
-		render( <RemoveButton /> );
+		render( <RemoveButton setError={ setError } /> );
 		fireEvent.click( screen.getByText( 'Remove' ) );
 
 		expect( mockDeleteFulfillment ).not.toHaveBeenCalled();

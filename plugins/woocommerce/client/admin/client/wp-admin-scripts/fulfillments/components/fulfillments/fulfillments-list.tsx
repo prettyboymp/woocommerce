@@ -5,7 +5,7 @@ import FulfillmentEditor from './fulfillment-editor';
 import { useFulfillmentDrawerContext } from '../../context/drawer-context';
 
 export default function FulfillmentsList() {
-	const { order, fulfillments, openSection, setOpenSection } =
+	const { order, fulfillments, openSection, setOpenSection, isEditing } =
 		useFulfillmentDrawerContext();
 
 	return (
@@ -14,6 +14,10 @@ export default function FulfillmentsList() {
 				{ fulfillments.map( ( fulfillment, index ) => (
 					<FulfillmentEditor
 						index={ index }
+						disabled={
+							isEditing &&
+							openSection !== 'fulfillment-' + fulfillment.id
+						}
 						expanded={
 							openSection === 'fulfillment-' + fulfillment.id
 						}

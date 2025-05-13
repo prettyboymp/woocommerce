@@ -10,6 +10,8 @@ import { useDispatch } from '@wordpress/data';
 import FulfillItemsButton from '../fulfill-items-button';
 import { useFulfillmentContext } from '../../../context/fulfillment-context';
 
+const setError = jest.fn();
+
 // Mock dependencies
 jest.mock( '@wordpress/data', () => {
 	const originalModule = jest.requireActual( '@wordpress/data' );
@@ -37,26 +39,46 @@ describe( 'FulfillItemsButton component', () => {
 	} );
 
 	it( 'should render button with correct text', () => {
-		render( <FulfillItemsButton /> );
+		render( <FulfillItemsButton setError={ setError } /> );
 		expect( screen.getByText( 'Fulfill items' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should call saveFulfillment when button is clicked', () => {
-		const mockSaveFulfillment = jest.fn();
+	it( 'should call saveFulfillment when button is clicked', async () => {
+		const mockSaveFulfillment = jest.fn( () => Promise.resolve() );
 		useDispatch.mockReturnValue( { saveFulfillment: mockSaveFulfillment } );
 
-		const mockFulfillment = { id: 456 };
+		const mockFulfillment = {
+			id: 456,
+			meta_data: [
+				{
+					id: 1,
+					key: '_items',
+					value: [
+						{
+							id: 1,
+							name: 'Item 1',
+							quantity: 2,
+						},
+						{
+							id: 2,
+							name: 'Item 2',
+							quantity: 3,
+						},
+					],
+				},
+			],
+		};
 		useFulfillmentContext.mockReturnValue( {
 			orderId: 123,
 			fulfillment: mockFulfillment,
 		} );
 
-		render( <FulfillItemsButton /> );
+		render( <FulfillItemsButton setError={ setError } /> );
 		fireEvent.click( screen.getByText( 'Fulfill items' ) );
 
 		expect( mockFulfillment.is_fulfilled ).toBe( true );
 		expect( mockFulfillment.status ).toBe( 'fulfilled' );
-		expect( mockSaveFulfillment ).toHaveBeenCalledWith(
+		expect( await mockSaveFulfillment ).toHaveBeenCalledWith(
 			123,
 			mockFulfillment
 		);
@@ -71,7 +93,7 @@ describe( 'FulfillItemsButton component', () => {
 			fulfillment: undefined,
 		} );
 
-		render( <FulfillItemsButton /> );
+		render( <FulfillItemsButton setError={ setError } /> );
 		fireEvent.click( screen.getByText( 'Fulfill items' ) );
 
 		expect( mockSaveFulfillment ).not.toHaveBeenCalled();

@@ -10,6 +10,8 @@ import { useDispatch } from '@wordpress/data';
 import UpdateButton from '../update-button';
 import { useFulfillmentContext } from '../../../context/fulfillment-context';
 
+const setError = jest.fn();
+
 // Mock dependencies
 jest.mock( '@wordpress/data', () => {
 	const originalModule = jest.requireActual( '@wordpress/data' );
@@ -32,31 +34,71 @@ describe( 'UpdateButton component', () => {
 		useDispatch.mockReturnValue( { updateFulfillment: jest.fn() } );
 		useFulfillmentContext.mockReturnValue( {
 			orderId: 123,
-			fulfillment: { id: 456 },
+			fulfillment: {
+				id: 456,
+				meta_data: [
+					{
+						id: 1,
+						key: '_items',
+						value: [
+							{
+								id: 1,
+								name: 'Item 1',
+								quantity: 2,
+							},
+							{
+								id: 2,
+								name: 'Item 2',
+								quantity: 3,
+							},
+						],
+					},
+				],
+			},
 		} );
 	} );
 
 	it( 'should render button with correct text', () => {
-		render( <UpdateButton /> );
+		render( <UpdateButton setError={ setError } /> );
 		expect( screen.getByText( 'Update' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should call updateFulfillment when button is clicked', () => {
-		const mockUpdateFulfillment = jest.fn();
+	it( 'should call updateFulfillment when button is clicked', async () => {
+		const mockUpdateFulfillment = jest.fn( () => Promise.resolve() );
 		useDispatch.mockReturnValue( {
 			updateFulfillment: mockUpdateFulfillment,
 		} );
 
-		const mockFulfillment = { id: 456 };
+		const mockFulfillment = {
+			id: 456,
+			meta_data: [
+				{
+					id: 1,
+					key: '_items',
+					value: [
+						{
+							id: 1,
+							name: 'Item 1',
+							quantity: 2,
+						},
+						{
+							id: 2,
+							name: 'Item 2',
+							quantity: 3,
+						},
+					],
+				},
+			],
+		};
 		useFulfillmentContext.mockReturnValue( {
 			orderId: 123,
 			fulfillment: mockFulfillment,
 		} );
 
-		render( <UpdateButton /> );
+		render( <UpdateButton setError={ setError } /> );
 		fireEvent.click( screen.getByText( 'Update' ) );
 
-		expect( mockUpdateFulfillment ).toHaveBeenCalledWith(
+		expect( await mockUpdateFulfillment ).toHaveBeenCalledWith(
 			123,
 			mockFulfillment
 		);
@@ -73,7 +115,7 @@ describe( 'UpdateButton component', () => {
 			fulfillment: undefined,
 		} );
 
-		render( <UpdateButton /> );
+		render( <UpdateButton setError={ setError } /> );
 		fireEvent.click( screen.getByText( 'Update' ) );
 
 		expect( mockUpdateFulfillment ).not.toHaveBeenCalled();

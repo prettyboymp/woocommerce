@@ -23,6 +23,8 @@ jest.mock( '../../../context/fulfillment-context', () => ( {
 	useFulfillmentContext: jest.fn(),
 } ) );
 
+const setError = jest.fn();
+
 describe( 'SaveAsDraftButton component', () => {
 	beforeEach( () => {
 		// Reset mocks
@@ -32,26 +34,66 @@ describe( 'SaveAsDraftButton component', () => {
 		useDispatch.mockReturnValue( { saveFulfillment: jest.fn() } );
 		useFulfillmentContext.mockReturnValue( {
 			orderId: 123,
-			fulfillment: { id: 456 },
+			fulfillment: {
+				id: 456,
+				meta_data: [
+					{
+						id: 1,
+						key: '_items',
+						value: [
+							{
+								id: 1,
+								name: 'Item 1',
+								quantity: 2,
+							},
+							{
+								id: 2,
+								name: 'Item 2',
+								quantity: 3,
+							},
+						],
+					},
+				],
+			},
 		} );
 	} );
 
 	it( 'should render button with correct text', () => {
-		render( <SaveAsDraftButton /> );
+		render( <SaveAsDraftButton setError={ setError } /> );
 		expect( screen.getByText( 'Save as draft' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should call saveFulfillment when button is clicked', () => {
-		const mockSaveFulfillment = jest.fn();
+	it( 'should call saveFulfillment when button is clicked', async () => {
+		const mockSaveFulfillment = jest.fn( () => Promise.resolve() );
 		useDispatch.mockReturnValue( { saveFulfillment: mockSaveFulfillment } );
 
-		const mockFulfillment = { id: 456 };
+		const mockFulfillment = {
+			id: 456,
+			meta_data: [
+				{
+					id: 1,
+					key: '_items',
+					value: [
+						{
+							id: 1,
+							name: 'Item 1',
+							quantity: 2,
+						},
+						{
+							id: 2,
+							name: 'Item 2',
+							quantity: 3,
+						},
+					],
+				},
+			],
+		};
 		useFulfillmentContext.mockReturnValue( {
 			orderId: 123,
 			fulfillment: mockFulfillment,
 		} );
 
-		render( <SaveAsDraftButton /> );
+		render( <SaveAsDraftButton setError={ setError } /> );
 		fireEvent.click( screen.getByText( 'Save as draft' ) );
 
 		expect( mockSaveFulfillment ).toHaveBeenCalledWith(
@@ -69,7 +111,7 @@ describe( 'SaveAsDraftButton component', () => {
 			fulfillment: undefined,
 		} );
 
-		render( <SaveAsDraftButton /> );
+		render( <SaveAsDraftButton setError={ setError } /> );
 		fireEvent.click( screen.getByText( 'Save as draft' ) );
 
 		expect( mockSaveFulfillment ).not.toHaveBeenCalled();

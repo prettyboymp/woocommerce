@@ -6,6 +6,7 @@
  * Internal dependencies
  */
 import { Fulfillment, LineItem, Order } from '../data/types';
+import { getFulfillmentItems } from './fulfillment-utils';
 
 /**
  * ItemQuantity interface represents an item with its ID, quantity, and checked status.
@@ -54,9 +55,7 @@ export const getItemsFromFulfillment = (
 	fulfillment: Fulfillment,
 	checked = false
 ): ItemQuantity[] => {
-	const fulfillmentItems = fulfillment.meta_data.find(
-		( meta ) => meta.key === '_items'
-	)?.value as Array< { item_id: string; qty: number } >;
+	const fulfillmentItems = getFulfillmentItems( fulfillment );
 	return fulfillmentItems.map( ( item ) => {
 		const orderItem = order.line_items.find(
 			( lineItem ) => String( lineItem.id ) === String( item.item_id )

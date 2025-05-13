@@ -18,9 +18,12 @@ import {
 } from '../../utils/order-utils';
 import ItemSelector from './item-selector';
 import { useFulfillmentDrawerContext } from '../../context/drawer-context';
+import ErrorLabel from '../user-interface/error-label';
 
 const NewFulfillmentForm: React.FC = () => {
-	const { order, fulfillments, openSection } = useFulfillmentDrawerContext();
+	const { order, fulfillments, openSection, isEditing } =
+		useFulfillmentDrawerContext();
+	const [ error, setError ] = useState< string | null >( null );
 	const remainingItems = getItemsNotInAnyFulfillment(
 		fulfillments,
 		order ?? ( { line_items: [] as LineItem[] } as Order )
@@ -38,7 +41,13 @@ const NewFulfillmentForm: React.FC = () => {
 	}
 
 	return (
-		<div className="woocommerce-fulfillment-new-fulfillment-form">
+		<div
+			className={ [
+				'woocommerce-fulfillment-new-fulfillment-form',
+				isEditing &&
+					'woocommerce-fulfillment-new-fulfillment-form__disabled',
+			].join( ' ' ) }
+		>
 			<div className="woocommerce-fulfillment-new-fulfillment-form__header">
 				<h3>
 					{ fulfillments.length === 0
@@ -48,6 +57,7 @@ const NewFulfillmentForm: React.FC = () => {
 			</div>
 			{ openSection && (
 				<div className="woocommerce-fulfillment-new-fulfillment-form__content">
+					{ error && <ErrorLabel error={ error } /> }
 					<ItemSelector
 						items={ remainingItems }
 						setSelectedItems={ setSelectedItems }
@@ -60,8 +70,8 @@ const NewFulfillmentForm: React.FC = () => {
 						fulfillment={ null }
 					>
 						<div className="woocommerce-fulfillment-item-actions">
-							<SaveAsDraftButton />
-							<FulfillItemsButton />
+							<SaveAsDraftButton setError={ setError } />
+							<FulfillItemsButton setError={ setError } />
 						</div>
 					</FulfillmentProvider>
 				</div>

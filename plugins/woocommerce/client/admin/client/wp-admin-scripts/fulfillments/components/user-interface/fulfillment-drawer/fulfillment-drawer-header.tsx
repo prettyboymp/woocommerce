@@ -13,14 +13,19 @@ export default function FulfillmentsDrawerHeader( {
 }: {
 	onClose: () => void;
 } ) {
-	const { order } = useFulfillmentDrawerContext();
+	const { order, isEditing } = useFulfillmentDrawerContext();
 	if ( ! order ) {
 		return null;
 	}
 
 	return (
 		order && (
-			<div className="drawer-header">
+			<div
+				className={ [
+					'drawer-header',
+					isEditing && 'drawer-header__disabled',
+				].join( ' ' ) }
+			>
 				<div className="drawer-header__title">
 					<h2>
 						#{ order.id }{ ' ' }
