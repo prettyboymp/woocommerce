@@ -48,7 +48,7 @@ class WC_Session_Handler extends WC_Session {
 	protected $_has_cookie = false;
 
 	/**
-	 * Table name for guest session data.
+	 * Table name for session data.
 	 *
 	 * @var string Custom session table name
 	 */
@@ -146,7 +146,7 @@ class WC_Session_Handler extends WC_Session {
 		 * @param array $data The updated session data.
 		 * @param array $user_session_data The user session data that will be overridden.
 		 */
-		$this->_data        = apply_filters( 'woocommerce_migrate_guest_session_to_user_session', $this->_data, $this->get_session( $user_session_id, array() ) );
+		$this->_data        = apply_filters( 'woocommerce_migrate_guest_session_to_user_session', (array) $this->_data, (array) $this->get_session( $user_session_id, array() ) );
 		$this->_customer_id = $user_session_id;
 		$this->_dirty       = true;
 		$this->save_data( $guest_session_id );
@@ -471,15 +471,15 @@ class WC_Session_Handler extends WC_Session {
 	 * Forget all session data without destroying it.
 	 */
 	public function forget_session() {
-		$this->_data        = array();
-		$this->_dirty       = false;
-		$this->_customer_id = $this->generate_customer_id();
-
 		wc_setcookie( $this->_cookie, '', time() - YEAR_IN_SECONDS, $this->use_secure_cookie(), true );
 
 		if ( WC()->cart instanceof WC_Cart ) {
 			WC()->cart->empty_cart();
 		}
+
+		$this->_data        = array();
+		$this->_dirty       = false;
+		$this->_customer_id = $this->generate_customer_id();
 	}
 
 	/**
