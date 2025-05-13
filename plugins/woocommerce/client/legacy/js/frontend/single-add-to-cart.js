@@ -5,6 +5,13 @@
 			'input:not([name="product_id"]), select, button, textarea'
 		);
 
+                const addToFormData = ( name, value ) => {
+                		formData.push( {
+				name,
+				value: value.replace( /\r?\n/g, '\r\n' ),
+			} );
+                };
+
 		elements.forEach( ( element ) => {
 			const name = element.getAttribute( 'name' );
 
@@ -20,16 +27,10 @@
 
 			if ( Array.isArray( value ) ) {
 				value.forEach( ( val ) => {
-					formData.push( {
-						name: name,
-						value: val.replace( /\r?\n/g, '\r\n' ),
-					} );
+					addToFormData( name, val );
 				} );
 			} else {
-				formData.push( {
-					name: name,
-					value: value.replace( /\r?\n/g, '\r\n' ),
-				} );
+				addToFormData( name, value );
 			}
 		} );
 
