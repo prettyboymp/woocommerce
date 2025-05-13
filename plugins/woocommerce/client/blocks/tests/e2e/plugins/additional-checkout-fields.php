@@ -103,12 +103,15 @@ class Additional_Checkout_Fields_Test_Helper {
 				'location' => 'order',
 				'type'     => 'checkbox',
 				'hidden'   => array(
-					'cart' => array(
-						'properties' => array(
-							'totals' => array(
-								'properties' => array(
-									'totalPrice' => array(
-										'maximum' => 4000,
+					'type'       => 'object',
+					'properties' => array(
+						'cart' => array(
+							'properties' => array(
+								'totals' => array(
+									'properties' => array(
+										'totalPrice' => array(
+											'maximum' => 4000,
+										),
 									),
 								),
 							),
@@ -117,16 +120,19 @@ class Additional_Checkout_Fields_Test_Helper {
 
 				),
 				'required' => array(
-					'cart' => array(
-						'properties' => array(
-							'totals' => array(
-								'properties' => array(
-									'totalPrice' => array(
-										'minimum' => 5900,
+					'type'       => 'object',
+					'properties' => array(
+						'cart' => array(
+							'properties' => array(
+								'totals' => array(
+									'properties' => array(
+										'totalPrice' => array(
+											'minimum' => 5900,
+										),
 									),
 								),
-							),
 
+							),
 						),
 					),
 				),
