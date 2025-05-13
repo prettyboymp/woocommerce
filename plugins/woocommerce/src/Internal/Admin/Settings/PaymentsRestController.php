@@ -8,7 +8,6 @@ use Exception;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
-use Automattic\WooCommerce\Internal\Admin\WCPayPromotion\Init as WCPayPromotion;
 
 /**
  * Controller for the REST endpoints to service the Payments settings page.
@@ -42,7 +41,7 @@ class PaymentsRestController extends RestApiControllerBase {
 	 * @return string
 	 */
 	protected function get_rest_api_namespace(): string {
-		return 'wc-admin';
+		return 'wc-admin-settings-payments';
 	}
 
 	/**
@@ -51,18 +50,6 @@ class PaymentsRestController extends RestApiControllerBase {
 	 * @param bool $override Whether to override the existing routes. Useful for testing.
 	 */
 	public function register_routes( bool $override = false ) {
-		register_rest_route(
-			$this->route_namespace,
-			'/' . $this->rest_base . '/woopay-eligibility',
-			array(
-				array(
-					'methods'             => \WP_REST_Server::READABLE,
-					'callback'            => fn( $request ) => $this->run( $request, 'get_woopay_eligibility' ),
-					'permission_callback' => fn( $request ) => $this->check_permissions( $request ),
-				),
-			),
-			$override
-		);
 		register_rest_route(
 			$this->route_namespace,
 			'/' . $this->rest_base . '/country',
@@ -125,6 +112,18 @@ class PaymentsRestController extends RestApiControllerBase {
 							'sanitize_callback' => fn( $value ) => $this->sanitize_providers_order_arg( $value ),
 						),
 					),
+				),
+			),
+			$override
+		);
+		register_rest_route(
+			$this->route_namespace,
+			'/' . $this->rest_base . '/suggestion/(?P<id>[\w\d\-]+)/attach',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::EDITABLE,
+					'callback'            => fn( $request ) => $this->run( $request, 'attach_payment_extension_suggestion' ),
+					'permission_callback' => fn( $request ) => $this->check_permissions( $request ),
 				),
 			),
 			$override
@@ -249,6 +248,25 @@ class PaymentsRestController extends RestApiControllerBase {
 		$order_map = $request->get_param( 'order_map' );
 
 		$result = $this->payments->update_payment_providers_order_map( $order_map );
+
+		return rest_ensure_response( array( 'success' => $result ) );
+	}
+
+	/**
+	 * Attach a payment extension suggestion.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 *
+	 * @return WP_Error|WP_REST_Response
+	 */
+	protected function attach_payment_extension_suggestion( WP_REST_Request $request ) {
+		$suggestion_id = $request->get_param( 'id' );
+
+		try {
+			$result = $this->payments->attach_payment_extension_suggestion( $suggestion_id );
+		} catch ( Exception $e ) {
+			return new WP_Error( 'woocommerce_rest_payment_extension_suggestion_error', $e->getMessage(), array( 'status' => 400 ) );
+		}
 
 		return rest_ensure_response( array( 'success' => $result ) );
 	}
@@ -485,12 +503,15 @@ class PaymentsRestController extends RestApiControllerBase {
 				$providers[ $key ]['_links'] = array();
 			}
 
-			// If this is a suggestion, add a link to hide it.
+			// If this is a suggestion, add dedicated links.
 			if ( ! empty( $provider['_type'] ) &&
 				PaymentProviders::TYPE_SUGGESTION === $provider['_type'] &&
 				! empty( $provider['_suggestion_id'] )
-				) {
-				$providers[ $key ]['_links']['hide'] = array(
+			) {
+				$providers[ $key ]['_links']['attach'] = array(
+					'href' => rest_url( sprintf( '/%s/%s/suggestion/%s/attach', $this->route_namespace, $this->rest_base, $provider['_suggestion_id'] ) ),
+				);
+				$providers[ $key ]['_links']['hide']   = array(
 					'href' => rest_url( sprintf( '/%s/%s/suggestion/%s/hide', $this->route_namespace, $this->rest_base, $provider['_suggestion_id'] ) ),
 				);
 			}
@@ -774,30 +795,16 @@ class PaymentsRestController extends RestApiControllerBase {
 					'type'        => 'object',
 					'description' => esc_html__( 'Onboarding-related details for the provider.', 'woocommerce' ),
 					'properties'  => array(
+						'type'                        => array(
+							'type'        => 'string',
+							'description' => esc_html__( 'The type of onboarding process the provider supports.', 'woocommerce' ),
+							'context'     => array( 'view', 'edit' ),
+							'readonly'    => true,
+						),
 						'state'                       => array(
 							'type'        => 'object',
 							'description' => esc_html__( 'The state of the onboarding process.', 'woocommerce' ),
 							'context'     => array( 'view', 'edit' ),
-							'properties'  => array(
-								'started'   => array(
-									'type'        => 'boolean',
-									'description' => esc_html__( 'Whether the onboarding process has been started.', 'woocommerce' ),
-									'context'     => array( 'view', 'edit' ),
-									'readonly'    => true,
-								),
-								'completed' => array(
-									'type'        => 'boolean',
-									'description' => esc_html__( 'Whether the onboarding process has been completed.', 'woocommerce' ),
-									'context'     => array( 'view', 'edit' ),
-									'readonly'    => true,
-								),
-								'test_mode' => array(
-									'type'        => 'boolean',
-									'description' => esc_html__( 'Whether the onboarding process happens in test mode (aka sandbox or test-drive).', 'woocommerce' ),
-									'context'     => array( 'view', 'edit' ),
-									'readonly'    => true,
-								),
-							),
 						),
 						'_links'                      => array(
 							'type'       => 'object',
@@ -902,7 +909,21 @@ class PaymentsRestController extends RestApiControllerBase {
 					'context'    => array( 'view', 'edit' ),
 					'readonly'   => true,
 					'properties' => array(
-						'hide' => array(
+						'attach' => array(
+							'type'        => 'object',
+							'description' => esc_html__( 'The link to mark the suggestion as attached. This should be called when an extension is installed.', 'woocommerce' ),
+							'context'     => array( 'view', 'edit' ),
+							'readonly'    => true,
+							'properties'  => array(
+								'href' => array(
+									'type'        => 'string',
+									'description' => esc_html__( 'The URL to attach the suggestion.', 'woocommerce' ),
+									'context'     => array( 'view', 'edit' ),
+									'readonly'    => true,
+								),
+							),
+						),
+						'hide'   => array(
 							'type'        => 'object',
 							'description' => esc_html__( 'The link to hide the suggestion.', 'woocommerce' ),
 							'context'     => array( 'view', 'edit' ),
@@ -1168,19 +1189,6 @@ class PaymentsRestController extends RestApiControllerBase {
 					),
 				),
 			),
-		);
-	}
-
-	/**
-	 * Get WooPay eligibility status.
-	 *
-	 * @return array The WooPay eligibility status.
-	 */
-	protected function get_woopay_eligibility() {
-		return rest_ensure_response(
-			array(
-				'is_eligible' => WCPayPromotion::is_woopay_eligible(),
-			)
 		);
 	}
 }
