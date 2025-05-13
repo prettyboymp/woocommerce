@@ -305,9 +305,10 @@ class AddToCartWithOptions extends AbstractBlock {
 
 			$cart_redirect_after_add = get_option( 'woocommerce_cart_redirect_after_add' );
 			$form_attributes         = '';
-			$empty_input             = '';
+			$hidden_input            = '';
 			if ( $hooks_before || $hooks_after || 'yes' === $cart_redirect_after_add ) {
-				// If an extension is hoooking into the form, we fall back to a regular HTML form.
+				// If an extension is hoooking into the form or we need to redirect to the cart,
+				// we fall back to a regular HTML form.
 				$form_attributes = array(
 					'action'  => esc_url(
 						/**
@@ -323,9 +324,9 @@ class AddToCartWithOptions extends AbstractBlock {
 					'enctype' => 'multipart/form-data',
 				);
 				if ( ProductType::SIMPLE === $product_type ) {
-					$empty_input = '<input type="hidden" name="add-to-cart" value="' . $product->get_id() . '" />';
+					$hidden_input = '<input type="hidden" name="add-to-cart" value="' . $product->get_id() . '" />';
 				} elseif ( ProductType::GROUPED === $product_type ) {
-					$empty_input = '<input type="hidden" name="add-to-cart" value="' . $product->get_id() . '" />';
+					$hidden_input = '<input type="hidden" name="add-to-cart" value="' . $product->get_id() . '" />';
 				}
 			} else {
 				// Otherwise, we use the Interactivity API.
@@ -341,7 +342,7 @@ class AddToCartWithOptions extends AbstractBlock {
 				$hooks_before,
 				$template_part_blocks,
 				$hooks_after,
-				$empty_input
+				$hidden_input
 			);
 
 			ob_start();
