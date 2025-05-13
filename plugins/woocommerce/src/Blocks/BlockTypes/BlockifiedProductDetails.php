@@ -77,69 +77,104 @@ class BlockifiedProductDetails extends AbstractBlock {
 	 * @return string Rendered block output.
 	 */
 	protected function render( $attributes, $content, $block ) {
-		return $this->hide_empty_accordion_items( $content, $block );
+		$parsed_block = $block->parsed_block;
+		$parsed_block = $this->hide_empty_accordion_items( $parsed_block, $block->context );
+
+		$inner_content = array_reduce(
+			$parsed_block['innerBlocks'],
+			function ( $carry, $parsed_inner_block ) use ( $block ) {
+				$carry .= ( new \WP_Block( $parsed_inner_block, $block->context ) )->render();
+				return $carry;
+			},
+			''
+		);
+
+		return sprintf(
+			'<div %1$s>%2$s</div>',
+			get_block_wrapper_attributes(),
+			$inner_content
+		);
 	}
 
 	/**
 	 * Hide empty accordion items.
 	 *
-	 * @param string   $content Block content.
-	 * @param WP_Block $block Block instance.
+	 * @param array $parsed_block Parsed block.
+	 * @param array $context Context.
 	 *
-	 * @return string Rendered block output.
+	 * @return array Parsed block.
 	 */
-	private function hide_empty_accordion_items( $content, $block ) {
-		$accordion_items = $this->find_accordion_items( $block->parsed_block );
-
-		if ( ! $accordion_items ) {
-			return $content;
+	private function hide_empty_accordion_items( $parsed_block, $context ) {
+		if ( ! $this->has_accordion( $parsed_block ) ) {
+			return $parsed_block;
 		}
 
-		$accordion_items_visibility = array_map(
-			function ( $item ) use ( $block ) {
-				$content_block          = end( $item['innerBlocks'] );
-				$rendered_content_block = ( new WP_Block( $content_block, $block->context ) )->render();
-				$p                      = new WP_HTML_Tag_Processor( $rendered_content_block );
-
-				return $p->next_tag( 'img' ) ||
-					$p->next_tag( 'iframe' ) ||
-					$p->next_tag( 'video' ) ||
-					$p->next_tag( 'meter' ) ||
-					! empty( wp_strip_all_tags( $rendered_content_block, true ) );
-			},
-			$accordion_items
-		);
-
-		$p = new WP_HTML_Tag_Processor( $content );
-
-		$counter = 0;
-		while ( $p->next_tag( array( 'class_name' => 'wp-block-woocommerce-accordion-item' ) ) ) {
-			if ( ! $accordion_items_visibility[ $counter ] ) {
-				$p->set_attribute( 'style', 'display:none;' );
-				$p->set_attribute( 'hidden', true );
+		if ( 'woocommerce/accordion-group' === $parsed_block['blockName'] ) {
+			foreach ( $parsed_block['innerBlocks'] as $key => $inner_block ) {
+				$parsed_block['innerBlocks'][ $key ] = $this->mark_accordion_item_hidden( $inner_block, $context );
 			}
-			++$counter;
+			$parsed_block['innerBlocks']  = array_values( array_filter( $parsed_block['innerBlocks'] ) );
+			$openning_tag                 = reset( $parsed_block['innerContent'] );
+			$closing_tag                  = end( $parsed_block['innerContent'] );
+			$parsed_block['innerContent'] = array_merge(
+				array( $openning_tag ),
+				array_fill( 0, count( $parsed_block['innerBlocks'] ), null ),
+				array( $closing_tag )
+			);
+			return $parsed_block;
 		}
 
-		return $p->get_updated_html();
+		foreach ( $parsed_block['innerBlocks'] as $key => $inner_block ) {
+			$parsed_block['innerBlocks'][ $key ] = $this->hide_empty_accordion_items( $inner_block, $context );
+		}
+
+		return $parsed_block;
 	}
 
 	/**
-	 * Find accordion items.
+	 * Mark an accordion item as hidden if it has no content.
 	 *
-	 * @param array $block Block instance.
+	 * @param array $item Item to mark.
+	 * @param array $context Context.
 	 *
-	 * @return array|false Accordion items.
+	 * @return array Item.
 	 */
-	private function find_accordion_items( $block ) {
-		if ( 'woocommerce/accordion-group' === $block['blockName'] ) {
-			return $block['innerBlocks'];
+	private function mark_accordion_item_hidden( $item, $context ) {
+		$content_block          = end( $item['innerBlocks'] );
+		$rendered_content_block = ( new WP_Block( $content_block, $context ) )->render();
+		$p                      = new WP_HTML_Tag_Processor( $rendered_content_block );
+
+		$has_content = $p->next_tag( 'img' ) ||
+			$p->next_tag( 'iframe' ) ||
+			$p->next_tag( 'video' ) ||
+			$p->next_tag( 'meter' ) ||
+			! empty( wp_strip_all_tags( $rendered_content_block, true ) );
+
+		if ( ! $has_content ) {
+			return array();
 		}
 
-		foreach ( $block['innerBlocks'] as $inner_block ) {
-			$items = $this->find_accordion_items( $inner_block );
-			if ( $items ) {
-				return $items;
+		return $item;
+	}
+
+	/**
+	 * Check if a parsed block has an accordion.
+	 *
+	 * @param array $parsed_block Parsed block.
+	 *
+	 * @return bool True if the block has an accordion, false otherwise.
+	 */
+	private function has_accordion( $parsed_block ) {
+		if (
+			'woocommerce/accordion-group' === $parsed_block['blockName'] &&
+			! empty( $parsed_block['attrs']['metadata']['isProductDetailsInnerBlock'] )
+		) {
+			return true;
+		}
+
+		foreach ( $parsed_block['innerBlocks'] as $inner_block ) {
+			if ( $this->has_accordion( $inner_block ) ) {
+				return true;
 			}
 		}
 
