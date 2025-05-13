@@ -27,6 +27,7 @@ import {
 import ProductSaleBadge from '../sale-badge/block';
 import './style.scss';
 import { BlockAttributes, ImageSizing } from './types';
+import { isTryingToDisplayLegacySaleBadge } from './utils';
 
 const ImagePlaceholder = ( props ): JSX.Element => {
 	return (
@@ -117,15 +118,7 @@ const displayLegacySaleBadge = ( props: Props ) => {
 	const isInAllProducts = ! isEmpty( product );
 
 	if ( isInAllProducts ) {
-		// If the All Products block is pristine, it doesn't have a showSaleBadge attribute
-		// but it was `true` by default.
-		const trueByDefault = props.showSaleBadge === undefined;
-
-		// If the All Products block was edited, it will have a showSaleBadge attribute
-		// that we should respect.
-		const trueAfterEdit = props.showSaleBadge === true;
-
-		return trueByDefault || trueAfterEdit;
+		return isTryingToDisplayLegacySaleBadge( props.showSaleBadge );
 	}
 
 	return false;

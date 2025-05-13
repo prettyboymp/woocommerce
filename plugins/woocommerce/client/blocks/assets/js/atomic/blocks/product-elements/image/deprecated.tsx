@@ -9,22 +9,14 @@ import { createBlock } from '@wordpress/blocks';
 import metadata from './block.json';
 import { BlockAttributes } from './types';
 import save from '../save';
+import { isTryingToDisplayLegacySaleBadge } from './utils';
 
 // In v2, we're migrating the `showSaleBadge` attribute to an inner block.
 const v1 = {
 	save,
 	attributes: metadata.attributes,
-	isEligible: ( { showSaleBadge }: BlockAttributes ) => {
-		// If the block is pristine, it doesn't have a showSaleBadge attribute
-		// but it is `true` by default.
-		const trueByDefault = showSaleBadge === undefined;
-
-		// If the block was edited, it will have a showSaleBadge attribute
-		// that we should respect.
-		const trueAfterEdit = showSaleBadge === true;
-
-		return trueByDefault || trueAfterEdit;
-	},
+	isEligible: ( { showSaleBadge }: BlockAttributes ) =>
+		isTryingToDisplayLegacySaleBadge( showSaleBadge ),
 	migrate: ( attributes: BlockAttributes ) => {
 		const { showSaleBadge, saleBadgeAlign } = attributes;
 
