@@ -22,6 +22,7 @@ const v1 = {
 		...metadata.attributes,
 	},
 	save,
+	isEligible: () => true,
 	migrate: ( attributes: BlockAttributesV1 ) => {
 		const { showSaleBadge, saleBadgeAlign } = attributes;
 		console.log( 'migration starts', attributes );
