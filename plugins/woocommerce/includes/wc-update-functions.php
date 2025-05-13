@@ -3081,3 +3081,11 @@ function wc_update_990_remove_email_notes() {
 		array( '%s' )
 	);
 }
+
+/**
+ * Remove DB options as a consequence of baking in the new Payments Settings page.
+ */
+function wc_update_990_remove_reactify_classic_payments_settings_feature_options() {
+	delete_option( 'woocommerce_feature_reactify-classic-payments-settings_enabled' );
+	delete_option( 'woocommerce_pre_install_woocommerce_payments_promotion_settings' );
+}

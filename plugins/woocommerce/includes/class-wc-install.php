@@ -291,6 +291,7 @@ class WC_Install {
 			'wc_update_990_add_old_refunded_order_items_to_product_lookup_table',
 			'wc_update_990_remove_wc_count_comments_transient',
 			'wc_update_990_remove_email_notes',
+			'wc_update_990_remove_reactify_classic_payments_settings_feature_options',
 		),
 	);
 
