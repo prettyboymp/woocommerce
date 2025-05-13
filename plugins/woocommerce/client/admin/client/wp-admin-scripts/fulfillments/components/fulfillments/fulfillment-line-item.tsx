@@ -108,13 +108,15 @@ export default function FulfillmentLineItem( {
 				) }
 				<div className="woocommerce-fulfillment-item-title">
 					<div className="woocommerce-fulfillment-item-image-container">
-						<img
-							src={ item.image.src }
-							alt={ item.name }
-							width={ 32 }
-							height={ 32 }
-							className="woocommerce-fulfillment-item-image"
-						/>
+						{ item.image?.src && (
+							<img
+								src={ item.image?.src }
+								alt={ item.name }
+								width={ 32 }
+								height={ 32 }
+								className="woocommerce-fulfillment-item-image"
+							/>
+						) }
 					</div>
 					<div className="woocommerce-fulfillment-item-name-sku">
 						<div className="woocommerce-fulfillment-item-name">

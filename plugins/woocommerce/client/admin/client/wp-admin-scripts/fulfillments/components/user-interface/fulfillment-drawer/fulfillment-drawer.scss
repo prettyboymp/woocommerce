@@ -7,6 +7,7 @@
 	z-index: 9999;
 	width: calc(27.7778vw + 1px);
 	min-width: 401px;
+	max-width: 501px;
 	pointer-events: none;
 	overflow: hidden;
 
@@ -16,6 +17,7 @@
 		top: 0;
 		width: 27.7778vw;
 		min-width: 400px;
+		max-width: 500px;
 		height: 100%;
 		background: #fff;
 		padding: 0;

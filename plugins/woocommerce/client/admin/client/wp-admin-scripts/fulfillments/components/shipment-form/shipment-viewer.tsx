@@ -30,10 +30,14 @@ export default function ShipmentViewer() {
 			header={
 				isShipmentInformationProvided ? (
 					<>
-						<img
-							src={ shipmentProviderObject?.icon as string }
-							alt={ shipmentProviderObject?.label as string }
-						/>
+						{ shipmentProviderObject ? (
+							<img
+								src={ shipmentProviderObject.icon as string }
+								alt={ shipmentProviderObject.label as string }
+							/>
+						) : (
+							<TruckIcon />
+						) }
 						<h3>
 							{ trackingNumber }{ ' ' }
 							<CopyIcon copyText={ trackingNumber } />
