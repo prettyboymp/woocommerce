@@ -27,6 +27,8 @@ const entries = {
 	...styleEntries,
 	...editorStyleEntries,
 
+	'woocommerce/mini-cart': './assets/js/blocks/mini-cart/iapi-frontend.ts',
+
 	// Other
 	'@woocommerce/stores/woocommerce/cart':
 		'./assets/js/base/stores/woocommerce/cart.ts',

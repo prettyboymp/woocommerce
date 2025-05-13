@@ -13,6 +13,7 @@ use Automattic\WooCommerce\Blocks\Utils\BlockTemplateUtils;
 use Automattic\WooCommerce\Blocks\Utils\Utils;
 use Automattic\WooCommerce\Blocks\Utils\MiniCartUtils;
 use Automattic\WooCommerce\Blocks\Utils\BlockHooksTrait;
+use Automattic\WooCommerce\Admin\Features\Features;
 
 /**
  * Mini-Cart class.
@@ -144,7 +145,7 @@ class MiniCart extends AbstractBlock {
 	 * @return array|string
 	 */
 	protected function get_block_type_script( $key = null ) {
-		if ( is_cart() || is_checkout() ) {
+		if ( is_cart() || is_checkout() || Features::is_enabled( 'experimental-iapi-mini-cart' ) ) {
 			return;
 		}
 
@@ -248,6 +249,10 @@ class MiniCart extends AbstractBlock {
 	 * Prints the variable containing information about the scripts to lazy load.
 	 */
 	public function print_lazy_load_scripts() {
+		if ( Features::is_enabled( 'experimental-iapi-mini-cart' ) ) {
+			return;
+		}
+
 		$script_data = $this->asset_api->get_script_data( 'assets/client/blocks/mini-cart-component-frontend.js' );
 
 		$num_dependencies = is_countable( $script_data['dependencies'] ) ? count( $script_data['dependencies'] ) : 0;
@@ -491,6 +496,31 @@ class MiniCart extends AbstractBlock {
 				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 				file_get_contents( Package::get_path() . 'templates/' . BlockTemplateUtils::DIRECTORY_NAMES['TEMPLATE_PARTS'] . '/mini-cart.html' )
 			);
+		}
+
+		if ( Features::is_enabled( 'experimental-iapi-mini-cart' ) ) {
+			wp_enqueue_script_module( $this->get_full_block_name() );
+			$context = array(
+				'isOpen' => false,
+			);
+			ob_start();
+			?>
+			<div <?php echo wp_interactivity_data_wp_context( $context ); ?> data-wp-interactive="woocommerce/mini-cart" class="<?php echo esc_attr( $wrapper_classes ); ?>" style="<?php echo esc_attr( $wrapper_styles ); ?>">
+				<button data-wp-on--click="callbacks.toggleIsOpen" class="wc-block-mini-cart__button" aria-label="<?php echo esc_attr( __( 'Cart', 'woocommerce' ) ); ?>">
+					<?php echo $button_html; ?>
+				</button>
+				<div  data-wp-bind--class="state.derivedClassName" class="is-loading wc-block-components-drawer__screen-overlay wc-block-components-drawer__screen-overlay--is-hidden" aria-hidden="true">
+					<div class="wc-block-mini-cart__drawer wc-block-components-drawer">
+						<div class="wc-block-components-drawer__content">
+							<div class="wc-block-mini-cart__template-part">
+								<?php echo wp_kses_post( $template_part_contents ); ?>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php
+			return ob_get_clean();
 		}
 
 		return '<div class="' . esc_attr( $wrapper_classes ) . '" style="' . esc_attr( $wrapper_styles ) . '">
