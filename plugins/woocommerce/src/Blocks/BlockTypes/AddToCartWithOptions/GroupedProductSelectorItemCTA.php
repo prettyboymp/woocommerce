@@ -38,6 +38,9 @@ class GroupedProductSelectorItemCTA extends AbstractBlock {
 		woocommerce_quantity_input( $args );
 		$quantity_html = ob_get_clean();
 
+		// Remove the label because we are rendering one as a separate block via GroupedProductSelectorItemLabel.
+		$quantity_html = AddToCartWithOptionsUtils::remove_quantity_label( $quantity_html );
+
 		// Modify the quantity input to add stepper buttons.
 		$product_name = $product->get_name();
 
