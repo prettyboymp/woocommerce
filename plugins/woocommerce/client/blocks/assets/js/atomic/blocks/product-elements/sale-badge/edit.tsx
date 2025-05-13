@@ -20,6 +20,9 @@ const Edit = ( {
 }: BlockEditProps< BlockAttributes > & { context: Context } ): JSX.Element => {
 	const blockProps = useBlockProps();
 
+	// Remove the `style` prop from the block props to avoid passing it to the wrapper div.
+	const { style, ...wrapperProps } = blockProps;
+
 	const blockAttrs = {
 		...attributes,
 		...context,
@@ -43,7 +46,7 @@ const Edit = ( {
 	);
 
 	return (
-		<div { ...blockProps }>
+		<div { ...wrapperProps }>
 			<Block { ...blockAttrs } />
 		</div>
 	);
