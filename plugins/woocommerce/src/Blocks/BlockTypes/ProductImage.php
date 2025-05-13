@@ -72,15 +72,16 @@ class ProductImage extends AbstractBlock {
 			return '';
 		}
 
-		$classes_and_styles = StyleAttributesUtils::get_classes_and_styles_by_attributes( $attributes );
+		$font_size = StyleAttributesUtils::get_font_size_class_and_style( $attributes );
 
 		$on_sale_badge = sprintf(
-			'<div class="wc-block-components-product-sale-badge wc-block-grid__product-onsale %s" style="%s">
+			'<div class="wc-block-components-product-sale-badge %s wc-block-grid__product-onsale %s" style="%s">
 				<span aria-hidden="true">%s</span>
 				<span class="screen-reader-text">%s</span>
 			</div>',
-			isset( $classes_and_styles['class'] ) ? esc_attr( $classes_and_styles['class'] ) : '',
-			isset( $classes_and_styles['style'] ) ? esc_attr( $classes_and_styles['style'] ) : '',
+			isset( $attributes['saleBadgeAlign'] ) ? 'wc-block-components-product-sale-badge--align-' . esc_attr( $attributes['saleBadgeAlign'] ) : '',
+			isset( $font_size['class'] ) ? esc_attr( $font_size['class'] ) : '',
+			isset( $font_size['style'] ) ? esc_attr( $font_size['style'] ) : '',
 			esc_html__( 'Sale', 'woocommerce' ),
 			esc_html__( 'Product on sale', 'woocommerce' )
 		);
