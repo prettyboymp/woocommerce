@@ -22,7 +22,17 @@ const v1 = {
 		...metadata.attributes,
 	},
 	save,
-	isEligible: () => true,
+	isEligible: ( { showSaleBadge }: BlockAttributesV1 ) => {
+		// If the block is pristine, it doesn't have a showSaleBadge attribute
+		// but it is `true` by default.
+		const trueByDefault = showSaleBadge === undefined;
+
+		// If the block was edited, it will have a showSaleBadge attribute
+		// that we should respect.
+		const trueAfterEdit = showSaleBadge === true;
+
+		return trueByDefault || trueAfterEdit;
+	},
 	migrate: ( attributes: BlockAttributesV1 ) => {
 		const { showSaleBadge, saleBadgeAlign } = attributes;
 		console.log( 'migration starts', attributes );
