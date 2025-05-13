@@ -306,7 +306,7 @@ class AddToCartWithOptions extends AbstractBlock {
 			$cart_redirect_after_add = get_option( 'woocommerce_cart_redirect_after_add' );
 			$form_attributes         = '';
 			$empty_input             = '';
-			if ( true || $hooks_before || $hooks_after || 'yes' === $cart_redirect_after_add ) {
+			if ( $hooks_before || $hooks_after || 'yes' === $cart_redirect_after_add ) {
 				// If an extension is hoooking into the form, we fall back to a regular HTML form.
 				$form_attributes = array(
 					'action'  => esc_url(
