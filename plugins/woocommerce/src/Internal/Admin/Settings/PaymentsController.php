@@ -3,7 +3,6 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce\Internal\Admin\Settings;
 
-use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Exception;
 use WC_Gateway_BACS;
 use WC_Gateway_Cheque;
