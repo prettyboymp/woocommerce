@@ -37,7 +37,7 @@ describe( 'NewFulfillmentForm', () => {
 	const mockContext = {
 		order: null,
 		fulfillments: [],
-		openSection: true,
+		openSection: 'order',
 	};
 
 	beforeEach( () => {
