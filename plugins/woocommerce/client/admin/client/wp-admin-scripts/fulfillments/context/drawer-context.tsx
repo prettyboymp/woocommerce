@@ -73,6 +73,9 @@ export const FulfillmentDrawerProvider = ( {
 			}
 			if ( ! isEqual( fulfillmentsData, fulfillments ) ) {
 				setFulfillments( fulfillmentsData ?? [] );
+				if ( ! fulfillmentsData || fulfillmentsData.length === 0 ) {
+					setOpenSection( 'order' );
+				}
 			}
 			return {
 				isLoading: store.isLoading( orderId ),
