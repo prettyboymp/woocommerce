@@ -92,7 +92,10 @@ export default function WooPaymentsModal( {
 
 	return (
 		<Modal setIsOpen={ handleClose }>
-			<OnboardingProvider closeModal={ handleClose }>
+			<OnboardingProvider
+				closeModal={ handleClose }
+				source="settings-payments"
+			>
 				<WooPaymentsOnboarding />
 			</OnboardingProvider>
 		</Modal>
