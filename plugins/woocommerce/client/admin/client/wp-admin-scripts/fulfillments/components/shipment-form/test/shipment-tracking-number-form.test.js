@@ -39,6 +39,8 @@ describe( 'ShipmentTrackingNumberForm', () => {
 		setShipmentProvider: jest.fn(),
 		trackingUrl: '',
 		setTrackingUrl: jest.fn(),
+		providerName: '',
+		setProviderName: jest.fn(),
 	};
 
 	beforeEach( () => {

@@ -48,6 +48,7 @@ describe( 'ShipmentViewer', () => {
 		shipmentProvider: '',
 		trackingNumber: '',
 		trackingUrl: '',
+		selectedOption: '',
 	};
 
 	beforeEach( () => {
@@ -55,7 +56,8 @@ describe( 'ShipmentViewer', () => {
 		useShipmentFormContext.mockReturnValue( mockContext );
 	} );
 
-	it( 'renders no shipment information when data is missing', () => {
+	it( 'renders no shipment information when option is set to no info', () => {
+		mockContext.selectedOption = 'no-info';
 		render( <ShipmentViewer /> );
 		expect( screen.getByTestId( 'truck-icon' ) ).toBeInTheDocument();
 		expect(
@@ -64,6 +66,7 @@ describe( 'ShipmentViewer', () => {
 	} );
 
 	it( 'renders shipment information when data is provided', () => {
+		mockContext.selectedOption = 'tracking-number';
 		mockContext.shipmentProvider = 'ups';
 		mockContext.trackingNumber = '12345678';
 		mockContext.trackingUrl = 'https://www.ups.com/track?tracknum=12345678';

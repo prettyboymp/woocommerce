@@ -9,8 +9,16 @@ import React, { createContext, useEffect } from 'react';
 import { Fulfillment } from '../data/types';
 import { useShipmentFormContext } from './shipment-form-context';
 import { ItemQuantity } from '../utils/order-utils';
-
-const WC_ORDER_CLASS = 'WC_Order';
+import {
+	ITEMS_META_KEY,
+	PROVIDER_NAME_META_KEY,
+	SHIPMENT_OPTION_NO_INFO,
+	SHIPMENT_PROVIDER_META_KEY,
+	SHIPPING_OPTION_META_KEY,
+	TRACKING_NUMBER_META_KEY,
+	TRACKING_URL_META_KEY,
+	WC_ORDER_CLASS,
+} from '../data/constants';
 
 interface FulfillmentContextProps {
 	orderId: number;
@@ -50,8 +58,13 @@ export const FulfillmentProvider = ( {
 } ) => {
 	const [ _fulfillment, _setFulfillment ] =
 		React.useState< Fulfillment | null >( fulfillment ?? null );
-	const { trackingNumber, trackingUrl, shipmentProvider } =
-		useShipmentFormContext();
+	const {
+		selectedOption,
+		trackingNumber,
+		trackingUrl,
+		shipmentProvider,
+		providerName,
+	} = useShipmentFormContext();
 
 	useEffect( () => {
 		if ( ! orderId ) {
@@ -68,22 +81,44 @@ export const FulfillmentProvider = ( {
 			meta_data: [
 				{
 					id: 0,
-					key: '_tracking_number',
-					value: trackingNumber,
+					key: SHIPPING_OPTION_META_KEY,
+					value: selectedOption,
 				},
 				{
 					id: 0,
-					key: '_tracking_url',
-					value: trackingUrl,
+					key: TRACKING_NUMBER_META_KEY,
+					value:
+						selectedOption === SHIPMENT_OPTION_NO_INFO
+							? ''
+							: trackingNumber,
 				},
 				{
 					id: 0,
-					key: '_shipment_provider',
-					value: shipmentProvider,
+					key: TRACKING_URL_META_KEY,
+					value:
+						selectedOption === SHIPMENT_OPTION_NO_INFO
+							? ''
+							: trackingUrl,
 				},
 				{
 					id: 0,
-					key: '_items',
+					key: SHIPMENT_PROVIDER_META_KEY,
+					value:
+						selectedOption === SHIPMENT_OPTION_NO_INFO
+							? ''
+							: shipmentProvider,
+				},
+				{
+					id: 0,
+					key: PROVIDER_NAME_META_KEY,
+					value:
+						selectedOption === SHIPMENT_OPTION_NO_INFO
+							? ''
+							: providerName,
+				},
+				{
+					id: 0,
+					key: ITEMS_META_KEY,
 					value: selectedItems.map( ( item ) => {
 						return {
 							item_id: parseInt( item.item_id, 10 ),
@@ -98,6 +133,9 @@ export const FulfillmentProvider = ( {
 		trackingNumber,
 		trackingUrl,
 		shipmentProvider,
+		providerName,
+		selectedOption,
+		fulfillment?.id,
 		selectedItems,
 	] );
 

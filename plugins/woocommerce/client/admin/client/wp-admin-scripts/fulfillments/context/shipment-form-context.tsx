@@ -8,8 +8,18 @@ import React, { createContext } from 'react';
  */
 import { Fulfillment } from '../data/types';
 import { getFulfillmentMeta } from '../utils/fulfillment-utils';
+import {
+	PROVIDER_NAME_META_KEY,
+	SHIPMENT_OPTION_DEFAULT,
+	SHIPMENT_PROVIDER_META_KEY,
+	SHIPPING_OPTION_META_KEY,
+	TRACKING_NUMBER_META_KEY,
+	TRACKING_URL_META_KEY,
+} from '../data/constants';
 
 interface ShipmentFormContextProps {
+	selectedOption: string;
+	setSelectedOption: ( selectedOption: string ) => void;
 	trackingNumber: string;
 	setTrackingNumber: ( trackingNumber: string ) => void;
 	shipmentProvider: string;
@@ -21,6 +31,8 @@ interface ShipmentFormContextProps {
 }
 
 const defaultContextProps: ShipmentFormContextProps = {
+	selectedOption: SHIPMENT_OPTION_DEFAULT,
+	setSelectedOption: () => {},
 	trackingNumber: '',
 	setTrackingNumber: () => {},
 	shipmentProvider: '',
@@ -51,23 +63,50 @@ export const ShipmentFormProvider = ( {
 	fulfillment?: Fulfillment | null;
 	children: React.ReactNode;
 } ) => {
+	const [ selectedOption, setSelectedOption ] = React.useState(
+		defaultContextProps.selectedOption
+	);
 	const [ trackingNumber, setTrackingNumber ] = React.useState(
-		getFulfillmentMeta( fulfillment, '_tracking_number', '' )
+		defaultContextProps.trackingNumber
 	);
 	const [ shipmentProvider, setShipmentProvider ] = React.useState(
-		getFulfillmentMeta( fulfillment, '_shipment_provider', '' )
+		defaultContextProps.shipmentProvider
 	);
 	const [ trackingUrl, setTrackingUrl ] = React.useState(
-		getFulfillmentMeta( fulfillment, '_tracking_url', '' )
+		defaultContextProps.trackingUrl
+	);
+	const [ providerName, setProviderName ] = React.useState(
+		defaultContextProps.providerName
 	);
 
-	const [ providerName, setProviderName ] = React.useState(
-		getFulfillmentMeta( fulfillment, '_provider_name', '' )
-	);
+	// fulfillment değiştiğinde state'leri güncelle
+	React.useEffect( () => {
+		setSelectedOption(
+			getFulfillmentMeta(
+				fulfillment,
+				SHIPPING_OPTION_META_KEY,
+				'tracking-number'
+			)
+		);
+		setTrackingNumber(
+			getFulfillmentMeta( fulfillment, TRACKING_NUMBER_META_KEY, '' )
+		);
+		setShipmentProvider(
+			getFulfillmentMeta( fulfillment, SHIPMENT_PROVIDER_META_KEY, '' )
+		);
+		setTrackingUrl(
+			getFulfillmentMeta( fulfillment, TRACKING_URL_META_KEY, '' )
+		);
+		setProviderName(
+			getFulfillmentMeta( fulfillment, PROVIDER_NAME_META_KEY, '' )
+		);
+	}, [ fulfillment ] );
 
 	return (
 		<ShipmentFormContextValue.Provider
 			value={ {
+				selectedOption,
+				setSelectedOption,
 				trackingNumber,
 				setTrackingNumber,
 				shipmentProvider,

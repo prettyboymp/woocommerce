@@ -1,85 +1,104 @@
 /**
  * External dependencies
  */
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 /**
  * Internal dependencies
  */
-import ShipmentForm from '../index';
+import ShipmentForm from '../../shipment-form';
+import { useShipmentFormContext } from '../../../context/shipment-form-context';
+import {
+	SHIPMENT_OPTION_MANUAL_ENTRY,
+	SHIPMENT_OPTION_NO_INFO,
+	SHIPMENT_OPTION_TRACKING_NUMBER,
+} from '../../../data/constants';
 
-// Mock subcomponents
+// 🔁 Mock dependent components
 jest.mock( '../shipment-tracking-number-form', () => () => (
-	<div data-testid="tracking-number-form">Tracking Number Form</div>
+	<div data-testid="tracking-form" />
 ) );
 jest.mock( '../shipment-manual-entry-form', () => () => (
-	<div data-testid="manual-entry-form">Manual Entry Form</div>
+	<div data-testid="manual-form" />
 ) );
-jest.mock( '../../user-interface/fulfillments-card/card', () => ( {
-	__esModule: true,
-	default: ( { header, children } ) => (
-		<div data-testid="fulfillment-card">
-			<div data-testid="card-header">{ header }</div>
-			<div data-testid="card-body">{ children }</div>
-		</div>
-	),
-} ) );
 jest.mock( '../../../utils/icons', () => ( {
-	TruckIcon: () => <span data-testid="truck-icon" />,
-} ) );
-jest.mock( '@wordpress/components', () => ( {
-	...jest.requireActual( '@wordpress/components' ),
-	CheckboxControl: ( { label, checked, onChange } ) => {
-		const randomId = Math.random();
-		return (
-			<div data-testid="checkbox-control">
-				<label htmlFor={ 'checkbox-' + randomId }>
-					<input
-						id={ 'checkbox-' + randomId }
-						type="radio"
-						checked={ checked }
-						onChange={ () => onChange( ! checked ) }
-					/>
-					{ label }
-				</label>
-			</div>
-		);
-	},
+	TruckIcon: () => <div data-testid="truck-icon" />,
 } ) );
 
-describe( 'ShipmentForm', () => {
-	it( 'renders the header and icon', () => {
-		render( <ShipmentForm /> );
-		expect( screen.getByTestId( 'card-header' ) ).toHaveTextContent(
-			'Shipment Information'
-		);
-		expect( screen.getByTestId( 'truck-icon' ) ).toBeInTheDocument();
+// 🧪 Mock context
+const mockSetSelectedOption = jest.fn();
+
+jest.mock( '../../../context/shipment-form-context', () => ( {
+	useShipmentFormContext: jest.fn(),
+} ) );
+
+beforeEach( () => {
+	jest.clearAllMocks();
+} );
+
+function setup( selectedOption ) {
+	useShipmentFormContext.mockReturnValue( {
+		selectedOption,
+		setSelectedOption: mockSetSelectedOption,
 	} );
 
-	it( 'renders the tracking number form by default', () => {
-		render( <ShipmentForm /> );
+	render( <ShipmentForm /> );
+}
+
+describe( '<ShipmentForm />', () => {
+	it( 'renders all shipment option radios', () => {
+		setup();
+
 		expect(
-			screen.getByTestId( 'tracking-number-form' )
+			screen.getByLabelText( 'Tracking Number' )
+		).toBeInTheDocument();
+		expect( screen.getByLabelText( 'Enter manually' ) ).toBeInTheDocument();
+		expect(
+			screen.getByLabelText( 'No shipment information' )
 		).toBeInTheDocument();
 	} );
 
-	it( 'switches to manual entry form when the corresponding radio is selected', () => {
-		render( <ShipmentForm /> );
-		fireEvent.click( screen.getByLabelText( 'Enter manually' ) );
-		expect( screen.getByTestId( 'manual-entry-form' ) ).toBeInTheDocument();
+	it( 'shows tracking number form when selected', () => {
+		setup( SHIPMENT_OPTION_TRACKING_NUMBER );
+
+		expect( screen.getByTestId( 'tracking-form' ) ).toBeInTheDocument();
+		expect( screen.queryByTestId( 'manual-form' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'shows manual entry form when selected', () => {
+		setup( SHIPMENT_OPTION_MANUAL_ENTRY );
+
+		expect( screen.getByTestId( 'manual-form' ) ).toBeInTheDocument();
 		expect(
-			screen.queryByTestId( 'tracking-number-form' )
+			screen.queryByTestId( 'tracking-form' )
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'switches to no shipment information when the corresponding radio is selected', () => {
-		render( <ShipmentForm /> );
+	it( 'does not show any form when no info is selected', () => {
+		setup( SHIPMENT_OPTION_NO_INFO );
+
+		expect(
+			screen.queryByTestId( 'tracking-form' )
+		).not.toBeInTheDocument();
+		expect( screen.queryByTestId( 'manual-form' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'calls setSelectedOption when a different radio is selected', async () => {
+		setup( '' );
+
+		fireEvent.click( screen.getByLabelText( 'Tracking Number' ) );
+		expect( mockSetSelectedOption ).toHaveBeenCalledWith(
+			SHIPMENT_OPTION_TRACKING_NUMBER
+		);
+
+		fireEvent.click( screen.getByLabelText( 'Enter manually' ) );
+		expect( mockSetSelectedOption ).toHaveBeenCalledWith(
+			SHIPMENT_OPTION_MANUAL_ENTRY
+		);
+
 		fireEvent.click( screen.getByLabelText( 'No shipment information' ) );
-		expect(
-			screen.queryByTestId( 'tracking-number-form' )
-		).not.toBeInTheDocument();
-		expect(
-			screen.queryByTestId( 'manual-entry-form' )
-		).not.toBeInTheDocument();
+		expect( mockSetSelectedOption ).toHaveBeenCalledWith(
+			SHIPMENT_OPTION_NO_INFO
+		);
 	} );
 } );

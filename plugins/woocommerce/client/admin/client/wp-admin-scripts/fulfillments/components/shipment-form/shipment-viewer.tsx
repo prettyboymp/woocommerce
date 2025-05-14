@@ -2,7 +2,6 @@
  * External dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { isEmpty } from 'lodash';
 
 /**
  * Internal dependencies
@@ -12,21 +11,39 @@ import ShipmentProviders from '../../data/shipment-providers';
 import { CopyIcon, TruckIcon } from '../../utils/icons';
 import FulfillmentCard from '../user-interface/fulfillments-card/card';
 import MetaList from '../user-interface/meta-list/meta-list';
+import { findShipmentProviderName } from '../../utils/fulfillment-utils';
+import { SHIPMENT_OPTION_NO_INFO } from '../../data/constants';
 
 export default function ShipmentViewer() {
-	const { shipmentProvider, trackingNumber, trackingUrl } =
-		useShipmentFormContext();
+	const {
+		shipmentProvider,
+		providerName,
+		trackingNumber,
+		trackingUrl,
+		selectedOption,
+	} = useShipmentFormContext();
 	const isShipmentInformationProvided =
-		! isEmpty( shipmentProvider ) &&
-		! isEmpty( trackingNumber ) &&
-		! isEmpty( trackingUrl );
-	const shipmentProviderObject = ShipmentProviders.find(
-		( p ) => p.value === shipmentProvider
-	);
+		selectedOption !== SHIPMENT_OPTION_NO_INFO;
+
+	const shipmentProviderObject =
+		shipmentProvider !== 'other'
+			? ShipmentProviders.find( ( p ) => p.value === shipmentProvider )
+			: null;
+
+	const getShipmentProviderLabel = (
+		savedProvider: string,
+		savedProviderName: string
+	) => {
+		if ( savedProvider === 'other' ) {
+			return savedProviderName;
+		}
+		return findShipmentProviderName( savedProvider );
+	};
 
 	return (
 		<FulfillmentCard
 			isCollapsable={ isShipmentInformationProvided }
+			initialState="collapsed"
 			header={
 				isShipmentInformationProvided ? (
 					<>
@@ -62,9 +79,10 @@ export default function ShipmentViewer() {
 						},
 						{
 							label: __( 'Provider name', 'woocommerce' ),
-							value:
-								shipmentProviderObject?.label ??
+							value: getShipmentProviderLabel(
 								shipmentProvider,
+								providerName
+							),
 						},
 						{
 							label: __( 'Tracking URL', 'woocommerce' ),

@@ -13,7 +13,7 @@ import { isEmpty } from 'lodash';
 import { useShipmentFormContext } from '../../context/shipment-form-context';
 import ErrorLabel from '../user-interface/error-label';
 import { EditIcon } from '../../utils/icons';
-import ShipmentProviders from '../../data/shipment-providers';
+import { findShipmentProviderName } from '../../utils/fulfillment-utils';
 
 export default function ShipmentTrackingNumberForm() {
 	const [ trackingNumberTemp, setTrackingNumberTemp ] = useState( '' );
@@ -22,10 +22,11 @@ export default function ShipmentTrackingNumberForm() {
 	const {
 		trackingNumber,
 		setTrackingNumber,
-		shipmentProvider,
-		setShipmentProvider,
 		trackingUrl,
 		setTrackingUrl,
+		setProviderName,
+		shipmentProvider,
+		setShipmentProvider,
 	} = useShipmentFormContext();
 
 	const handleTrackingNumberLookup = () => {
@@ -34,6 +35,7 @@ export default function ShipmentTrackingNumberForm() {
 		if ( trackingNumberTemp === '12345678' ) {
 			setTrackingNumber( trackingNumberTemp );
 			setShipmentProvider( 'ups' );
+			setProviderName( '' );
 			setTrackingUrl( 'https://www.ups.com/track?tracknum=12345678' );
 			setEditMode( false );
 		} else {
@@ -105,12 +107,11 @@ export default function ShipmentTrackingNumberForm() {
 						<h4>{ __( 'Provider', 'woocommerce' ) }</h4>
 						<div className="woocommerce-fulfillment-input-group">
 							<TextControl
+								disabled
 								type="text"
-								value={
-									ShipmentProviders.find(
-										( p ) => p.value === shipmentProvider
-									)?.label ?? shipmentProvider
-								}
+								value={ findShipmentProviderName(
+									shipmentProvider
+								) }
 								onChange={ ( value ) => {
 									setShipmentProvider( value );
 								} }
@@ -123,6 +124,7 @@ export default function ShipmentTrackingNumberForm() {
 						<h4>{ __( 'Tracking URL', 'woocommerce' ) }</h4>
 						<div className="woocommerce-fulfillment-input-group">
 							<TextControl
+								disabled
 								type="text"
 								value={ trackingUrl }
 								onChange={ ( value ) => {
