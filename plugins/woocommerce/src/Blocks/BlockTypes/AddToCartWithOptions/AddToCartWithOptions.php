@@ -167,9 +167,10 @@ class AddToCartWithOptions extends AbstractBlock {
 			$default_quantity = apply_filters( 'woocommerce_add_to_cart_quantity', 1, $product->get_id() );
 
 			$context = array(
-				'productId'   => $product->get_id(),
-				'productType' => $product->get_type(),
-				'quantity'    => $default_quantity,
+				'productId'         => $product->get_id(),
+				'productType'       => $product->get_type(),
+				'quantity'          => $default_quantity,
+				'isGrouped'         => $product->is_type( 'grouped' ),
 				'groupedProductIds' => $product->is_type( 'grouped' ) ? $product->get_children() : array(),
 			);
 

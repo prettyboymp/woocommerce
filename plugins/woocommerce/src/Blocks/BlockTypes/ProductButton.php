@@ -118,29 +118,28 @@ class ProductButton extends AbstractBlock {
 			)
 		);
 
-		// If grouped product, loop through the children and check if any of them are purchasable.
-		$is_grouped_product_purchasable = false;
-		if ( $product->is_type( 'grouped' ) ) {
+		$is_grouped = $product->is_type( 'grouped' );
+		$grouped_product_ids = $product->get_children();
+
+		// Handle grouped product variables
+		if ( $is_grouped ) {
 			$children = $product->get_children();
 			foreach ( $children as $child ) {
 				$child_product = wc_get_product( $child );
 				if ( $child_product->is_purchasable() && $child_product->is_in_stock() ) {
-					$is_grouped_product_purchasable = true;
+					$is_product_purchasable = true;
 					break;
 				}
 			}
-		}
 
-		$is_product_purchasable = $product->is_type( 'grouped' ) ? $is_grouped_product_purchasable : $product->is_purchasable();
-		$is_grouped = $product->is_type( 'grouped' );
-		$grouped_product_ids = $product->get_children();
-		if ( $is_grouped ) {
 			$number_of_items_in_cart = array_sum( array_map( function ( $child_product_id ) {
 				return $this->get_cart_item_quantities_by_product_id( (int) $child_product_id );
 			}, $grouped_product_ids ) );
 		} else {
+			$is_product_purchasable = $product->is_purchasable();
 			$number_of_items_in_cart = $this->get_cart_item_quantities_by_product_id( $product->get_id() );
 		}
+
 		$cart_redirect_after_add  = get_option( 'woocommerce_cart_redirect_after_add' ) === 'yes';
 		$ajax_add_to_cart_enabled = get_option( 'woocommerce_enable_ajax_add_to_cart' ) === 'yes';
 		$is_ajax_button           = $ajax_add_to_cart_enabled && ! $cart_redirect_after_add && $product->supports( 'ajax_add_to_cart' ) && $is_product_purchasable && $product->is_in_stock();

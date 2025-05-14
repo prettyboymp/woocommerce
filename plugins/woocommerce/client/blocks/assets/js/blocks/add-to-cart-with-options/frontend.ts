@@ -16,10 +16,11 @@ export type Context = {
 	productType: string;
 	selectedAttributes: CartVariationItem[];
 	variationId: number | null;
-	groupedProductIds: number[];
 	availableVariations: AvailableVariation[];
 	quantity: number;
 	tempQuantity: number;
+	isGrouped: boolean;
+	groupedProductIds: number[];
 };
 
 interface GroupedCartItem {
@@ -216,10 +217,11 @@ const addToCartWithOptionsStore = store(
 					productId,
 					quantity,
 					selectedAttributes,
+					isGrouped,
 					groupedProductIds,
 				} = getContext< Context >();
 
-				if ( groupedProductIds.length > 0 ) {
+				if ( isGrouped && groupedProductIds.length > 0 ) {
 					// Handle grouped products
 					const form = event.target as HTMLFormElement;
 					const quantityInputs = form.querySelectorAll(
