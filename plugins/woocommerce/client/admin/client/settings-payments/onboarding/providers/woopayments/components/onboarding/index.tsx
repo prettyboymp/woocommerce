@@ -45,7 +45,7 @@ export default function WooPaymentsOnboarding(): React.ReactNode {
 		return (
 			<Routes>
 				<Route
-					path="/woopayments/onboarding/*"
+					path="*"
 					element={
 						<div className="settings-payments-onboarding-modal__wrapper">
 							<Stepper
