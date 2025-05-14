@@ -106,14 +106,16 @@ const Image = ( {
 };
 
 type Props = BlockAttributes &
-	HTMLAttributes< HTMLDivElement > & { style?: Record< string, unknown > } & {
-		product: ProductResponseItem;
-	};
+	HTMLAttributes< HTMLDivElement > & { style?: Record< string, unknown > };
+
+type LegacyProps = Props & {
+	product?: ProductResponseItem;
+};
 
 // props.product is not listed in the BlockAttributes explicitly,
 // but it is implicitly passed from the All Products block.
 // This is what distinguishes this block from the other usage of the Product Image component.
-const displayLegacySaleBadge = ( props: Props ) => {
+const displayLegacySaleBadge = ( props: LegacyProps ) => {
 	const { product } = props;
 	const isInAllProducts = ! isEmpty( product );
 
