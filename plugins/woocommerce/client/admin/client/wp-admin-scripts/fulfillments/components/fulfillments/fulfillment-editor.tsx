@@ -86,7 +86,10 @@ export default function FulfillmentEditor( {
 			].join( ' ' ) }
 		>
 			<div
-				className="woocommerce-fulfillment-stored-fulfillment-list-item-header"
+				className={ [
+					'woocommerce-fulfillment-stored-fulfillment-list-item-header',
+					expanded ? 'is-open' : '',
+				].join( ' ' ) }
 				onClick={ handleChevronClick }
 				onKeyUp={ ( event ) => {
 					if ( event.key === 'Enter' ) {

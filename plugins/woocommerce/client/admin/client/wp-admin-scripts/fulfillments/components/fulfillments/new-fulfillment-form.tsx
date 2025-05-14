@@ -3,6 +3,7 @@
  */
 import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
+import { Button, Icon } from '@wordpress/components';
 
 /**
  * Internal dependencies
@@ -21,7 +22,7 @@ import { useFulfillmentDrawerContext } from '../../context/drawer-context';
 import ErrorLabel from '../user-interface/error-label';
 
 const NewFulfillmentForm: React.FC = () => {
-	const { order, fulfillments, openSection, isEditing } =
+	const { order, fulfillments, openSection, setOpenSection, isEditing } =
 		useFulfillmentDrawerContext();
 	const [ error, setError ] = useState< string | null >( null );
 	const remainingItems = getItemsNotInAnyFulfillment(
@@ -47,15 +48,38 @@ const NewFulfillmentForm: React.FC = () => {
 				isEditing &&
 					'woocommerce-fulfillment-new-fulfillment-form__disabled',
 			].join( ' ' ) }
+			onClick={ () => setOpenSection( 'order' ) }
+			onKeyUp={ ( event ) => {
+				if ( event.key === 'Enter' ) {
+					setOpenSection( 'order' );
+				}
+			} }
+			role="button"
+			tabIndex={ -1 }
 		>
-			<div className="woocommerce-fulfillment-new-fulfillment-form__header">
+			<div
+				className={ [
+					'woocommerce-fulfillment-new-fulfillment-form__header',
+					openSection === 'order' ? 'is-open' : '',
+				].join( ' ' ) }
+			>
 				<h3>
 					{ fulfillments.length === 0
 						? __( 'Order Items', 'woocommerce' )
 						: __( 'Pending Items', 'woocommerce' ) }
 				</h3>
+				<Button __next40pxDefaultSize size="small">
+					<Icon
+						icon={
+							openSection === 'order'
+								? 'arrow-up-alt2'
+								: 'arrow-down-alt2'
+						}
+						size={ 16 }
+					/>
+				</Button>
 			</div>
-			{ openSection && (
+			{ ! isEditing && openSection === 'order' && (
 				<div className="woocommerce-fulfillment-new-fulfillment-form__content">
 					{ error && <ErrorLabel error={ error } /> }
 					<ItemSelector
