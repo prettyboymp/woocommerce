@@ -132,7 +132,15 @@ class ProductButton extends AbstractBlock {
 		}
 
 		$is_product_purchasable = $product->is_type( 'grouped' ) ? $is_grouped_product_purchasable : $product->is_purchasable();
-		$number_of_items_in_cart  = $this->get_cart_item_quantities_by_product_id( $product->get_id() );
+		$is_grouped = $product->is_type( 'grouped' );
+		$grouped_product_ids = $product->get_children();
+		if ( $is_grouped ) {
+			$number_of_items_in_cart = array_sum( array_map( function ( $child_product_id ) {
+				return $this->get_cart_item_quantities_by_product_id( (int) $child_product_id );
+			}, $grouped_product_ids ) );
+		} else {
+			$number_of_items_in_cart = $this->get_cart_item_quantities_by_product_id( $product->get_id() );
+		}
 		$cart_redirect_after_add  = get_option( 'woocommerce_cart_redirect_after_add' ) === 'yes';
 		$ajax_add_to_cart_enabled = get_option( 'woocommerce_enable_ajax_add_to_cart' ) === 'yes';
 		$is_ajax_button           = $ajax_add_to_cart_enabled && ! $cart_redirect_after_add && $product->supports( 'ajax_add_to_cart' ) && $is_product_purchasable && $product->is_in_stock();
@@ -178,11 +186,13 @@ class ProductButton extends AbstractBlock {
 		}
 
 		$context = array(
-			'quantityToAdd'   => $default_quantity,
-			'productId'       => $product->get_id(),
-			'addToCartText'   => $add_to_cart_text,
-			'tempQuantity'    => $number_of_items_in_cart,
-			'animationStatus' => 'IDLE',
+			'quantityToAdd'     => $default_quantity,
+			'productId'         => $product->get_id(),
+			'addToCartText'     => $add_to_cart_text,
+			'tempQuantity'      => $number_of_items_in_cart,
+			'isGrouped'         => $is_grouped,
+			'groupedProductIds' => $grouped_product_ids,
+			'animationStatus'   => 'IDLE',
 		);
 
 		$attributes = array(

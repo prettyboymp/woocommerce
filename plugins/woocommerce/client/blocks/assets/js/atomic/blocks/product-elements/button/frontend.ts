@@ -19,6 +19,8 @@ interface Context {
 	quantityToAdd: number;
 	tempQuantity: number;
 	animationStatus: AnimationStatus;
+	isGrouped: boolean;
+	groupedProductIds?: number[];
 }
 
 enum AnimationStatus {
@@ -62,7 +64,25 @@ const { state } = store< Store >(
 	{
 		state: {
 			get quantity() {
-				const { productId } = getContext();
+				const { productId, isGrouped, groupedProductIds } =
+					getContext();
+
+				if ( isGrouped && groupedProductIds ) {
+					if ( groupedProductIds.length > 0 ) {
+						const totalGroupedQuantityInCart =
+							groupedProductIds.reduce(
+								( total, groupedProductId ) => {
+									const cartItem = wooState.cart?.items.find(
+										( item ) => item.id === groupedProductId
+									);
+									return total + ( cartItem?.quantity || 0 );
+								},
+								0
+							);
+						return totalGroupedQuantityInCart;
+					}
+				}
+
 				const product = wooState.cart?.items.find(
 					( item ) => item.id === productId
 				);
