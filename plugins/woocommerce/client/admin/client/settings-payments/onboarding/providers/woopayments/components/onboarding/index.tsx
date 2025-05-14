@@ -25,7 +25,7 @@ export default function WooPaymentsOnboarding(): React.ReactNode {
 	useEffect( () => {
 		if (
 			currentStep &&
-			location.pathname !== ( currentStep?.path ?? '' )
+			! location.pathname.endsWith( currentStep?.path ?? '' )
 		) {
 			navigateToStep( currentStep.id );
 		}

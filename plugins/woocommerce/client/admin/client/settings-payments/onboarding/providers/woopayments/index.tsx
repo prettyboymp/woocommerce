@@ -36,7 +36,7 @@ export default function WooPaymentsModal( {
 	// Open modal when on an onboarding route
 	React.useEffect( () => {
 		if (
-			location.pathname.startsWith( wooPaymentsOnboardingPath ) &&
+			location.pathname.endsWith( wooPaymentsOnboardingPath ) &&
 			! isOpen &&
 			// Prevent the onboarding modal from reopening if the WPCom connection remains unestablished and the user has returned from Jetpack.
 			! ( ! hasWPComConnection && isJetpackReturn )
@@ -64,7 +64,7 @@ export default function WooPaymentsModal( {
 	React.useEffect( () => {
 		if (
 			isOpen &&
-			! location.pathname.startsWith( wooPaymentsOnboardingPath )
+			! location.pathname.endsWith( wooPaymentsOnboardingPath )
 		) {
 			const newPath = getNewPath(
 				{ path: wooPaymentsOnboardingPath },
