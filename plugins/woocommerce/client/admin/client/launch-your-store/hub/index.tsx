@@ -4,6 +4,7 @@
 import { useMachine } from '@xstate5/react';
 import { useEffect } from 'react';
 import clsx from 'clsx';
+import { Route, Routes } from 'react-router-dom';
 
 /**
  * Internal dependencies
@@ -25,6 +26,7 @@ import {
 	MainContentContainer,
 } from './main-content/xstate';
 import { useXStateInspect } from '~/xstate';
+import { PaymentsModal } from './main-content/pages/payments-modal';
 
 export type LaunchYourStoreComponentProps = {
 	sendEventToSidebar: ( arg0: SidebarMachineEvents ) => void;
@@ -95,6 +97,12 @@ const LaunchStoreController = () => {
 					/>
 				) }
 			</MainContentContainer>
+			<Routes>
+				<Route
+					path="/woopayments/onboarding/*"
+					element={ <PaymentsModal /> }
+				/>
+			</Routes>
 		</div>
 	);
 };
