@@ -104,8 +104,15 @@ export function taskClickedAction( event: {
 	recordEvent( 'launch_your_store_hub_task_clicked', {
 		task: event.task.id,
 	} );
+
 	if ( event.task.actionUrl ) {
 		navigateTo( { url: event.task.actionUrl } );
+	} else if ( event.task.id === 'payments' ) {
+		navigateTo( {
+			url: getAdminLink(
+				'admin.php?page=wc-admin&path=/launch-your-store/woopayments/onboarding'
+			),
+		} );
 	} else {
 		navigateTo( {
 			url: getNewPath( { task: event.task.id }, '/', {} ),
