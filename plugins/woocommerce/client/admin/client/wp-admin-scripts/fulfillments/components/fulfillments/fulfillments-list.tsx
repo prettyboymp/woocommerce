@@ -9,7 +9,8 @@ export default function FulfillmentsList() {
 		useFulfillmentDrawerContext();
 
 	return (
-		order && (
+		order &&
+		fulfillments.length > 0 && (
 			<div className="woocommerce-fulfillment-stored-fulfillments-list">
 				{ fulfillments.map( ( fulfillment, index ) => (
 					<FulfillmentEditor

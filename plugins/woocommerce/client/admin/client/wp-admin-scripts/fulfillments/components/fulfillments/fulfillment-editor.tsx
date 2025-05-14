@@ -67,9 +67,6 @@ export default function FulfillmentEditor( {
 		itemsNotInAnyFulfillment
 	);
 
-	const [ formItems, setFormItems ] =
-		useState< ItemQuantity[] >( itemsInFulfillment );
-
 	const handleChevronClick = () => {
 		if ( editMode ) return;
 		if ( ! expanded ) {
@@ -125,7 +122,9 @@ export default function FulfillmentEditor( {
 				<div className="woocommerce-fulfillment-stored-fulfillment-list-item-content">
 					{ error && <ErrorLabel error={ error } /> }
 					<ItemSelector
-						items={ formItems }
+						items={
+							editMode ? selectableItems : itemsInFulfillment
+						}
 						setSelectedItems={ setSelectedItems }
 						currency={ order.currency }
 						editMode={ editMode }
@@ -143,7 +142,6 @@ export default function FulfillmentEditor( {
 										onClick={ () => {
 											setEditMode( true );
 											setIsEditing( true );
-											setFormItems( selectableItems );
 										} }
 									/>
 									<FulfillItemsButton setError={ setError } />
@@ -153,7 +151,6 @@ export default function FulfillmentEditor( {
 									<CancelLink
 										onClick={ () => {
 											setError( null );
-											setFormItems( itemsInFulfillment );
 											setIsEditing( false );
 											setEditMode( false );
 										} }

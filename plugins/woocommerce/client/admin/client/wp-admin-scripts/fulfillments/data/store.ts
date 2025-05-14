@@ -20,6 +20,13 @@ const actionTypes = {
 	DELETE_FULFILLMENT: 'DELETE_FULFILLMENT',
 } as const;
 
+interface ResponseWithFulfillment {
+	fulfillment: Fulfillment & { id: number };
+}
+interface ResponseWithFulfillments {
+	fulfillments: Fulfillment[];
+}
+
 interface OrderState {
 	order: Order | null;
 	fulfillments: Fulfillment[];
@@ -71,19 +78,20 @@ const internalActions = {
 
 // --- Public Async Actions
 const publicActions = {
-	saveFulfillment( orderId: number, fulfillment: Fulfillment ) {
-		return async ( { dispatch }: { dispatch: typeof actions } ) => {
+	saveFulfillment:
+		( orderId: number, fulfillment: Fulfillment ) =>
+		async ( { dispatch }: { dispatch: typeof actions } ) => {
 			dispatch.setLoading( orderId, true );
 			dispatch.setError( orderId, null );
 			try {
-				const saved = ( await apiFetch( {
+				const saved = await apiFetch< ResponseWithFulfillment >( {
 					path: `/wc/v3/orders/${ orderId }/fulfillments`,
 					method: 'POST',
 					data: fulfillment,
-				} ) ) as { fulfillment: Fulfillment };
+				} );
 				dispatch.setFulfillment(
 					orderId,
-					saved.fulfillment.id ?? 0,
+					saved.fulfillment.id,
 					saved.fulfillment
 				);
 			} catch ( error: unknown ) {
@@ -96,22 +104,22 @@ const publicActions = {
 			} finally {
 				dispatch.setLoading( orderId, false );
 			}
-		};
-	},
+		},
 
-	updateFulfillment( orderId: number, fulfillment: Fulfillment ) {
-		return async ( { dispatch }: { dispatch: typeof actions } ) => {
+	updateFulfillment:
+		( orderId: number, fulfillment: Fulfillment ) =>
+		async ( { dispatch }: { dispatch: typeof actions } ) => {
 			dispatch.setLoading( orderId, true );
 			dispatch.setError( orderId, null );
 			try {
-				const updated = ( await apiFetch( {
+				const updated = await apiFetch< ResponseWithFulfillment >( {
 					path: `/wc/v3/orders/${ orderId }/fulfillments/${ fulfillment.id }`,
 					method: 'PUT',
 					data: fulfillment,
-				} ) ) as { fulfillment: Fulfillment };
+				} );
 				dispatch.setFulfillment(
 					orderId,
-					updated.fulfillment.id ?? 0,
+					updated.fulfillment.id,
 					updated.fulfillment
 				);
 			} catch ( error: unknown ) {
@@ -124,11 +132,11 @@ const publicActions = {
 			} finally {
 				dispatch.setLoading( orderId, false );
 			}
-		};
-	},
+		},
 
-	deleteFulfillment( orderId: number, fulfillmentId: number ) {
-		return async ( { dispatch }: { dispatch: typeof actions } ) => {
+	deleteFulfillment:
+		( orderId: number, fulfillmentId: number ) =>
+		async ( { dispatch }: { dispatch: typeof actions } ) => {
 			dispatch.setLoading( orderId, true );
 			dispatch.setError( orderId, null );
 			try {
@@ -147,8 +155,7 @@ const publicActions = {
 			} finally {
 				dispatch.setLoading( orderId, false );
 			}
-		};
-	},
+		},
 };
 
 const actions = {
@@ -274,6 +281,7 @@ const resolvers = {
 			try {
 				const order: Order = await apiFetch( {
 					path: `/wc/v3/orders/${ orderId }`,
+					method: 'GET',
 				} );
 				dispatch.setOrder( orderId, order );
 			} catch ( error: unknown ) {
@@ -293,9 +301,11 @@ const resolvers = {
 			dispatch.setLoading( orderId, true );
 			dispatch.setError( orderId, null );
 			try {
-				const { fulfillments } = ( await apiFetch( {
-					path: `/wc/v3/orders/${ orderId }/fulfillments`,
-				} ) ) as { fulfillments: Fulfillment[] };
+				const { fulfillments } =
+					await apiFetch< ResponseWithFulfillments >( {
+						path: `/wc/v3/orders/${ orderId }/fulfillments`,
+						method: 'GET',
+					} );
 				dispatch.setFulfillments( orderId, fulfillments );
 			} catch ( error: unknown ) {
 				dispatch.setError(

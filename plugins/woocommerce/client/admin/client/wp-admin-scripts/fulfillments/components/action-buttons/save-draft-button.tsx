@@ -12,12 +12,14 @@ import { useState } from 'react';
 import { useFulfillmentContext } from '../../context/fulfillment-context';
 import { store as FulfillmentStore } from '../../data/store';
 import { getFulfillmentItems } from '../../utils/fulfillment-utils';
+import { useFulfillmentDrawerContext } from '../../context/drawer-context';
 
 export default function SaveAsDraftButton( {
 	setError,
 }: {
 	setError: ( message: string | null ) => void;
 } ) {
+	const { setIsEditing } = useFulfillmentDrawerContext();
 	const { orderId, fulfillment } = useFulfillmentContext();
 	const [ isExecuting, setIsExecuting ] = useState( false );
 	const { saveFulfillment } = useDispatch( FulfillmentStore );
@@ -36,6 +38,9 @@ export default function SaveAsDraftButton( {
 			return;
 		}
 		saveFulfillment( orderId, fulfillment )
+			.then( () => {
+				setIsEditing( false );
+			} )
 			.catch( ( error ) => {
 				setError( error );
 			} )

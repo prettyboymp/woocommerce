@@ -11,12 +11,14 @@ import { useState } from 'react';
  */
 import { useFulfillmentContext } from '../../context/fulfillment-context';
 import { store as FulfillmentStore } from '../../data/store';
+import { useFulfillmentDrawerContext } from '../../context/drawer-context';
 
 export default function RemoveButton( {
 	setError,
 }: {
 	setError: ( message: string | null ) => void;
 } ) {
+	const { setIsEditing } = useFulfillmentDrawerContext();
 	const { orderId, fulfillment } = useFulfillmentContext();
 	const [ isExecuting, setIsExecuting ] = useState< boolean >( false );
 	const { deleteFulfillment } = useDispatch( FulfillmentStore );
@@ -29,6 +31,9 @@ export default function RemoveButton( {
 			return;
 		}
 		deleteFulfillment( orderId, fulfillment.id )
+			.then( () => {
+				setIsEditing( false );
+			} )
 			.catch( ( error ) => {
 				setError( error );
 			} )

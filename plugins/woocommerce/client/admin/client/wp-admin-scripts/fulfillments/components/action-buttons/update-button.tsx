@@ -12,12 +12,14 @@ import { useState } from 'react';
 import { useFulfillmentContext } from '../../context/fulfillment-context';
 import { store as FulfillmentStore } from '../../data/store';
 import { getFulfillmentItems } from '../../utils/fulfillment-utils';
+import { useFulfillmentDrawerContext } from '../../context/drawer-context';
 
 export default function UpdateButton( {
 	setError,
 }: {
 	setError: ( message: string | null ) => void;
 } ) {
+	const { setIsEditing } = useFulfillmentDrawerContext();
 	const { orderId, fulfillment } = useFulfillmentContext();
 	const { updateFulfillment } = useDispatch( FulfillmentStore );
 	const [ isExecuting, setIsExecuting ] = useState< boolean >( false );
@@ -26,14 +28,23 @@ export default function UpdateButton( {
 		setIsExecuting( true );
 		if ( ! fulfillment ) {
 			setIsExecuting( false );
+			setError(
+				__(
+					'An unexpected error has occurred. Please refresh the page and try again.',
+					'woocommerce'
+				)
+			);
 			return;
 		}
 		if ( getFulfillmentItems( fulfillment ).length === 0 ) {
 			setIsExecuting( false );
-			setError( 'Select items to be fulfilled.' );
+			setError( __( 'Select items to be fulfilled.', 'woocommerce' ) );
 			return;
 		}
 		updateFulfillment( orderId, fulfillment )
+			.then( () => {
+				setIsEditing( false );
+			} )
 			.catch( ( error ) => {
 				setError( error );
 			} )

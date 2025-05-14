@@ -3,6 +3,7 @@
  */
 import React, { createContext, useState } from 'react';
 import { useSelect } from '@wordpress/data';
+import { isEqual } from 'lodash';
 
 /**
  * Internal dependencies
@@ -67,13 +68,17 @@ export const FulfillmentDrawerProvider = ( {
 			const store = select( FulfillmentsStore );
 			const orderData = store.getOrder( orderId );
 			const fulfillmentsData = store.readFulfillments( orderId );
-			setOrder( orderData );
-			setFulfillments( fulfillmentsData ?? [] );
+			if ( ! isEqual( orderData, order ) ) {
+				setOrder( orderData );
+			}
+			if ( ! isEqual( fulfillmentsData, fulfillments ) ) {
+				setFulfillments( fulfillmentsData ?? [] );
+			}
 			return {
 				isLoading: store.isLoading( orderId ),
 			};
 		},
-		[ orderId ]
+		[ orderId, fulfillments, order ]
 	);
 
 	if ( orderId === null ) {
