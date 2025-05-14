@@ -25,6 +25,9 @@ import UpdateButton from '../action-buttons/update-button';
 import FulfillmentStatusBadge from './fulfillment-status-badge';
 import ErrorLabel from '../user-interface/error-label';
 import { useFulfillmentDrawerContext } from '../../context/drawer-context';
+import ShipmentViewer from '../shipment-form/shipment-viewer';
+import ShipmentForm from '../shipment-form';
+import { ShipmentFormProvider } from '../../context/shipment-form-context';
 
 interface FulfillmentEditorProps {
 	index: number;
@@ -132,46 +135,51 @@ export default function FulfillmentEditor( {
 						currency={ order.currency }
 						editMode={ editMode }
 					/>
-
-					<FulfillmentProvider
-						fulfillment={ fulfillment }
-						orderId={ order.id }
-						selectedItems={ selectedItems }
-					>
-						<div className="woocommerce-fulfillment-item-actions">
-							{ ! editMode ? (
-								<>
-									<EditFulfillmentButton
-										onClick={ () => {
-											setEditMode( true );
-											setIsEditing( true );
-										} }
-									/>
-									<FulfillItemsButton setError={ setError } />
-								</>
-							) : (
-								<>
-									<CancelLink
-										onClick={ () => {
-											setError( null );
-											setIsEditing( false );
-											setEditMode( false );
-										} }
-									/>
-									<RemoveButton
-										setError={ ( message ) =>
-											setError( message )
-										}
-									/>
-									<UpdateButton
-										setError={ ( message ) =>
-											setError( message )
-										}
-									/>
-								</>
-							) }
-						</div>
-					</FulfillmentProvider>
+					<ShipmentFormProvider fulfillment={ fulfillment }>
+						{ editMode && <ShipmentForm /> }
+						{ ! editMode && <ShipmentViewer /> }
+						<FulfillmentProvider
+							fulfillment={ fulfillment }
+							orderId={ order.id }
+							selectedItems={ selectedItems }
+						>
+							<div className="woocommerce-fulfillment-item-actions">
+								{ ! editMode ? (
+									<>
+										<EditFulfillmentButton
+											onClick={ () => {
+												setEditMode( true );
+												setIsEditing( true );
+											} }
+										/>
+										<FulfillItemsButton
+											setError={ setError }
+										/>
+									</>
+								) : (
+									<>
+										<CancelLink
+											onClick={ () => {
+												setError( null );
+												setIsEditing( false );
+												setEditMode( false );
+											} }
+										/>
+										<RemoveButton
+											setError={ ( message ) =>
+												setError( message )
+											}
+										/>
+										<UpdateButton
+											setError={ ( message ) =>
+												setError( message )
+											}
+										/>
+									</>
+								) }
+							</div>
+						</FulfillmentProvider>
+					</ShipmentFormProvider>
 				</div>
 			) }
 		</div>

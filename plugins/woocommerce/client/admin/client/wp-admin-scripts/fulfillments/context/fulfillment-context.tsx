@@ -7,6 +7,7 @@ import React, { createContext, useEffect } from 'react';
  * Internal dependencies
  */
 import { Fulfillment } from '../data/types';
+import { useShipmentFormContext } from './shipment-form-context';
 import { ItemQuantity } from '../utils/order-utils';
 
 const WC_ORDER_CLASS = 'WC_Order';
@@ -49,6 +50,8 @@ export const FulfillmentProvider = ( {
 } ) => {
 	const [ _fulfillment, _setFulfillment ] =
 		React.useState< Fulfillment | null >( fulfillment ?? null );
+	const { trackingNumber, trackingUrl, shipmentProvider } =
+		useShipmentFormContext();
 
 	useEffect( () => {
 		if ( ! orderId ) {
@@ -65,6 +68,21 @@ export const FulfillmentProvider = ( {
 			meta_data: [
 				{
 					id: 0,
+					key: '_tracking_number',
+					value: trackingNumber,
+				},
+				{
+					id: 0,
+					key: '_tracking_url',
+					value: trackingUrl,
+				},
+				{
+					id: 0,
+					key: '_shipment_provider',
+					value: shipmentProvider,
+				},
+				{
+					id: 0,
 					key: '_items',
 					value: selectedItems.map( ( item ) => {
 						return {
@@ -75,7 +93,13 @@ export const FulfillmentProvider = ( {
 				},
 			],
 		} as Fulfillment );
-	}, [ orderId, selectedItems, fulfillment?.id ] );
+	}, [
+		orderId,
+		trackingNumber,
+		trackingUrl,
+		shipmentProvider,
+		selectedItems,
+	] );
 
 	return (
 		<FulfillmentContextValue.Provider

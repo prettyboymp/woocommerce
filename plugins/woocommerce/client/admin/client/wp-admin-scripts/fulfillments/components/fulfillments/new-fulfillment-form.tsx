@@ -20,6 +20,8 @@ import {
 import ItemSelector from './item-selector';
 import { useFulfillmentDrawerContext } from '../../context/drawer-context';
 import ErrorLabel from '../user-interface/error-label';
+import { ShipmentFormProvider } from '../../context/shipment-form-context';
+import ShipmentForm from '../shipment-form';
 
 const NewFulfillmentForm: React.FC = () => {
 	const { order, fulfillments, openSection, setOpenSection, isEditing } =
@@ -88,16 +90,19 @@ const NewFulfillmentForm: React.FC = () => {
 						currency={ order.currency }
 						editMode={ true }
 					/>
-					<FulfillmentProvider
-						orderId={ order.id }
-						selectedItems={ selectedItems }
-						fulfillment={ null }
-					>
-						<div className="woocommerce-fulfillment-item-actions">
-							<SaveAsDraftButton setError={ setError } />
-							<FulfillItemsButton setError={ setError } />
-						</div>
-					</FulfillmentProvider>
+					<ShipmentFormProvider>
+						<ShipmentForm />
+						<FulfillmentProvider
+							orderId={ order.id }
+							selectedItems={ selectedItems }
+							fulfillment={ null }
+						>
+							<div className="woocommerce-fulfillment-item-actions">
+								<SaveAsDraftButton setError={ setError } />
+								<FulfillItemsButton setError={ setError } />
+							</div>
+						</FulfillmentProvider>
+					</ShipmentFormProvider>
 				</div>
 			) }
 		</div>
