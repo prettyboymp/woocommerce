@@ -44,8 +44,9 @@ export const useOnboardingContext = () => useContext( OnboardingContext );
 
 export const OnboardingProvider: React.FC< {
 	children: React.ReactNode;
+	source: 'settings-payments' | 'launch-your-store';
 	closeModal: () => void;
-} > = ( { children, closeModal } ) => {
+} > = ( { children, closeModal, source = 'settings-payments' } ) => {
 	const history = getHistory();
 
 	// Use React state to manage steps and loading state
@@ -109,11 +110,27 @@ export const OnboardingProvider: React.FC< {
 		( stepKey: string ) => {
 			const step = getStepByKey( stepKey );
 			if ( step?.path ) {
-				const newPath = getNewPath( { path: step.path }, step.path, {
-					page: 'wc-settings',
-					tab: 'checkout',
-				} );
-				history.push( newPath );
+				if ( source === 'settings-payments' ) {
+					const newPath = getNewPath(
+						{ path: step.path },
+						step.path,
+						{
+							page: 'wc-settings',
+							tab: 'checkout',
+						}
+					);
+					history.push( newPath );
+				} else if ( source === 'launch-your-store' ) {
+					const newPath = getNewPath(
+						{ path: step.path },
+						'/launch-your-store' + step.path,
+						{
+							page: 'wc-admin',
+							path: '/launch-your-store/woopayments/onboarding',
+						}
+					);
+					history.push( newPath );
+				}
 			}
 		},
 		[ getStepByKey, history ]
