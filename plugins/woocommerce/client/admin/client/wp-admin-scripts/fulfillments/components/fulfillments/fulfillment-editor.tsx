@@ -28,6 +28,7 @@ import { useFulfillmentDrawerContext } from '../../context/drawer-context';
 import ShipmentViewer from '../shipment-form/shipment-viewer';
 import ShipmentForm from '../shipment-form';
 import { ShipmentFormProvider } from '../../context/shipment-form-context';
+import MetadataViewer from '../metadata-viewer';
 
 interface FulfillmentEditorProps {
 	index: number;
@@ -137,7 +138,12 @@ export default function FulfillmentEditor( {
 					/>
 					<ShipmentFormProvider fulfillment={ fulfillment }>
 						{ editMode && <ShipmentForm /> }
-						{ ! editMode && <ShipmentViewer /> }
+						{ ! editMode && (
+							<>
+								<ShipmentViewer />
+								<MetadataViewer fulfillment={ fulfillment } />
+							</>
+						) }
 						<FulfillmentProvider
 							fulfillment={ fulfillment }
 							orderId={ order.id }
