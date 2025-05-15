@@ -3,6 +3,7 @@
  */
 import { render } from '@testing-library/react';
 import { useSelect, useDispatch } from '@wordpress/data';
+import triggerFetch from '@wordpress/api-fetch';
 import CheckoutProcessor from '../checkout-processor';
 
 // Mock WordPress dependencies
@@ -119,5 +120,47 @@ describe( 'CheckoutProcessor', () => {
 		render( <CheckoutProcessor /> );
 		// Since CheckoutProcessor returns null, we just verify it renders without errors
 		expect( document.body ).toBeTruthy();
+	} );
+
+	it( 'should not process order when there are validation errors', () => {
+		( useSelect as jest.Mock ).mockImplementation( ( selector ) => {
+			return selector( ( storeName: string ) => {
+				if ( storeName === 'validation' ) {
+					return {
+						hasValidationErrors: () => true,
+						getValidationError: () => 'validation error',
+					};
+				}
+				if ( storeName === 'checkout' ) {
+					return {
+						isProcessing: () => true,
+						isBeforeProcessing: () => false,
+						isComplete: () => false,
+						hasError: () => false,
+						getAdditionalFields: () => ( {} ),
+						getCustomerId: () => 0,
+						getCustomerPassword: () => '',
+						getExtensionData: () => ( {} ),
+						getOrderNotes: () => '',
+						getRedirectUrl: () => '',
+						getShouldCreateAccount: () => false,
+					};
+				}
+				if ( storeName === 'payment' ) {
+					return {
+						getActivePaymentMethod: () => '',
+						getPaymentMethodData: () => ( {} ),
+						isExpressPaymentMethodActive: () => false,
+						hasPaymentError: () => false,
+						isPaymentReady: () => true,
+						getShouldSavePaymentMethod: () => false,
+					};
+				}
+				return {};
+			} );
+		} );
+
+		render( <CheckoutProcessor /> );
+		expect( triggerFetch ).not.toHaveBeenCalled();
 	} );
 } );
