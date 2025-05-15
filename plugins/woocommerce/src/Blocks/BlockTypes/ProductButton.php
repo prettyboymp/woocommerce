@@ -145,7 +145,7 @@ class ProductButton extends AbstractBlock {
 			$number_of_items_in_cart = $this->get_cart_item_quantities_by_product_id( $product->get_id() );
 		}
 
-		$cart_redirect_after_add   = get_option( 'woocommerce_cart_redirect_after_add' ) === 'yes';
+		$cart_redirect_after_add  = get_option( 'woocommerce_cart_redirect_after_add' ) === 'yes';
 		$ajax_add_to_cart_enabled = get_option( 'woocommerce_enable_ajax_add_to_cart' ) === 'yes';
 		$is_ajax_button           = $ajax_add_to_cart_enabled && ! $cart_redirect_after_add && $product->supports( 'ajax_add_to_cart' ) && $is_product_purchasable && $product->is_in_stock();
 		$html_element             = $is_ajax_button ? 'button' : 'a';
