@@ -4,6 +4,10 @@
 import { render } from '@testing-library/react';
 import { useSelect, useDispatch } from '@wordpress/data';
 import triggerFetch from '@wordpress/api-fetch';
+
+/**
+ * Internal dependencies
+ */
 import CheckoutProcessor from '../checkout-processor';
 
 // Mock WordPress dependencies
@@ -41,6 +45,8 @@ jest.mock( '@woocommerce/blocks-registry', () => ( {
 
 jest.mock( '@woocommerce/blocks-checkout-events', () => ( {
 	checkoutEvents: {
+		// Mock implementation returns a no-op function as we don't need to test the actual event handling
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
 		onCheckoutValidation: jest.fn( () => () => {} ),
 	},
 } ) );
