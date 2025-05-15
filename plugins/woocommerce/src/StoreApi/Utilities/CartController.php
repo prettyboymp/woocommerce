@@ -29,6 +29,8 @@ class CartController {
 	 */
 	public function load_cart() {
 		if ( did_action( 'woocommerce_load_cart_from_session' ) ) {
+			$cart               = $this->get_cart_instance();
+			$cart->cart_context = 'store-api';
 			return;
 		}
 
