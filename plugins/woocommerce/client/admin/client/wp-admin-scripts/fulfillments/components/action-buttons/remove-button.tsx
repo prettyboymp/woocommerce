@@ -19,7 +19,7 @@ export default function RemoveButton( {
 	setError: ( message: string | null ) => void;
 } ) {
 	const { setIsEditing } = useFulfillmentDrawerContext();
-	const { orderId, fulfillment } = useFulfillmentContext();
+	const { orderId, fulfillment, notifyCustomer } = useFulfillmentContext();
 	const [ isExecuting, setIsExecuting ] = useState< boolean >( false );
 	const { deleteFulfillment } = useDispatch( FulfillmentStore );
 
@@ -30,7 +30,7 @@ export default function RemoveButton( {
 			setIsExecuting( false );
 			return;
 		}
-		deleteFulfillment( orderId, fulfillment.id )
+		deleteFulfillment( orderId, fulfillment.id, notifyCustomer )
 			.then( () => {
 				setIsEditing( false );
 			} )

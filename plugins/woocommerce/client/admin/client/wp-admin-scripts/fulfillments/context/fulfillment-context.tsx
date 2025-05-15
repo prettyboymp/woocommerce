@@ -24,12 +24,16 @@ interface FulfillmentContextProps {
 	orderId: number;
 	fulfillment: Fulfillment | null;
 	setFulfillment: ( fulfillment: Fulfillment | null ) => void;
+	notifyCustomer: boolean;
+	setNotifyCustomer: ( notifyCustomer: boolean ) => void;
 }
 
 const defaultContextProps: FulfillmentContextProps = {
 	orderId: 0,
 	fulfillment: null,
 	setFulfillment: () => {},
+	notifyCustomer: true,
+	setNotifyCustomer: () => {},
 };
 
 const FulfillmentContextValue =
@@ -58,6 +62,8 @@ export const FulfillmentProvider = ( {
 } ) => {
 	const [ _fulfillment, _setFulfillment ] =
 		React.useState< Fulfillment | null >( fulfillment ?? null );
+	const [ notifyCustomer, setNotifyCustomer ] = React.useState( true );
+
 	const {
 		selectedOption,
 		trackingNumber,
@@ -76,8 +82,8 @@ export const FulfillmentProvider = ( {
 			fulfillment_id: fulfillment?.id ?? undefined,
 			entity_id: String( orderId ),
 			entity_type: WC_ORDER_CLASS,
-			is_fulfilled: false,
-			status: 'unfulfilled',
+			is_fulfilled: fulfillment?.is_fulfilled ?? false,
+			status: fulfillment?.status ?? 'unfulfilled',
 			meta_data: [
 				{
 					id: 0,
@@ -135,7 +141,7 @@ export const FulfillmentProvider = ( {
 		shipmentProvider,
 		providerName,
 		selectedOption,
-		fulfillment?.id,
+		fulfillment,
 		selectedItems,
 	] );
 
@@ -145,6 +151,8 @@ export const FulfillmentProvider = ( {
 				orderId,
 				fulfillment: _fulfillment,
 				setFulfillment: _setFulfillment,
+				notifyCustomer,
+				setNotifyCustomer,
 			} }
 		>
 			{ children }

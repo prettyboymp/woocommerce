@@ -22,6 +22,7 @@ import { useFulfillmentDrawerContext } from '../../context/drawer-context';
 import ErrorLabel from '../user-interface/error-label';
 import { ShipmentFormProvider } from '../../context/shipment-form-context';
 import ShipmentForm from '../shipment-form';
+import CustomerNotificationBox from '../customer-notification-form';
 
 const NewFulfillmentForm: React.FC = () => {
 	const { order, fulfillments, openSection, setOpenSection, isEditing } =
@@ -97,6 +98,7 @@ const NewFulfillmentForm: React.FC = () => {
 							selectedItems={ selectedItems }
 							fulfillment={ null }
 						>
+							<CustomerNotificationBox />
 							<div className="woocommerce-fulfillment-item-actions">
 								<SaveAsDraftButton setError={ setError } />
 								<FulfillItemsButton setError={ setError } />

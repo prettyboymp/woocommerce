@@ -20,7 +20,7 @@ export default function FulfillItemsButton( {
 	setError: ( message: string | null ) => void;
 } ) {
 	const { setIsEditing } = useFulfillmentDrawerContext();
-	const { orderId, fulfillment } = useFulfillmentContext();
+	const { orderId, fulfillment, notifyCustomer } = useFulfillmentContext();
 	const [ isExecuting, setIsExecuting ] = useState( false );
 	const { saveFulfillment } = useDispatch( FulfillmentStore );
 
@@ -37,7 +37,7 @@ export default function FulfillItemsButton( {
 		}
 		fulfillment.is_fulfilled = true;
 		fulfillment.status = 'fulfilled';
-		saveFulfillment( orderId, fulfillment )
+		saveFulfillment( orderId, fulfillment, notifyCustomer )
 			.then( () => {
 				setIsEditing( false );
 			} )
