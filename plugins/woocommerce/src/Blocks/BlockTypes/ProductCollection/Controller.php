@@ -148,16 +148,16 @@ class Controller extends AbstractBlock {
 
 		$block_name                  = $parsed_block['blockName'];
 		$is_product_collection_block = $parsed_block['attrs']['query']['isProductCollectionBlock'] ?? false;
-		$force_page_reload_global    = $parsed_block['attrs']['forcePageReload'] ?? false;
+		$force_page_reload_global    =
+			$parsed_block['attrs']['forcePageReload'] ?? false &&
+			isset( $parsed_block['attrs']['queryId'] );
 
 		if (
 			$is_product_collection_block &&
 			'woocommerce/product-collection' === $block_name &&
 			! $force_page_reload_global
 		) {
-			// Generate a temporary queryId if not set yet
-			$query_id = $parsed_block['attrs']['queryId'] ?? 'temp-' . uniqid();
-			$enhanced_query_stack[] = $query_id;
+			$enhanced_query_stack[] = $parsed_block['attrs']['queryId'];
 
 			if ( ! isset( $render_product_collection_callback ) ) {
 				/**
@@ -171,18 +171,17 @@ class Controller extends AbstractBlock {
 				 * @return string Returns the modified output of the query block.
 				 */
 				$render_product_collection_callback = static function ( $content, $block ) use ( &$enhanced_query_stack, &$dirty_enhanced_queries, &$render_product_collection_callback ) {
-					$force_page_reload = $block['attrs']['forcePageReload'] ?? false;
+					$force_page_reload =
+						$parsed_block['attrs']['forcePageReload'] ?? false &&
+						isset( $block['attrs']['queryId'] );
 
 					if ( $force_page_reload ) {
 						return $content;
 					}
 
-					// Get the last queryId from the stack
-					$query_id = end( $enhanced_query_stack );
-
-					if ( isset( $dirty_enhanced_queries[ $query_id ] ) ) {
+					if ( isset( $dirty_enhanced_queries[ $block['attrs']['queryId'] ] ) ) {
 						wp_interactivity_config( 'core/router', array( 'clientNavigationDisabled' => true ) );
-						$dirty_enhanced_queries[ $query_id ] = null;
+						$dirty_enhanced_queries[ $block['attrs']['queryId'] ] = null;
 					}
 
 					array_pop( $enhanced_query_stack );

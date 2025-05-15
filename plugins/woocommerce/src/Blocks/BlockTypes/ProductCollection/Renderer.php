@@ -91,7 +91,7 @@ class Renderer {
 		// Generate and set the queryId before any rendering
 		if ( isset( $this->parsed_block ) ) {
 			$this->query_id = $this->generate_query_id( $block );
-			$this->parsed_block['context']['queryId'] = $this->query_id;
+			$this->parsed_block['attrs']['queryId'] = $this->query_id;
 		}
 
 		return $this->enhance_product_collection_with_interactivity( $block_content, $block );
@@ -361,6 +361,11 @@ class Renderer {
 				'productId' => absint( $context['postId'] ),
 			),
 		) : $this->get_location_context();
+
+		// Add queryId to the context for inner blocks
+		if ( isset( $this->parsed_block ) && isset( $this->parsed_block['context']['queryId'] ) ) {
+			$context['queryId'] = $this->parsed_block['context']['queryId'];
+		}
 
 		return $context;
 	}

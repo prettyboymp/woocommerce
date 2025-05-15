@@ -18,7 +18,7 @@ class Utils {
 	 * @param WP_Block $block Block instance.
 	 */
 	public static function prepare_and_execute_query( $block ) {
-		// The queryId is set by the Renderer in the block's context
+		// The queryId is available in the block context for inner blocks
 		$query_id = $block->context['queryId'] ?? null;
 		$page_key = $query_id ? 'query-' . $query_id . '-page' : 'query-page';
 
