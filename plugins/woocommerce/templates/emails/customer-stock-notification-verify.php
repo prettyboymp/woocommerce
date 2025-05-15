@@ -1,6 +1,6 @@
 <?php
 /**
- * Customer verification for back-in-stock notification email.
+ * Customer back-in-stock notification confirmation email.
  *
  * This template can be overridden by copying it to yourtheme/woocommerce/emails/customer-stock-notification-verify.php.
  *
@@ -30,6 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 do_action( 'woocommerce_email_header', $email_heading, $email );
 
 ?>
+
 <table border="0" cellpadding="0" cellspacing="0" id="notification__container"><tr><td>
 
 	<div id="notification__into_content">
@@ -37,56 +38,21 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 	</div>
 
 	<div id="notification__product">
-
 		<?php
 		/**
-		 * Hook: woocommerce_email_notification_product_before_title.
+		 * Hook: woocommerce_email_stock_notification_product.
 		 *
 		 * @since 0.0.0
 		 *
-		 * @hooked woocommerce_email_notification_product_image - 10
+		 * @hooked \Automattic\WooCommerce\Internal\StockNotifications\Templates::email_product_image - 10
+		 * @hooked \Automattic\WooCommerce\Internal\StockNotifications\Templates::email_product_title - 20
+		 * @hooked \Automattic\WooCommerce\Internal\StockNotifications\Templates::email_product_attributes - 30
+		 * @hooked \Automattic\WooCommerce\Internal\StockNotifications\Templates::email_product_price - 40
 		 */
-		do_action( 'woocommerce_bis_email_notification_product_before_title', $product, $notification );
-
-		/**
-		 * Hook: woocommerce_email_notification_product_title.
-		 *
-		 * @since 0.0.0
-		 *
-		 * @hooked woocommerce_email_notification_product_title - 10
-		 */
-		do_action( 'woocommerce_bis_email_notification_product_title', $product, $notification );
-
-		/**
-		 * Hook: woocommerce_email_notification_product_after_title.
-		 *
-		 * @since 0.0.0
-		 *
-		 * @hooked woocommerce_email_notification_product_attributes - 10
-		 * @hooked woocommerce_email_notification_product_price - 20
-		 */
-		do_action( 'woocommerce_bis_email_notification_product_after_title', $product, $notification );
+		do_action( 'woocommerce_email_stock_notification_product', $product, $notification, $plain_text, $email );
 		?>
 
-		<a href="<?php echo esc_url( $verification_href ); ?>" id="notification__action_button">
-			<?php
-			echo esc_html(
-				/**
-				 * Customize the button text.
-				 *
-				 * @since 0.0.0
-				 *
-				 * @param string $button_text The button text.
-				 * @param \Automattic\WooCommerce\Internal\StockNotifications\Notification $notification The notification object.
-				 */
-				apply_filters(
-					'woocommerce_stock_notification_verify_button_text',
-					_x( 'Confirm', 'Verify email notification', 'woocommerce' ),
-					$notification
-				)
-			);
-			?>
-		</a>
+		<a href="<?php echo esc_url( $verification_href ); ?>" id="notification__action_button"><?php echo esc_html( apply_filters( 'woocommerce_email_stock_notification_verify_button_text', _x( 'Confirm', 'Verify email notification', 'woocommerce' ), $notification ) ); ?></a>
 
 		<div id="notification__verification_expiration">
 			<?php

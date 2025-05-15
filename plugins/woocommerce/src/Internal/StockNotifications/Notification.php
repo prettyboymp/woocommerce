@@ -26,7 +26,7 @@ class Notification extends \WC_Data {
 	 *
 	 * @var \WC_Product
 	 */
-	private $product;
+	public $product;
 
 	/**
 	 * Default data.
@@ -340,5 +340,93 @@ class Notification extends \WC_Data {
 		);
 
 		return $this->data_store->create_activity_log( $this, $args );
+	}
+
+	/**
+	 * Get product formatted variation list.
+	 *
+	 * @param  bool   $flat
+	 * @param  string $context
+	 * @return string
+	 */
+	public function get_product_formatted_variation_list( $flat = false, $context = 'view' ) {
+
+		$product = $this->get_product();
+		if ( ! $product ) {
+			return false;
+		}
+
+		$formatted_variation_list = wc_get_formatted_variation( $product, $flat, true, true );
+
+		if ( $product->is_type( 'variation' ) ) {
+
+			// Replace list with custom data.
+			$attributes = $this->get_meta( 'posted_attributes' );
+			if ( $attributes ) {
+				$attrs = array();
+				foreach ( $attributes as $key => $value ) {
+
+					if ( 0 === strpos( $key, 'attribute_pa_' ) ) {
+						$attrs[ str_replace( 'attribute_', '', $key ) ] = $value;
+					} else {
+						// By pass converting global product attributes.
+						$attrs[ wc_attribute_label( str_replace( 'attribute_', '', $key ), $product ) ] = $value;
+					}
+				}
+
+				$formatted_variation_list = wc_get_formatted_variation( $attrs, $flat, true, true );
+			}
+		}
+
+		if ( 'email' === $context ) {
+
+			// Convert list to HTML table for better rendering.
+			$formatted_variation_list = strtr(
+				$formatted_variation_list,
+				array(
+					'<dl' => '<table',
+					'<dd' => '<tr><th',
+					'<dt' => '<tr><td',
+					'dl>' => 'table>',
+					'dd>' => 'th></tr>',
+					'dt>' => 'td></tr>',
+				)
+			);
+		}
+
+		return $formatted_variation_list;
+	}
+
+	/**
+	 * Get product link.
+	 *
+	 * @return string
+	 */
+	public function get_product_permalink() {
+
+		$product = $this->get_product();
+		if ( ! $product ) {
+			return false;
+		}
+
+		if ( $product->is_type( 'variation' ) && ! empty( $this->get_meta( 'posted_attributes' ) ) ) {
+			return $product->get_permalink( array( 'variation' => $this->get_meta( 'posted_attributes' ) ) );
+		} else {
+			return $product->get_permalink();
+		}
+	}
+
+	/**
+	 * Get product name.
+	 *
+	 * @return string
+	 */
+	public function get_product_name() {
+		$product = $this->get_product();
+		if ( ! $product ) {
+			return false;
+		}
+
+		return $product->get_parent_id() ? $product->get_name() : $product->get_title();
 	}
 }

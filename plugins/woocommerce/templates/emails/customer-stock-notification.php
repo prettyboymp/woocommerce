@@ -38,102 +38,40 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 	</div>
 
 	<div id="notification__product">
-
 		<?php
 		/**
-		 * Hook: woocommerce_email_notification_product_before_title.
+		 * Hook: woocommerce_email_stock_notification_product.
 		 *
 		 * @since 0.0.0
 		 *
-		 * @hooked woocommerce_email_notification_product_image - 10
+		 * @hooked \Automattic\WooCommerce\Internal\StockNotifications\Templates::email_product_image - 10
+		 * @hooked \Automattic\WooCommerce\Internal\StockNotifications\Templates::email_product_title - 20
+		 * @hooked \Automattic\WooCommerce\Internal\StockNotifications\Templates::email_product_attributes - 30
+		 * @hooked \Automattic\WooCommerce\Internal\StockNotifications\Templates::email_product_price - 40
 		 */
-		do_action( 'woocommerce_bis_email_notification_product_before_title', $product, $notification );
-
-		/**
-		 * Hook: woocommerce_email_notification_product_title.
-		 *
-		 * @since 0.0.0
-		 *
-		 * @hooked woocommerce_email_notification_product_title - 10
-		 */
-		do_action( 'woocommerce_bis_email_notification_product_title', $product, $notification );
-
-		/**
-		 * Hook: woocommerce_email_notification_product_after_title.
-		 *
-		 * @since 0.0.0
-		 *
-		 * @hooked woocommerce_email_notification_product_attributes - 10
-		 * @hooked woocommerce_email_notification_product_price - 20
-		 */
-		do_action( 'woocommerce_bis_email_notification_product_after_title', $product, $notification );
+		do_action( 'woocommerce_email_stock_notification_product', $product, $notification, $plain_text, $email );
 		?>
 
-		<a href="
-		<?php
-		echo esc_attr(
-			add_query_arg(
-				array(
-					'utm_source' => 'back-in-stock-notifications',
-					'utm_medium' => 'email',
-				),
-				/**
-				* Edit the button href.
-				*
-				* @since 0.0.0
-				*
-				* @param string $product_permalink The  permalink.
-				* @param \Automattic\WooCommerce\Internal\StockNotifications\Notification $notification The notification object.
-				* @param WC_Product $product The product object.
-				*
-				*/
-				apply_filters(
-					'woocommerce_stock_notification_button_href',
-					$notification->get_product_permalink(),
-					$notification,
-					$product
-				)
-			)
-		);
-		?>
-" id="notification__action_button">
-		<?php
-
-		echo esc_html(
-			/**
-			 * Customize the button text.
-			 *
-			 * @since 0.0.0
-			 *
-			 * @param string $button_text The button text.
-			 * @param \Automattic\WooCommerce\Internal\StockNotifications\Notification $notification The notification object.
-			 */
-			apply_filters(
-				'woocommerce_stock_notification_button_text',
-				_x( 'Shop Now', 'Email notification', 'woocommerce' ),
-				$notification
-			)
-		);
-		?>
+		<a href="<?php echo esc_url( $button_link ); ?>" id="notification__action_button">
+			<?php echo esc_html( $button_text ); ?>
 		</a>
 	</div>
 
 	<table id="notification__footer"><tr><td>
-		<?php echo esc_html( sprintf( __( 'You have received this message because your e-mail address was used to sign up for stock notifications on our store.', 'woocommerce' ), $product->get_name() ) ); ?>
-		<?php
 
-		if ( $is_user ) {
+		<?php echo esc_html( __( 'You have received this message because your e-mail address was used to sign up for stock notifications on our store.', 'woocommerce' ) );
+
+		if ( ! $is_guest ) {
 			// translators: %1$s placeholder is the unsubscribe link, %2$s placeholder is the Unsubscribe text link.
-			$unsubscribe_link = sprintf( '<a href="%1$s" id="notification__unsubscribe_link">%2$s</a>', esc_url( $unsubscribe_href ), _x( 'click here', 'unsubscribe cta for stock notification customer', 'woocommerce' ) );
+			$unsubscribe_link_tag = sprintf( '<a href="%1$s" id="notification__unsubscribe_link">%2$s</a>', esc_url( $unsubscribe_link ), _x( 'click here', 'unsubscribe cta for stock notifications for existing customers', 'woocommerce' ) );
 			// translators: %s placeholder is the text part from above.
-			echo wp_kses_post( sprintf( __( 'To manage your notifications, %s to log in to your account.', 'woocommerce' ), $unsubscribe_link ) );
+			echo wp_kses_post( sprintf( __( 'To manage your notifications, %s to log in to your account.', 'woocommerce' ), $unsubscribe_link_tag ) );
 		} else {
 			// translators: %1$s placeholder is the unsubscribe link, %2$s placeholder is the Unsubscribe text link.
-			$unsubscribe_link = sprintf( '<a href="%1$s" id="notification__unsubscribe_link">%2$s</a>', esc_url( $unsubscribe_href ), _x( 'click here', 'unsubscribe cta for stock notification guest', 'woocommerce' ) );
+			$unsubscribe_link_tag = sprintf( '<a href="%1$s" id="notification__unsubscribe_link">%2$s</a>', esc_url( $unsubscribe_link ), _x( 'click here', 'unsubscribe cta for stock notifications for guests', 'woocommerce' ) );
 			// translators: %s placeholder is the text part from above.
-			echo wp_kses_post( sprintf( __( 'To stop receiving these messages, %s to unsubscribe.', 'woocommerce' ), $unsubscribe_link ) );
+			echo wp_kses_post( sprintf( __( 'To stop receiving these messages, %s to unsubscribe.', 'woocommerce' ), $unsubscribe_link_tag ) );
 		}
-
 		?>
 		<br><br>
 		<?php
