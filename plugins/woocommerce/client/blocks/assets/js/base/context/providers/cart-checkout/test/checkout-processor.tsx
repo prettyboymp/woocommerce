@@ -66,47 +66,71 @@ jest.mock( '../utils', () => ( {
 	processCheckoutResponseHeaders: jest.fn(),
 } ) );
 
+type StoreSelectors = {
+	checkout: {
+		getAdditionalFields: () => Record< string, unknown >;
+		getCustomerId: () => number;
+		getCustomerPassword: () => string;
+		getExtensionData: () => Record< string, unknown >;
+		hasError: () => boolean;
+		isBeforeProcessing: () => boolean;
+		isComplete: () => boolean;
+		isProcessing: () => boolean;
+		getOrderNotes: () => string;
+		getRedirectUrl: () => string;
+		getShouldCreateAccount: () => boolean;
+	};
+	validation: {
+		hasValidationErrors: () => boolean;
+		getValidationError: () => string | undefined;
+	};
+	payment: {
+		getActivePaymentMethod: () => string;
+		getPaymentMethodData: () => Record< string, unknown >;
+		isExpressPaymentMethodActive: () => boolean;
+		hasPaymentError: () => boolean;
+		isPaymentReady: () => boolean;
+		getShouldSavePaymentMethod: () => boolean;
+	};
+};
+
 describe( 'CheckoutProcessor', () => {
+	const defaultStoreSelectors: StoreSelectors = {
+		checkout: {
+			getAdditionalFields: () => ( {} ),
+			getCustomerId: () => 0,
+			getCustomerPassword: () => '',
+			getExtensionData: () => ( {} ),
+			hasError: () => false,
+			isBeforeProcessing: () => false,
+			isComplete: () => false,
+			isProcessing: () => false,
+			getOrderNotes: () => '',
+			getRedirectUrl: () => '',
+			getShouldCreateAccount: () => false,
+		},
+		validation: {
+			hasValidationErrors: () => false,
+			getValidationError: () => undefined,
+		},
+		payment: {
+			getActivePaymentMethod: () => '',
+			getPaymentMethodData: () => ( {} ),
+			isExpressPaymentMethodActive: () => false,
+			hasPaymentError: () => false,
+			isPaymentReady: () => true,
+			getShouldSavePaymentMethod: () => false,
+		},
+	};
+
 	beforeEach( () => {
 		// Reset all mocks before each test
 		jest.clearAllMocks();
 
 		// Setup default mock implementations
 		( useSelect as jest.Mock ).mockImplementation( ( selector ) => {
-			// The selector is a function that takes a select function as argument
-			return selector( ( storeName: string ) => {
-				if ( storeName === 'checkout' ) {
-					return {
-						getAdditionalFields: () => ( {} ),
-						getCustomerId: () => 0,
-						getCustomerPassword: () => '',
-						getExtensionData: () => ( {} ),
-						hasError: () => false,
-						isBeforeProcessing: () => false,
-						isComplete: () => false,
-						isProcessing: () => false,
-						getOrderNotes: () => '',
-						getRedirectUrl: () => '',
-						getShouldCreateAccount: () => false,
-					};
-				}
-				if ( storeName === 'validation' ) {
-					return {
-						hasValidationErrors: () => false,
-						getValidationError: () => undefined,
-					};
-				}
-				if ( storeName === 'payment' ) {
-					return {
-						getActivePaymentMethod: () => '',
-						getPaymentMethodData: () => ( {} ),
-						isExpressPaymentMethodActive: () => false,
-						hasPaymentError: () => false,
-						isPaymentReady: () => true,
-						getShouldSavePaymentMethod: () => false,
-					};
-				}
-				return {};
+			return selector( ( storeName: keyof StoreSelectors ) => {
+				return defaultStoreSelectors[ storeName ] || {};
 			} );
 		} );
 
@@ -124,39 +148,21 @@ describe( 'CheckoutProcessor', () => {
 
 	it( 'should not process order when there are validation errors', () => {
 		( useSelect as jest.Mock ).mockImplementation( ( selector ) => {
-			return selector( ( storeName: string ) => {
+			return selector( ( storeName: keyof StoreSelectors ) => {
 				if ( storeName === 'validation' ) {
 					return {
+						...defaultStoreSelectors.validation,
 						hasValidationErrors: () => true,
 						getValidationError: () => 'validation error',
 					};
 				}
 				if ( storeName === 'checkout' ) {
 					return {
+						...defaultStoreSelectors.checkout,
 						isProcessing: () => true,
-						isBeforeProcessing: () => false,
-						isComplete: () => false,
-						hasError: () => false,
-						getAdditionalFields: () => ( {} ),
-						getCustomerId: () => 0,
-						getCustomerPassword: () => '',
-						getExtensionData: () => ( {} ),
-						getOrderNotes: () => '',
-						getRedirectUrl: () => '',
-						getShouldCreateAccount: () => false,
 					};
 				}
-				if ( storeName === 'payment' ) {
-					return {
-						getActivePaymentMethod: () => '',
-						getPaymentMethodData: () => ( {} ),
-						isExpressPaymentMethodActive: () => false,
-						hasPaymentError: () => false,
-						isPaymentReady: () => true,
-						getShouldSavePaymentMethod: () => false,
-					};
-				}
-				return {};
+				return defaultStoreSelectors[ storeName ] || {};
 			} );
 		} );
 
