@@ -236,7 +236,7 @@ if ( ! function_exists( 'is_order_received_page' ) ) {
 if ( ! function_exists( 'is_payment_methods_page' ) ) {
 
 	/**
-	 * is_payment_methods_page - Returns true when viewing the payment methods list page.
+	 * Is_payment_methods_page - Returns true when viewing the payment methods list page.
 	 *
 	 * @return bool
 	 */
