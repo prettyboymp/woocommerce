@@ -22,10 +22,10 @@ class Templates {
 	 * Add template hooks.
 	 */
 	public function add_email_template_hooks() {
-		add_action( 'woocommerce_email_stock_notification_product', array( $this, 'email_product_image' ), 10, 2 );
-		add_action( 'woocommerce_email_stock_notification_product', array( $this, 'email_product_title' ), 20, 2 );
-		add_action( 'woocommerce_email_stock_notification_product', array( $this, 'email_product_attributes' ), 30, 2 );
-		add_action( 'woocommerce_email_stock_notification_product', array( $this, 'email_product_price' ), 40, 2 );
+		add_action( 'woocommerce_email_stock_notification_product', array( $this, 'email_product_image' ), 10, 3 );
+		add_action( 'woocommerce_email_stock_notification_product', array( $this, 'email_product_title' ), 20, 3 );
+		add_action( 'woocommerce_email_stock_notification_product', array( $this, 'email_product_attributes' ), 30, 3 );
+		add_action( 'woocommerce_email_stock_notification_product', array( $this, 'email_product_price' ), 40, 3 );
 	}
 
 	/**
@@ -33,8 +33,12 @@ class Templates {
 	 *
 	 * @param WC_Product   $product The product object.
 	 * @param Notification $notification The notification object.
+	 * @param bool         $plain_text Whether the email is plain text.
 	 */
-	public function email_product_image( $product, $notification ) {
+	public function email_product_image( $product, $notification, $plain_text = false ) {
+		if ( $plain_text ) {
+			return;
+		}
 
 		$image     = wp_get_attachment_image_src( $product->get_image_id(), 'woocommerce_thumbnail' );
 		$image_src = is_array( $image ) && isset( $image[0] ) ? $image[0] : '';
@@ -55,8 +59,13 @@ class Templates {
 	 *
 	 * @param WC_Product   $product The product object.
 	 * @param Notification $notification The notification object.
+	 * @param bool         $plain_text Whether the email is plain text.
 	 */
-	public function email_product_title( $product, $notification ) {
+	public function email_product_title( $product, $notification, $plain_text = false ) {
+		if ( $plain_text ) {
+			return;
+		}
+
 		ob_start();
 		?>
 		<div id="notification__product__title"><?php echo esc_html( $product->get_name() ); ?></div>
@@ -70,8 +79,13 @@ class Templates {
 	 *
 	 * @param WC_Product   $product The product object.
 	 * @param Notification $notification The notification object.
+	 * @param bool         $plain_text Whether the email is plain text.
 	 */
-	public function email_product_attributes( $product, $notification ) {
+	public function email_product_attributes( $product, $notification, $plain_text = false ) {
+		if ( $plain_text ) {
+			return;
+		}
+
 		ob_start();
 		?>
 		<div id="notification__product__attributes"><?php echo wp_kses_post( $notification->get_product_formatted_variation_list( false, 'email' ) ); ?></div>
@@ -85,8 +99,13 @@ class Templates {
 	 *
 	 * @param WC_Product   $product The product object.
 	 * @param Notification $notification The notification object.
+	 * @param bool         $plain_text Whether the email is plain text.
 	 */
-	public function email_product_price( $product, $notification ) {
+	public function email_product_price( $product, $notification, $plain_text = false ) {
+		if ( $plain_text ) {
+			return;
+		}
+
 		ob_start();
 		?>
 		<div id="notification__product__price"><?php echo wp_kses_post( $product->get_price_html() ); ?></div>
