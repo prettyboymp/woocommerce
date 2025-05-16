@@ -35,7 +35,7 @@ class Social_Link extends Abstract_Block_Renderer {
 	 * @param string $service The service name.
 	 * @return string The service icon URL.
 	 */
-	public static function get_service_icon_url( $service ) {
+	public static function get_service_icon_url( $service, $image_type = '' ) {
 		$services = block_core_social_link_services();
 
 		if ( ! isset( $services[ $service ] ) ) {
@@ -45,9 +45,9 @@ class Social_Link extends Abstract_Block_Renderer {
 		$service_data = $services[ $service ];
 
 		// Get URL to icons/service.png.
-		$service_icon_url = self::get_service_png_url( $service );
+		$service_icon_url = self::get_service_png_url( $service, $image_type );
 
-		if ( $service_icon_url && ! file_exists( self::get_service_png_path( $service ) ) ) {
+		if ( $service_icon_url && ! file_exists( self::get_service_png_path( $service, $image_type ) ) ) {
 			// Create image file from SVG.
 			$service_icon_url = self::create_image_from_svg( $service, $service_data );
 		}
@@ -87,8 +87,10 @@ class Social_Link extends Abstract_Block_Renderer {
 	 * @param string $service The service name.
 	 * @return string The service PNG URL.
 	 */
-	public static function get_service_png_url( $service ) {
-		return plugins_url( 'icons/' . $service . '.png', __FILE__ );
+	public static function get_service_png_url( $service, $image_type = 'white' ) {
+		$file_extension = $image_type === 'svg' ? 'svg' : 'png';
+		$file_name =  "/icons/{$service}/{$service}-{$image_type}.{$file_extension}";
+		return plugins_url( $file_name, __FILE__ );
 	}
 
 	/**
@@ -97,7 +99,9 @@ class Social_Link extends Abstract_Block_Renderer {
 	 * @param string $service The service name.
 	 * @return string The service PNG path.
 	 */
-	public static function get_service_png_path( $service ) {
-		return __DIR__ . "/icons/{$service}.png";
+	public static function get_service_png_path( $service, $image_type = 'white' ) {
+		$file_extension = $image_type === 'svg' ? 'svg' : 'png';
+		$file_name =  "/icons/{$service}/{$service}-{$image_type}.{$file_extension}";
+		return __DIR__ . $file_name;
 	}
 }

@@ -71,7 +71,9 @@ class Social_Links extends Abstract_Block_Renderer {
 		$icon_color_value            = $parent_block_attrs['iconColorValue'] ?? '';
 		$icon_background_color_value = $parent_block_attrs['iconBackgroundColorValue'] ?? '';
 
-		$service_icon_url = Social_Link::get_service_icon_url( $service_name );
+		$isLogosOnly = strpos( $parent_block_attrs['className'] ?? '', 'is-style-logos-only' ) !== false;
+
+		$service_icon_url = Social_Link::get_service_icon_url( $service_name, $isLogosOnly ? 'brand' : 'white' );
 
 		$label_html = '';
 		if ( $show_labels ) {
