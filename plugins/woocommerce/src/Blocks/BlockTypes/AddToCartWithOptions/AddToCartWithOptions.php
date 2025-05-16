@@ -170,7 +170,6 @@ class AddToCartWithOptions extends AbstractBlock {
 				'productId'         => $product->get_id(),
 				'productType'       => $product->get_type(),
 				'quantity'          => $default_quantity,
-				'isGrouped'         => $product->is_type( 'grouped' ),
 				'groupedProductIds' => $product->is_type( 'grouped' ) ? $product->get_children() : array(),
 			);
 

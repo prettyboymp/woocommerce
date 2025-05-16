@@ -18,9 +18,9 @@ interface Context {
 	displayViewCart: boolean;
 	quantityToAdd: number;
 	tempQuantity: number;
-	animationStatus: AnimationStatus;
 	isGrouped: boolean;
 	groupedProductIds?: number[];
+	animationStatus: AnimationStatus;
 }
 
 enum AnimationStatus {
