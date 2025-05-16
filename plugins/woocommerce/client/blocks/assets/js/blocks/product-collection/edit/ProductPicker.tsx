@@ -17,6 +17,7 @@ import {
  */
 import type { ProductCollectionEditComponentProps } from '../types';
 import { getCollectionByName } from '../collections';
+import { useBlockProps } from '@wordpress/block-editor';
 
 const ProductPicker = (
 	props: ProductCollectionEditComponentProps & {
@@ -24,6 +25,8 @@ const ProductPicker = (
 	}
 ) => {
 	const { attributes, isDeletedProductReference } = props;
+
+	const blockProps = useBlockProps();
 
 	const collection = getCollectionByName( attributes.collection );
 	if ( ! collection ) {
@@ -48,34 +51,36 @@ const ProductPicker = (
 		  );
 
 	return (
-		<Placeholder className="wc-blocks-product-collection__editor-product-picker">
-			<HStack alignment="center">
-				<Icon
-					icon={ info }
-					className="wc-blocks-product-collection__info-icon"
-				/>
-				<Text>{ infoText }</Text>
-			</HStack>
-			<ProductControl
-				selected={
-					attributes.query?.productReference as SelectedOption
-				}
-				onChange={ ( value = [] ) => {
-					const isValidId = ( value[ 0 ]?.id ?? null ) !== null;
-					if ( isValidId ) {
-						props.setAttributes( {
-							query: {
-								...attributes.query,
-								productReference: value[ 0 ].id,
-							},
-						} );
+		<div { ...blockProps }>
+			<Placeholder className="wc-blocks-product-collection__editor-product-picker">
+				<HStack alignment="center">
+					<Icon
+						icon={ info }
+						className="wc-blocks-product-collection__info-icon"
+					/>
+					<Text>{ infoText }</Text>
+				</HStack>
+				<ProductControl
+					selected={
+						attributes.query?.productReference as SelectedOption
 					}
-				} }
-				messages={ {
-					search: __( 'Select a product', 'woocommerce' ),
-				} }
-			/>
-		</Placeholder>
+					onChange={ ( value = [] ) => {
+						const isValidId = ( value[ 0 ]?.id ?? null ) !== null;
+						if ( isValidId ) {
+							props.setAttributes( {
+								query: {
+									...attributes.query,
+									productReference: value[ 0 ].id,
+								},
+							} );
+						}
+					} }
+					messages={ {
+						search: __( 'Select a product', 'woocommerce' ),
+					} }
+				/>
+			</Placeholder>
+		</div>
 	);
 };
 
