@@ -55,9 +55,9 @@ class Emails {
 	 * @return array
 	 */
 	public function email_classes( $emails ) {
-		$emails[ 'WC_Email_Stock_Notification_Receive' ] = new StockNotificationEmail();
-		$emails[ 'WC_Email_Stock_Notification_Confirm' ] = new StockNotificationEmailConfirm();
-		$emails[ 'WC_Email_Stock_Notification_Verify' ]  = new StockNotificationEmailVerify();
+		$emails['WC_Email_Stock_Notification_Receive'] = new StockNotificationEmail();
+		$emails['WC_Email_Stock_Notification_Confirm'] = new StockNotificationEmailConfirm();
+		$emails['WC_Email_Stock_Notification_Verify']  = new StockNotificationEmailVerify();
 
 		return $emails;
 	}
@@ -65,7 +65,7 @@ class Emails {
 	/**
 	 * Restore customer data from notification's metadata, if applicable.
 	 *
-	 * @param  Notification $notification
+	 * @param  Notification $notification The notification object.
 	 * @return void
 	 */
 	public function maybe_restore_customer_data( $notification ) {
@@ -98,9 +98,9 @@ class Emails {
 	/**
 	 * Prints CSS in the emails.
 	 *
-	 * @param  string   $css
-	 * @param  WC_Email $email (Optional)
-	 * @return void
+	 * @param  string   $css The CSS to print.
+	 * @param  WC_Email $email (Optional) The email object.
+	 * @return string
 	 */
 	public function add_stylesheets( $css, $email = null ) {
 
@@ -260,6 +260,7 @@ class Emails {
 	private function get_dummy_notification(): Notification {
 		$product      = $this->get_dummy_product();
 		$notification = new Notification();
+
 		$notification->product = $product;
 		return $notification;
 	}

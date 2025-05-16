@@ -25,7 +25,7 @@ class StockNotificationEmailConfirm extends WC_Email {
 
 		$this->template_html  = 'emails/customer-stock-notification-confirm.php';
 		$this->template_plain = 'emails/plain/customer-stock-notification-confirm.php';
-		$this->placeholders  = array(
+		$this->placeholders   = array(
 			'{product_name}' => '',
 			'{site_title}'   => '',
 		);
@@ -140,7 +140,7 @@ class StockNotificationEmailConfirm extends WC_Email {
 	private function get_additional_template_args(): array {
 		$notification = $this->object;
 
-		$unsubscribe_link = ''; //$this->get_unsubscribe_link( $notification );
+		$unsubscribe_link = '';
 		$user             = get_user_by( 'email', $notification->get_user_email() );
 		$is_guest         = ! is_a( $user, 'WP_User' );
 

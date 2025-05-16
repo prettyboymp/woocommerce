@@ -177,7 +177,7 @@ class StockNotificationEmail extends WC_Email {
 			$product
 		);
 
-		$unsubscribe_link = ''; //$this->get_unsubscribe_link( $notification );
+		$unsubscribe_link = '';
 		$user             = get_user_by( 'email', $notification->get_user_email() );
 		$is_guest         = ! is_a( $user, 'WP_User' );
 

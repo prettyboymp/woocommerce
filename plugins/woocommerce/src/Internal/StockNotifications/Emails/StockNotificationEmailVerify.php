@@ -20,8 +20,8 @@ class StockNotificationEmailVerify extends WC_Email {
 		$this->id             = 'stock_notification_verify';
 		$this->customer_email = true;
 
-		$this->title       = __( 'Back in stock sign-up verification2', 'woocommerce-back-in-stock-notifications' );
-		$this->description = __( 'Verification e-mail sent to customers, as part of the double opt-in sign-up process.', 'woocommerce-back-in-stock-notifications' );
+		$this->title       = __( 'Back in stock sign-up verification2', 'woocommerce' );
+		$this->description = __( 'Verification e-mail sent to customers, as part of the double opt-in sign-up process.', 'woocommerce' );
 
 		$this->template_html  = 'emails/customer-stock-notification-verify.php';
 		$this->template_plain = 'emails/plain/customer-stock-notification-verify.php';
@@ -159,7 +159,7 @@ class StockNotificationEmailVerify extends WC_Email {
 		);
 
 		$verification_link    = '';
-		$expiration_threshold = '30m'; //human_time_diff( time(), time() + wc_bis_get_verification_expiration_time_threshold() );
+		$expiration_threshold = '30m';
 
 		return array(
 			'verification_link'                 => $verification_link,

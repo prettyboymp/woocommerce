@@ -52,7 +52,20 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 		do_action( 'woocommerce_email_stock_notification_product', $product, $notification, $plain_text, $email );
 		?>
 
-		<a href="<?php echo esc_url( $verification_link ); ?>" id="notification__action_button"><?php echo esc_html( apply_filters( 'woocommerce_email_stock_notification_verify_button_text', _x( 'Confirm', 'Verify email notification', 'woocommerce' ), $notification ) ); ?></a>
+		<a href="<?php echo esc_url( $verification_link ); ?>" id="notification__action_button"><?php
+		echo esc_html(
+			/**
+			 * Filter the verify button text.
+			 *
+			 * @since 0.0.0
+			 */
+			apply_filters(
+				'woocommerce_email_stock_notification_verify_button_text',
+				_x( 'Confirm', 'Verify email notification button text', 'woocommerce' ),
+				$notification
+			)
+		);
+		?></a>
 
 		<div id="notification__verification_expiration">
 			<?php

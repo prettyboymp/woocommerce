@@ -13,6 +13,10 @@ class Templates {
 
 	/**
 	 * Initialize the class.
+	 *
+	 * @internal
+	 *
+	 * @return void
 	 */
 	final public function init() {
 		add_action( 'init', array( $this, 'add_email_template_hooks' ) );
