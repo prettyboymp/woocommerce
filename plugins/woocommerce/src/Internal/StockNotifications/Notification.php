@@ -345,8 +345,8 @@ class Notification extends \WC_Data {
 	/**
 	 * Get product formatted variation list.
 	 *
-	 * @param  bool   $flat
-	 * @param  string $context
+	 * @param  bool   $flat Flatten the list.
+	 * @param  string $context Context.
 	 * @return string
 	 */
 	public function get_product_formatted_variation_list( $flat = false, $context = 'view' ) {

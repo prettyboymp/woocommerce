@@ -59,7 +59,8 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 
 	<table id="notification__footer"><tr><td>
 
-		<?php echo esc_html( __( 'You have received this message because your e-mail address was used to sign up for stock notifications on our store.', 'woocommerce' ) );
+		<?php
+		echo esc_html( __( 'You have received this message because your e-mail address was used to sign up for stock notifications on our store.', 'woocommerce' ) );
 
 		if ( ! $is_guest ) {
 			// translators: %1$s placeholder is the unsubscribe link, %2$s placeholder is the Unsubscribe text link.

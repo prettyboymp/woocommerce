@@ -25,7 +25,7 @@ class StockNotificationEmailConfirm extends WC_Email {
 
 		$this->template_html  = 'emails/customer-stock-notification-confirm.php';
 		$this->template_plain = 'emails/plain/customer-stock-notification-confirm.php';
-		$this->placeholders = array(
+		$this->placeholders  = array(
 			'{product_name}' => '',
 			'{site_title}'   => '',
 		);
@@ -40,7 +40,7 @@ class StockNotificationEmailConfirm extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_subject() {
-		return __( 'You have joined the "{product_name}" waitlist.', 'woocommerce-back-in-stock-notifications' );
+		return __( 'You have joined the "{product_name}" waitlist.', 'woocommerce' );
 	}
 
 	/**
@@ -49,7 +49,7 @@ class StockNotificationEmailConfirm extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return __( 'Sign-up successful', 'woocommerce-back-in-stock-notifications' );
+		return __( 'Sign-up successful', 'woocommerce' );
 	}
 
 	/**
@@ -58,7 +58,7 @@ class StockNotificationEmailConfirm extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_intro_content() {
-		return __( 'Thanks for joining the waitlist! You will hear from us again when "{product_name}" is back in stock.', 'woocommerce-back-in-stock-notifications' );
+		return __( 'Thanks for joining the waitlist! You will hear from us again when "{product_name}" is back in stock.', 'woocommerce' );
 	}
 
 	/**
@@ -140,7 +140,7 @@ class StockNotificationEmailConfirm extends WC_Email {
 	private function get_additional_template_args(): array {
 		$notification = $this->object;
 
-		$unsubscribe_link = '';//$this->get_unsubscribe_link( $notification );
+		$unsubscribe_link = ''; //$this->get_unsubscribe_link( $notification );
 		$user             = get_user_by( 'email', $notification->get_user_email() );
 		$is_guest         = ! is_a( $user, 'WP_User' );
 
@@ -153,7 +153,7 @@ class StockNotificationEmailConfirm extends WC_Email {
 	/**
 	 * Trigger the sending of this email.
 	 *
-	 * @param Notification|int $notification
+	 * @param Notification|int $notification The notification object or ID.
 	 */
 	public function trigger( $notification ) {
 		$this->setup_locale();

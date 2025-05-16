@@ -25,7 +25,7 @@ class StockNotificationEmail extends WC_Email {
 
 		$this->template_html  = 'emails/customer-stock-notification.php';
 		$this->template_plain = 'emails/plain/customer-stock-notification.php';
-		$this->placeholders = array(
+		$this->placeholders   = array(
 			'{product_name}' => '',
 			'{site_title}'   => '',
 		);
@@ -153,7 +153,7 @@ class StockNotificationEmail extends WC_Email {
 		 */
 		$button_text = apply_filters( 'woocommerce_email_stock_notification_button_text', _x( 'Shop Now', 'Email notification', 'woocommerce' ), $notification, $product );
 
-		$query_args  = array(
+		$query_args = array(
 			'utm_source' => 'back-in-stock-notifications',
 			'utm_medium' => 'email',
 		);
@@ -177,7 +177,7 @@ class StockNotificationEmail extends WC_Email {
 			$product
 		);
 
-		$unsubscribe_link = '';//$this->get_unsubscribe_link( $notification );
+		$unsubscribe_link = ''; //$this->get_unsubscribe_link( $notification );
 		$user             = get_user_by( 'email', $notification->get_user_email() );
 		$is_guest         = ! is_a( $user, 'WP_User' );
 
@@ -192,7 +192,7 @@ class StockNotificationEmail extends WC_Email {
 	/**
 	 * Trigger the sending of this email.
 	 *
-	 * @param Notification|int $notification
+	 * @param Notification|int $notification The notification object or ID.
 	 */
 	public function trigger( $notification ) {
 		$this->setup_locale();

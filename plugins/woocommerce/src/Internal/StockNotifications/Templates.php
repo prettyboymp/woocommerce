@@ -31,7 +31,7 @@ class Templates {
 	/**
 	 * Email product image.
 	 *
-	 * @param WC_Product $product The product object.
+	 * @param WC_Product   $product The product object.
 	 * @param Notification $notification The notification object.
 	 */
 	public function email_product_image( $product, $notification ) {
@@ -53,7 +53,7 @@ class Templates {
 	/**
 	 * Email product title.
 	 *
-	 * @param WC_Product $product The product object.
+	 * @param WC_Product   $product The product object.
 	 * @param Notification $notification The notification object.
 	 */
 	public function email_product_title( $product, $notification ) {
@@ -68,7 +68,7 @@ class Templates {
 	/**
 	 * Email product attributes.
 	 *
-	 * @param WC_Product $product The product object.
+	 * @param WC_Product   $product The product object.
 	 * @param Notification $notification The notification object.
 	 */
 	public function email_product_attributes( $product, $notification ) {
@@ -83,7 +83,7 @@ class Templates {
 	/**
 	 * Email product price.
 	 *
-	 * @param WC_Product $product The product object.
+	 * @param WC_Product   $product The product object.
 	 * @param Notification $notification The notification object.
 	 */
 	public function email_product_price( $product, $notification ) {

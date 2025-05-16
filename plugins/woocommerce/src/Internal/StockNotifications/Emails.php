@@ -25,6 +25,13 @@ class Emails {
 		'stock_notification_verify',
 	);
 
+	/**
+	 * Initialize the emails.
+	 *
+	 * @internal
+	 *
+	 * @return void
+	 */
 	final public function init() {
 
 		// Setup email hooks & handlers.
@@ -44,13 +51,13 @@ class Emails {
 	/**
 	 * Registers custom emails classes.
 	 *
-	 * @param  array $emails Array of email classes.
+	 * @param array $emails Array of email classes.
 	 * @return array
 	 */
 	public function email_classes( $emails ) {
 		$emails[ 'WC_Email_Stock_Notification_Receive' ] = new StockNotificationEmail();
 		$emails[ 'WC_Email_Stock_Notification_Confirm' ] = new StockNotificationEmailConfirm();
-		$emails[ 'WC_Email_Stock_Notification_Verify' ] = new StockNotificationEmailVerify();
+		$emails[ 'WC_Email_Stock_Notification_Verify' ]  = new StockNotificationEmailVerify();
 
 		return $emails;
 	}
@@ -98,13 +105,13 @@ class Emails {
 	public function add_stylesheets( $css, $email = null ) {
 
 		/**
-		 * `woocommerce_bis_emails_to_style` filter.
+		 * `woocommerce_email_stock_notification_emails_to_style` filter.
 		 *
 		 * @since  0.0.0
 		 *
 		 * @return array
 		 */
-		if ( ( is_null( $email ) || ! in_array( $email->id, (array) apply_filters( 'woocommerce_bis_emails_to_style', self::$email_ids ), true ) ) ) {
+		if ( ( is_null( $email ) || ! in_array( $email->id, (array) apply_filters( 'woocommerce_email_stock_notification_emails_to_style', self::$email_ids ), true ) ) ) {
 			return $css;
 		}
 
@@ -112,8 +119,16 @@ class Emails {
 		$text = get_option( 'woocommerce_email_text_color' );
 
 		// Primary color.
-		$base      = get_option( 'woocommerce_email_base_color' );
-		$base_text = (string) apply_filters( 'woocommerce_bis_email_base_text_color', wc_light_or_dark( $base, '#202020', '#ffffff' ), $email );
+		$base = get_option( 'woocommerce_email_base_color' );
+
+		/**
+		 * `woocommerce_email_stock_notification_base_text_color` filter.
+		 *
+		 * @since  0.0.0
+		 *
+		 * @return string
+		 */
+		$base_text = (string) apply_filters( 'woocommerce_email_stock_notification_base_text_color', wc_light_or_dark( $base, '#202020', '#ffffff' ), $email );
 
 		ob_start();
 		?>

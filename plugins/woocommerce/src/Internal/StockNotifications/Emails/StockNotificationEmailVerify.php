@@ -25,7 +25,7 @@ class StockNotificationEmailVerify extends WC_Email {
 
 		$this->template_html  = 'emails/customer-stock-notification-verify.php';
 		$this->template_plain = 'emails/plain/customer-stock-notification-verify.php';
-		$this->placeholders = array(
+		$this->placeholders   = array(
 			'{product_name}' => '',
 			'{site_title}'   => '',
 		);
@@ -40,7 +40,7 @@ class StockNotificationEmailVerify extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_subject() {
-		return __( 'Join the "{product_name}" waitlist.', 'woocommerce-back-in-stock-notifications' );
+		return __( 'Join the "{product_name}" waitlist.', 'woocommerce' );
 	}
 
 	/**
@@ -49,7 +49,7 @@ class StockNotificationEmailVerify extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return __( 'Confirm sign-up', 'woocommerce-back-in-stock-notifications' );
+		return __( 'Confirm sign-up', 'woocommerce' );
 	}
 
 	/**
@@ -58,7 +58,7 @@ class StockNotificationEmailVerify extends WC_Email {
 	 * @return string
 	 */
 	public function get_default_intro_content() {
-		return __( 'Please follow the link below to complete the sign-up process and join the "{product_name}" waitlist.', 'woocommerce-back-in-stock-notifications' );
+		return __( 'Please follow the link below to complete the sign-up process and join the "{product_name}" waitlist.', 'woocommerce' );
 	}
 
 	/**
@@ -171,7 +171,7 @@ class StockNotificationEmailVerify extends WC_Email {
 	/**
 	 * Trigger the sending of this email.
 	 *
-	 * @param Notification|int $notification
+	 * @param Notification|int $notification The notification object or ID.
 	 */
 	public function trigger( $notification ) {
 		$this->setup_locale();

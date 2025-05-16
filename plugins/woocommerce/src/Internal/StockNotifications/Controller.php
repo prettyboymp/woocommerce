@@ -34,7 +34,7 @@ class Controller {
 		$container->get( Emails::class );
 	}
 
-	 /**
+	/**
 	 * Register the data stores.
 	 *
 	 * @param array $data_stores Data stores.
