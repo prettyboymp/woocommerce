@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version override. Default version is fetched from the base branch name, you can override the version but make sure the that the branch release/{version} exists on remote. Format: X.Y (Major.Minor)'
+        description: 'Version Override (X.Y.Z format). If not provided, it is extracted from the release branch. Ensure branch "release/{version}" exists on remote.'
         required: false
         default: ''
 
