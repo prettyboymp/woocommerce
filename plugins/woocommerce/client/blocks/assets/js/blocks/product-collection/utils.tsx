@@ -3,7 +3,7 @@
  */
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { addFilter } from '@wordpress/hooks';
-import { select, useSelect } from '@wordpress/data';
+import { select, useDispatch, useSelect } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
 import type { BlockEditProps, Block } from '@wordpress/blocks';
 import {
@@ -394,18 +394,22 @@ export const useSetPreviewState = ( {
 		if ( ! setPreviewState && ! isUsingReferencePreviewMode ) {
 			const isGenericArchiveTemplate =
 				location.type === LocationType.Archive && termId === null;
+			const isPreview = isGenericArchiveTemplate
+				? !! attributes?.query?.inherit
+				: false;
 
-			setAttributes( {
-				__privatePreviewState: {
-					isPreview: isGenericArchiveTemplate
-						? !! attributes?.query?.inherit
-						: false,
-					previewMessage: __(
-						'Actual products will vary depending on the page being viewed.',
-						'woocommerce'
-					),
-				},
-			} );
+			// Avoid setting preview state if it's already set to false.
+			if ( isPreview ) {
+				setAttributes( {
+					__privatePreviewState: {
+						isPreview,
+						previewMessage: __(
+							'Actual products will vary depending on the page being viewed.',
+							'woocommerce'
+						),
+					},
+				} );
+			}
 		}
 	}, [
 		attributes?.query?.inherit,
