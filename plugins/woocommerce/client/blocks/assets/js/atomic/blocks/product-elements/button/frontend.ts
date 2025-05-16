@@ -197,6 +197,13 @@ const { state } = store< Store >(
 					context.animationStatus = AnimationStatus.SLIDE_OUT;
 				}
 			},
+			updateProductId() {
+				const context = getContext();
+				const { variationId } = getContext(
+					'woocommerce/add-to-cart-with-options'
+				);
+				console.log( context, variationId );
+			},
 		},
 	},
 	{ lock: true }
