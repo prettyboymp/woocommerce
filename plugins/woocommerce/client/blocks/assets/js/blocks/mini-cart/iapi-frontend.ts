@@ -5,7 +5,7 @@ import { store, getContext } from '@wordpress/interactivity';
 
 store( 'woocommerce/mini-cart', {
 	state: {
-		get derivedClassName() {
+		get drawerOverlayClass() {
 			const { isOpen } = getContext< { isOpen: boolean } >();
 
 			return ! isOpen
