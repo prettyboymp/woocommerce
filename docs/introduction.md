@@ -50,9 +50,9 @@ Join our open-source community and contribute to WooCommerce. Explore how you ca
 
 * [Visit the WooCommerce monorepo](https://github.com/woocommerce/woocommerce)
 * [Open Issues on GitHub](https://github.com/woocommerce/woocommerce/issues)
-* [Woo contributor guidelines](docs/contributor-guides/contributing/)
+* [Woo contributor guidelines](/docs/contributor-guides/contributing/)
 
-Learn more about [contributing](/docs/category/contributor-guidescontributing)
+Learn more about [contributing](/docs/category/contributor-guides)
 
 ---
 
