@@ -52,7 +52,8 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 		do_action( 'woocommerce_email_stock_notification_product', $product, $notification, $plain_text, $email );
 		?>
 
-		<a href="<?php echo esc_url( $verification_link ); ?>" id="notification__action_button"><?php
+		<a href="<?php echo esc_url( $verification_link ); ?>" id="notification__action_button">
+		<?php
 		echo esc_html(
 			/**
 			 * Filter the verify button text.
@@ -65,7 +66,8 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 				$notification
 			)
 		);
-		?></a>
+		?>
+		</a>
 
 		<div id="notification__verification_expiration">
 			<?php
