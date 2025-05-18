@@ -33,23 +33,24 @@ class Social_Link extends Abstract_Block_Renderer {
 	 * Gets the service icon URL.
 	 *
 	 * @param string $service The service name.
+	 * @param string $image_type The image type. e.g 'white', 'brand', 'svg'.
 	 * @return string The service icon URL.
 	 */
 	public static function get_service_icon_url( $service, $image_type = '' ) {
 		$services = block_core_social_link_services();
 
 		if ( ! isset( $services[ $service ] ) ) {
+			// not in the list of core services.
 			return '';
 		}
-
-		$service_data = $services[ $service ];
 
 		// Get URL to icons/service.png.
 		$service_icon_url = self::get_service_png_url( $service, $image_type );
 
 		if ( $service_icon_url && ! file_exists( self::get_service_png_path( $service, $image_type ) ) ) {
 			// Create image file from SVG.
-			$service_icon_url = self::create_image_from_svg( $service, $service_data );
+			// We previously created the images from SVGs using create_image_from_svg.
+			return '';
 		}
 
 		return $service_icon_url;
@@ -85,11 +86,12 @@ class Social_Link extends Abstract_Block_Renderer {
 	 * Gets the service PNG URL.
 	 *
 	 * @param string $service The service name.
+	 * @param string $image_type The image type. e.g 'white', 'brand', 'svg'.
 	 * @return string The service PNG URL.
 	 */
 	public static function get_service_png_url( $service, $image_type = 'white' ) {
-		$file_extension = $image_type === 'svg' ? 'svg' : 'png';
-		$file_name =  "/icons/{$service}/{$service}-{$image_type}.{$file_extension}";
+		$file_extension = 'svg' === $image_type ? 'svg' : 'png';
+		$file_name      = "/icons/{$service}/{$service}-{$image_type}.{$file_extension}";
 		return plugins_url( $file_name, __FILE__ );
 	}
 
@@ -97,11 +99,12 @@ class Social_Link extends Abstract_Block_Renderer {
 	 * Gets the service PNG path.
 	 *
 	 * @param string $service The service name.
+	 * @param string $image_type The image type. e.g 'white', 'brand', 'svg'.
 	 * @return string The service PNG path.
 	 */
 	public static function get_service_png_path( $service, $image_type = 'white' ) {
-		$file_extension = $image_type === 'svg' ? 'svg' : 'png';
-		$file_name =  "/icons/{$service}/{$service}-{$image_type}.{$file_extension}";
+		$file_extension = 'svg' === $image_type ? 'svg' : 'png';
+		$file_name      = "/icons/{$service}/{$service}-{$image_type}.{$file_extension}";
 		return __DIR__ . $file_name;
 	}
 }

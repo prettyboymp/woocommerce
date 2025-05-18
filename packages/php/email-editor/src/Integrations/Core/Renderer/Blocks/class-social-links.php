@@ -71,9 +71,10 @@ class Social_Links extends Abstract_Block_Renderer {
 		$icon_color_value            = $parent_block_attrs['iconColorValue'] ?? '';
 		$icon_background_color_value = $parent_block_attrs['iconBackgroundColorValue'] ?? '';
 
-		$isLogosOnly = strpos( $parent_block_attrs['className'] ?? '', 'is-style-logos-only' ) !== false;
+		$is_logos_only = strpos( $parent_block_attrs['className'] ?? '', 'is-style-logos-only' ) !== false;
 
-		$service_icon_url = Social_Link::get_service_icon_url( $service_name, $isLogosOnly ? 'brand' : 'white' );
+		$service_icon_url     = Social_Link::get_service_icon_url( $service_name, $is_logos_only ? 'brand' : 'white' );
+		$service_svg_icon_url = Social_Link::get_service_icon_url( $service_name, 'svg' );
 
 		$label_html = '';
 		if ( $show_labels ) {
@@ -106,15 +107,18 @@ class Social_Links extends Abstract_Block_Renderer {
 		return sprintf(
 			'<td %1$s role="presentation" valign="middle">
 				<a %2$s href="%3$s" class="wp-block-social-link-anchor">
-					<img src="%4$s" alt="%1$s" width="24" height="24" />
+					<img src="%4$s" srcset="%6$s 1x" alt="%7$s" width="24" height="24">
 					%5$s
 				</a>
 			</td>',
 			$td_attributes, // The td attributes.
 			$anchor_html, // The a target and rel attributes.
 			esc_url( $service_url ), // The a href link.
-			$service_icon_url, // The Img src.
-			$label_html // The Label.
+			esc_url( $service_icon_url ), // The Img src.
+			$label_html, // The Label.
+			esc_url( $service_svg_icon_url ), // The Img srcset.
+			// translators: %s is the service name.
+			sprintf( __( '%s icon', 'woocommerce' ), $service_name ) // The Img alt.
 		);
 	}
 

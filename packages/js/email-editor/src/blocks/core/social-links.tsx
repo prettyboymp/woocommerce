@@ -1,15 +1,11 @@
 /**
  * External dependencies
  */
-import { addFilter } from '@wordpress/hooks';
 import {
-	unregisterBlockStyle,
 	unregisterBlockVariation,
 	getBlockVariations,
 	registerBlockVariation,
-	Block,
 } from '@wordpress/blocks';
-import { select } from '@wordpress/data';
 
 // Add support for top social networks
 const supportedVariations = [
