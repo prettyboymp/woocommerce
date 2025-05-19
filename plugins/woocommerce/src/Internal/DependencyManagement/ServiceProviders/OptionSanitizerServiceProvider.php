@@ -28,4 +28,5 @@ class OptionSanitizerServiceProvider extends AbstractServiceProvider {
 	public function register() {
 		$this->share( OptionSanitizer::class );
 	}
+
 }
