@@ -20,7 +20,7 @@ class StockNotificationConfirmEmail extends WC_Email {
 		$this->id             = 'stock_notification_confirm';
 		$this->customer_email = true;
 
-		$this->title       = __( 'Back in stock sign-up confirmation2', 'woocommerce' );
+		$this->title       = __( 'Back in stock sign-up confirmation', 'woocommerce' );
 		$this->description = __( 'Email sent to customers after completing the sign-up process successfully.', 'woocommerce' );
 
 		$this->template_html  = 'emails/customer-stock-notification-confirm.php';

@@ -20,7 +20,7 @@ class StockNotificationVerifyEmail extends WC_Email {
 		$this->id             = 'stock_notification_verify';
 		$this->customer_email = true;
 
-		$this->title       = __( 'Back in stock sign-up verification2', 'woocommerce' );
+		$this->title       = __( 'Back in stock sign-up verification', 'woocommerce' );
 		$this->description = __( 'Verification e-mail sent to customers, as part of the double opt-in sign-up process.', 'woocommerce' );
 
 		$this->template_html  = 'emails/customer-stock-notification-verify.php';

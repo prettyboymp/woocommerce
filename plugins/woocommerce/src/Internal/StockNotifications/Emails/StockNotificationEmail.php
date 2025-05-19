@@ -20,7 +20,7 @@ class StockNotificationEmail extends WC_Email {
 		$this->id             = 'stock_notification_receive';
 		$this->customer_email = true;
 
-		$this->title       = __( 'Back in stock notification2', 'woocommerce' );
+		$this->title       = __( 'Back in stock notification', 'woocommerce' );
 		$this->description = __( 'Email sent to signed-up customers when a product is back in stock.', 'woocommerce' );
 
 		$this->template_html  = 'emails/customer-stock-notification.php';
