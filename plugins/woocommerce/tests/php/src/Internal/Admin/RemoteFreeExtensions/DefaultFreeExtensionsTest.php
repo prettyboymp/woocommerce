@@ -47,14 +47,6 @@ class DefaultFreeExtensionsTest extends WC_Unit_Test_Case {
 					DefaultFreeExtensions::get_plugin( 'woocommerce-services:tax' ),
 				),
 			),
-			array(
-				'key'     => 'obw/core-profiler',
-				'title'   => 'Core Profiler Bundle',
-				'plugins' => array(
-					DefaultFreeExtensions::get_plugin( 'woocommerce-payments' ),
-					DefaultFreeExtensions::get_plugin( 'mailpoet' ),
-				),
-			),
 		);
 	}
 
