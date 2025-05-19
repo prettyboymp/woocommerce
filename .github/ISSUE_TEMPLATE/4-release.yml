@@ -33,26 +33,25 @@ body:
   - type: markdown
     attributes:
       value: |
-        ### Before RC release
-
-  - type: markdown
-    attributes:
-      value: |
         ### RC release
         
-        -    [] skip changelog generation
-
-  - type: markdown
-    attributes:
-      value: |
-        ### Between RC and final releases
+        -    [] Ensure all CFEs for the target release version are addressed and merged
+        -    [] Validate stable tag in `readme.txt` for the release branch and update if necessary
+        -    [] Validate stable tag in `readme.txt` for the SVN `trunk` ([here](https://plugins.svn.wordpress.org/woocommerce/trunk/readme.txt))
+        -    [] Skip changelog generation (?)
+        -    [] Create a PR to bump version in source code with `GITHUB_TOKEN=<your_PAT_token> pnpm utils code-freeze version-bump -b release/9.9 9.9.0-rc.1`
+        -    [] Review (ensure CI-checks are passing) and merge the PR
 
   - type: markdown
     attributes:
       value: |
         ### Final release
         
-        -    [] generate [changelog](https://github.com/woocommerce/woocommerce/blob/trunk/changelog.txt) ([workflow](https://github.com/woocommerce/woocommerce/actions/workflows/new-cfe-prr-pre-build-compile-changelog-file.yml))
+        -    [] Validate stable tag in `readme.txt` for the release branch and update if necessary
+        -    [] Validate stable tag in `readme.txt` for the SVN `trunk` ([here](https://plugins.svn.wordpress.org/woocommerce/trunk/readme.txt))
+        -    [] Generate [changelog](https://github.com/woocommerce/woocommerce/blob/trunk/changelog.txt) ([workflow](https://github.com/woocommerce/woocommerce/actions/workflows/new-cfe-prr-pre-build-compile-changelog-file.yml))
+        -    [] Create a PR to bump version in source code with `GITHUB_TOKEN=<your_PAT_token> pnpm utils code-freeze version-bump -b release/9.9 9.9.0`
+        -    [] Review (ensure CI-checks are passing) and merge the PR
 
   - type: markdown
     attributes:
@@ -64,4 +63,5 @@ body:
       value: |
         ### Dot-releases
         
-        -    Follow `Final release` checklist
+        -    [] Ensure all PRRs for the target release version are merged
+        -    [] Follow `Final release` checklist
