@@ -102,12 +102,12 @@ class ProductButton extends AbstractBlock {
 				'addToCartText' => function () {
 					$context = wp_interactivity_get_context();
 					$quantity = $context['tempQuantity'];
-					$addToCartText = $context['addToCartText'];
+					$add_to_cart_text = $context['addToCartText'];
 					return $quantity > 0 ? sprintf(
 						/* translators: %s: product number. */
 						__( '%s in cart', 'woocommerce' ),
 						$quantity
-					) : $addToCartText;
+					) : $add_to_cart_text;
 				},
 				'inTheCartText' => sprintf(
 					/* translators: %s: product number. */
@@ -164,12 +164,11 @@ class ProductButton extends AbstractBlock {
 		}
 
 		$context = array(
-			'quantityToAdd'                      => $default_quantity,
-			'productId'                          => $product->get_id(),
-			'addToCartText'                      => $add_to_cart_text,
-			'tempQuantity'                       => $number_of_items_in_cart,
-			'animationStatus'                    => 'IDLE',
-			'isDescendantOfAddToCartWithOptions' => $is_descendant_of_add_to_cart_form,
+			'quantityToAdd'   => $default_quantity,
+			'productId'       => $product->get_id(),
+			'addToCartText'   => $add_to_cart_text,
+			'tempQuantity'    => $number_of_items_in_cart,
+			'animationStatus' => 'IDLE',
 		);
 
 		$attributes = array(

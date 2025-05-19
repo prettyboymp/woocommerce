@@ -8,11 +8,6 @@ import {
 } from '@wordpress/interactivity';
 import type { Store as WooCommerce } from '@woocommerce/stores/woocommerce/cart';
 
-/**
- * Internal dependencies
- */
-import { AddToCartWithOptionsStore } from '../../../../blocks/add-to-cart-with-options/frontend';
-
 // Stores are locked to prevent 3PD usage until the API is stable.
 const universalLock =
 	'I acknowledge that using a private store means my plugin will inevitably break on the next store release.';
@@ -24,7 +19,6 @@ interface Context {
 	quantityToAdd: number;
 	tempQuantity: number;
 	animationStatus: AnimationStatus;
-	isDescendantOfAddToCartWithOptions: boolean;
 }
 
 enum AnimationStatus {
@@ -64,31 +58,15 @@ const { state: wooState } = store< WooCommerce >(
 	{ lock: universalLock }
 );
 
-// Stores are locked to prevent 3PD usage until the API is stable.
-const { state: addToCartWithOptionsState } = store< AddToCartWithOptionsStore >(
-	'woocommerce/add-to-cart-with-options',
-	{},
-	{ lock: universalLock }
-);
-
 const { state } = store< Store >(
 	'woocommerce/product-button',
 	{
 		state: {
 			get quantity() {
-				const { productId, isDescendantOfAddToCartWithOptions } =
-					getContext();
-
-				const itemId =
-					isDescendantOfAddToCartWithOptions &&
-					addToCartWithOptionsState?.productOrVariationId
-						? addToCartWithOptionsState.productOrVariationId
-						: productId;
-
+				const { productId } = getContext();
 				const product = wooState.cart?.items.find(
-					( item ) => item.id === itemId
+					( item ) => item.id === productId
 				);
-
 				return product?.quantity || 0;
 			},
 			get slideInAnimation() {
@@ -199,6 +177,8 @@ const { state } = store< Store >(
 				}
 			},
 			syncProductId() {
+				// This is intentionally not typed as we don't know if the block
+				// is inside the Add to Cart Form + Options block.
 				const addToCartContext = getContextFn(
 					'woocommerce/add-to-cart-with-options'
 				);
