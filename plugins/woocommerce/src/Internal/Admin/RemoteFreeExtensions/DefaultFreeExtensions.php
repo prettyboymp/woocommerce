@@ -96,21 +96,6 @@ class DefaultFreeExtensions {
 			),
 		);
 
-		if ( Features::is_enabled( 'disable-core-profiler-fallback' ) ) {
-			$remote_variant_assignment = (int) get_option( 'woocommerce_remote_variant_assignment', 61 ); // 1-120
-			$should_rollout_to_users   = $remote_variant_assignment <= 60; // Rollout to 50% of users.
-
-			if ( $should_rollout_to_users ) {
-				// Remove the core-profiler bundle.
-				$bundles = array_filter(
-					$bundles,
-					function ( $bundle ) {
-						return 'obw/core-profiler' !== $bundle['key'];
-					}
-				);
-			}
-		}
-
 		$bundles = wp_json_encode( $bundles );
 		return json_decode( $bundles );
 	}
