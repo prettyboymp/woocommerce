@@ -52,6 +52,7 @@ interface Store {
 	callbacks: {
 		startAnimation: () => void;
 		syncTempQuantityOnLoad: () => void;
+		syncProductId: () => void;
 	};
 }
 
@@ -195,6 +196,33 @@ const { state } = store< Store >(
 					context.animationStatus === AnimationStatus.IDLE
 				) {
 					context.animationStatus = AnimationStatus.SLIDE_OUT;
+				}
+			},
+			syncProductId() {
+				const addToCartContext = getContextFn(
+					'woocommerce/add-to-cart-with-options'
+				);
+
+				if (
+					! addToCartContext ||
+					! ( 'productId' in addToCartContext ) ||
+					! ( 'variationId' in addToCartContext ) ||
+					typeof addToCartContext.productId !== 'number' ||
+					typeof addToCartContext.variationId !== 'number' ||
+					! addToCartContext.productId
+				) {
+					return;
+				}
+
+				const context = getContext();
+				const { productId, variationId } = addToCartContext;
+
+				// The `variationId` is only available when the product is a
+				// variable product and the user has selected a variation.
+				if ( variationId > 0 ) {
+					context.productId = variationId;
+				} else {
+					context.productId = productId;
 				}
 			},
 		},

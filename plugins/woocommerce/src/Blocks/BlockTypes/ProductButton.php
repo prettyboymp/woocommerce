@@ -86,9 +86,9 @@ class ProductButton extends AbstractBlock {
 			return '';
 		}
 
-		$is_descendent_of_add_to_cart_form = isset( $block->context['woocommerce/isDescendantOfAddToCartWithOptions'] ) ? $block->context['woocommerce/isDescendantOfAddToCartWithOptions'] : false;
+		$is_descendant_of_add_to_cart_form = isset( $block->context['woocommerce/isDescendantOfAddToCartWithOptions'] ) ? $block->context['woocommerce/isDescendantOfAddToCartWithOptions'] : false;
 
-		if ( $is_descendent_of_add_to_cart_form && Utils::is_not_purchasable_simple_product( $product ) ) {
+		if ( $is_descendant_of_add_to_cart_form && Utils::is_not_purchasable_simple_product( $product ) ) {
 			$product = $previous_product;
 
 			return '';
@@ -226,8 +226,9 @@ class ProductButton extends AbstractBlock {
 			data-wp-class--wc-block-slide-in="state.slideInAnimation"
 			data-wp-class--wc-block-slide-out="state.slideOutAnimation"
 			data-wp-on--animationend="actions.handleAnimationEnd"
-			data-wp-watch="callbacks.startAnimation"
+			data-wp-watch--start-animation="callbacks.startAnimation"
 			data-wp-run="callbacks.syncTempQuantityOnLoad"
+			data-wp-watch--sync-product-id="callbacks.syncProductId"
 		';
 
 		$wrapper_attributes = get_block_wrapper_attributes(
