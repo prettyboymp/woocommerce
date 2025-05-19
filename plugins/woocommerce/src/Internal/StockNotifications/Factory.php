@@ -51,7 +51,7 @@ class Factory {
 		$product->set_price( 25 );
 		$product->set_image_id( get_option( 'woocommerce_placeholder_image', 0 ) );
 
-		// Set required notification data
+		// Set required notification data.
 		$notification->set_product_id( $product->get_id() );
 		$notification->set_user_email( 'preview@example.com' );
 
