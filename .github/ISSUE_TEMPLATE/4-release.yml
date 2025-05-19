@@ -39,6 +39,8 @@ body:
     attributes:
       value: |
         ### RC release
+        
+        -    [] [changelog](https://github.com/woocommerce/woocommerce/blob/trunk/changelog.txt) is NOT updated 
 
   - type: markdown
     attributes:
@@ -49,6 +51,8 @@ body:
     attributes:
       value: |
         ### Final release
+        
+        -    [] [changelog](https://github.com/woocommerce/woocommerce/blob/trunk/changelog.txt) IS updated
 
   - type: markdown
     attributes:
@@ -59,3 +63,5 @@ body:
     attributes:
       value: |
         ### Dot-releases
+        
+        -    [] [changelog](https://github.com/woocommerce/woocommerce/blob/trunk/changelog.txt) IS updated
