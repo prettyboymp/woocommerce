@@ -40,7 +40,7 @@ body:
       value: |
         ### RC release
         
-        -    [] [changelog](https://github.com/woocommerce/woocommerce/blob/trunk/changelog.txt) is NOT updated 
+        -    [] skip changelog generation
 
   - type: markdown
     attributes:
@@ -52,7 +52,7 @@ body:
       value: |
         ### Final release
         
-        -    [] [changelog](https://github.com/woocommerce/woocommerce/blob/trunk/changelog.txt) IS updated
+        -    [] generate [changelog](https://github.com/woocommerce/woocommerce/blob/trunk/changelog.txt) ([workflow](https://github.com/woocommerce/woocommerce/actions/workflows/new-cfe-prr-pre-build-compile-changelog-file.yml))
 
   - type: markdown
     attributes:
@@ -64,4 +64,4 @@ body:
       value: |
         ### Dot-releases
         
-        -    [] [changelog](https://github.com/woocommerce/woocommerce/blob/trunk/changelog.txt) IS updated
+        -    Follow `Final release` checklist
