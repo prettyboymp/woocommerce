@@ -1,11 +1,17 @@
 name: 'WooCommerce: release checklist'
 description: Create a new issue to track the next WooCommerce core release progress.
-title: "WooCommerce VERSION_NUMBER: RC, final and dot-releases progress tracking"
+title: "WooCommerce RELEASE_VERSION: RC, final and dot-releases progress tracking"
 body:
   - type: markdown
     attributes:
       value: |
-        This issue is to provide visibility on the progress of the release process of WooCommerce core VERSION_NUMBER and to 
+        This issue is to provide visibility on the progress of the release process of WooCommerce core RELEASE_VERSION and to 
         centralize any conversations about it. The ultimate goal of this issue is to keep the reference of the steps, 
         resources, work, and conversations about this release so it can be helpful for the next contributors releasing 
         a new WooCommerce core version.
+
+        -   WooCommerce core version to release: RELEASE_VERSION ([milestone](https://github.com/woocommerce/woocommerce/milestone/MILESTONE_ID))
+        -   Release Lead: RELEASE_LEAD
+        -   Release Date: RC release on RELEASE_DATE
+        -   Release Date: final release on RELEASE_DATE
+        -   WooCommerce core change log: [here](https://github.com/woocommerce/woocommerce/blob/trunk/changelog.txt)
