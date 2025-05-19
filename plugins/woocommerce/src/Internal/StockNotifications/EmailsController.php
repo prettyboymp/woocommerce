@@ -5,14 +5,15 @@ declare( strict_types = 1 );
 namespace Automattic\WooCommerce\Internal\StockNotifications;
 
 use Automattic\WooCommerce\Internal\StockNotifications\Notification;
+use Automattic\WooCommerce\Internal\StockNotifications\Factory;
 use Automattic\WooCommerce\Internal\StockNotifications\Emails\StockNotificationEmail;
-use Automattic\WooCommerce\Internal\StockNotifications\Emails\StockNotificationEmailConfirm;
-use Automattic\WooCommerce\Internal\StockNotifications\Emails\StockNotificationEmailVerify;
+use Automattic\WooCommerce\Internal\StockNotifications\Emails\StockNotificationConfirmEmail;
+use Automattic\WooCommerce\Internal\StockNotifications\Emails\StockNotificationVerifyEmail;
 
 /**
  * Emails manager.
  */
-class Emails {
+class EmailsController {
 
 	/**
 	 * List of all core email IDs.
@@ -44,7 +45,7 @@ class Emails {
 		add_filter( 'woocommerce_prepare_email_for_preview', array( $this, 'prepare_email_for_preview' ) );
 		add_filter( 'woocommerce_email_preview_email_content_setting_ids', array( $this, 'add_intro_content_to_preview_settings' ), 10, 2 );
 
-		// Restore customer's context into the background queue.
+		// Restore customer's context while rendering the emails.
 		add_action( 'woocommerce_email_stock_notification_product_before_title', array( $this, 'maybe_restore_customer_data' ), 9 );
 	}
 
@@ -56,8 +57,8 @@ class Emails {
 	 */
 	public function email_classes( $emails ) {
 		$emails['WC_Email_Stock_Notification_Receive'] = new StockNotificationEmail();
-		$emails['WC_Email_Stock_Notification_Confirm'] = new StockNotificationEmailConfirm();
-		$emails['WC_Email_Stock_Notification_Verify']  = new StockNotificationEmailVerify();
+		$emails['WC_Email_Stock_Notification_Confirm'] = new StockNotificationConfirmEmail();
+		$emails['WC_Email_Stock_Notification_Verify']  = new StockNotificationVerifyEmail();
 
 		return $emails;
 	}
@@ -234,34 +235,48 @@ class Emails {
 			return $email;
 		}
 
-		$notification = $this->get_dummy_notification( $email );
+		$notification = Factory::create_dummy_notification();
 		$email->prepare_email( $notification );
 
 		return $email;
 	}
 
 	/**
-	 * Get a dummy product.
+	 * Send a stock notification email.
 	 *
-	 * @return WC_Product
+	 * @param Notification $notification The notification object.
+	 * @return void
 	 */
-	private function get_dummy_product(): \WC_Product {
-		$product = new \WC_Product();
-		$product->set_name( 'Dummy Product' );
-		$product->set_price( 25 );
-		return $product;
+	public function send_stock_notification_email( $notification ) {
+		$emails = WC()->mailer()->get_emails();
+		if ( isset( $emails['WC_Email_Stock_Notification_Receive'] ) ) {
+			$emails['WC_Email_Stock_Notification_Receive']->trigger( $notification );
+		}
 	}
 
 	/**
-	 * Get a dummy notification object.
+	 * Send a stock notification confirm email.
 	 *
-	 * @return Notification
+	 * @param Notification $notification The notification object.
+	 * @return void
 	 */
-	private function get_dummy_notification(): Notification {
-		$product      = $this->get_dummy_product();
-		$notification = new Notification();
+	public function send_stock_notification_confirm_email( $notification ) {
+		$emails = WC()->mailer()->get_emails();
+		if ( isset( $emails['WC_Email_Stock_Notification_Confirm'] ) ) {
+			$emails['WC_Email_Stock_Notification_Confirm']->trigger( $notification );
+		}
+	}
 
-		$notification->product = $product;
-		return $notification;
+	/**
+	 * Send a stock notification verify email.
+	 *
+	 * @param Notification $notification The notification object.
+	 * @return void
+	 */
+	public function send_stock_notification_verify_email( $notification ) {
+		$emails = WC()->mailer()->get_emails();
+		if ( isset( $emails['WC_Email_Stock_Notification_Verify'] ) ) {
+			$emails['WC_Email_Stock_Notification_Verify']->trigger( $notification );
+		}
 	}
 }

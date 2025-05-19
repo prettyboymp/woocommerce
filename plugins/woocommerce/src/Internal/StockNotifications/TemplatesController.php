@@ -7,9 +7,9 @@ namespace Automattic\WooCommerce\Internal\StockNotifications;
 use Automattic\WooCommerce\Internal\StockNotifications\Notification;
 
 /**
- * Emails manager.
+ * Emails controller.
  */
-class Templates {
+class TemplatesController {
 
 	/**
 	 * Initialize the class.

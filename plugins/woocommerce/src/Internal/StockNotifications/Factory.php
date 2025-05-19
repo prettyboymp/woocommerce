@@ -36,4 +36,28 @@ class Factory {
 			return false;
 		}
 	}
+
+	/**
+	 * Create a dummy notification for preview/testing purposes.
+	 *
+	 * @return Notification
+	 */
+	public static function create_dummy_notification() {
+		$notification = new Notification();
+
+		// Create a dummy product
+		$product = new \WC_Product();
+		$product->set_name( __( 'Dummy Product', 'woocommerce' ) );
+		$product->set_price( 25 );
+		$product->set_image_id( get_option( 'woocommerce_placeholder_image', 0 ) );
+
+		// Set required notification data
+		$notification->set_product_id($product->get_id());
+		$notification->set_user_email('preview@example.com');
+
+		// Store the dummy product in the notification object for preview
+		$notification->product = $product;
+
+		return $notification;
+	}
 }

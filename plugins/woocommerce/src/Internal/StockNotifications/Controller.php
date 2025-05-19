@@ -5,8 +5,8 @@ declare( strict_types = 1 );
 namespace Automattic\WooCommerce\Internal\StockNotifications;
 
 use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsDataStore;
-use Automattic\WooCommerce\Internal\StockNotifications\Templates;
-use Automattic\WooCommerce\Internal\StockNotifications\Emails;
+use Automattic\WooCommerce\Internal\StockNotifications\TemplatesController;
+use Automattic\WooCommerce\Internal\StockNotifications\EmailsController;
 
 /**
  * The controller for the stock notifications.
@@ -19,19 +19,21 @@ class Controller {
 	 * @internal
 	 */
 	final public function init() {
-		$this->init_feature();
-		add_filter( 'woocommerce_data_stores', array( $this, 'register_data_stores' ) );
+		add_action( 'plugins_loaded', array( $this, 'init_hooks' ) );
 	}
 
 	/**
-	 * Initialize the controller.
+	 * Regiter hooks and services.
 	 *
 	 * @internal
 	 */
-	private function init_feature() {
+	public function init_hooks() {
+
+		add_filter( 'woocommerce_data_stores', array( $this, 'register_data_stores' ) );
+
 		$container = wc_get_container();
-		$container->get( Templates::class );
-		$container->get( Emails::class );
+		$container->get( TemplatesController::class );
+		$container->get( EmailsController::class );
 	}
 
 	/**
@@ -41,6 +43,10 @@ class Controller {
 	 * @return array
 	 */
 	public function register_data_stores( $data_stores ) {
+		if ( ! is_array( $data_stores ) ) {
+			return $data_stores;
+		}
+
 		$data_stores['stock_notification'] = wc_get_container()->get( StockNotificationsDataStore::class );
 		return $data_stores;
 	}
