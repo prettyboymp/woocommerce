@@ -168,10 +168,7 @@ class AddToCartWithOptions extends AbstractBlock {
 
 			wp_interactivity_state(
 				'woocommerce/add-to-cart-with-options',
-				array(
-					'isFormValid'          => ! $product->is_type( 'variable' ),
-					'productOrVariationId' => $product->get_id(),
-				)
+				array( 'isFormValid' => ! $product->is_type( 'variable' ) )
 			);
 
 			$context = array(

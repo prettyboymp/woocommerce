@@ -132,13 +132,6 @@ const addToCartWithOptionsStore = store(
 				context.variationId = matchedVariation?.variation_id || null;
 				return !! matchedVariation;
 			},
-			get productOrVariationId() {
-				const context = getContext< Context >();
-
-				return context.productType === 'variable'
-					? context.variationId
-					: context.productId;
-			},
 		},
 		actions: {
 			setQuantity( value: number ) {
