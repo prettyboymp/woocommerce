@@ -501,12 +501,8 @@ function wc_is_file_valid_csv( $file, $check_path = true ) {
 			'txt' => 'text/plain',
 		)
 	);
-	
-	// $file = 's3://joshuaflow/test.csv';
-	$filetype = wp_check_filetype( $file, $valid_filetypes );
 
-	// error_log( 'filetype' );
-	// error_log( print_r($filetype,true) );
+	$filetype = wp_check_filetype( $file, $valid_filetypes );
 
 	if ( in_array( $filetype['type'], $valid_filetypes, true ) ) {
 		return true;
