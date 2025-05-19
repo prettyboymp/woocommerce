@@ -1,0 +1,11 @@
+name: 'WooCommerce: release checklist'
+description: Create a new issue to track the next WooCommerce core release progress.
+title: "WooCommerce VERSION_NUMBER: RC, final and dot-releases progress tracking"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue is to provide visibility on the progress of the release process of WooCommerce core VERSION_NUMBER and to 
+        centralize any conversations about it. The ultimate goal of this issue is to keep the reference of the steps, 
+        resources, work, and conversations about this release so it can be helpful for the next contributors releasing 
+        a new WooCommerce core version.
