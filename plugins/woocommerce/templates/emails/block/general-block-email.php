@@ -100,7 +100,7 @@ if ( 'customer_pos_completed_order' === $email->id || 'customer_pos_refunded_ord
 	<!-- wp:paragraph -->
 	<p>
 	<?php
-		echo esc_html__( 'Here’s a reminder of what you’ve ordered:', 'woocommerce' );
+		echo esc_html__( 'Here’s a reminder of what you’ve bought:', 'woocommerce' );
 	?>
 	</p>
 	<!-- /wp:paragraph -->
