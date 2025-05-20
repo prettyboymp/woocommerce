@@ -63,6 +63,9 @@ class Notification extends \WC_Data {
 			$this->set_id( $read->get_id() );
 		} elseif ( ! empty( $read->ID ) ) {
 			$this->set_id( absint( $read->ID ) );
+		} elseif ( is_array( $read ) && ! empty( $read['id'] ) ) {
+			$this->set_props( $read );
+			$this->set_object_read( true );
 		} else {
 			$this->set_object_read( true );
 		}

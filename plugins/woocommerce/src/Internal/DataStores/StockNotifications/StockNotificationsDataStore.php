@@ -403,7 +403,7 @@ CREATE TABLE $meta_table_name (
 	 * Query the stock notifications.
 	 *
 	 * @param array $args The arguments.
-	 * @return array|int An array of notifications or the number of notifications.
+	 * @return array<int>|array<Notification>|int An array of notifications or the number of notifications.
 	 */
 	public function query( array $args ) {
 		global $wpdb;
@@ -417,14 +417,17 @@ CREATE TABLE $meta_table_name (
 				'user_email' => '',
 				'limit'      => -1,
 				'offset'     => 0,
-				'return'     => 'objects',
+				'return'     => 'ids', // 'count', 'ids', 'objects'.
 			)
 		);
 
 		$table  = $this->get_table_name();
+
 		$select = 'id';
 		if ( 'count' === $args['return'] ) {
-			$select = 'COUNT(*)';
+			$select = 'COUNT(id)';
+		} elseif ( 'objects' === $args['return'] ) {
+			$select = '*';
 		}
 
 		// WHERE clauses.
@@ -467,15 +470,24 @@ CREATE TABLE $meta_table_name (
 		}
 
 		$results = $wpdb->get_results( $prepared_sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		if ( empty( $results ) ) {
+		if ( empty( $results ) || ! is_array( $results ) ) {
 			return array();
 		}
 
-		$notifications = array();
-		foreach ( $results as $result ) {
-			$notifications[] = new Notification( absint( $result['id'] ) );
+		if ( 'objects' === $args['return'] ) {
+			$notifications = array();
+			foreach ( $results as $result ) {
+				$notifications[] = new Notification( $result );
+			}
+
+			return $notifications;
 		}
 
-		return $notifications;
+		return array_map(
+			function( $result ) {
+				return absint( $result['id'] );
+			},
+			$results
+		);
 	}
 }
