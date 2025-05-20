@@ -1,7 +1,7 @@
 ---
 post_title: Uninstall and remove all WooCommerce Data
 sidebar_label: Uninstalling and removing data
-tags: [code-snippet]
+
 current wccom url: https://woocommerce.com/document/installing-uninstalling-woocommerce/#uninstalling-woocommerce
 ---
 

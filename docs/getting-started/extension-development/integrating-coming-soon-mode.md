@@ -1,6 +1,6 @@
 ---
 post_title: Integrating with coming soon mode
-tags: [how-to, coming-soon]
+
 ---
 
 # Integrating with coming soon mode

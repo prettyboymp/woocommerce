@@ -1,7 +1,7 @@
 ---
 post_title: Add link to logged data
 sidebar_label: Add link to logged data
-tags: [code-snippets]
+
 ---
 
 # Add link to logged data

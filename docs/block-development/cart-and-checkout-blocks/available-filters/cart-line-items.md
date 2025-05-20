@@ -1,7 +1,7 @@
 ---
 post_title: Cart and Checkout Filters - Cart line items
 sidebar_label: Cart Line Items
-tags: [reference]
+
 ---
 
 # Cart line items

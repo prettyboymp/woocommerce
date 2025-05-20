@@ -1,7 +1,7 @@
 ---
 post_title: WooCommerce developer tools
 sidebar_label: Developer tools
-tags: [reference]
+
 ---
 
 # WooCommerce developer tools

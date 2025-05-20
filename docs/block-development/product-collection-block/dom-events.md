@@ -1,7 +1,7 @@
 ---
 post_title: DOM Events sent from product collection block
 sidebar_label: DOM Events
-tags: [how-to]
+
 ---
 
 # DOM Events sent from product collection block

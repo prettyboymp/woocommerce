@@ -1,7 +1,7 @@
 ---
 post_title: Checkout Block - Payment method integration
 sidebar_label: Payment Method Integration
-tags: [reference]
+
 ---
 
 # Checkout Block - Payment method integration

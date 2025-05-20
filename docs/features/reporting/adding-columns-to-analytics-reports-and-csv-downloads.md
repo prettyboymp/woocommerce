@@ -1,7 +1,7 @@
 ---
 post_title: How to add columns to analytics reports and CSV downloads
 sidebar_label: Add columns to analytics reports
-tags: [how-to]
+
 ---
 
 # How to add columns to analytics reports and CSV downloads

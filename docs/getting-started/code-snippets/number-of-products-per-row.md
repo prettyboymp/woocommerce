@@ -1,6 +1,6 @@
 ---
 post_title: Change number of related products displayed
-tags: [code-snippet]
+
 ---
 
 # Change number of related products displayed

@@ -1,7 +1,7 @@
 ---
 post_title: Cart and Checkout - Checkout flow and events
 sidebar_label: Checkout Flow and Events
-tags: [reference]
+
 ---
 
 # Checkout flow and events

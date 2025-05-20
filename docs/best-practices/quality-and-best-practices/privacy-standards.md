@@ -1,7 +1,7 @@
 ---
 post_title: Privacy Standards for WooCommerce Extensions
 sidebar_label: Privacy Standards
-tags: [reference]
+
 ---
 
 # Privacy Standards for WooCommerce Extensions

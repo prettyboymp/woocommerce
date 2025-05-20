@@ -1,6 +1,6 @@
 ---
 post_title: Useful core functions
-tags: [code-snippet]
+
 ---
 
 # Useful core functions

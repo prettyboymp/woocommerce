@@ -1,7 +1,7 @@
 ---
 post_title: Updating Countries and Subdivisions
 sidebar_label: Countries and Subdivisions
-tags: [how-to]
+
 ---
 
 # Updating Countries and Subdivisions

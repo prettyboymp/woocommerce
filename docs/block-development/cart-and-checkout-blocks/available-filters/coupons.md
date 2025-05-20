@@ -1,7 +1,7 @@
 ---
 post_title: Cart and Checkout Filters - Coupons
 sidebar_label: Coupons
-tags: [reference]
+
 ---
 
 # Coupons

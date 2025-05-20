@@ -1,7 +1,7 @@
 ---
 post_title: Registering custom collections in product collection block
 sidebar_label: Registering custom collections
-tags: [how-to]
+
 ---
 
 # Registering custom collections in product collection block

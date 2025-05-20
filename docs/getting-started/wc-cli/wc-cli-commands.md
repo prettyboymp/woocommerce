@@ -1,7 +1,7 @@
 ---
 post_title: WooCommerce CLI Commands
 sidebar_label: Commands
-tags: [reference]
+
 ---
 
 # WooCommerce CLI Commands

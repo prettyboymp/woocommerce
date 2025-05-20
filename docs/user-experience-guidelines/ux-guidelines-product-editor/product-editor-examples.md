@@ -1,7 +1,7 @@
 ---
 post_title: Product Editor Guidelines - Example Use-Cases
 sidebar_label: Example Use-Cases
-tags: [reference]
+
 ---
 
 # Product Editor Guidelines - Example Use-Cases

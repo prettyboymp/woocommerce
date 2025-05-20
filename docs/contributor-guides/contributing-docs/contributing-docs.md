@@ -62,7 +62,7 @@ Optionally, you can set additional metadata. The following fields are supported:
 ---
 post_title: Your Post Title Goes Here
 sidebar_label: Short Title Goes Here
-tags: [tag1, tag2, tag3]
+
 ---
 
 # Your Post Title Goes Here

@@ -1,7 +1,7 @@
 ---
 post_title: Cart and Checkout Filters - Totals footer item
 sidebar_label: Totals Footer Item
-tags: [reference]
+
 ---
 
 # Totals footer item

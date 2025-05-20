@@ -1,7 +1,7 @@
 ---
 post_title: WooCommerce core critical flows
 sidebar_label: Core critical flows
-tags: [reference]
+
 ---
 
 # WooCommerce core critical flows

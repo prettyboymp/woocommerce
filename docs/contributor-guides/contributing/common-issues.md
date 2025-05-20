@@ -1,7 +1,7 @@
 ---
 post_title: Common issues
 sidebar_label: Common issues
-tags: [reference]
+
 ---
 
 # Common issues

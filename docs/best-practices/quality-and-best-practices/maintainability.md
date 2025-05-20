@@ -1,7 +1,7 @@
 ---
 post_title: Maintaining and updating WooCommerce extensions
 sidebar_label: Maintainability and updates
-tags: [reference]
+
 ---
 
 # Maintaining and updating WooCommerce extensions

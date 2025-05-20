@@ -1,6 +1,6 @@
 ---
 post_title: Change a currency symbol
-tags: [code-snippet]
+
 ---
 
 # Change a currency symbol

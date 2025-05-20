@@ -1,7 +1,7 @@
 ---
 post_title: Cart and Checkout Filters - Checkout and place order button
 sidebar_label: Checkout and Place Order Button
-tags: [reference]
+
 ---
 
 # Checkout and place order button

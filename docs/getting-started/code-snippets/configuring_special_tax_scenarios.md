@@ -1,7 +1,7 @@
 ---
 post_title: Code snippets for configuring special tax scenarios
 sidebar_label: Configuring special tax scenarios
-tags: [code-snippet, tax]
+
 current wccom url: https://woocommerce.com/document/setting-up-taxes-in-woocommerce/configuring-specific-tax-setups-in-woocommerce/#configuring-special-tax-setups
 ---
 

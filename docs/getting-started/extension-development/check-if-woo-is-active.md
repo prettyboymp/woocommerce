@@ -1,7 +1,7 @@
 ---
 post_title: How to check if WooCommerce is active
 sidebar_label: Check if WooCommerce is active
-tags: [how-to]
+
 ---
 
 # How to check if WooCommerce is active

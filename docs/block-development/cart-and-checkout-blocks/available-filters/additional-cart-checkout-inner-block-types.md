@@ -1,7 +1,7 @@
 ---
 post_title: Cart and Checkout Filters - Inner block types
 sidebar_label: Inner Block Types
-tags: [reference]
+
 ---
 
 # Inner block types

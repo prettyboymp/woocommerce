@@ -1,7 +1,7 @@
 ---
 post_title: Cart and Checkout - How the checkout block processes an order
 sidebar_label: Processing an Order
-tags: [reference]
+
 ---
 
 # How the checkout block processes an order

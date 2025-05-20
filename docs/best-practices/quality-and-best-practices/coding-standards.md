@@ -1,7 +1,7 @@
 ---
 post_title: WooCommerce coding standards
 sidebar_label: Coding standards
-tags: [reference]
+
 ---
 
 # WooCommerce coding standards

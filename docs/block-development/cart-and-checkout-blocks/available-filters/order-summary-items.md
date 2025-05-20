@@ -1,7 +1,7 @@
 ---
 post_title: Cart and Checkout Filters - Order summary items
 sidebar_label: Order Summary Items
-tags: [reference]
+
 ---
 
 # Order summary items

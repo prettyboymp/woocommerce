@@ -1,7 +1,7 @@
 ---
 post_title: CSS styling for themes
 sidebar_label: CSS Styling for Themes
-tags: [reference]
+
 ---
 
 # CSS styling for themes

@@ -1,6 +1,6 @@
 ---
 post_title: Adjust the quantity input values
-tags: [code-snippet]
+
 ---
 
 # Adjust the quantity input values

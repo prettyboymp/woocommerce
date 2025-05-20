@@ -1,7 +1,7 @@
 ---
 post_title: WooCommerce grammar, punctuation and capitalization guide
 sidebar_label: Grammar, punctuation and capitalization
-tags: [reference]
+
 ---
 
 # WooCommerce grammar, punctuation and capitalization guide

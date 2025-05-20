@@ -1,7 +1,7 @@
 ---
 post_title: How to add store management links
 sidebar_label: Add store management links
-tags: [reference]
+
 ---
 
 # How to add store management links

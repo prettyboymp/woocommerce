@@ -1,7 +1,7 @@
 ---
 post_title: Troubleshooting WooCommerce Endpoints
 sidebar_label: Troubleshooting Endpoints
-tags: [how-to]
+
 ---
 
 # Troubleshooting WooCommerce Endpoints

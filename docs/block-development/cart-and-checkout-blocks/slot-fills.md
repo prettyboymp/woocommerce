@@ -1,7 +1,7 @@
 ---
 post_title: Cart and Checkout - Slot and fill
 sidebar_label: Slot and Fill
-tags: [reference]
+
 ---
 
 # Slot and fill

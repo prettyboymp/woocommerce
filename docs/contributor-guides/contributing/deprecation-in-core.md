@@ -1,7 +1,7 @@
 ---
 post_title: Deprecation in core
 sidebar_label: Deprecation in core
-tags: [reference]
+
 ---
 
 # Deprecation in core

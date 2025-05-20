@@ -1,7 +1,7 @@
 ---
 post_title: How to Use WooCommerce CLI
 sidebar_label: Using WooCommerce CLI
-tags: [how-to]
+
 ---
 
 # How to Use WooCommerce CLI

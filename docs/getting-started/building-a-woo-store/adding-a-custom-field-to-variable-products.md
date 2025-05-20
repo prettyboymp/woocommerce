@@ -1,7 +1,7 @@
 ---
 post_title: How to add a custom field to simple and variable products
 sidebar_label: Add Custom Fields to Products
-tags: [how-to]
+
 ---
 
 # How to add a custom field to simple and variable products

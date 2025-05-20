@@ -1,6 +1,6 @@
 ---
 post_title: Add a message above the login / register form
-tags: [code-snippet]
+
 ---
 
 # Add a message above the login / register form

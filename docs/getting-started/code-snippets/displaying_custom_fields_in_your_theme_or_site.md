@@ -1,7 +1,7 @@
 ---
 post_title: Displaying Custom Fields in Your Theme or Site
 sidebar_label: Displaying custom fields in theme
-tags: [code-snippet]
+
 current wccom url: https://woocommerce.com/document/custom-product-fields/
 ---
 

@@ -1,7 +1,7 @@
 ---
 post_title: Check if a Payment Method Support Refunds, Subscriptions or Pre-orders
 sidebar_label: Payment method support  for refunds, subscriptions, pre-orders
-tags: [payment-methods]
+
 current wccom url: https://woocommerce.com/document/check-if-payment-gateway-supports-refunds-subscriptions-preorders/
 ---
 

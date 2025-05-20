@@ -1,7 +1,7 @@
 ---
 post_title: Example WordPress plugin header comment for WooCommerce extensions
 sidebar_label: Plugin header comments
-tags: [reference]
+
 ---
 
 # Example WordPress plugin header comment for WooCommerce extensions

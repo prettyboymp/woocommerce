@@ -1,7 +1,7 @@
 ---
 post_title: How to create custom product tours
 sidebar_label: How to create custom product tours
-tags: [how-to]
+
 ---
 
 # How to create custom product tours
