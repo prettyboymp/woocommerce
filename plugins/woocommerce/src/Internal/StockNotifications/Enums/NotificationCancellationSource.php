@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Automattic\WooCommerce\Internal\StockNotifications\Enums;
 
+/**
+ * Notification cancellation source enum.
+ */
 class NotificationCancellationSource {
 
 	/**
@@ -26,9 +29,9 @@ class NotificationCancellationSource {
 	 * @return string[]
 	 */
 	public static function get_valid_cancellation_sources(): array {
-		return [
+		return array(
 			self::ADMIN,
 			self::USER,
-		];
+		);
 	}
 }

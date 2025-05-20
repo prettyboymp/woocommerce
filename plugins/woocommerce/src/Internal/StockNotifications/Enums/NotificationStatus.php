@@ -42,11 +42,11 @@ final class NotificationStatus {
 	 * @return array<string> Notification statuses.
 	 */
 	public static function get_valid_statuses(): array {
-		return [
+		return array(
 			self::PENDING,
 			self::ACTIVE,
 			self::SENT,
 			self::CANCELLED,
-		];
+		);
 	}
 }

@@ -36,8 +36,8 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	 *
 	 * @internal
 	 *
-	 * @param StockNotificationsMetaDataStore         $data_store_meta The data store meta instance to use.
-	 * @param DatabaseUtil                            $database_util   The database util instance to use.
+	 * @param StockNotificationsMetaDataStore $data_store_meta The data store meta instance to use.
+	 * @param DatabaseUtil                    $database_util   The database util instance to use.
 	 *
 	 * @return void
 	 */
@@ -160,17 +160,17 @@ CREATE TABLE $meta_table_name (
 		$insert = $wpdb->insert(
 			$this->get_table_name(),
 			array(
-				'product_id'          => $notification->get_product_id( 'edit' ),
-				'user_id'             => $notification->get_user_id( 'edit' ),
-				'user_email'          => $notification->get_user_email( 'edit' ),
-				'status'              => $notification->get_status( 'edit' ),
-				'date_created_gmt'    => gmdate( 'Y-m-d H:i:s', $notification->get_date_created( 'edit' )->getTimestamp() ),
-				'date_modified_gmt'   => gmdate( 'Y-m-d H:i:s', $notification->get_date_modified( 'edit' )->getTimestamp() ),
-				'date_confirmed_gmt'  => $notification->get_date_confirmed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_confirmed( 'edit' )->getTimestamp() ) : null,
+				'product_id'            => $notification->get_product_id( 'edit' ),
+				'user_id'               => $notification->get_user_id( 'edit' ),
+				'user_email'            => $notification->get_user_email( 'edit' ),
+				'status'                => $notification->get_status( 'edit' ),
+				'date_created_gmt'      => gmdate( 'Y-m-d H:i:s', $notification->get_date_created( 'edit' )->getTimestamp() ),
+				'date_modified_gmt'     => gmdate( 'Y-m-d H:i:s', $notification->get_date_modified( 'edit' )->getTimestamp() ),
+				'date_confirmed_gmt'    => $notification->get_date_confirmed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_confirmed( 'edit' )->getTimestamp() ) : null,
 				'date_last_attempt_gmt' => $notification->get_date_last_attempt( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_last_attempt( 'edit' )->getTimestamp() ) : null,
-				'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
-				'date_cancelled_gmt'  => $notification->get_date_cancelled( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_cancelled( 'edit' )->getTimestamp() ) : null,
-				'cancellation_source' => $notification->get_cancellation_source( 'edit' ),
+				'date_notified_gmt'     => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
+				'date_cancelled_gmt'    => $notification->get_date_cancelled( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_cancelled( 'edit' )->getTimestamp() ) : null,
+				'cancellation_source'   => $notification->get_cancellation_source( 'edit' ),
 			),
 			array(
 				'%d',
@@ -229,17 +229,17 @@ CREATE TABLE $meta_table_name (
 
 		$notification->set_props(
 			array(
-				'id'              => $data->id,
-				'product_id'      => $data->product_id,
-				'user_id'         => $data->user_id,
-				'user_email'      => $data->user_email,
-				'status'          => $data->status,
-				'date_created'    => wc_string_to_timestamp( $data->date_created_gmt ),
-				'date_modified'   => wc_string_to_timestamp( $data->date_modified_gmt ),
-				'date_confirmed'  => wc_string_to_timestamp( $data->date_confirmed_gmt ),
-				'date_last_attempt' => wc_string_to_timestamp( $data->date_last_attempt_gmt ),
-				'date_notified'   => wc_string_to_timestamp( $data->date_notified_gmt ),
-				'date_cancelled'  => wc_string_to_timestamp( $data->date_cancelled_gmt ),
+				'id'                  => $data->id,
+				'product_id'          => $data->product_id,
+				'user_id'             => $data->user_id,
+				'user_email'          => $data->user_email,
+				'status'              => $data->status,
+				'date_created'        => wc_string_to_timestamp( $data->date_created_gmt ),
+				'date_modified'       => wc_string_to_timestamp( $data->date_modified_gmt ),
+				'date_confirmed'      => wc_string_to_timestamp( $data->date_confirmed_gmt ),
+				'date_last_attempt'   => wc_string_to_timestamp( $data->date_last_attempt_gmt ),
+				'date_notified'       => wc_string_to_timestamp( $data->date_notified_gmt ),
+				'date_cancelled'      => wc_string_to_timestamp( $data->date_cancelled_gmt ),
 				'cancellation_source' => $data->cancellation_source,
 			)
 		);
@@ -273,17 +273,17 @@ CREATE TABLE $meta_table_name (
 			$result = $wpdb->update(
 				$this->get_table_name(),
 				array(
-					'product_id'          => $notification->get_product_id( 'edit' ),
-					'user_id'             => $notification->get_user_id( 'edit' ),
-					'user_email'          => $notification->get_user_email( 'edit' ),
-					'status'              => $notification->get_status( 'edit' ),
-					'date_created_gmt'    => gmdate( 'Y-m-d H:i:s', $notification->get_date_created( 'edit' )->getTimestamp() ),
-					'date_modified_gmt'   => gmdate( 'Y-m-d H:i:s', $notification->get_date_modified( 'edit' )->getTimestamp() ),
-					'date_confirmed_gmt'  => $notification->get_date_confirmed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_confirmed( 'edit' )->getTimestamp() ) : null,
+					'product_id'            => $notification->get_product_id( 'edit' ),
+					'user_id'               => $notification->get_user_id( 'edit' ),
+					'user_email'            => $notification->get_user_email( 'edit' ),
+					'status'                => $notification->get_status( 'edit' ),
+					'date_created_gmt'      => gmdate( 'Y-m-d H:i:s', $notification->get_date_created( 'edit' )->getTimestamp() ),
+					'date_modified_gmt'     => gmdate( 'Y-m-d H:i:s', $notification->get_date_modified( 'edit' )->getTimestamp() ),
+					'date_confirmed_gmt'    => $notification->get_date_confirmed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_confirmed( 'edit' )->getTimestamp() ) : null,
 					'date_last_attempt_gmt' => $notification->get_date_last_attempt( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_last_attempt( 'edit' )->getTimestamp() ) : null,
-					'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
-					'date_cancelled_gmt'  => $notification->get_date_cancelled( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_cancelled( 'edit' )->getTimestamp() ) : null,
-					'cancellation_source' => $notification->get_cancellation_source( 'edit' ),
+					'date_notified_gmt'     => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
+					'date_cancelled_gmt'    => $notification->get_date_cancelled( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_cancelled( 'edit' )->getTimestamp() ) : null,
+					'cancellation_source'   => $notification->get_cancellation_source( 'edit' ),
 				),
 				array( 'id' => $notification->get_id() ),
 				array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ),
