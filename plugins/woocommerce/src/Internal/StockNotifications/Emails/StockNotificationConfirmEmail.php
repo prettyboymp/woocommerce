@@ -75,7 +75,7 @@ class StockNotificationConfirmEmail extends WC_Email {
 	 *
 	 * @return string
 	 */
-	public function get_into_content() {
+	public function get_intro_content() {
 		/**
 		 * Allows modifying the email introduction content.
 		 *
@@ -100,7 +100,7 @@ class StockNotificationConfirmEmail extends WC_Email {
 					'notification'       => $this->object,
 					'product'            => $this->object->get_product(),
 					'email_heading'      => $this->get_heading(),
-					'intro_content'      => $this->get_into_content(),
+					'intro_content'      => $this->get_intro_content(),
 					'additional_content' => $this->get_additional_content(),
 					'plain_text'         => false,
 					'email'              => $this,
@@ -123,7 +123,7 @@ class StockNotificationConfirmEmail extends WC_Email {
 					'notification'       => $this->object,
 					'product'            => $this->object->get_product(),
 					'email_heading'      => $this->get_heading(),
-					'intro_content'      => $this->get_into_content(),
+					'intro_content'      => $this->get_intro_content(),
 					'additional_content' => $this->get_additional_content(),
 					'plain_text'         => true,
 					'email'              => $this,
