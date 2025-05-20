@@ -24,6 +24,7 @@ body:
         -   [Release calendar](https://developer.woocommerce.com/release-calendar/)
         -   [Previous releases](https://developer.woocommerce.com/releases/)
         -   Latest (version 9.9+) [release process changes](https://developer.woocommerce.com/2025/03/05/upcoming-changes-to-the-woocommerce-release-process/)
+        -   Internal reference with more details: Pf59Ax-7F-p2
 
   - type: markdown
     attributes:
@@ -48,15 +49,23 @@ body:
 
         #### Release to WordPress.org
 
-        -    [] TBD
+        -    [] Skip notifying Atomic
+        -    [] Using WooRelease, perform release dry ran with e.g. `php woorelease.php wporg:release --product_version=9.9.0-rc.1 --zip_file=ZIP_FILE_PATH --product_path=plugins/woocommerce https://github.com/woocommerce/woocommerce/tree/release/9.9`
+        -    [] Using WooRelease, perform release with e.g. `php woorelease.php wporg:release --product_version=9.9.0-rc.1 --zip_file=ZIP_FILE_PATH --product_path=plugins/woocommerce https://github.com/woocommerce/woocommerce/tree/release/9.9 --release`
+        -    [] If the release command reports SVN-related timeouts, validate versions on https://wordpress.org/plugins/woocommerce/advanced/ and https://plugins.svn.wordpress.org/woocommerce/tags/ pages and continue if those are correct
+        -    [] Upon receiving email `[WordPress Plugin Directory] Pending release for WooCommerce`, confirm the release
+        -    [] Verify new version is listed and downloadable on https://wordpress.org/plugins/woocommerce/advanced/ page
 
         #### Stage and bump stable tag
 
-        -    [] TBD
+        -    [] Manually create a release entry on https://github.com/woocommerce/woocommerce/releases (use version as tag, upload the generated zip and pick the proper release branch)
+        -    [] Verify new PRs created by `github-actions` and merge ones related to the release
 
         #### Send comms out
 
-        -    [] TBD
+        -    [] Coordinate with Developer Advocacy team updating pre-release post on developer.woocommerce.com
+        -    [] Notify #woo-core-releases and #woo-announcements Slack channels with a link to the release post
+        -    [] Post an update in the internal release P2
 
   - type: markdown
     attributes:
@@ -75,15 +84,28 @@ body:
 
         #### Release to WordPress.org
 
-        -    [] TBD
+        -    [] Notify Atomic (via P2 and Slack) before deploying release
+        -    [] Using WooRelease, perform release dry ran with e.g. `php woorelease.php wporg:release --product_version=9.9.0 --zip_file=ZIP_FILE_PATH --product_path=plugins/woocommerce https://github.com/woocommerce/woocommerce/tree/release/9.9`
+        -    [] Using WooRelease, perform release with e.g. `php woorelease.php wporg:release --product_version=9.9.0 --zip_file=ZIP_FILE_PATH --product_path=plugins/woocommerce https://github.com/woocommerce/woocommerce/tree/release/9.9 --release`
+        -    [] If the release command reports SVN-related timeouts, validate versions on https://wordpress.org/plugins/woocommerce/advanced/ and https://plugins.svn.wordpress.org/woocommerce/tags/ pages and continue if those are correct
+        -    [] Upon receiving email `[WordPress Plugin Directory] Pending release for WooCommerce`, confirm the release
+        -    [] Verify new version is listed and downloadable on https://wordpress.org/plugins/woocommerce/ page
+        -    [] Update the Atomic comms threads about the release completion        
 
         #### Stage and bump stable tag
 
-        -    [] TBD
+        -    [] For next 4 hours monitor the release staging: monitoring alerts and updates in the Atomic comms threads.
+        -    [] Using WooRelease, perform stable tag bump dry ran with e.g. `php woorelease.php update-stable --product_path=plugins/woocommerce https://github.com/woocommerce/woocommerce/tree/trunk 9.9.0`
+        -    [] Using WooRelease, perform stable tag bump with e.g. `php woorelease.php update-stable --product_path=plugins/woocommerce https://github.com/woocommerce/woocommerce/tree/trunk 9.9.0 --update`
+        -    [] Review (ensure PR CI-checks are passing) and merge additional PR (ensure merge CI-checks are passing) created on the previous step to sync stable tag sync with the source code
+        -    [] Manually create a release entry on https://github.com/woocommerce/woocommerce/releases (use version as tag, upload the generated zip and pick the proper release branch)
+        -    [] Verify new PRs created by `github-actions` and merge ones related to the release
 
         #### Send comms out
 
-        -    [] TBD
+        -    [] Coordinate with Developer Advocacy team posting release announcement on developer.woocommerce.com (post guidelines outlined here: Pf59Ax-7F-p2)
+        -    [] Notify #woo-core-releases and #woo-announcements Slack channels with a link to the release post
+        -    [] Post an update in the internal release P2   
 
   - type: markdown
     attributes:
