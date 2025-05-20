@@ -15,6 +15,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { CollapsibleContent } from '@woocommerce/components';
 import { settings, plugins, layout } from '@wordpress/icons';
 import { recordEvent } from '@woocommerce/tracks';
+import { useUser } from '@woocommerce/data';
 
 /**
  * Internal dependencies
@@ -49,7 +50,10 @@ const Blueprint = () => {
 		}, {} )
 	);
 
+	const { currentUserCan } = useUser();
+
 	const exportBlueprint = async ( _steps ) => {
+		setExportError( null );
 		setExportEnabled( false );
 
 		const linkContainer = document.getElementById(
@@ -65,6 +69,7 @@ const Blueprint = () => {
 					steps: _steps,
 				},
 			} );
+
 			const link = document.createElement( 'a' );
 			let url = null;
 
@@ -94,14 +99,41 @@ const Blueprint = () => {
 				settings_exported: _steps.settings,
 			} );
 		} catch ( e ) {
-			setExportError( e.message );
-
 			recordEvent( 'blueprint_export_error', {
 				error_message: e.message || 'unknown',
 			} );
-		}
 
-		setExportEnabled( true );
+			setExportError( e.message );
+
+			switch ( true ) {
+				case e instanceof Error:
+					setExportError( e.message );
+					break;
+				case typeof e === 'string':
+					setExportError( e );
+					break;
+				case e.errors &&
+					e.errors.wooblueprint_insufficient_permissions &&
+					e.errors.wooblueprint_insufficient_permissions.length > 0:
+					setExportError(
+						__(
+							'Sorry, you are not allowed to export the selected settings.',
+							'woocommerce'
+						)
+					);
+					break;
+				default:
+					setExportError(
+						__(
+							'An unknown error occurred while exporting the settings.',
+							'woocommerce'
+						)
+					);
+					break;
+			}
+		} finally {
+			setExportEnabled( true );
+		}
 	};
 
 	// Handle checkbox change
@@ -121,7 +153,7 @@ const Blueprint = () => {
 			<p className="blueprint-settings-intro-text">
 				{ createInterpolateElement(
 					__(
-						'Blueprints are setup files that contain all the installation instructions, including plugins, themes, and setting. Ease the setup process, allow teams to apply each others’ changes and much more. <docLink />',
+						'Blueprints are setup files containing WooCommerce settings, plugins, and themes. Simplify setup, streamline team collaboration, and <docLink />.',
 						'woocommerce'
 					),
 					{
@@ -135,24 +167,28 @@ const Blueprint = () => {
 									recordEvent( 'blueprint_learn_more_click' );
 								} }
 							>
-								{ __( 'Learn more', 'woocommerce' ) }
+								{ __( 'more', 'woocommerce' ) }
 							</a>
 						),
 					}
 				) }
 			</p>
-			<h4>{ __( 'Import', 'woocommerce' ) }</h4>
-			<p>
-				{ __(
-					'Import .json file, max size 50 MB. Only one Blueprint can be imported at a time.',
-					'woocommerce'
-				) }
-			</p>
-			<BlueprintUploadDropzone />
+			{ currentUserCan( 'manage_options' ) && (
+				<>
+					<h4>{ __( 'Import', 'woocommerce' ) }</h4>
+					<p>
+						{ __(
+							'Import a .json file. You can import only one Blueprint at a time.',
+							'woocommerce'
+						) }
+					</p>
+					<BlueprintUploadDropzone />
+				</>
+			) }
 			<h4>{ __( 'Export', 'woocommerce' ) }</h4>
 			<p className="blueprint-settings-export-intro">
 				{ __(
-					'Choose what you want to include, and export it as a .json file.',
+					'Select the settings, plugins, and themes to export as a .json file.',
 					'woocommerce'
 				) }
 			</p>

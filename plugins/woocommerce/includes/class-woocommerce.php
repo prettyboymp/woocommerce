@@ -25,6 +25,7 @@ use Automattic\WooCommerce\Internal\RestockRefundedItemsAdjuster;
 use Automattic\WooCommerce\Internal\Settings\OptionSanitizer;
 use Automattic\WooCommerce\Internal\Utilities\LegacyRestApiStub;
 use Automattic\WooCommerce\Internal\Utilities\WebhookUtil;
+use Automattic\WooCommerce\Internal\Admin\EmailImprovements\EmailImprovements;
 use Automattic\WooCommerce\Internal\Admin\Marketplace;
 use Automattic\WooCommerce\Proxies\LegacyProxy;
 use Automattic\WooCommerce\Utilities\{LoggingUtil, RestApiUtil, TimeUtil};
@@ -44,7 +45,7 @@ final class WooCommerce {
 	 *
 	 * @var string
 	 */
-	public $version = '9.9.0';
+	public $version = '10.0.0';
 
 	/**
 	 * WooCommerce Schema version.
@@ -333,6 +334,7 @@ final class WooCommerce {
 		$container->get( ComingSoonCacheInvalidator::class );
 		$container->get( ComingSoonRequestHandler::class );
 		$container->get( OrderCountCacheService::class );
+		$container->get( EmailImprovements::class );
 		$container->get( StockNotificationsController::class );
 
 		/**
@@ -346,13 +348,13 @@ final class WooCommerce {
 		$container->get( Automattic\WooCommerce\Internal\Admin\Settings\PaymentsController::class )->register();
 		$container->get( Automattic\WooCommerce\Internal\Utilities\LegacyRestApiStub::class )->register();
 		$container->get( Automattic\WooCommerce\Internal\Email\EmailStyleSync::class )->register();
-		Automattic\WooCommerce\Internal\Admin\WcPayWelcomePage::instance()->register();
 
 		// Classes inheriting from RestApiControllerBase.
 		$container->get( Automattic\WooCommerce\Internal\ReceiptRendering\ReceiptRenderingRestController::class )->register();
 		$container->get( Automattic\WooCommerce\Internal\Orders\OrderActionsRestController::class )->register();
 		$container->get( Automattic\WooCommerce\Internal\Orders\OrderStatusRestController::class )->register();
 		$container->get( Automattic\WooCommerce\Internal\Admin\Settings\PaymentsRestController::class )->register();
+		$container->get( Automattic\WooCommerce\Internal\Admin\Settings\PaymentProviders\WooPayments\WooPaymentsRestController::class )->register();
 		$container->get( Automattic\WooCommerce\Internal\Admin\EmailPreview\EmailPreviewRestController::class )->register();
 
 		$container->get( Automattic\WooCommerce\Internal\ProductFilters\MainQueryController::class )->register();
@@ -613,6 +615,7 @@ final class WooCommerce {
 		/**
 		 * Abstract classes.
 		 */
+		include_once WC_ABSPATH . 'includes/abstracts/abstract-wc-address-provider.php';
 		include_once WC_ABSPATH . 'includes/abstracts/abstract-wc-data.php';
 		include_once WC_ABSPATH . 'includes/abstracts/abstract-wc-object-query.php';
 		include_once WC_ABSPATH . 'includes/abstracts/abstract-wc-payment-token.php';
