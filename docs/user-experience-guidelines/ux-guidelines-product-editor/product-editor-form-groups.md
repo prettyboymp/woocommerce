@@ -1,5 +1,5 @@
 ---
-post_title: Product Editor Guidelines - Groups
+post_title: Groups
 sidebar_label: Groups
 ---
 

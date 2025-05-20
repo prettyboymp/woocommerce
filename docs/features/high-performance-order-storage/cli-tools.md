@@ -1,6 +1,6 @@
 ---
 post_title: HPOS CLI Tools
-tags: [reference]
+
 ---
 
 # HPOS CLI Tools

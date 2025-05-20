@@ -1,7 +1,7 @@
 ---
 post_title: How to add a section to a settings tab
 sidebar_label: Add a section to a settings tab
-tags: [how-to]
+
 ---
 
 # How to add a section to a settings tab

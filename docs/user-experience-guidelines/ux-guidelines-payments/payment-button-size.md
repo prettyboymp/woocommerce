@@ -1,6 +1,6 @@
 ---
-post_title: User Experience Guidelines - Payment Button Size and Anatomy
-sidebar_label: Payment Button Size
+post_title: Payment button size
+sidebar_label: Payment button size
 ---
 
 # User Experience Guidelines - Payment Button Size and Anatomy

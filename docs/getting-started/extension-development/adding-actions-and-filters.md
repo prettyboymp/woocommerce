@@ -1,7 +1,7 @@
 ---
 post_title: How to add actions and filters
 sidebar_label: Add actions and filters
-tags: [how-to]
+
 ---
 
 # How to add actions and filters

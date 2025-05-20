@@ -1,7 +1,7 @@
 ---
 post_title: How to configure caching plugins for WooCommerce
 sidebar_label: Configure caching plugins
-tags: [how-to]
+
 ---
 
 # How to configure caching plugins for WooCommerce

@@ -1,7 +1,7 @@
 ---
 post_title: Writing high quality testing instructions
 sidebar_label: Writing testing instructions
-tags: [reference]
+
 ---
 
 # Writing high quality testing instructions

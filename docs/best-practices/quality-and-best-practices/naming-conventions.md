@@ -1,7 +1,7 @@
 ---
 post_title: Naming conventions
 sidebar_label: Naming conventions
-tags: [reference]
+
 ---
 
 # Naming conventions

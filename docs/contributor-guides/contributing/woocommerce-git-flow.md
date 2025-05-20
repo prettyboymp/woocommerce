@@ -1,7 +1,7 @@
 ---
 post_title: WooCommerce Git flow
 sidebar_label: WooCommerce Git flow
-tags: [reference]
+
 ---
 
 # WooCommerce Git flow

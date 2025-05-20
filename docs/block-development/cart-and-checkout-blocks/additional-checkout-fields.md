@@ -1,7 +1,7 @@
 ---
-post_title: Cart and Checkout - Additional checkout fields
-sidebar_label: Additional Checkout Fields
-tags: [reference]
+post_title: Additional checkout fields
+sidebar_label: Additional checkout fields
+
 ---
 
 # Additional checkout fields

@@ -1,5 +1,5 @@
 ---
-post_title: Theme Design Guidelines - Branding
+post_title: Branding
 sidebar_label: Branding
 ---
 

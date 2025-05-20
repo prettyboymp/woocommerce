@@ -1,7 +1,7 @@
 ---
 post_title: Add currencies and symbols
 sidebar_label: Add currencies and symbols
-tags: [code-snippet]
+
 ---
 
 # Add currencies and symbols

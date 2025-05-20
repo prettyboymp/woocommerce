@@ -1,7 +1,7 @@
 ---
 post_title: Data storage primer
 sidebar_label: Data storage
-tags: [reference]
+
 ---
 
 # Data storage primer

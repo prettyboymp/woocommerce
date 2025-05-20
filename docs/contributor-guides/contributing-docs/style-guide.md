@@ -1,6 +1,6 @@
 ---
-post_title: Technical Documentation Style Guide
-sidebar_label: Style Guide
+post_title: Technical documentation style guide
+sidebar_label: Style guide
 ---
 
 # Technical Documentation Style Guide

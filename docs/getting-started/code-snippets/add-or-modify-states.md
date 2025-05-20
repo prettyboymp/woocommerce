@@ -1,6 +1,6 @@
 ---
 post_title: Add or modify states
-tags: [code-snippet]
+
 ---
 
 # Add or modify states

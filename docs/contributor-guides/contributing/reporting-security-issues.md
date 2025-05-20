@@ -1,7 +1,7 @@
 ---
 post_title: Reporting security issues
 sidebar_label: Reporting security issues
-tags: [reference]
+
 ---
 
 # Reporting security issues

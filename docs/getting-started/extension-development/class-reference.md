@@ -1,7 +1,7 @@
 ---
 post_title: Classes in WooCommerce
 sidebar_label: Classes in WooCommerce
-tags: [reference]
+
 ---
 
 # Classes in WooCommerce

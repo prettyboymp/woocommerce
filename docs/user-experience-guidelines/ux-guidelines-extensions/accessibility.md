@@ -1,5 +1,5 @@
 ---
-post_title: WooCommerce Extension Guidelines - Accessibility
+post_title: Accessibility
 sidebar_label: Accessibility
 ---
 

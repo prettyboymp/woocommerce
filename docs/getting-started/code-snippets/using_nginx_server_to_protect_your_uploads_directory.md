@@ -1,7 +1,7 @@
 ---
 post_title: Using NGINX server to protect your upload directory
 sidebar_label: NGINX server to protect upload directory
-tags: [code-snippet]
+
 current wccom url: https://woocommerce.com/document/digital-downloadable-product-handling/#protecting-your-uploads-directory
 ---
 

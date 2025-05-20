@@ -1,7 +1,7 @@
 ---
 post_title: Support and documentation for WooCommerce extensions
 sidebar_label: Support and documentation
-tags: [reference]
+
 ---
 
 # Support and documentation for WooCommerce extensions

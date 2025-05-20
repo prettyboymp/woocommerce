@@ -1,7 +1,7 @@
 ---
 post_title: Compatibility and interoperability for WooCommerce extensions
 sidebar_label: Compatibility best practices
-tags: [reference]
+
 ---
 
 # Compatibility and interoperability for WooCommerce extensions

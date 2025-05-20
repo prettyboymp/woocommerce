@@ -1,7 +1,7 @@
 ---
 post_title: Theming for Woo blocks
-sidebar_label: Theming for Woo Blocks
-tags: [reference]
+sidebar_label: Theming for Woo blocks
+
 ---
 
 # Theming for Woo blocks

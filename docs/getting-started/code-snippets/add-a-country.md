@@ -1,7 +1,7 @@
 ---
 post_title: Add a country
 sidebar_label: Add a country
-tags: [code-snippet]
+
 ---
 
 # Add a country

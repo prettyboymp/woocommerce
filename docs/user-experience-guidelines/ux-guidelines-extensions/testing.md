@@ -1,5 +1,5 @@
 ---
-post_title: WooCommerce Extension Guidelines - Testing
+post_title: Testing
 sidebar_label: Testing
 ---
 

@@ -1,7 +1,7 @@
 ---
-post_title: Cart and Checkout - Available slots
-sidebar_label: Available Slots
-tags: [reference]
+post_title: Available slots
+sidebar_label: Available slots
+
 ---
 
 # Available slots

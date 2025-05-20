@@ -1,7 +1,7 @@
 ---
 post_title: CSS styling for themes
-sidebar_label: CSS Styling for Themes
-tags: [reference]
+sidebar_label: CSS styling for themes
+
 ---
 
 # CSS styling for themes
@@ -47,7 +47,7 @@ Container width | Class name
 \>700px         | `is-large`
 521px-700px     | `is-medium`
 401px-520px     | `is-small`
-<=400px         | `is-mobile`
+\<=400px         | `is-mobile`
 
 As an example, if we wanted to do the Checkout font size 10% larger when the container has a width of 521px or wider, we could do so with this code:
 

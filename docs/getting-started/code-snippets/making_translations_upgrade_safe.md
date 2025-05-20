@@ -1,7 +1,7 @@
 ---
 post_title: Making your translation upgrade safe
 sidebar_label: Translation upgrade safety
-tags: [code-snippet]
+
 current wccom url: https://woocommerce.com/document/woocommerce-localization/#making-your-translation-upgrade-safe
 ---
 

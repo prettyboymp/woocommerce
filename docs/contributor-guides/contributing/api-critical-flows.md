@@ -1,7 +1,7 @@
 ---
 post_title: Critical flows within the WooCommerce Core API
 sidebar_label: API critical flows
-tags: [reference]
+
 ---
 
 # Critical flows within the WooCommerce Core API

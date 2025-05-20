@@ -1,10 +1,10 @@
 ---
-post_title: Checkout Block - Payment method integration
-sidebar_label: Payment Method Integration
-tags: [reference]
+post_title: Payment method integration
+sidebar_label: Payment method integration
+
 ---
 
-# Checkout Block - Payment method integration
+# Payment method integration
 
 ## Client Side integration
 

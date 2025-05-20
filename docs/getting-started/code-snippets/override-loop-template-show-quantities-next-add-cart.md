@@ -1,6 +1,6 @@
 ---
 post_title: Override loop template and show quantities next to add to cart buttons
-tags: [code-snippet]
+
 ---
 
 # Override loop template and show quantities next to add to cart buttons

@@ -1,7 +1,7 @@
 ---
 post_title: How to assess the impact of a pull request
 sidebar_label: Assessing PR impact
-tags: [how-to]
+
 ---
 
 # How to assess the impact of a pull request

@@ -1,7 +1,7 @@
 ---
 post_title: Creating custom settings for WooCommerce extensions
 sidebar_label: Creating custom settings
-tags: [how-to]
+
 ---
 
 # Creating custom settings for WooCommerce extensions

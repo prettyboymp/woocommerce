@@ -1,6 +1,6 @@
 ---
-post_title: WooCommerce Theme Guidelines - Demos and Sample Content
-sidebar_label: Demos and Sample Content
+post_title: Demos and sample content
+sidebar_label: Demos and sample content
 ---
 
 # WooCommerce Theme Guidelines - Demos and Sample Content

@@ -1,7 +1,7 @@
 ---
-post_title: WooCommerce CLI Examples
+post_title: WooCommerce CLI examples
 sidebar_label: Examples
-tags: [reference]
+
 ---
 
 # WooCommerce CLI Examples

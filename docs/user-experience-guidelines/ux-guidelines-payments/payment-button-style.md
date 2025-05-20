@@ -1,6 +1,6 @@
 ---
-post_title: User Experience Guidelines - Payment Button Style
-sidebar_label: Payment Button Style
+post_title: Payment button style
+sidebar_label: Payment button style
 ---
 
 # User Experience Guidelines - Payment Button Style

@@ -1,5 +1,5 @@
 ---
-post_title: Product Editor Guidelines - Sections
+post_title: Sections
 sidebar_label: Sections
 ---
 

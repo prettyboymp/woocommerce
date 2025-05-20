@@ -1,7 +1,7 @@
 ---
 post_title: Managing extension deactivation and uninstallation
 sidebar_label: Manage deactivation and uninstallation
-tags: [how-to]
+
 ---
 
 # Managing extension deactivation and uninstallation

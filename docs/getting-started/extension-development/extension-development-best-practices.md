@@ -1,6 +1,6 @@
 ---
 post_title: WooCommerce extension development best practices
-sidebar_label: Best Practices
+sidebar_label: Best practices
 ---
 
 # WooCommerce extension development best practices

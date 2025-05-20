@@ -1,7 +1,7 @@
 ---
 post_title: String localization guidelines
 sidebar_label: String localization guidelines
-tags: [reference]
+
 ---
 
 # String localization guidelines

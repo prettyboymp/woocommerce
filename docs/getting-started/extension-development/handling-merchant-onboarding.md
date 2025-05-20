@@ -1,7 +1,7 @@
 ---
 post_title: How to implement merchant onboarding
 sidebar_label: Implement merchant onboarding
-tags: [how-to]
+
 ---
 
 # How to implement merchant onboarding

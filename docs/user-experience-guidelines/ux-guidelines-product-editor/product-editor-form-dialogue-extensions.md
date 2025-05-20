@@ -1,6 +1,6 @@
 ---
-post_title: Product Editor Guidelines - Dialogue Extensions (future feature)
-sidebar_label: Dialogue Extensions
+post_title: Dialogue extensions (future feature)
+sidebar_label: Dialogue extensions
 ---
 
 # Product Editor Guidelines - Dialogue Extensions (future feature)

@@ -1,7 +1,7 @@
 ---
 post_title: Integrating admin pages into WooCommerce extensions
 sidebar_label: Integrating admin pages
-tags: [how-to]
+
 ---
 
 # Integrating admin pages into WooCommerce extensions

@@ -1,6 +1,6 @@
 ---
 post_title: Customizing checkout fields using actions and filters
-tags: [code-snippet]
+
 ---
 
 # Customizing checkout fields using actions and filters

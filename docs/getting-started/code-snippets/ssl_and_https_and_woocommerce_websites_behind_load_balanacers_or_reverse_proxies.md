@@ -1,7 +1,7 @@
 ---
 post_title: SSL and HTTPS and WooCommerce
 sidebar_label: SSL and HTTPS and WooCommerce
-tags: [code-snippet]
+
 current wccom url: https://woocommerce.com/document/ssl-and-https/#websites-behind-load-balancers-or-reverse-proxies
 ---
 

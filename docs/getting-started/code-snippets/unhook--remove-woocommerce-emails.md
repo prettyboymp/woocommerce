@@ -1,6 +1,6 @@
 ---
 post_title: Unhook and remove WooCommerce emails
-tags: [code-snippet]
+
 ---
 
 # Unhook and remove WooCommerce emails

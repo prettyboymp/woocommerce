@@ -1,6 +1,6 @@
 ---
 post_title: CSS SASS coding guidelines and naming conventions
-tags: [reference]
+
 ---
 
 # CSS SASS coding guidelines and naming conventions

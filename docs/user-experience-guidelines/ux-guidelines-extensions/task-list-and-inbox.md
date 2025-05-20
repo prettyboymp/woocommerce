@@ -1,6 +1,6 @@
 ---
-post_title: WooCommerce Extension Guidelines - Task List and Inbox
-sidebar_label: Task list and Inbox
+post_title: Task list and inbox
+sidebar_label: Task list and inbox
 ---
 
 # WooCommerce Extension Guidelines - Task List and Inbox

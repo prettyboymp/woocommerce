@@ -1,7 +1,7 @@
 ---
 post_title: How to extend WooCommerce analytics reports
 sidebar_label: Extend analytics reports
-tags: [how-to]
+
 ---
 
 # How to extend WooCommerce analytics reports

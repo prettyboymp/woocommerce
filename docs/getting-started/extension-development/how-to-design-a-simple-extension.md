@@ -1,7 +1,7 @@
 ---
 post_title: How to design a simple extension
 sidebar_label: Design a simple extension
-tags: [how-to]
+
 ---
 
 # How to design a simple extension

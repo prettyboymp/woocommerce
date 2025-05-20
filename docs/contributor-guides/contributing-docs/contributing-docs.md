@@ -1,6 +1,6 @@
 ---
-post_title: Contributing Technical Documentation
-sidebar_label: Contributing Docs
+post_title: Contributing technical documentation
+sidebar_label: Contributing docs
 ---
 
 # Contributing Technical Documentation
@@ -62,7 +62,7 @@ Optionally, you can set additional metadata. The following fields are supported:
 ---
 post_title: Your Post Title Goes Here
 sidebar_label: Short Title Goes Here
-tags: [tag1, tag2, tag3]
+
 ---
 
 # Your Post Title Goes Here
@@ -138,4 +138,4 @@ If you're a technical contributor who is able to regenerate the manifest, we req
 
 * Emojis are not supported.
 * Avoid copy pasting content from editors such as Google docs. For example, quotation-mark characters in these editors may not translate properly when ingested by our plugin. 
-* You may want to references HTML like content, however, our plugin is set up to strip non-allowlisted HTML elements. You may use an [HTML named references](https://developer.mozilla.org/en-US/docs/Glossary/Character_reference) to create an HTML like tag, by using the less-than (<) and greater-than (>) symbol named references. 
+* You may want to references HTML like content, however, our plugin is set up to strip non-allowlisted HTML elements. You may use an [HTML named references](https://developer.mozilla.org/en-US/docs/Glossary/Character_reference) to create an HTML like tag, by using the less-than (`<`) and greater-than (`>`) symbol named references. 

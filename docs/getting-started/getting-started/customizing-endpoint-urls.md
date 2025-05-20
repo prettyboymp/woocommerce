@@ -1,7 +1,7 @@
 ---
-post_title: Customizing WooCommerce Endpoint URLs
-sidebar_label: Customizing Endpoint URLs
-tags: [how-to]
+post_title: Customizing WooCommerce endpoint URLs
+sidebar_label: Customizing endpoint URLs
+
 ---
 
 # Customizing WooCommerce Endpoint URLs

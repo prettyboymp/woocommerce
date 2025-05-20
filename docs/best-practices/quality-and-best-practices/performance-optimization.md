@@ -1,7 +1,7 @@
 ---
 post_title: How to optimize performance for WooCommerce stores
 sidebar_label: Optimize store performance
-tags: [reference]
+
 ---
 
 # How to optimize performance for WooCommerce stores

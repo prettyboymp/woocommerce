@@ -1,7 +1,7 @@
 ---
 post_title: Shipping method API
 sidebar_label: Shipping method API
-tags: [reference]
+
 ---
 
 # Shipping method API

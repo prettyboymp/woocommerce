@@ -1,6 +1,6 @@
 ---
 post_title: Beta Testing
-tags: [how-to]
+
 ---
 
 # Beta Testing
