@@ -258,7 +258,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the date created.
 	 *
-	 * @param string $date_created Date created.
+	 * @param string|int $date_created Date created.
 	 */
 	public function set_date_created( $date_created ) {
 		$this->set_date_prop( 'date_created', $date_created );
@@ -267,7 +267,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the date modified.
 	 *
-	 * @param string $date_modified Date modified.
+	 * @param string|int $date_modified Date modified.
 	 */
 	public function set_date_modified( $date_modified ) {
 		$this->set_date_prop( 'date_modified', $date_modified );
@@ -276,7 +276,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the date confirmed.
 	 *
-	 * @param string $date_confirmed Date confirmed.
+	 * @param string|int $date_confirmed Date confirmed.
 	 */
 	public function set_date_confirmed( $date_confirmed ) {
 		$this->set_date_prop( 'date_confirmed', $date_confirmed );
@@ -285,7 +285,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the date last attempt.
 	 *
-	 * @param string $date_last_attempt Date last attempt.
+	 * @param string|int $date_last_attempt Date last attempt.
 	 */
 	public function set_date_last_attempt( $date_last_attempt ) {
 		$this->set_date_prop( 'date_last_attempt', $date_last_attempt );
@@ -294,7 +294,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the date notified.
 	 *
-	 * @param string $date_notified Date notified.
+	 * @param string|int $date_notified Date notified.
 	 */
 	public function set_date_notified( $date_notified ) {
 		$this->set_date_prop( 'date_notified', $date_notified );
@@ -303,7 +303,7 @@ class Notification extends \WC_Data {
 	/**
 	 * Set the date cancelled.
 	 *
-	 * @param string $date_cancelled Date cancelled.
+	 * @param string|int $date_cancelled Date cancelled.
 	 */
 	public function set_date_cancelled( $date_cancelled ) {
 		$this->set_date_prop( 'date_cancelled', $date_cancelled );
