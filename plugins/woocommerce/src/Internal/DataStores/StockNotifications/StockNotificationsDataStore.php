@@ -94,7 +94,7 @@ CREATE TABLE $table_name (
 	date_cancelled_gmt datetime NULL,
 	cancellation_source varchar(255) NULL,
 	PRIMARY KEY  (id),
-	KEY product_status_attempt (product_id, status, date_last_attempt_gmt),
+	KEY product_status_attempt (product_id, status, date_last_attempt_gmt, id),
 	KEY user_lookup (user_id, product_id, status),
 	KEY email_lookup (user_email(100), product_id, status)
 ) $collate;
