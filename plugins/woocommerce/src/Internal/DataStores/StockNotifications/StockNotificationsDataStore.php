@@ -32,26 +32,17 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	protected StockNotificationsMetaDataStore $data_store_meta;
 
 	/**
-	 * The activity logs data store.
-	 *
-	 * @var StockNotificationsActivityLogsDataStore
-	 */
-	protected StockNotificationsActivityLogsDataStore $data_store_logs;
-
-	/**
 	 * Initialize.
 	 *
 	 * @internal
 	 *
-	 * @param StockNotificationsMetaDataStore         $data_store_meta The data store meta instance to use.
-	 * @param StockNotificationsActivityLogsDataStore $data_store_logs The activity logs data store instance to use.
-	 * @param DatabaseUtil                            $database_util   The database util instance to use.
+	 * @param StockNotificationsMetaDataStore $data_store_meta The data store meta instance to use.
+	 * @param DatabaseUtil                    $database_util   The database util instance to use.
 	 *
 	 * @return void
 	 */
-	final public function init( StockNotificationsMetaDataStore $data_store_meta, StockNotificationsActivityLogsDataStore $data_store_logs, DatabaseUtil $database_util ) {
+	final public function init( StockNotificationsMetaDataStore $data_store_meta, DatabaseUtil $database_util ) {
 		$this->data_store_meta = $data_store_meta;
-		$this->data_store_logs = $data_store_logs;
 		$this->database_util   = $database_util;
 	}
 
@@ -75,15 +66,6 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 	}
 
 	/**
-	 * Get the stock notifications logs table name.
-	 *
-	 * @return string
-	 */
-	public function get_logs_table_name(): string {
-		return $this->data_store_logs->get_table_name();
-	}
-
-	/**
 	 * Get the database schema.
 	 *
 	 * @return string
@@ -95,7 +77,6 @@ class StockNotificationsDataStore implements \WC_Object_Data_Store_Interface {
 
 		$table_name       = $this->get_table_name();
 		$meta_table_name  = $this->get_meta_table_name();
-		$logs_table_name  = $this->get_logs_table_name();
 		$max_index_length = $this->database_util->get_max_index_length();
 
 		$sql = "
@@ -107,13 +88,15 @@ CREATE TABLE $table_name (
 	status varchar(20) NOT NULL DEFAULT 'pending',
 	date_created_gmt datetime NULL,
 	date_modified_gmt datetime NULL,
-	date_subscribed_gmt datetime NULL,
+	date_confirmed_gmt datetime NULL,
+	date_last_attempt_gmt datetime NULL,
 	date_notified_gmt datetime NULL,
-	is_queued tinyint(1) NOT NULL DEFAULT 0,
+	date_cancelled_gmt datetime NULL,
+	cancellation_source varchar(255) NULL,
 	PRIMARY KEY  (id),
-	KEY status_product_queued (status, product_id, is_queued),
-	KEY user_product (user_id, product_id),
-	KEY email_product (user_email, product_id)
+	KEY product_status_attempt (product_id, status, date_last_attempt_gmt),
+	KEY user_lookup (user_id, product_id, status),
+	KEY email_lookup (user_email(100), product_id, status)
 ) $collate;
 CREATE TABLE $meta_table_name (
 	id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -123,20 +106,6 @@ CREATE TABLE $meta_table_name (
 	PRIMARY KEY  (id),
 	KEY notification_id (notification_id),
 	KEY meta_key (meta_key($max_index_length))
-) $collate;
-CREATE TABLE $logs_table_name (
-	id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-	notification_id bigint(20) unsigned NOT NULL,
-	action varchar(100) NOT NULL,
-	user_id bigint(20) unsigned NOT NULL,
-	user_email varchar(100) NOT NULL,
-	ip_address varchar(45) NULL,
-	date_logged_gmt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	payload text NOT NULL,
-	PRIMARY KEY  (id),
-	KEY notification_id (notification_id),
-	KEY action (action),
-	KEY user_id (user_id)
 ) $collate;
 		";
 
@@ -191,15 +160,17 @@ CREATE TABLE $logs_table_name (
 		$insert = $wpdb->insert(
 			$this->get_table_name(),
 			array(
-				'product_id'          => $notification->get_product_id( 'edit' ),
-				'user_id'             => $notification->get_user_id( 'edit' ),
-				'user_email'          => $notification->get_user_email( 'edit' ),
-				'status'              => $notification->get_status( 'edit' ),
-				'date_created_gmt'    => gmdate( 'Y-m-d H:i:s', $notification->get_date_created( 'edit' )->getTimestamp() ),
-				'date_modified_gmt'   => gmdate( 'Y-m-d H:i:s', $notification->get_date_modified( 'edit' )->getTimestamp() ),
-				'date_subscribed_gmt' => $notification->get_date_subscribed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_subscribed( 'edit' )->getTimestamp() ) : null,
-				'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
-				'is_queued'           => $notification->is_queued( 'edit' ) ? 1 : 0,
+				'product_id'            => $notification->get_product_id( 'edit' ),
+				'user_id'               => $notification->get_user_id( 'edit' ),
+				'user_email'            => $notification->get_user_email( 'edit' ),
+				'status'                => $notification->get_status( 'edit' ),
+				'date_created_gmt'      => gmdate( 'Y-m-d H:i:s', $notification->get_date_created( 'edit' )->getTimestamp() ),
+				'date_modified_gmt'     => gmdate( 'Y-m-d H:i:s', $notification->get_date_modified( 'edit' )->getTimestamp() ),
+				'date_confirmed_gmt'    => $notification->get_date_confirmed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_confirmed( 'edit' )->getTimestamp() ) : null,
+				'date_last_attempt_gmt' => $notification->get_date_last_attempt( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_last_attempt( 'edit' )->getTimestamp() ) : null,
+				'date_notified_gmt'     => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
+				'date_cancelled_gmt'    => $notification->get_date_cancelled( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_cancelled( 'edit' )->getTimestamp() ) : null,
+				'cancellation_source'   => $notification->get_cancellation_source( 'edit' ),
 			),
 			array(
 				'%d',
@@ -210,7 +181,9 @@ CREATE TABLE $logs_table_name (
 				'%s',
 				'%s',
 				'%s',
-				'%d',
+				'%s',
+				'%s',
+				'%s',
 			)
 		);
 
@@ -256,16 +229,18 @@ CREATE TABLE $logs_table_name (
 
 		$notification->set_props(
 			array(
-				'id'              => $data->id,
-				'product_id'      => $data->product_id,
-				'user_id'         => $data->user_id,
-				'user_email'      => $data->user_email,
-				'status'          => $data->status,
-				'date_created'    => wc_string_to_timestamp( $data->date_created_gmt ),
-				'date_modified'   => wc_string_to_timestamp( $data->date_modified_gmt ),
-				'date_subscribed' => wc_string_to_timestamp( $data->date_subscribed_gmt ),
-				'date_notified'   => wc_string_to_timestamp( $data->date_notified_gmt ),
-				'is_queued'       => $data->is_queued,
+				'id'                  => $data->id,
+				'product_id'          => $data->product_id,
+				'user_id'             => $data->user_id,
+				'user_email'          => $data->user_email,
+				'status'              => $data->status,
+				'date_created'        => wc_string_to_timestamp( $data->date_created_gmt ),
+				'date_modified'       => wc_string_to_timestamp( $data->date_modified_gmt ),
+				'date_confirmed'      => wc_string_to_timestamp( $data->date_confirmed_gmt ),
+				'date_last_attempt'   => wc_string_to_timestamp( $data->date_last_attempt_gmt ),
+				'date_notified'       => wc_string_to_timestamp( $data->date_notified_gmt ),
+				'date_cancelled'      => wc_string_to_timestamp( $data->date_cancelled_gmt ),
+				'cancellation_source' => $data->cancellation_source,
 			)
 		);
 
@@ -298,18 +273,20 @@ CREATE TABLE $logs_table_name (
 			$result = $wpdb->update(
 				$this->get_table_name(),
 				array(
-					'product_id'          => $notification->get_product_id( 'edit' ),
-					'user_id'             => $notification->get_user_id( 'edit' ),
-					'user_email'          => $notification->get_user_email( 'edit' ),
-					'status'              => $notification->get_status( 'edit' ),
-					'date_created_gmt'    => gmdate( 'Y-m-d H:i:s', $notification->get_date_created( 'edit' )->getTimestamp() ),
-					'date_modified_gmt'   => gmdate( 'Y-m-d H:i:s', $notification->get_date_modified( 'edit' )->getTimestamp() ),
-					'date_subscribed_gmt' => $notification->get_date_subscribed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_subscribed( 'edit' )->getTimestamp() ) : null,
-					'date_notified_gmt'   => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
-					'is_queued'           => $notification->is_queued( 'edit' ) ? 1 : 0,
+					'product_id'            => $notification->get_product_id( 'edit' ),
+					'user_id'               => $notification->get_user_id( 'edit' ),
+					'user_email'            => $notification->get_user_email( 'edit' ),
+					'status'                => $notification->get_status( 'edit' ),
+					'date_created_gmt'      => gmdate( 'Y-m-d H:i:s', $notification->get_date_created( 'edit' )->getTimestamp() ),
+					'date_modified_gmt'     => gmdate( 'Y-m-d H:i:s', $notification->get_date_modified( 'edit' )->getTimestamp() ),
+					'date_confirmed_gmt'    => $notification->get_date_confirmed( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_confirmed( 'edit' )->getTimestamp() ) : null,
+					'date_last_attempt_gmt' => $notification->get_date_last_attempt( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_last_attempt( 'edit' )->getTimestamp() ) : null,
+					'date_notified_gmt'     => $notification->get_date_notified( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_notified( 'edit' )->getTimestamp() ) : null,
+					'date_cancelled_gmt'    => $notification->get_date_cancelled( 'edit' ) ? gmdate( 'Y-m-d H:i:s', $notification->get_date_cancelled( 'edit' )->getTimestamp() ) : null,
+					'cancellation_source'   => $notification->get_cancellation_source( 'edit' ),
 				),
 				array( 'id' => $notification->get_id() ),
-				array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%d' ),
+				array( '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ),
 				array( '%d' )
 			);
 
@@ -344,8 +321,6 @@ CREATE TABLE $logs_table_name (
 		$wpdb->delete( $this->get_table_name(), array( 'id' => $notification->get_id() ), array( '%d' ) );
 
 		$this->data_store_meta->delete_by_notification_id( $notification->get_id() );
-
-		$this->data_store_logs->delete_by_notification_id( $notification->get_id() );
 	}
 
 	/**
@@ -508,25 +483,5 @@ CREATE TABLE $logs_table_name (
 		}
 
 		return $notifications;
-	}
-
-	/**
-	 * Create an activity log.
-	 *
-	 * @param array $args The log arguments.
-	 * @return int|false The log ID or false if the log was not created.
-	 */
-	public function create_activity_log( array $args ) {
-		return $this->data_store_logs->create( $args );
-	}
-
-	/**
-	 * Query the activity logs.
-	 *
-	 * @param array $args The query arguments.
-	 * @return array|int An array of logs or the number of logs.
-	 */
-	public function query_activity_logs( array $args ) {
-		return $this->data_store_logs->query( $args );
 	}
 }

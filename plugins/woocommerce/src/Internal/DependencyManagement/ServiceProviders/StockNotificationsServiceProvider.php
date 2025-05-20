@@ -10,7 +10,6 @@ namespace Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders;
 use Automattic\WooCommerce\Internal\DependencyManagement\AbstractServiceProvider;
 use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsDataStore;
 use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsMetaDataStore;
-use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsActivityLogsDataStore;
 use Automattic\WooCommerce\Internal\StockNotifications\Controller;
 use Automattic\WooCommerce\Internal\StockNotifications\EmailsController;
 use Automattic\WooCommerce\Internal\StockNotifications\TemplatesController;
@@ -32,7 +31,6 @@ class StockNotificationsServiceProvider extends AbstractServiceProvider {
 		TemplatesController::class,
 		StockNotificationsDataStore::class,
 		StockNotificationsMetaDataStore::class,
-		StockNotificationsActivityLogsDataStore::class,
 	);
 
 	/**

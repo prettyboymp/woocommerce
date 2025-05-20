@@ -7,6 +7,9 @@ declare( strict_types = 1);
 
 namespace Automattic\WooCommerce\Internal\StockNotifications;
 
+use Automattic\WooCommerce\Internal\StockNotifications\Enums\NotificationStatus;
+use Automattic\WooCommerce\Internal\StockNotifications\Enums\NotificationCancellationSource;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -34,15 +37,17 @@ class Notification extends \WC_Data {
 	 * @var array
 	 */
 	protected $data = array(
-		'product_id'      => 0,
-		'user_id'         => 0,
-		'user_email'      => '',
-		'status'          => 'pending',
-		'date_created'    => null,
-		'date_modified'   => null,
-		'date_subscribed' => null,
-		'date_notified'   => null,
-		'is_queued'       => 0,
+		'status'              => NotificationStatus::PENDING,
+		'product_id'          => 0,
+		'user_id'             => 0,
+		'user_email'          => '',
+		'date_created'        => null,
+		'date_confirmed'      => null,
+		'date_modified'       => null,
+		'date_notified'       => null,
+		'date_last_attempt'   => null,
+		'date_cancelled'      => null,
+		'cancellation_source' => null,
 	);
 
 	/**
@@ -129,13 +134,23 @@ class Notification extends \WC_Data {
 	}
 
 	/**
-	 * Get the date subscribed.
+	 * Get the date confirmed.
 	 *
 	 * @param string $context Context.
 	 * @return \WC_DateTime|null Datetime object if the date is set or null if there is no date.
 	 */
-	public function get_date_subscribed( $context = 'view' ) {
-		return $this->get_prop( 'date_subscribed', $context );
+	public function get_date_confirmed( $context = 'view' ) {
+		return $this->get_prop( 'date_confirmed', $context );
+	}
+
+	/**
+	 * Get the date last attempt.
+	 *
+	 * @param string $context Context.
+	 * @return \WC_DateTime|null Datetime object if the date is set or null if there is no date.
+	 */
+	public function get_date_last_attempt( $context = 'view' ) {
+		return $this->get_prop( 'date_last_attempt', $context );
 	}
 
 	/**
@@ -146,6 +161,26 @@ class Notification extends \WC_Data {
 	 */
 	public function get_date_notified( $context = 'view' ) {
 		return $this->get_prop( 'date_notified', $context );
+	}
+
+	/**
+	 * Get the date cancelled.
+	 *
+	 * @param string $context Context.
+	 * @return \WC_DateTime|null Datetime object if the date is set or null if there is no date.
+	 */
+	public function get_date_cancelled( $context = 'view' ) {
+		return $this->get_prop( 'date_cancelled', $context );
+	}
+
+	/**
+	 * Get the cancellation source.
+	 *
+	 * @param string $context Context.
+	 * @return string|null The cancellation source or null if there is no source.
+	 */
+	public function get_cancellation_source( $context = 'view' ) {
+		return $this->get_prop( 'cancellation_source', $context );
 	}
 
 	/**
@@ -211,6 +246,12 @@ class Notification extends \WC_Data {
 	 * @param string $status Status.
 	 */
 	public function set_status( $status ) {
+
+		if ( ! in_array( $status, NotificationStatus::get_valid_statuses(), true ) ) {
+			// Default to pending.
+			$status = NotificationStatus::PENDING;
+		}
+
 		$this->set_prop( 'status', $status );
 	}
 
@@ -233,12 +274,21 @@ class Notification extends \WC_Data {
 	}
 
 	/**
-	 * Set the date subscribed.
+	 * Set the date confirmed.
 	 *
-	 * @param string $date_subscribed Date subscribed.
+	 * @param string $date_confirmed Date confirmed.
 	 */
-	public function set_date_subscribed( $date_subscribed ) {
-		$this->set_date_prop( 'date_subscribed', $date_subscribed );
+	public function set_date_confirmed( $date_confirmed ) {
+		$this->set_date_prop( 'date_confirmed', $date_confirmed );
+	}
+
+	/**
+	 * Set the date last attempt.
+	 *
+	 * @param string $date_last_attempt Date last attempt.
+	 */
+	public function set_date_last_attempt( $date_last_attempt ) {
+		$this->set_date_prop( 'date_last_attempt', $date_last_attempt );
 	}
 
 	/**
@@ -251,27 +301,26 @@ class Notification extends \WC_Data {
 	}
 
 	/**
-	 * Set the is queued.
+	 * Set the date cancelled.
 	 *
-	 * @param bool $is_queued Is queued.
+	 * @param string $date_cancelled Date cancelled.
 	 */
-	public function set_is_queued( $is_queued ) {
-		$this->set_prop( 'is_queued', $is_queued ? 1 : 0 );
+	public function set_date_cancelled( $date_cancelled ) {
+		$this->set_date_prop( 'date_cancelled', $date_cancelled );
 	}
 
-	/*
-	|--------------------------------------------------------------------------
-	| Conditionals
-	|--------------------------------------------------------------------------
-	*/
-
 	/**
-	 * Is queued.
+	 * Set the cancellation source.
 	 *
-	 * @return bool
+	 * @param string $cancellation_source Cancellation source. Can be null.
 	 */
-	public function is_queued() {
-		return 1 === $this->get_prop( 'is_queued', 'edit' );
+	public function set_cancellation_source( $cancellation_source ) {
+		if ( $cancellation_source && ! in_array( $cancellation_source, NotificationCancellationSource::get_valid_cancellation_sources(), true ) ) {
+			// Default to user.
+			$cancellation_source = NotificationCancellationSource::USER;
+		}
+
+		$this->set_prop( 'cancellation_source', $cancellation_source );
 	}
 
 	/*
@@ -318,28 +367,6 @@ class Notification extends \WC_Data {
 		}
 
 		return $this->get_id();
-	}
-
-	/**
-	 * Log an activity.
-	 *
-	 * @param array $args Activity log arguments.
-	 * @return int|false The log ID or false if the log was not created.
-	 */
-	public function log( $args ) {
-
-		$args = wp_parse_args(
-			$args,
-			array(
-				'action'     => '',
-				'user_id'    => 0,
-				'user_email' => '',
-				'ip_address' => \WC_Geolocation::get_ip_address(),
-				'payload'    => '',
-			)
-		);
-
-		return $this->data_store->create_activity_log( $this, $args );
 	}
 
 	/**

@@ -6,6 +6,9 @@ namespace Automattic\WooCommerce\Tests\Internal\DataStores\StockNotifications;
 use Automattic\WooCommerce\Internal\StockNotifications\Notification;
 use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsDataStore;
 
+use Automattic\WooCommerce\Internal\StockNotifications\Enums\NotificationCancellationSource;
+use Automattic\WooCommerce\Internal\StockNotifications\Enums\NotificationStatus;
+
 /**
  * Class StockNotificationsDataStoreTests.
  */
@@ -35,7 +38,6 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		global $wpdb;
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}wc_stock_notifications" );
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}wc_stock_notificationmeta" );
-		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}wc_stock_notifications_logs" );
 	}
 
 	/**
@@ -57,12 +59,14 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->set_product_id( 1 );
 		$notification->set_user_id( 1 );
 		$notification->set_user_email( 'test@test.com' );
-		$notification->set_status( 'active' );
+		$notification->set_status( NotificationStatus::ACTIVE );
 		$notification->set_date_created( '2024-01-01 00:00:00' );
 		$notification->set_date_modified( '2024-02-01 00:00:00' );
-		$notification->set_date_subscribed( '2024-03-01 00:00:00' );
-		$notification->set_date_notified( '2024-04-01 00:00:00' );
-		$notification->set_is_queued( true );
+		$notification->set_date_confirmed( '2024-04-01 00:00:00' );
+		$notification->set_date_notified( '2024-05-01 00:00:00' );
+		$notification->set_date_last_attempt( '2024-06-01 00:00:00' );
+		$notification->set_date_cancelled( '2024-07-01 00:00:00' );
+		$notification->set_cancellation_source( NotificationCancellationSource::USER );
 
 		$notification->save();
 
@@ -71,12 +75,14 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$this->assertEquals( 1, $notification->get_product_id() );
 		$this->assertEquals( 1, $notification->get_user_id() );
 		$this->assertEquals( 'test@test.com', $notification->get_user_email() );
-		$this->assertEquals( 'active', $notification->get_status() );
+		$this->assertEquals( NotificationStatus::ACTIVE, $notification->get_status() );
 		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_created()->format( 'Y-m-d H:i:s' ) );
 		$this->assertEquals( '2024-02-01 00:00:00', $notification->get_date_modified()->format( 'Y-m-d H:i:s' ) );
-		$this->assertEquals( '2024-03-01 00:00:00', $notification->get_date_subscribed()->format( 'Y-m-d H:i:s' ) );
-		$this->assertEquals( '2024-04-01 00:00:00', $notification->get_date_notified()->format( 'Y-m-d H:i:s' ) );
-		$this->assertTrue( $notification->is_queued() );
+		$this->assertEquals( '2024-04-01 00:00:00', $notification->get_date_confirmed()->format( 'Y-m-d H:i:s' ) );
+		$this->assertEquals( '2024-05-01 00:00:00', $notification->get_date_notified()->format( 'Y-m-d H:i:s' ) );
+		$this->assertEquals( '2024-06-01 00:00:00', $notification->get_date_last_attempt()->format( 'Y-m-d H:i:s' ) );
+		$this->assertEquals( '2024-07-01 00:00:00', $notification->get_date_cancelled()->format( 'Y-m-d H:i:s' ) );
+		$this->assertEquals( NotificationCancellationSource::USER, $notification->get_cancellation_source() );
 	}
 
 	/**
@@ -107,13 +113,14 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$this->assertEquals( null, $notification->get_product_id() );
 		$this->assertEquals( null, $notification->get_user_id() );
 		$this->assertEquals( null, $notification->get_user_email() );
-		$this->assertEquals( 'pending', $notification->get_status() );
-		$this->assertFalse( $notification->is_queued() );
+		$this->assertEquals( NotificationStatus::PENDING, $notification->get_status() );
 		$this->assertEquals( null, $notification->get_date_created() );
 		$this->assertEquals( null, $notification->get_date_modified() );
-		$this->assertEquals( null, $notification->get_date_subscribed() );
+		$this->assertEquals( null, $notification->get_date_confirmed() );
 		$this->assertEquals( null, $notification->get_date_notified() );
-
+		$this->assertEquals( null, $notification->get_date_last_attempt() );
+		$this->assertEquals( null, $notification->get_date_cancelled() );
+		$this->assertEquals( null, $notification->get_cancellation_source() );
 		$notification->set_product_id( 1 );
 		$notification->set_user_id( 1 );
 		$notification->save();
@@ -122,12 +129,14 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$this->assertEquals( 1, $notification->get_product_id() );
 		$this->assertEquals( 1, $notification->get_user_id() );
 		$this->assertEquals( null, $notification->get_user_email() );
-		$this->assertEquals( 'pending', $notification->get_status() );
-		$this->assertFalse( $notification->is_queued() );
+		$this->assertEquals( NotificationStatus::PENDING, $notification->get_status() );
 		$this->assertEqualsWithDelta( 5, $notification->get_date_created()->getTimestamp(), time() );
 		$this->assertEqualsWithDelta( 5, $notification->get_date_modified()->getTimestamp(), time() );
-		$this->assertEquals( null, $notification->get_date_subscribed() );
+		$this->assertEquals( null, $notification->get_date_confirmed() );
 		$this->assertEquals( null, $notification->get_date_notified() );
+		$this->assertEquals( null, $notification->get_date_last_attempt() );
+		$this->assertEquals( null, $notification->get_date_cancelled() );
+		$this->assertEquals( null, $notification->get_cancellation_source() );
 	}
 
 	/**
@@ -151,20 +160,24 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification->set_product_id( 2 );
 		$notification->set_user_id( 2 );
 		$notification->set_user_email( 'test2@test.com' );
-		$notification->set_status( 'active' );
-		$notification->set_date_subscribed( '2024-01-02 00:00:00' );
-		$notification->set_date_notified( '2024-01-02 00:00:00' );
-		$notification->set_is_queued( true );
+		$notification->set_status( NotificationStatus::ACTIVE );
+		$notification->set_date_confirmed( '2024-01-02 00:00:00' );
+		$notification->set_date_notified( '2024-01-03 00:00:00' );
+		$notification->set_date_last_attempt( '2024-01-04 00:00:00' );
+		$notification->set_date_cancelled( '2024-01-05 00:00:00' );
+		$notification->set_cancellation_source( NotificationCancellationSource::ADMIN );
 		$notification->save();
 
 		// Verify all properties were updated correctly.
 		$this->assertEquals( 2, $notification->get_product_id() );
 		$this->assertEquals( 2, $notification->get_user_id() );
 		$this->assertEquals( 'test2@test.com', $notification->get_user_email() );
-		$this->assertEquals( 'active', $notification->get_status() );
-		$this->assertEquals( '2024-01-02 00:00:00', $notification->get_date_subscribed()->format( 'Y-m-d H:i:s' ) );
-		$this->assertEquals( '2024-01-02 00:00:00', $notification->get_date_notified()->format( 'Y-m-d H:i:s' ) );
-		$this->assertTrue( $notification->is_queued() );
+		$this->assertEquals( NotificationStatus::ACTIVE, $notification->get_status() );
+		$this->assertEquals( '2024-01-02 00:00:00', $notification->get_date_confirmed()->format( 'Y-m-d H:i:s' ) );
+		$this->assertEquals( '2024-01-03 00:00:00', $notification->get_date_notified()->format( 'Y-m-d H:i:s' ) );
+		$this->assertEquals( '2024-01-04 00:00:00', $notification->get_date_last_attempt()->format( 'Y-m-d H:i:s' ) );
+		$this->assertEquals( '2024-01-05 00:00:00', $notification->get_date_cancelled()->format( 'Y-m-d H:i:s' ) );
+		$this->assertEquals( NotificationCancellationSource::ADMIN, $notification->get_cancellation_source() );
 
 		// Verify modified date is updated.
 		$this->assertEquals( '2024-01-01 00:00:00', $notification->get_date_created()->format( 'Y-m-d H:i:s' ) );
@@ -361,7 +374,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notification = new Notification();
 		$notification->set_product_id( 1 );
 		$notification->set_user_id( 1 );
-		$notification->set_status( 'active' );
+		$notification->set_status( NotificationStatus::ACTIVE );
 		$notification->save();
 
 		$notification_2 = new Notification();
@@ -371,7 +384,7 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 
 		$notifications = $this->data_store->query(
 			array(
-				'status' => 'active',
+				'status' => NotificationStatus::ACTIVE,
 			)
 		);
 		$this->assertCount( 1, $notifications );
@@ -443,30 +456,6 @@ class StockNotificationsDataStoreTests extends \WC_Unit_Test_Case {
 		$notifications = $this->data_store->query(
 			array(
 				'user_email' => 'test@test.com',
-			)
-		);
-		$this->assertCount( 1, $notifications );
-	}
-
-	/**
-	 * Test querying notifications with a is_queued.
-	 */
-	public function test_query_notifications_with_is_queued() {
-
-		$notification = new Notification();
-		$notification->set_product_id( 1 );
-		$notification->set_user_id( 1 );
-		$notification->set_is_queued( true );
-		$notification->save();
-
-		$notification_2 = new Notification();
-		$notification_2->set_product_id( 1 );
-		$notification_2->set_user_id( 2 );
-		$notification_2->save();
-
-		$notifications = $this->data_store->query(
-			array(
-				'is_queued' => true,
 			)
 		);
 		$this->assertCount( 1, $notifications );
