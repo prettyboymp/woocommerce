@@ -47,7 +47,11 @@ export const LocalPickupSelect = ( {
 				highlightChecked={ true }
 				selected={ selectedOption }
 				options={ pickupLocations.map( ( location ) =>
-					renderPickupLocation( location, packageCount )
+					renderPickupLocation(
+						location,
+						packageCount,
+						selectedOption
+					)
 				) }
 			/>
 		</div>
