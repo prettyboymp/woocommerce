@@ -264,7 +264,7 @@ CREATE TABLE $meta_table_name (
 		$changes = $notification->get_changes();
 		$result  = 0;
 
-		if ( array_intersect( array( 'product_id', 'user_id', 'user_email', 'status', 'is_queued', 'date_modified', 'date_subscribed', 'date_notified' ), array_keys( $changes ) ) ) {
+		if ( array_intersect( array( 'product_id', 'user_id', 'user_email', 'status', 'date_modified', 'date_confirmed', 'date_last_attempt', 'date_notified', 'date_cancelled', 'cancellation_source' ), array_keys( $changes ) ) ) {
 
 			if ( ! in_array( 'date_modified', array_keys( $changes ), true ) ) {
 				$notification->set_date_modified( time() );
@@ -415,7 +415,6 @@ CREATE TABLE $meta_table_name (
 				'product_id' => array(),
 				'user_id'    => 0,
 				'user_email' => '',
-				'is_queued'  => '',
 				'limit'      => -1,
 				'offset'     => 0,
 				'return'     => 'objects',
@@ -450,11 +449,6 @@ CREATE TABLE $meta_table_name (
 		if ( $args['user_email'] ) {
 			$where[]        = 'user_email = %s';
 			$where_values[] = esc_sql( $args['user_email'] );
-		}
-
-		if ( '' !== $args['is_queued'] ) {
-			$where[]        = 'is_queued = %d';
-			$where_values[] = true === $args['is_queued'] ? 1 : 0;
 		}
 
 		// Assemble the query.
