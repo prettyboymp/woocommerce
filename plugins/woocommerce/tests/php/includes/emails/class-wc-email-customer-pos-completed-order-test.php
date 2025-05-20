@@ -219,7 +219,7 @@ class WC_Email_Customer_POS_Completed_Order_Test extends \WC_Unit_Test_Case {
 		// When getting content from POS email.
 		$email = new WC_Email_Customer_POS_Completed_Order( $emails );
 
-		// Set the order on both email objects.
+		// Set the order on the email.
 		$email->object = OrderHelper::create_order();
 
 		$content = $email->get_content_html();
