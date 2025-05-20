@@ -1,5 +1,5 @@
 ---
-post_title: WooCommerce Extension Guidelines - Navigation
+post_title: Navigation
 sidebar_label: Navigation
 ---
 

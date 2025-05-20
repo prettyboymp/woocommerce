@@ -1,6 +1,6 @@
 ---
-post_title: Cart and Checkout - Filtering payment methods in the Checkout block
-sidebar_label: Filtering Payment Methods
+post_title: Filtering payment methods in the Checkout block
+sidebar_label: Filtering payment methods
 
 ---
 

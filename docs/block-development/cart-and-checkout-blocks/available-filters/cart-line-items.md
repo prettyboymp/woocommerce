@@ -1,5 +1,5 @@
 ---
-post_title: Cart and Checkout Filters - Cart line items
+post_title: Cart line items
 sidebar_label: Cart Line Items
 
 ---

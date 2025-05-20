@@ -1,6 +1,6 @@
 ---
-post_title: Product Editor Guidelines - Top Bar Extensions (future feature)
-sidebar_label: Top Bar Extensions
+post_title: Top bar extensions (future feature)
+sidebar_label: Top bar extensions
 ---
 
 # Product Editor Guidelines - Top Bar Extensions (future feature)

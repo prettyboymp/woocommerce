@@ -1,6 +1,6 @@
 ---
 post_title: Blocks reference
-sidebar_label: Blocks Reference
+sidebar_label: Blocks reference
 ---
 
 # Blocks reference

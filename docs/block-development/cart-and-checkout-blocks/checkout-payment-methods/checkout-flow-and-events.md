@@ -1,6 +1,6 @@
 ---
-post_title: Cart and Checkout - Checkout flow and events
-sidebar_label: Checkout Flow and Events
+post_title: Checkout flow and events
+sidebar_label: Checkout flow and events
 
 ---
 

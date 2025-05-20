@@ -1,6 +1,6 @@
 ---
-post_title: User Experience Guidelines - Payment Button Layout
-sidebar_label: Payment Button Layout
+post_title: Payment button layout
+sidebar_label: Payment button layout
 ---
 
 # User Experience Guidelines - Payment Button Layout

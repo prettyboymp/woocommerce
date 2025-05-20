@@ -1,6 +1,6 @@
 ---
-post_title: Cart and Checkout - Slot and fill
-sidebar_label: Slot and Fill
+post_title: Slot and fill
+sidebar_label: Slot and fill
 
 ---
 

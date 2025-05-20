@@ -1,6 +1,6 @@
 ---
-post_title: Cart and Checkout - Additional checkout fields
-sidebar_label: Additional Checkout Fields
+post_title: Additional checkout fields
+sidebar_label: Additional checkout fields
 
 ---
 

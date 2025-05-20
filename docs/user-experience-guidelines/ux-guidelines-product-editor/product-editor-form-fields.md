@@ -1,5 +1,5 @@
 ---
-post_title: Product Editor Guidelines - Fields
+post_title: Fields
 sidebar_label: Fields
 ---
 

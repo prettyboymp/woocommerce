@@ -1,6 +1,6 @@
 ---
-post_title: Working with Webhooks in WooCommerce
-sidebar_label: Using Webhooks
+post_title: Working with webhooks in WooCommerce
+sidebar_label: Using webhooks
 ---
 
 # Working with Webhooks in WooCommerce

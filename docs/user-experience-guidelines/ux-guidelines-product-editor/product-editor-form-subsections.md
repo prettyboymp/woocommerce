@@ -1,5 +1,5 @@
 ---
-post_title: Product Editor Guidelines - Subsections
+post_title: Subsections
 sidebar_label: Subsections
 ---
 

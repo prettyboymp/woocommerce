@@ -1,6 +1,6 @@
 ---
-post_title: Cart and Checkout - How the checkout block processes an order
-sidebar_label: Processing an Order
+post_title: How the checkout block processes an order
+sidebar_label: Processing an order
 
 ---
 

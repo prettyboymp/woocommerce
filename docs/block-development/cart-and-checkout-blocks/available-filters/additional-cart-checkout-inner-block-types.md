@@ -1,6 +1,6 @@
 ---
-post_title: Cart and Checkout Filters - Inner block types
-sidebar_label: Inner Block Types
+post_title: Inner block types
+sidebar_label: Inner block types
 
 ---
 

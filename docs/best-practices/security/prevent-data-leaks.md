@@ -1,6 +1,6 @@
 ---
-post_title: How to Prevent Data Leaks in WooCommerce
-sidebar_label: Prevent Data Leaks
+post_title: How to prevent data leaks in WooCommerce
+sidebar_label: Prevent data leaks
 
 ---
 

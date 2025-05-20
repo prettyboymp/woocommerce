@@ -1,6 +1,6 @@
 ---
-post_title: Cart and checkout blocks theming 
-sidebar_label: Cart and Checkout Blocks Theming 
+post_title: Cart and Checkout blocks theming 
+sidebar_label: Cart and Checkout blocks theming 
 
 ---
 

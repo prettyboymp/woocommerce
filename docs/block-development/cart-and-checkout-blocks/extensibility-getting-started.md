@@ -1,5 +1,5 @@
 ---
-post_title: Cart and Checkout - Extensibility getting started guide
+post_title: Extensibility getting started guide
 sidebar_label: Extensibility - Getting started
 
 ---

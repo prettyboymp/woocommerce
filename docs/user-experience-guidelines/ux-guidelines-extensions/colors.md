@@ -1,5 +1,5 @@
 ---
-post_title: WooCommerce Extension Guidelines - Colors
+post_title: Colors
 sidebar_label: Colors
 ---
 

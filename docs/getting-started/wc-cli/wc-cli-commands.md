@@ -1,5 +1,5 @@
 ---
-post_title: WooCommerce CLI Commands
+post_title: WooCommerce CLI commands
 sidebar_label: Commands
 
 ---

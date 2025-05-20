@@ -1,6 +1,6 @@
 ---
-post_title: Product Editor Guidelines - Custom Product Types
-sidebar_label: Custom Product Types
+post_title: Custom product types
+sidebar_label: Custom product types
 ---
 
 # Product Editor Guidelines - Custom Product Types

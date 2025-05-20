@@ -1,6 +1,6 @@
 ---
-post_title: Troubleshooting WooCommerce Endpoints
-sidebar_label: Troubleshooting Endpoints
+post_title: Troubleshooting WooCommerce endpoints
+sidebar_label: Troubleshooting endpoints
 
 ---
 

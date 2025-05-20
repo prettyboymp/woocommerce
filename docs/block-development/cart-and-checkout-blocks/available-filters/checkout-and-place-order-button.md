@@ -1,6 +1,6 @@
 ---
-post_title: Cart and Checkout Filters - Checkout and place order button
-sidebar_label: Checkout and Place Order Button
+post_title: Checkout and place order button
+sidebar_label: Checkout and place order button
 
 ---
 

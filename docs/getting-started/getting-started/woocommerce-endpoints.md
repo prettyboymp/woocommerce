@@ -1,6 +1,6 @@
 ---
-post_title: Understanding WooCommerce Endpoints
-sidebar_label: WooCommerce Endpoints
+post_title: Understanding WooCommerce endpoints
+sidebar_label: WooCommerce endpoints
 ---
 
 # Understanding WooCommerce Endpoints

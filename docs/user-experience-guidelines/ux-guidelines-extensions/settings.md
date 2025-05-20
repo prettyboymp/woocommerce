@@ -1,5 +1,5 @@
 ---
-post_title: WooCommerce Extension Guidelines - Settings
+post_title: Settings
 sidebar_label: Settings
 ---
 

@@ -1,5 +1,5 @@
 ---
-post_title: WooCommerce Extension Guidelines - Notices
+post_title: Notices
 sidebar_label: Notices
 ---
 

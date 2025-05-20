@@ -1,6 +1,6 @@
 ---
-post_title: WooCommerce CLI Frequently Asked Questions
-sidebar_label: Frequently Asked Questions
+post_title: WooCommerce CLI frequently asked questions
+sidebar_label: Frequently asked questions
 
 ---
 

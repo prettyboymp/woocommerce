@@ -1,5 +1,5 @@
 ---
-post_title: WooCommerce Extension Guidelines - Onboarding
+post_title: Onboarding
 sidebar_label: Onboarding
 ---
 

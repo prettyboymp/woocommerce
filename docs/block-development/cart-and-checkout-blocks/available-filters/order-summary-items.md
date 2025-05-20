@@ -1,6 +1,6 @@
 ---
-post_title: Cart and Checkout Filters - Order summary items
-sidebar_label: Order Summary Items
+post_title: Order summary items
+sidebar_label: Order summary items
 
 ---
 

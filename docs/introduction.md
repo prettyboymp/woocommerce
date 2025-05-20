@@ -1,5 +1,5 @@
 ---
-post_title: WooCommerce Developer Documentation
+post_title: WooCommerce developer documentation
 sidebar_label: Introduction
 slug: /
 ---

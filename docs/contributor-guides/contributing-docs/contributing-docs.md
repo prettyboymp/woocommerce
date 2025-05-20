@@ -1,6 +1,6 @@
 ---
-post_title: Contributing Technical Documentation
-sidebar_label: Contributing Docs
+post_title: Contributing technical documentation
+sidebar_label: Contributing docs
 ---
 
 # Contributing Technical Documentation
