@@ -28,9 +28,19 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 	class WC_Email_Customer_POS_Completed_Order extends WC_Email {
 
 		/**
-		 * Constructor.
+		 * Emails instance.
+		 *
+		 * @var WC_Emails
 		 */
-		public function __construct() {
+		private $emails;
+
+		/**
+		 * Constructor.
+		 *
+		 * @param WC_Emails|null $emails The WC_Emails instance. Used for unit testing.
+		 */
+		public function __construct( WC_Emails $emails = null ) {
+			$this->emails         = $emails;
 			$this->id             = 'customer_pos_completed_order';
 			$this->customer_email = true;
 			$this->title          = __( 'POS completed order', 'woocommerce' );
@@ -114,6 +124,7 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 		 */
 		public function get_content_html() {
 			$this->add_pos_customizations();
+			$this->add_pos_customizations_to_html_email_header();
 			$content = wc_get_template_html(
 				$this->template_html,
 				array(
@@ -131,6 +142,7 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 				)
 			);
 			$this->remove_pos_customizations();
+			$this->remove_pos_customizations_from_html_email_header();
 			return $content;
 		}
 
@@ -205,6 +217,47 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 			// Remove actions and filters after generating content to avoid affecting other emails.
 			remove_action( 'woocommerce_order_item_meta_start', array( $this, 'add_unit_price' ), 10 );
 			remove_filter( 'woocommerce_get_order_item_totals', array( $this, 'order_item_totals' ), 10 );
+		}
+
+		/**
+		 * Add POS customizations to HTML email header.
+		 *
+		 * Removes the default email header action and adds a custom one that includes
+		 * the POS store name in the email header.
+		 */
+		private function add_pos_customizations_to_html_email_header() {
+			remove_action( 'woocommerce_email_header', array( $this->get_emails(), 'email_header' ) );
+			add_action( 'woocommerce_email_header', array( $this, 'email_header' ) );
+		}
+
+		/**
+		 * Remove POS customizations from HTML email header.
+		 *
+		 * Removes the custom email header action and restores the default one
+		 * to avoid affecting other emails.
+		 */
+		private function remove_pos_customizations_from_html_email_header() {
+			remove_action( 'woocommerce_email_header', array( $this, 'email_header' ) );
+			if ( ! has_action( 'woocommerce_email_header', array( $this->get_emails(), 'email_header' ) ) ) {
+				add_action( 'woocommerce_email_header', array( $this->get_emails(), 'email_header' ) );
+			}
+		}
+
+		/**
+		 * Get the email header.
+		 *
+		 * @param mixed $email_heading Heading for the email.
+		 *
+		 * @internal For exclusive usage within this class, backwards compatibility not guaranteed.
+		 */
+		public function email_header( $email_heading ) {
+			wc_get_template(
+				'emails/email-header.php',
+				array(
+					'email_heading' => $email_heading,
+					'store_name'    => $this->get_pos_store_name(),
+				)
+			);
 		}
 
 		/**
@@ -333,6 +386,15 @@ if ( ! class_exists( 'WC_Email_Customer_POS_Completed_Order', false ) ) :
 			return $this->format_string(
 				get_option( 'woocommerce_pos_refund_returns_policy' )
 			);
+		}
+
+		/**
+		 * Get the WC_Emails instance.
+		 *
+		 * @return WC_Emails The WC_Emails instance.
+		 */
+		private function get_emails() {
+			return $this->emails ?? WC_Emails::instance();
 		}
 	}
 
