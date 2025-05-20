@@ -486,7 +486,10 @@ class MiniCart extends AbstractBlock {
 				<div class="wc-block-mini-cart__drawer wc-block-components-drawer">
 					<div class="wc-block-components-drawer__content">
 						<div class="wc-block-mini-cart__template-part">
-							<?php echo wp_kses_post( $template_part_contents ); ?>
+							<?php
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								echo $template_part_contents;
+							?>
 						</div>
 					</div>
 				</div>
