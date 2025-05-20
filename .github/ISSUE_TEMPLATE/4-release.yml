@@ -45,7 +45,7 @@ body:
         -    [] Create a PR to bump version in source code with `GITHUB_TOKEN=<your_PAT_token> pnpm utils code-freeze version-bump -b release/9.9 9.9.0-rc.1`
         -    [] Review (ensure PR CI-checks are passing) and merge the PR (ensure merge CI-checks are passing)
         -    [] Build zip file ([workflow](https://github.com/woocommerce/woocommerce/actions/workflows/build-release-zip-file.yml))
-        -    [] Validate version and stable tag in `readme.txt` for the generated zip file
+        -    [] Validate version and stable tag in 'woocommerce.php' and `readme.txt` for the generated zip file
 
         #### Release to WordPress.org
 
@@ -84,7 +84,7 @@ body:
         -    [] Create a PR to bump version in source code with `GITHUB_TOKEN=<your_PAT_token> pnpm utils code-freeze version-bump -b release/9.9 9.9.0`
         -    [] Review (ensure PR CI-checks are passing) and merge the PR (ensure merge CI-checks are passing)
         -    [] Build zip file ([workflow](https://github.com/woocommerce/woocommerce/actions/workflows/build-release-zip-file.yml))
-        -    [] Validate version and stable tag in `readme.txt` for the generated zip file
+        -    [] Validate version and stable tag in 'woocommerce.php' and `readme.txt` for the generated zip file
 
         #### Release to WordPress.org
 
