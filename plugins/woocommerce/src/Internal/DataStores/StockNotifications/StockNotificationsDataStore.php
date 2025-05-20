@@ -417,12 +417,11 @@ CREATE TABLE $meta_table_name (
 				'user_email' => '',
 				'limit'      => -1,
 				'offset'     => 0,
-				'return'     => 'ids', // 'count', 'ids', 'objects'.
+				'return'     => 'ids', // i.e. 'count', 'ids', 'objects'.
 			)
 		);
 
 		$table  = $this->get_table_name();
-
 		$select = 'id';
 		if ( 'count' === $args['return'] ) {
 			$select = 'COUNT(id)';
@@ -484,7 +483,7 @@ CREATE TABLE $meta_table_name (
 		}
 
 		return array_map(
-			function( $result ) {
+			function ( $result ) {
 				return absint( $result['id'] );
 			},
 			$results
