@@ -80,6 +80,8 @@ const renderPickupLocation = (
 	const address = getPickupAddress( option );
 	const details = getPickupDetails( option );
 
+	const isSelected = selectedOption === option.rate_id;
+
 	// Default to showing "free" as the secondary label. Price checks below will update it if needed.
 	let secondaryLabel = <em>{ __( 'free', 'woocommerce' ) }</em>;
 
@@ -130,9 +132,12 @@ const renderPickupLocation = (
 				{ decodeEntities( address ) }
 			</>
 		) : undefined,
-		secondaryDescription: details ? (
-			<ReadMore maxLines={ 2 }>{ decodeEntities( details ) }</ReadMore>
-		) : undefined,
+		secondaryDescription:
+			isSelected && details ? (
+				<ReadMore maxLines={ 2 }>
+					{ decodeEntities( details ) }
+				</ReadMore>
+			) : undefined,
 	};
 };
 
