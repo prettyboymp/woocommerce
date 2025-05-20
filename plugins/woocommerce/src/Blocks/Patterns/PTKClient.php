@@ -24,19 +24,7 @@ class PTKClient {
 		$locale = get_user_locale();
 		$lang   = preg_replace( '/(_.*)$/', '', $locale );
 
-		$ptk_url = self::PATTERNS_TOOLKIT_URL . $lang;
-
-		if ( isset( $options['site'] ) ) {
-			$ptk_url = add_query_arg( 'site', $options['site'], $ptk_url );
-		}
-
-		if ( isset( $options['categories'] ) ) {
-			$ptk_url = add_query_arg( 'categories', implode( ',', $options['categories'] ), $ptk_url );
-		}
-
-		if ( isset( $options['per_page'] ) ) {
-			$ptk_url = add_query_arg( 'per_page', $options['per_page'], $ptk_url );
-		}
+		$ptk_url = 'https://public-api.wordpress.com/rest/v1/ptk/woo-block-patterns/' . $lang;
 
 		$patterns = wp_safe_remote_get( $ptk_url );
 		if ( is_wp_error( $patterns ) || 200 !== wp_remote_retrieve_response_code( $patterns ) ) {
