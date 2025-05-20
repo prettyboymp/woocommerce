@@ -15,7 +15,7 @@ class WC_Email_Header_Template_Test extends \WC_Unit_Test_Case {
 		update_option( 'blogname', 'Online Store' );
 
 		// When getting content from email header.
-		$content = wc_get_template_html( 'emails/email-header.php', array( 'email_heading' => $email_heading ) );
+		$content = wc_get_template_html( 'emails/email-header.php', array( 'email_heading' => 'Test email heading' ) );
 
 		// Then email header should include blog name.
 		$this->assertStringContainsString( '<title>Online Store</title>', $content );
@@ -32,7 +32,7 @@ class WC_Email_Header_Template_Test extends \WC_Unit_Test_Case {
 		$content = wc_get_template_html(
 			'emails/email-header.php',
 			array(
-				'email_heading' => $email_heading,
+				'email_heading' => 'Test email heading',
 				'store_name'    => 'Another store',
 			)
 		);
