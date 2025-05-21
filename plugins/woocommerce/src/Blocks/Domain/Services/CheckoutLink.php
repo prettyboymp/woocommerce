@@ -92,12 +92,18 @@ class CheckoutLink {
 			}
 		}
 
+		// Nothing was added to the cart. We need to redirect to the cart page with an error notice. Since guests may not
+		// have a session, add the notice in the query string.
+		if ( wc()->cart->is_empty() ) {
+			return add_query_arg( 'wc_error', __( 'The provided checkout link was out of date or invalid. No products were added to the cart.', 'woocommerce' ), wc_get_cart_url() );
+		}
+
+		$redirect_url = wc_get_checkout_url();
+
 		// If the user is logged in, the session is tied to the user ID. Do not use a cart token.
-		if ( is_user_logged_in() ) {
-			$redirect_url = wc_get_checkout_url();
-		} else {
+		if ( ! is_user_logged_in() ) {
 			$session_token = CartTokenUtils::get_cart_token( wc()->session->get_customer_id() );
-			$redirect_url  = add_query_arg( 'session', $session_token, wc_get_checkout_url() );
+			$redirect_url  = add_query_arg( 'session', $session_token, $redirect_url );
 		}
 
 		return $redirect_url;
