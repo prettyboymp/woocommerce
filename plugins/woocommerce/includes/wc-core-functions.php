@@ -1406,7 +1406,7 @@ function wc_get_user_agent() {
  *
  * @since  2.4.0
  * @param  string $prefix Prefix for the hash.
- * @param  ?int   $max_length Maximum length of the hash.
+ * @param  ?int   $max_length Maximum length of the hash. Excludes the prefix.
  * @return string
  */
 function wc_rand_hash( $prefix = '', $max_length = null ) {
@@ -1417,7 +1417,7 @@ function wc_rand_hash( $prefix = '', $max_length = null ) {
 	}
 
 	if ( $max_length ) {
-		$random = substr( $random, 0, $max_length - strlen( $prefix ) );
+		$random = substr( $random, 0, $max_length );
 	}
 
 	return $prefix . $random;
