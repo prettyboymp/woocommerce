@@ -62,7 +62,7 @@ class WC_Brands_Admin {
 			}
 		);
 
-		// Hiding setting for future depreciation. Only users who have touched these settings should see it.
+		// Hiding setting for future deprecation. Only users who have touched these settings should see it.
 		$setting_value = get_option( 'wc_brands_show_description' );
 		if ( is_string( $setting_value ) ) {
 
