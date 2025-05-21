@@ -14,7 +14,12 @@ const getInnerBlocksTemplate = () => [
 	[ largeImageNextPreviousButtonMetadata.name ],
 ];
 
-const ProductImage = ( { image }: { image: { src: string; alt: string } } ) => {
+type ProductImageProps = {
+	image: { src: string; alt: string };
+	cropImages: boolean;
+};
+
+const ProductImage = ( { image, cropImages }: ProductImageProps ) => {
 	const placeholderSrc = `${ WC_BLOCKS_IMAGE_URL }block-placeholders/product-image-gallery.svg`;
 
 	const src = image.src || placeholderSrc;
@@ -22,12 +27,25 @@ const ProductImage = ( { image }: { image: { src: string; alt: string } } ) => {
 
 	return (
 		<div className="wc-block-product-gallery-large-image wc-block-editor-product-gallery-large-image">
-			<img src={ src } alt={ alt } loading="lazy" />
+			<img
+				src={ src }
+				alt={ alt }
+				loading="lazy"
+				className={
+					cropImages
+						? 'wc-block-woocommerce-product-gallery-large-image__image--cropped'
+						: ''
+				}
+			/>
 		</div>
 	);
 };
 
-export const Edit = () => {
+type ProductGalleryLargeImageProps = {
+	context: { cropImages?: boolean };
+};
+
+export const Edit = ( { context }: ProductGalleryLargeImageProps ) => {
 	const productContext = useProductDataContext();
 	const firstImage = productContext?.product?.images?.[ 0 ];
 	const image = {
@@ -52,7 +70,10 @@ export const Edit = () => {
 
 	return (
 		<div { ...blockProps }>
-			<ProductImage image={ image } />
+			<ProductImage
+				image={ image }
+				cropImages={ context.cropImages ?? false }
+			/>
 			<div { ...innerBlocksProps } />
 		</div>
 	);
