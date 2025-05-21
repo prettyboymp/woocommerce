@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Checkout Link class.
  */
-final class CheckoutLink {
+class CheckoutLink {
 	/**
 	 * Initialize the checkout link service.
 	 */
@@ -41,8 +41,6 @@ final class CheckoutLink {
 	 */
 	public function add_query_vars( $vars ) {
 		$vars[] = 'checkout-link';
-		$vars[] = 'products';
-		$vars[] = 'coupon';
 		return $vars;
 	}
 
@@ -55,12 +53,21 @@ final class CheckoutLink {
 		if ( ! get_query_var( 'checkout-link' ) ) {
 			return;
 		}
+		wp_safe_redirect( $this->get_checkout_link() );
+		exit;
+	}
 
+	/**
+	 * Process the query params and return the checkout link to redirect to complete with session token.
+	 *
+	 * @return string The checkout link.
+	 */
+	protected function get_checkout_link() {
 		$controller = new CartController();
 		$controller->empty_cart();
 
 		// Populate cart with products.
-		$products = wp_parse_id_list( get_query_var( 'products' ) ?? '' );
+		$products = wp_parse_id_list( wp_unslash( $_GET['products'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		foreach ( $products as $product_id ) {
 			try {
 				$controller->add_to_cart(
@@ -75,11 +82,11 @@ final class CheckoutLink {
 		}
 
 		// Apply coupon if provided.
-		$coupon = get_query_var( 'coupon' ) ?? '';
+		$coupon = wc_format_coupon_code( wp_unslash( $_GET['coupon'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		if ( wc_coupons_enabled() && ! empty( $coupon ) ) {
 			try {
-				$controller->apply_coupon( wc_format_coupon_code( wp_unslash( $coupon ) ) );
+				$controller->apply_coupon( $coupon );
 			} catch ( \Exception $e ) {
 				wc_add_notice( $e->getMessage(), 'error' );
 			}
@@ -93,7 +100,6 @@ final class CheckoutLink {
 			$redirect_url  = add_query_arg( 'session', $session_token, wc_get_checkout_url() );
 		}
 
-		wp_safe_redirect( $redirect_url );
-		exit;
+		return $redirect_url;
 	}
 }
