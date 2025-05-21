@@ -67,13 +67,23 @@ class CheckoutLink {
 		$controller->empty_cart();
 
 		// Populate cart with products.
-		$products = wp_parse_id_list( wp_unslash( $_GET['products'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		foreach ( $products as $product_id ) {
+		$products = array_filter( explode( ',', wc_clean( wp_unslash( $_GET['products'] ?? '' ) ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+		foreach ( $products as $product_id_qty ) {
+			if ( strpos( $product_id_qty, ':' ) !== false ) {
+				list( $product_id, $qty ) = explode( ':', $product_id_qty );
+			} else {
+				$product_id = $product_id_qty;
+				$qty        = 1;
+			}
+			if ( ! absint( $product_id ) ) {
+				continue;
+			}
 			try {
 				$controller->add_to_cart(
 					[
-						'id'       => $product_id,
-						'quantity' => 1,
+						'id'       => absint( $product_id ),
+						'quantity' => absint( $qty ),
 					]
 				);
 			} catch ( \Exception $e ) {
@@ -95,7 +105,14 @@ class CheckoutLink {
 		// Nothing was added to the cart. We need to redirect to the cart page with an error notice. Since guests may not
 		// have a session, add the notice in the query string.
 		if ( wc()->cart->is_empty() ) {
-			return add_query_arg( 'wc_error', __( 'The provided checkout link was out of date or invalid. No products were added to the cart.', 'woocommerce' ), wc_get_cart_url() );
+			$empty_cart_notice = __( 'The provided checkout link was out of date or invalid. No products were added to the cart.', 'woocommerce' );
+			wc_add_notice( $empty_cart_notice, 'error' );
+
+			if ( ! wc()->session->has_session() ) {
+				return add_query_arg( 'wc_error', $empty_cart_notice, wc_get_cart_url() );
+			}
+
+			return wc_get_cart_url();
 		}
 
 		$redirect_url = wc_get_checkout_url();
