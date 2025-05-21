@@ -64,8 +64,6 @@ class MiniCartContents extends AbstractBlock {
 	 * @return string Rendered block type output.
 	 */
 	protected function render_experimental_iapi_mini_cart_contents( $attributes, $content, $block ) {
-		wp_enqueue_script_module( $this->get_full_block_name() );
-
 		ob_start();
 		?>
 		<div data-wp-interactive="woocommerce/mini-cart-contents" class="wp-block-woocommerce-mini-cart-contents">
