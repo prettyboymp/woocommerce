@@ -1,6 +1,7 @@
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import {filterSidebarItems} from "./src/js/sidebar-filters";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -45,6 +46,14 @@ const config: Config = {
 					editUrl:
 						'https://github.com/woocommerce/woocommerce/tree/docusaurus-docs-prep/docs/docs/',
 					routeBasePath: 'docs',
+
+					// Custom sidebar filter to remove some items from the docs sidebar.
+					async sidebarItemsGenerator({defaultSidebarItemsGenerator, ...args}) {					
+						let sidebarItems = await defaultSidebarItemsGenerator(args);
+						sidebarItems = filterSidebarItems(sidebarItems);
+						return sidebarItems;
+					},
+
 				},
 				theme: {
 					customCss: './src/css/custom.css',
@@ -64,6 +73,31 @@ const config: Config = {
 				href: '/docs',
 			},
 			items: [
+				{          
+					type: 'docSidebar',
+					sidebarId: 'docsSidebar',
+					label: 'Docs',
+				},
+				{          
+					type: 'docSidebar',
+					sidebarId: 'extensionsSidebar',
+					label: 'Extensions',
+				},
+				{          
+					type: 'docSidebar',
+					sidebarId: 'apiSidebar',
+					label: 'API',
+				},
+				{          
+					type: 'docSidebar',
+					sidebarId: 'cliSidebar',
+					label: 'CLI',
+				},
+				{
+					href: 'https://developer.woocommerce.com/',
+					label: 'Blog',
+					position: 'right',
+				},
 				{
 					href: 'https://github.com/woocommerce/woocommerce/tree/trunk/docs',
 					label: 'GitHub',
