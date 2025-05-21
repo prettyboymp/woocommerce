@@ -8,7 +8,6 @@ declare( strict_types=1 );
 namespace Automattic\WooCommerce\Internal\Admin\RemoteFreeExtensions;
 
 use Automattic\WooCommerce\Admin\Features\PaymentGatewaySuggestions\DefaultPaymentGateways;
-use Automattic\WooCommerce\Admin\Features\Features;
 
 defined( 'ABSPATH' ) || exit;
 
