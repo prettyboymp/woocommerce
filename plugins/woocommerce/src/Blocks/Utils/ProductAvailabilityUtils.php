@@ -40,7 +40,7 @@ class ProductAvailabilityUtils {
 		/**
 		 * Filters the product availability information.
 		 *
-		 * @since χ.χ.χ
+		 * @since x.x.x
 		 * @param array $product_availability The product availability information.
 		 * @param \WC_Product $product Product object.
 		 */
