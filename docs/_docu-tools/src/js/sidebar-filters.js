@@ -1,6 +1,7 @@
 const HIDDEN_DOC_IDS = [
   'apis', // doc id or slug, relative to docs root
-//   'WooCommerce CLI',
+  'cli',
+  'extensions',
 ];
 
 export function filterSidebarItems(items) {

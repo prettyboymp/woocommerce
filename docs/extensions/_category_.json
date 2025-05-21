@@ -1,10 +1,10 @@
 {
-    "label": "CLI",
+    "label": "Extensions",
     "link": {
       "type": "generated-index",
-      "title": "WC-CLI"
+      "title": "Extensions"
     },
     "customProps" : {
-      "id" : "cli"
+      "id" : "extensions"
     }
 }
