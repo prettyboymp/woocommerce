@@ -30,7 +30,9 @@ export const BusinessVerificationStep: React.FC = () => {
 			location.hostname === 'localhost'
 				? 'https://wcpay.test'
 				: window.wcSettings?.homeUrl + getComingSoonShareKey(),
-		country: currentStep?.context?.fields?.location,
+		country: ( currentStep?.context?.fields?.location || 'US' ).split(
+			':'
+		)[ 0 ],
 		...( currentStep?.context?.self_assessment ?? {} ),
 	};
 	const hasTestAccount = currentStep?.context?.has_test_account ?? false;
