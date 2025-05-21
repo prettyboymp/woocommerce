@@ -288,6 +288,37 @@ class WC_Session_Handler extends WC_Session {
 	}
 
 	/**
+	 * Hash a value using wp_fast_hash (from WP 6.8 onwards).
+	 *
+	 * This method can be removed when the minimum version supported is 6.8.
+	 *
+	 * @param string $message Value to hash.
+	 * @return string Hashed value.
+	 */
+	private function hash( $message ) {
+		if ( function_exists( 'wp_fast_hash' ) ) {
+			return wp_fast_hash( $message );
+		}
+		return hash_hmac( 'md5', $message, wp_hash( $message ) );
+	}
+
+	/**
+	 * Verify a hash using wp_verify_fast_hash (from WP 6.8 onwards).
+	 *
+	 * This method can be removed when the minimum version supported is 6.8.
+	 *
+	 * @param string $message Message to verify.
+	 * @param string $hash Hash to verify.
+	 * @return bool Whether the hash is valid.
+	 */
+	private function verify_hash( $message, $hash ) {
+		if ( function_exists( 'wp_verify_fast_hash' ) ) {
+			return wp_verify_fast_hash( $message, $hash );
+		}
+		return hash_equals( hash_hmac( 'md5', $message, wp_hash( $message ) ), $hash );
+	}
+
+	/**
 	 * Sets the session cookie on-demand (usually after adding an item to the cart).
 	 *
 	 * Since the cookie name (as of 2.1) is prepended with wp, cache systems like batcache will not cache pages when set.
@@ -298,7 +329,7 @@ class WC_Session_Handler extends WC_Session {
 	 */
 	public function set_customer_session_cookie( $set ) {
 		if ( $set ) {
-			$cookie_hash  = wp_fast_hash( $this->_customer_id . '|' . $this->_session_expiration );
+			$cookie_hash  = $this->hash( $this->_customer_id . '|' . $this->_session_expiration );
 			$cookie_value = $this->_customer_id . '|' . $this->_session_expiration . '|' . $this->_session_expiring . '|' . $cookie_hash;
 
 			if ( ! isset( $_COOKIE[ $this->_cookie ] ) || $_COOKIE[ $this->_cookie ] !== $cookie_value ) {
@@ -432,7 +463,7 @@ class WC_Session_Handler extends WC_Session {
 			return false;
 		}
 
-		$verify_hash = wp_verify_fast_hash( $customer_id . '|' . $session_expiration, $cookie_hash );
+		$verify_hash = $this->verify_hash( $customer_id . '|' . $session_expiration, $cookie_hash );
 
 		if ( ! $verify_hash ) {
 			return false;

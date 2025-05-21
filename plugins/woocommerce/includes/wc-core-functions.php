@@ -1413,7 +1413,11 @@ function wc_rand_hash( $prefix = '', $max_length = null ) {
 	try {
 		$random = bin2hex( random_bytes( 20 ) );
 	} catch ( Exception $e ) {
-		$random = bin2hex( substr( wp_fast_hash( wp_rand() ), -20 ) );
+		if ( function_exists( 'wp_fast_hash' ) ) {
+			$random = bin2hex( substr( wp_fast_hash( wp_rand() ), -20 ) );
+		} else {
+			$random = bin2hex( substr( sha1( wp_rand() ), -20 ) );
+		}
 	}
 
 	if ( $max_length && $max_length > 0 ) {
