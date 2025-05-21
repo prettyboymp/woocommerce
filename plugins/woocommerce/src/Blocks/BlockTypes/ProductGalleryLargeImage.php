@@ -32,7 +32,7 @@ class ProductGalleryLargeImage extends AbstractBlock {
 	 * @return string[]
 	 */
 	protected function get_block_type_uses_context() {
-		return [ 'postId', 'hoverZoom', 'fullScreenOnClick' ];
+		return [ 'postId', 'hoverZoom', 'fullScreenOnClick', 'cropImages' ];
 	}
 
 	/**
@@ -113,6 +113,9 @@ class ProductGalleryLargeImage extends AbstractBlock {
 		}
 		if ( $context['hoverZoom'] ) {
 			$base_classes .= ' wc-block-woocommerce-product-gallery-large-image__image--hoverZoom';
+		}
+		if ( $context['cropImages'] ) {
+			$base_classes .= ' wc-block-woocommerce-product-gallery-large-image__image--cropped';
 		}
 
 		ob_start();

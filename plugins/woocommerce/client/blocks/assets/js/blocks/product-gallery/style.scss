@@ -57,6 +57,10 @@ $dialog-padding: 20px;
 		&.wc-block-woocommerce-product-gallery-large-image__image--hoverZoom {
 			cursor: zoom-in;
 		}
+
+		&.wc-block-woocommerce-product-gallery-large-image__image--cropped {
+			object-fit: cover;
+		}
 	}
 
 	.wc-block-product-gallery-large-image__inner-blocks {
