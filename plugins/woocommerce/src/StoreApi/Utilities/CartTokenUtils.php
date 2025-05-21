@@ -75,7 +75,7 @@ class CartTokenUtils {
 		/**
 		 * Filters the session expiration.
 		 *
-		 * @since 8.7.0
+		 * @since 5.0.0
 		 * @param int $expiration Expiration in seconds.
 		 */
 		return time() + intval( apply_filters( 'wc_session_expiration', DAY_IN_SECONDS * 2 ) );

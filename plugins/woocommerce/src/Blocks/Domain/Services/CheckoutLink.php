@@ -85,8 +85,8 @@ final class CheckoutLink {
 			}
 		}
 
-		// If the user is logged in, the session persists and is tied to the user ID.
-		if ( 0 && is_user_logged_in() ) {
+		// If the user is logged in, the session is tied to the user ID. Do not use a cart token.
+		if ( is_user_logged_in() ) {
 			$redirect_url = wc_get_checkout_url();
 		} else {
 			$session_token = CartTokenUtils::get_cart_token( wc()->session->get_customer_id() );
