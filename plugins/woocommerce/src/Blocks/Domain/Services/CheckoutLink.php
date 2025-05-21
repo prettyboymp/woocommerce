@@ -8,9 +8,9 @@ declare(strict_types=1);
 namespace Automattic\WooCommerce\Blocks\Domain\Services;
 
 use Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils;
-use Automattic\WooCommerce\StoreApi\Utilities\SessionUtils;
+use Automattic\WooCommerce\StoreApi\Utilities\CartTokenUtils;
 use Automattic\WooCommerce\StoreApi\Utilities\CartController;
-use Automattic\WooCommerce\StoreApi\Utilities\JsonWebToken;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -86,30 +86,14 @@ final class CheckoutLink {
 		}
 
 		// If the user is logged in, the session persists and is tied to the user ID.
-		if ( is_user_logged_in() ) {
+		if ( 0 && is_user_logged_in() ) {
 			$redirect_url = wc_get_checkout_url();
 		} else {
-			$session_token = SessionUtils::get_cart_token_for_customer( wc()->session->get_customer_id() );
+			$session_token = CartTokenUtils::get_cart_token( wc()->session->get_customer_id() );
 			$redirect_url  = add_query_arg( 'session', $session_token, wc_get_checkout_url() );
 		}
 
 		wp_safe_redirect( $redirect_url );
 		exit;
-	}
-
-	/**
-	 * Generate a cart token.
-	 *
-	 * @return string
-	 */
-	private function generate_cart_token() {
-		return JsonWebToken::create(
-			[
-				'user_id' => SessionUtils::generate_customer_id(),
-				'exp'     => time() + DAY_IN_SECONDS,
-				'iss'     => 'checkout-link',
-			],
-			SessionUtils::get_cart_token_secret()
-		);
 	}
 }

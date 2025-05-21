@@ -1,10 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace Automattic\WooCommerce\StoreApi;
 
 use Automattic\Jetpack\Constants;
-use Automattic\WooCommerce\StoreApi\Utilities\JsonWebToken;
-use Automattic\WooCommerce\StoreApi\Utilities\SessionUtils;
+use Automattic\WooCommerce\StoreApi\Utilities\CartTokenUtils;
 use WC_Session;
 
 defined( 'ABSPATH' ) || exit;
@@ -38,7 +38,7 @@ final class SessionHandler extends WC_Session {
 	 * Constructor for the session class.
 	 */
 	public function __construct() {
-		$this->token = SessionUtils::get_cart_token();
+		$this->token = wc_clean( wp_unslash( $_SERVER['HTTP_CART_TOKEN'] ?? '' ) );
 		$this->table = $GLOBALS['wpdb']->prefix . 'woocommerce_sessions';
 	}
 
@@ -54,10 +54,10 @@ final class SessionHandler extends WC_Session {
 	 * Process the token header to load the correct session.
 	 */
 	protected function init_session_from_token() {
-		$payload = JsonWebToken::get_parts( $this->token )->payload;
+		$payload = CartTokenUtils::get_cart_token_payload( $this->token );
 
-		$this->_customer_id       = $payload->user_id;
-		$this->session_expiration = $payload->exp;
+		$this->_customer_id       = $payload['user_id'];
+		$this->session_expiration = $payload['exp'];
 		$this->_data              = (array) $this->get_session( $this->_customer_id, array() );
 	}
 
@@ -65,11 +65,11 @@ final class SessionHandler extends WC_Session {
 	 * Returns the session.
 	 *
 	 * @param string $customer_id Customer ID.
-	 * @param mixed  $default Default session value.
+	 * @param mixed  $default_value Default session value.
 	 *
 	 * @return string|array|bool
 	 */
-	public function get_session( $customer_id, $default = false ) {
+	public function get_session( $customer_id, $default_value = false ) {
 		global $wpdb;
 
 		// This mimics behaviour from default WC_Session_Handler class. There will be no sessions retrieved while WP setup is due.
@@ -85,7 +85,7 @@ final class SessionHandler extends WC_Session {
 		);
 
 		if ( is_null( $value ) ) {
-			$value = $default;
+			$value = $default_value;
 		}
 
 		return maybe_unserialize( $value );

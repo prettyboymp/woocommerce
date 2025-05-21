@@ -13,7 +13,7 @@ use Automattic\WooCommerce\StoreApi\SessionHandler;
 use Automattic\WooCommerce\StoreApi\Utilities\CartController;
 use Automattic\WooCommerce\StoreApi\Utilities\DraftOrderTrait;
 use Automattic\WooCommerce\StoreApi\Utilities\OrderController;
-use Automattic\WooCommerce\StoreApi\Utilities\SessionUtils;
+use Automattic\WooCommerce\StoreApi\Utilities\CartTokenUtils;
 
 /**
  * Abstract Cart Route
@@ -197,7 +197,7 @@ abstract class AbstractCartRoute extends AbstractRoute {
 			return null;
 		}
 
-		return SessionUtils::get_cart_token_for_customer( wc()->session->get_customer_id() );
+		return CartTokenUtils::get_cart_token( wc()->session->get_customer_id() );
 	}
 
 	/**
@@ -208,7 +208,7 @@ abstract class AbstractCartRoute extends AbstractRoute {
 	 */
 	protected function has_cart_token( \WP_REST_Request $request ) {
 		if ( is_null( $this->has_cart_token ) ) {
-			$this->has_cart_token = SessionUtils::validate_cart_token( $request->get_header( 'Cart-Token' ) ?? '' );
+			$this->has_cart_token = CartTokenUtils::validate_cart_token( $request->get_header( 'Cart-Token' ) ?? '' );
 		}
 		return $this->has_cart_token;
 	}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Session utility functions for WooCommerce Blocks.
+ * Cart token utility functions.
  */
 
 declare(strict_types=1);
@@ -11,16 +11,16 @@ use Automattic\WooCommerce\StoreApi\Authentication;
 use Automattic\WooCommerce\StoreApi\Utilities\JsonWebToken;
 
 /**
- * Session utility functions.
+ * Cart token utility functions.
  */
-class SessionUtils {
+class CartTokenUtils {
 	/**
 	 * Generate a cart token.
 	 *
-	 * @param int $customer_id The customer ID.
+	 * @param string $customer_id The customer ID.
 	 * @return string
 	 */
-	public static function get_cart_token_for_customer( $customer_id ) {
+	public static function get_cart_token( string $customer_id ): string {
 		return JsonWebToken::create(
 			array(
 				'user_id' => $customer_id,
@@ -32,31 +32,29 @@ class SessionUtils {
 	}
 
 	/**
-	 * Generate a unique customer ID for guests, or return user ID if logged in.
-	 *
-	 * @return string
-	 */
-	public static function generate_customer_id() {
-		return is_user_logged_in() ? strval( get_current_user_id() ) : wc_rand_hash( 't_', 32 );
-	}
-
-	/**
-	 * Get the cart token from the request header.
-	 *
-	 * @return string
-	 */
-	public static function get_cart_token() {
-		return wc_clean( wp_unslash( $_SERVER['HTTP_CART_TOKEN'] ?? '' ) );
-	}
-
-	/**
 	 * Validate the cart token.
 	 *
 	 * @param string $cart_token The cart token.
 	 * @return bool
 	 */
-	public static function validate_cart_token( $cart_token ) {
+	public static function validate_cart_token( string $cart_token ): bool {
 		return JsonWebToken::validate( $cart_token, self::get_cart_token_secret() );
+	}
+
+	/**
+	 * Get the cart token payload.
+	 *
+	 * @param string $cart_token The cart token.
+	 * @return array
+	 */
+	public static function get_cart_token_payload( string $cart_token ): array {
+		$parts = JsonWebToken::get_parts( $cart_token )->payload;
+
+		return array(
+			'user_id' => $parts->user_id ?? '',
+			'exp'     => $parts->exp ?? 0,
+			'iss'     => $parts->iss ?? '',
+		);
 	}
 
 	/**
@@ -64,7 +62,7 @@ class SessionUtils {
 	 *
 	 * @return string
 	 */
-	public static function get_cart_token_secret() {
+	private static function get_cart_token_secret(): string {
 		return '@' . wp_salt();
 	}
 
@@ -73,7 +71,7 @@ class SessionUtils {
 	 *
 	 * @return int
 	 */
-	protected static function get_cart_token_expiration() {
+	private static function get_cart_token_expiration(): int {
 		/**
 		 * Filters the session expiration.
 		 *
