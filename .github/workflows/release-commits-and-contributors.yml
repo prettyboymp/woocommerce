@@ -1,0 +1,30 @@
+name: 'Release: Generate Number of Commits and Contributors'
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: false
+        description: 'The release version (X.Y format) to be used to calculate the number of commits and contributors. If not provided, it will be derived from the branch name.'
+        
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        required: false
+        description: 'The release version (X.Y format) to be used to calculate the number of commits and contributors. If not provided, it will be derived from the branch name.' 
+
+jobs:
+  print-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print version
+        if: ${{ github.event.inputs.version != '' }}
+        run: echo "${{ inputs.version }}"
+    
+  print-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print branch
+        if: ${{ github.event.inputs.version == '' }}
+        run: echo "${{ github.ref_name }}"
