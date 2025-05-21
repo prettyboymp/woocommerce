@@ -394,6 +394,9 @@ class Controller extends GenericController implements ExportableInterface {
 			'type'              => 'array',
 			'items'             => array(
 				'type' => 'array',
+				'items' => array(
+					'type' => 'integer',
+				),
 			),
 			'default'           => array(),
 			'validate_callback' => 'rest_validate_request_arg',
@@ -403,6 +406,9 @@ class Controller extends GenericController implements ExportableInterface {
 			'type'              => 'array',
 			'items'             => array(
 				'type' => 'array',
+				'items' => array(
+					'type' => 'integer',
+				),
 			),
 			'default'           => array(),
 			'validate_callback' => 'rest_validate_request_arg',
