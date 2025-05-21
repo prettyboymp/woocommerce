@@ -102,7 +102,7 @@ class WC_Marketplace_Updater {
 	public static function add_personalization_data( $data ) {
 		$country_setting = get_option( 'woocommerce_default_country' );
 		// Extract just the country code from the "COUNTRY:STATE" format.
-		$country_code    = explode( ':', $country_setting )[0];
+		$country_code    = sanitize_text_field( explode( ':', $country_setting )[0] );
 		$data['country'] = $country_code;
 
 		return $data;
