@@ -96,16 +96,16 @@ class WC_Marketplace_Updater {
 	/**
 	 * Add additional data to the request for personalized suggestions.
 	 *
-	 * @param array $data The data to include in the request.
+	 * @param array $request_params The data to include in the request.
 	 * @return array
 	 */
-	public static function add_personalization_data( $data ) {
+	public static function add_personalization_data( $request_params ) {
 		$country_setting = get_option( 'woocommerce_default_country' );
 		// Extract just the country code from the "COUNTRY:STATE" format.
-		$country_code    = sanitize_text_field( explode( ':', $country_setting )[0] );
-		$data['country'] = $country_code;
+		$country_code              = sanitize_text_field( explode( ':', $country_setting )[0] );
+		$request_params['country'] = $country_code;
 
-		return $data;
+		return $request_params;
 	}
 }
 
