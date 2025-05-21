@@ -15,9 +15,15 @@ store( 'woocommerce/mini-cart', {
 	},
 
 	callbacks: {
-		toggleIsOpen() {
+		openDrawer() {
 			const ctx = getContext< { isOpen: boolean } >();
-			ctx.isOpen = ! ctx.isOpen;
+			ctx.isOpen = true;
+		},
+
+		closeDrawer() {
+			const ctx = getContext< { isOpen: boolean } >();
+
+			ctx.isOpen = false;
 		},
 	},
 } );

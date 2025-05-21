@@ -467,7 +467,7 @@ class MiniCart extends AbstractBlock {
 		?>
 		<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<div <?php echo wp_interactivity_data_wp_context( $context ); ?> data-wp-interactive="woocommerce/mini-cart" class="<?php echo esc_attr( $wrapper_classes ); ?>" style="<?php echo esc_attr( $wrapper_styles ); ?>">
-			<button data-wp-on--click="callbacks.toggleIsOpen" class="wc-block-mini-cart__button" aria-label="<?php echo esc_attr( __( 'Cart', 'woocommerce' ) ); ?>">
+			<button data-wp-on--click="callbacks.openDrawer" class="wc-block-mini-cart__button" aria-label="<?php echo esc_attr( __( 'Cart', 'woocommerce' ) ); ?>">
 				<span class="wc-block-mini-cart__quantity-badge">
 					<?php
 					  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
