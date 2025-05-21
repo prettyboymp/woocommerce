@@ -28,11 +28,11 @@ Learn more about [getting started](/docs/category/getting-started)
 
 Explore comprehensive guides and resources to build and enhance WooCommerce extensions. Dive into development best practices and innovative techniques for creating powerful extensions.
 
-* [How to build your first extension](/docs/getting-started/extension-development/building-your-first-extension)
-* [Designing a simple extension](/docs/getting-started/extension-development/how-to-design-a-simple-extension)
-* [Extension development best practices](/docs/getting-started/extension-development/extension-development-best-practices)
+* [How to build your first extension](/docs/extensions/building-your-first-extension)
+* [Designing a simple extension](/docs/extensions/how-to-design-a-simple-extension)
+* [Extension development best practices](/docs/extensions/extension-development-best-practices)
 
-Learn more about [extension development](/docs/getting-started/extension-development/)
+Learn more about [extension development](/docs/extensions/)
 
 ---
 

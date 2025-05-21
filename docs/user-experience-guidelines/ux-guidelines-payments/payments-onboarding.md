@@ -26,7 +26,7 @@ If manual entry of API keys is required, design the setup process to be as simpl
 
 ## Configuration & Settings
 
-Follow the Woo User Experience guidelines for [Settings](../ux-guidelines-extensions/settings.md) and [Navigation](../ux-guidelines-extensions/navigation.md).
+Follow the Woo User Experience guidelines for [Settings](/docs/extensions/ux-guidelines-extensions/settings) and [Navigation](/docs/extensions/ux-guidelines-extensions/navigation).
 
 Include sensible default settings to minimize the configuration effort for the user.
 
