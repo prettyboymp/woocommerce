@@ -17,7 +17,7 @@ class CheckoutLinkTest extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		$_GET = [];
-		// Reset global cart/session if needed
+		// Reset global cart/session if needed.
 		$GLOBALS['added_to_cart']   = [];
 		$GLOBALS['applied_coupons'] = [];
 	}
