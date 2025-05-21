@@ -1416,7 +1416,7 @@ function wc_rand_hash( $prefix = '', $max_length = null ) {
 		$random = bin2hex( substr( wp_fast_hash( wp_rand() ), -20 ) );
 	}
 
-	if ( $max_length ) {
+	if ( $max_length && $max_length > 0 ) {
 		$random = substr( $random, 0, $max_length );
 	}
 

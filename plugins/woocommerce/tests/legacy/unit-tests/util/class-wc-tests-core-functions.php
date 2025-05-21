@@ -835,13 +835,13 @@ class WC_Tests_Core_Functions extends WC_Unit_Test_Case {
 		$this->assertEquals( 20, strlen( $h ) );
 		$this->assertMatchesRegularExpression( '/^foo_[a-f0-9]{16}$/', $h );
 
-		// length = 0.
+		// length = 0 should use default length.
 		$h = wc_rand_hash( '', 0 );
-		$this->assertEquals( '', $h );
+		$this->assertEquals( 40, strlen( $h ) );
 
-		// negative length.
+		// negative length should use default length.
 		$h = wc_rand_hash( '', -5 );
-		$this->assertEquals( '', $h );
+		$this->assertEquals( 40, strlen( $h ) );
 	}
 
 	/**
