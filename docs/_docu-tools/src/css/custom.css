@@ -60,8 +60,3 @@ html[data-theme='dark'] .automattic-logo-light {
 .pagination-nav {
   display: none;
 }
-
-/* Utility hidden link */
-.hidden {
-display: none !important;
-}
