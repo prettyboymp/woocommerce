@@ -193,17 +193,17 @@ const config: Config = {
 			darkTheme: prismThemes.dracula,
 			additionalLanguages: [ 'php' ],
 		},
-		algolia: {
-			// The application ID provided by Algolia
-			appId: 'DGCTEY3UZR',
+		// algolia: {
+		// 	// The application ID provided by Algolia
+		// 	appId: 'DGCTEY3UZR',
 
-			// Public API key: it is safe to commit it
-			apiKey: '8b541e433184605374ff8fb8985b3dc4',
+		// 	// Public API key: it is safe to commit it
+		// 	apiKey: '8b541e433184605374ff8fb8985b3dc4',
 
-			indexName: 'developer-woocommerce',
+		// 	indexName: 'developer-woocommerce',
 
-			contextualSearch: true,
-		},
+		// 	contextualSearch: true,
+		// },
 	} satisfies Preset.ThemeConfig,
 };
 
