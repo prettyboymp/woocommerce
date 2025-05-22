@@ -49,7 +49,7 @@ class EmailManager {
 		add_filter( 'woocommerce_email_preview_email_content_setting_ids', array( $this, 'add_intro_content_to_preview_settings' ), 10, 2 );
 
 		// Restore customer's context while rendering the emails.
-		add_action( 'woocommerce_email_stock_notification_product_before_title', array( $this, 'maybe_restore_customer_tax_location_data' ), 9 );
+		add_action( 'woocommerce_email_stock_notification_product', array( $this, 'maybe_restore_customer_tax_location_data' ), 9 );
 
 		// Register email templates.
 		$container = wc_get_container();
