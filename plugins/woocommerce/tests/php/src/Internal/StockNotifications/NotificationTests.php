@@ -67,4 +67,42 @@ class NotificationTests extends \WC_Unit_Test_Case {
 		$formatted_variation_attributes = $notification->get_product_formatted_variation_list(false, 'email');
 		$this->assertEquals( '<table class="variation"><tr><td>size:</td></tr><tr><th>small</th></tr><tr><td>colour:</td></tr><tr><th>red</th></tr></table>', $formatted_variation_attributes );
 	}
+
+	public function test_get_product_permalink() {
+		$product = \WC_Helper_Product::create_simple_product();
+		$notification = new Notification();
+		$notification->set_product_id( $product->get_id() );
+		$notification->set_user_email( 'test@example.com' );
+		$notification->save();
+
+		$permalink = $notification->get_product_permalink();
+		$this->assertEquals( $product->get_permalink(), $permalink );
+
+		$variable_product  = \WC_Helper_Product::create_variation_product();
+		$variation_id      = $variable_product->get_children()[0]; // This only uses the "size" as variation attribute.
+		$variation_product = wc_get_product( $variation_id );
+		$notification->set_product_id( $variation_id );
+		$notification->save();
+		$permalink = $notification->get_product_permalink();
+		$this->assertEquals( $variation_product->get_permalink(), $permalink );
+	}
+
+	public function test_get_product_name() {
+		$product = \WC_Helper_Product::create_simple_product();
+		$notification = new Notification();
+		$notification->set_product_id( $product->get_id() );
+		$notification->set_user_email( 'test@example.com' );
+		$notification->save();
+
+		$product_name = $notification->get_product_name();
+		$this->assertEquals( $product->get_name(), $product_name );
+
+		$variable_product = \WC_Helper_Product::create_variation_product();
+		$variation_id     = $variable_product->get_children()[0]; // This only uses the "size" as variation attribute.
+		$variation_product = wc_get_product( $variation_id );
+		$notification->set_product_id( $variation_id );
+		$notification->save();
+		$product_name = $notification->get_product_name();
+		$this->assertEquals( $variation_product->get_name(), $product_name );
+	}
 }

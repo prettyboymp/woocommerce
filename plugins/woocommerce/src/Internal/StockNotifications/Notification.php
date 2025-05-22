@@ -379,7 +379,7 @@ class Notification extends \WC_Data {
 	 * @param  string $context Context.
 	 * @return string
 	 */
-	public function get_product_formatted_variation_list( bool $flat = false, string $context = 'view' ) : string {
+	public function get_product_formatted_variation_list( bool $flat = false, string $context = 'view' ) {
 
 		$product = $this->get_product();
 		if ( ! $product || ! $product->is_type( array( 'variation' ) ) ) {
@@ -429,7 +429,7 @@ class Notification extends \WC_Data {
 	 *
 	 * @return string
 	 */
-	public function get_product_permalink() : string {
+	public function get_product_permalink() {
 
 		$product = $this->get_product();
 		if ( ! $product ) {
@@ -437,7 +437,7 @@ class Notification extends \WC_Data {
 		}
 
 		if ( $product->is_type( 'variation' ) && ! empty( $this->get_meta( 'posted_attributes' ) ) ) {
-			return $product->get_permalink( array( 'variation' => $this->get_meta( 'posted_attributes' ) ) );
+			return $product->get_permalink( array( 'item_meta_array' => $this->get_meta( 'posted_attributes' ) ) );
 		} else {
 			return $product->get_permalink();
 		}
@@ -448,7 +448,7 @@ class Notification extends \WC_Data {
 	 *
 	 * @return string
 	 */
-	public function get_product_name() : string {
+	public function get_product_name() {
 		$product = $this->get_product();
 		if ( ! $product ) {
 			return '';
