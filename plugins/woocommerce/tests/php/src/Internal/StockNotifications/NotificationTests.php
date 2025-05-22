@@ -64,7 +64,7 @@ class NotificationTests extends \WC_Unit_Test_Case {
 		// 3. Test that the variation returns the formatted variation attributes with posted attributes (any attribute on the variation).
 		$notification->add_meta_data( 'posted_attributes', $posted_attributes );
 		$notification->save();
-		$formatted_variation_attributes = $notification->get_product_formatted_variation_list( true) ;
+		$formatted_variation_attributes = $notification->get_product_formatted_variation_list( true );
 		$this->assertEquals( 'size: small, colour: red', $formatted_variation_attributes );
 		// 3.1 Test that the variation returns the formatted variation attributes with posted attributes (any attribute on the variation) in HTML table.
 		$formatted_variation_attributes = $notification->get_product_formatted_variation_list( false, 'email' );
