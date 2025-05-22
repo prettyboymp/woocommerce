@@ -5,7 +5,7 @@ declare( strict_types = 1 );
 namespace Automattic\WooCommerce\Internal\StockNotifications;
 
 use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsDataStore;
-use Automattic\WooCommerce\Internal\StockNotifications\Emails\EmailsController;
+use Automattic\WooCommerce\Internal\StockNotifications\Emails\EmailManager;
 
 /**
  * The controller for the stock notifications.
@@ -31,7 +31,7 @@ class Controller {
 		add_filter( 'woocommerce_data_stores', array( $this, 'register_data_stores' ) );
 
 		$container = wc_get_container();
-		$container->get( EmailsController::class );
+		$container->get( EmailManager::class );
 	}
 
 	/**

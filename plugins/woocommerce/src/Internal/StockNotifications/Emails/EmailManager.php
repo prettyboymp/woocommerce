@@ -13,7 +13,7 @@ use Automattic\WooCommerce\Internal\StockNotifications\Emails\EmailTemplatesCont
 /**
  * Emails manager.
  */
-class EmailsController {
+class EmailManager {
 
 	/**
 	 * List of all core email IDs.
@@ -38,6 +38,9 @@ class EmailsController {
 		// Setup email hooks & handlers.
 		add_filter( 'woocommerce_email_classes', array( $this, 'email_classes' ) );
 
+		// Add "transactional" emails.
+		add_action( 'woocommerce_email_actions', array( $this, 'add_transactional_emails' ) );
+
 		// Setup styles.
 		add_filter( 'woocommerce_email_styles', array( $this, 'add_stylesheets' ), 10, 2 );
 
@@ -61,10 +64,33 @@ class EmailsController {
 	 */
 	public function email_classes( $emails ) {
 		$emails['WC_Email_Customer_Stock_Notification']         = new CustomerStockNotificationEmail();
-		$emails['WC_Email_Customer_Stock_Notification_Confirm'] = new CustomerStockNotificationConfirmEmail();
 		$emails['WC_Email_Customer_Stock_Notification_Verify']  = new CustomerStockNotificationVerifyEmail();
+		$emails['WC_Email_Customer_Stock_Notification_Confirm'] = new CustomerStockNotificationConfirmEmail();
 
 		return $emails;
+	}
+
+	/**
+	 * Adds transactional emails.
+	 *
+	 * Stock notifications are sent via a custom AS job.
+	 * Additionally, two transactional emails are dispatched during the signup and verification processes,
+	 * which need to be included in the actions array to support deferred email functionality.
+	 *
+	 * @hook woocommerce_defer_transactional_emails
+	 *
+	 * @param array $actions The list of actions.
+	 * @return void
+	 */
+	public function add_transactional_emails( $actions ) {
+		if ( ! is_array( $actions ) ) {
+			return $actions;
+		}
+
+		$actions[] = 'customer_stock_notification_confirm';
+		$actions[] = 'customer_stock_notification_verify';
+
+		return $actions;
 	}
 
 	/**
@@ -251,36 +277,10 @@ class EmailsController {
 	 * @param Notification $notification The notification object.
 	 * @return void
 	 */
-	public function send_stock_notification_email( $notification ) {
+	public function send_stock_notification_email( Notification $notification ) {
 		$emails = WC()->mailer()->get_emails();
 		if ( isset( $emails['WC_Email_Stock_Notification_Receive'] ) ) {
 			$emails['WC_Email_Stock_Notification_Receive']->trigger( $notification );
-		}
-	}
-
-	/**
-	 * Send a stock notification confirm email.
-	 *
-	 * @param Notification $notification The notification object.
-	 * @return void
-	 */
-	public function send_stock_notification_confirm_email( $notification ) {
-		$emails = WC()->mailer()->get_emails();
-		if ( isset( $emails['WC_Email_Stock_Notification_Confirm'] ) ) {
-			$emails['WC_Email_Stock_Notification_Confirm']->trigger( $notification );
-		}
-	}
-
-	/**
-	 * Send a stock notification verify email.
-	 *
-	 * @param Notification $notification The notification object.
-	 * @return void
-	 */
-	public function send_stock_notification_verify_email( $notification ) {
-		$emails = WC()->mailer()->get_emails();
-		if ( isset( $emails['WC_Email_Stock_Notification_Verify'] ) ) {
-			$emails['WC_Email_Stock_Notification_Verify']->trigger( $notification );
 		}
 	}
 }

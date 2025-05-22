@@ -30,6 +30,8 @@ class CustomerStockNotificationVerifyEmail extends WC_Email {
 			'{site_title}'   => '',
 		);
 
+		add_action( 'woocommerce_email_stock_notification_verify_notification', array( $this, 'trigger' ), 10, 1 );
+
 		// Call parent constructor.
 		parent::__construct();
 	}
