@@ -11,13 +11,13 @@ use WC_Email;
 /**
  * Back in stock notification email class.
  */
-class StockNotificationConfirmEmail extends WC_Email {
+class CustomerStockNotificationConfirmEmail extends WC_Email {
 
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->id             = 'stock_notification_confirm';
+		$this->id             = 'customer_stock_notification_confirm';
 		$this->customer_email = true;
 
 		$this->title       = __( 'Back in stock sign-up confirmation', 'woocommerce' );

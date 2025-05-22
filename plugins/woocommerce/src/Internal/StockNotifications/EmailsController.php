@@ -6,9 +6,9 @@ namespace Automattic\WooCommerce\Internal\StockNotifications;
 
 use Automattic\WooCommerce\Internal\StockNotifications\Notification;
 use Automattic\WooCommerce\Internal\StockNotifications\Factory;
-use Automattic\WooCommerce\Internal\StockNotifications\Emails\StockNotificationEmail;
-use Automattic\WooCommerce\Internal\StockNotifications\Emails\StockNotificationConfirmEmail;
-use Automattic\WooCommerce\Internal\StockNotifications\Emails\StockNotificationVerifyEmail;
+use Automattic\WooCommerce\Internal\StockNotifications\Emails\CustomerStockNotificationEmail;
+use Automattic\WooCommerce\Internal\StockNotifications\Emails\CustomerStockNotificationConfirmEmail;
+use Automattic\WooCommerce\Internal\StockNotifications\Emails\CustomerStockNotificationVerifyEmail;
 
 /**
  * Emails manager.
@@ -21,9 +21,9 @@ class EmailsController {
 	 * @var array
 	 */
 	public static $email_ids = array(
-		'stock_notification_receive',
-		'stock_notification_confirm',
-		'stock_notification_verify',
+		'customer_stock_notification',
+		'customer_stock_notification_confirm',
+		'customer_stock_notification_verify',
 	);
 
 	/**
@@ -56,9 +56,9 @@ class EmailsController {
 	 * @return array
 	 */
 	public function email_classes( $emails ) {
-		$emails['WC_Email_Stock_Notification_Receive'] = new StockNotificationEmail();
-		$emails['WC_Email_Stock_Notification_Confirm'] = new StockNotificationConfirmEmail();
-		$emails['WC_Email_Stock_Notification_Verify']  = new StockNotificationVerifyEmail();
+		$emails['WC_Email_Customer_Stock_Notification']         = new CustomerStockNotificationEmail();
+		$emails['WC_Email_Customer_Stock_Notification_Confirm'] = new CustomerStockNotificationConfirmEmail();
+		$emails['WC_Email_Customer_Stock_Notification_Verify']  = new CustomerStockNotificationVerifyEmail();
 
 		return $emails;
 	}
