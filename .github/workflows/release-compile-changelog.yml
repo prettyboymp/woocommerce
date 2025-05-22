@@ -48,9 +48,10 @@ jobs:
             const version = process.env.VERSION;
             if (!/^\d+\.\d+(?:\.\d+)?$/.test(version)) {
               core.setFailed('Invalid version format. The version must be in the format X.Y or X.Y.Z');
-              core.info(`Version you entered: ${version}`);
               process.exit(1);
             }
+
+            console.log(`Version: ${version}`);
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -78,4 +79,15 @@ jobs:
         id: changelog
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpm utils code-freeze changelog -o ${{ github.repository_owner }} -v ${{ github.event.inputs.version || steps.extract-version.outputs.version }} -b ${{ github.ref_name }}
+        run: |
+          if [[ -z "${{ github.event.inputs.version }}" ]]; then
+            # The version is empty, so we need to extract it from the provided branch name
+            BRANCH_ARG="-b ${{ github.ref_name }}"
+            VERSION="${{ steps.extract-version.outputs.version }}"
+          else
+            # The version is provided, so we use it directly
+            BRANCH_ARG=""
+            VERSION="${{ github.event.inputs.version }}"
+          fi
+
+          pnpm utils code-freeze changelog -o ${{ github.repository_owner }} -v $VERSION $BRANCH_ARG
