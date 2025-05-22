@@ -2,14 +2,14 @@
 
 declare( strict_types = 1 );
 
-namespace Automattic\WooCommerce\Internal\StockNotifications;
+namespace Automattic\WooCommerce\Internal\StockNotifications\Emails;
 
 use Automattic\WooCommerce\Internal\StockNotifications\Notification;
 use Automattic\WooCommerce\Internal\StockNotifications\Factory;
 use Automattic\WooCommerce\Internal\StockNotifications\Emails\CustomerStockNotificationEmail;
 use Automattic\WooCommerce\Internal\StockNotifications\Emails\CustomerStockNotificationConfirmEmail;
 use Automattic\WooCommerce\Internal\StockNotifications\Emails\CustomerStockNotificationVerifyEmail;
-
+use Automattic\WooCommerce\Internal\StockNotifications\Emails\EmailTemplatesController;
 /**
  * Emails manager.
  */
@@ -47,6 +47,10 @@ class EmailsController {
 
 		// Restore customer's context while rendering the emails.
 		add_action( 'woocommerce_email_stock_notification_product_before_title', array( $this, 'maybe_restore_customer_tax_location_data' ), 9 );
+
+		// Register email templates.
+		$container = wc_get_container();
+		$container->get( EmailTemplatesController::class );
 	}
 
 	/**

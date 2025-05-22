@@ -11,8 +11,8 @@ use Automattic\WooCommerce\Internal\DependencyManagement\AbstractServiceProvider
 use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsDataStore;
 use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsMetaDataStore;
 use Automattic\WooCommerce\Internal\StockNotifications\Controller;
-use Automattic\WooCommerce\Internal\StockNotifications\EmailsController;
-use Automattic\WooCommerce\Internal\StockNotifications\TemplatesController;
+use Automattic\WooCommerce\Internal\StockNotifications\Emails\EmailsController;
+use Automattic\WooCommerce\Internal\StockNotifications\Emails\EmailTemplatesController;
 use Automattic\WooCommerce\Internal\Utilities\DatabaseUtil;
 
 /**
@@ -28,7 +28,7 @@ class StockNotificationsServiceProvider extends AbstractServiceProvider {
 	protected $provides = array(
 		Controller::class,
 		EmailsController::class,
-		TemplatesController::class,
+		EmailTemplatesController::class,
 		StockNotificationsDataStore::class,
 		StockNotificationsMetaDataStore::class,
 	);
@@ -40,6 +40,6 @@ class StockNotificationsServiceProvider extends AbstractServiceProvider {
 		$this->share( StockNotificationsDataStore::class )->addArguments( array( StockNotificationsMetaDataStore::class, StockNotificationsActivityLogsDataStore::class, DatabaseUtil::class ) );
 		$this->share( Controller::class );
 		$this->share( EmailsController::class );
-		$this->share( TemplatesController::class );
+		$this->share( EmailTemplatesController::class );
 	}
 }
