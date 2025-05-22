@@ -80,15 +80,15 @@ class EmailManager {
 	 * @hook woocommerce_defer_transactional_emails
 	 *
 	 * @param array $actions The list of actions.
-	 * @return void
+	 * @return array
 	 */
 	public function add_transactional_emails( $actions ) {
 		if ( ! is_array( $actions ) ) {
 			return $actions;
 		}
 
-		$actions[] = 'customer_stock_notification_confirm';
-		$actions[] = 'customer_stock_notification_verify';
+		$actions[] = 'woocommerce_customer_stock_notification_confirm';
+		$actions[] = 'woocommerce_customer_stock_notification_verify';
 
 		return $actions;
 	}
