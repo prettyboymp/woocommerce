@@ -370,16 +370,14 @@ class Notification extends \WC_Data {
 	}
 
 	/**
+	 * Retrieves the formatted attributes of the product based on the notification's posted attributes.
+	 *
 	 * Wrapper of the `wc_get_formatted_variation` function.
 	 *
-	 * This function retrieves the formatted variation attributes for the notification product in a flat format.
-	 * It is also used to display these attributes in the notification email using an HTML table.
-	 *
 	 * @param  bool   $flat Flatten the list.
-	 * @param  string $context Context.
 	 * @return string
 	 */
-	public function get_product_formatted_variation_list( bool $flat = false, string $context = 'view' ) {
+	public function get_product_formatted_variation_list( bool $flat = false ) {
 
 		$product = $this->get_product();
 		if ( ! $product || ! $product->is_type( array( 'variation' ) ) ) {
@@ -390,6 +388,10 @@ class Notification extends \WC_Data {
 		$attributes = $this->get_meta( 'posted_attributes' );
 		if ( ! $attributes ) {
 			$attributes = $product->get_attributes();
+		}
+
+		if ( empty( $attributes ) ) {
+			return '';
 		}
 
 		$attrs = array();
@@ -404,22 +406,6 @@ class Notification extends \WC_Data {
 		}
 
 		$formatted_variation_list = wc_get_formatted_variation( $attrs, $flat, true, true );
-
-		if ( 'email' === $context ) {
-
-			// Convert list to HTML table for better rendering.
-			$formatted_variation_list = strtr(
-				$formatted_variation_list,
-				array(
-					'<dl' => '<table',
-					'<dd' => '<tr><th',
-					'<dt' => '<tr><td',
-					'dl>' => 'table>',
-					'dd>' => 'th></tr>',
-					'dt>' => 'td></tr>',
-				)
-			);
-		}
 
 		return $formatted_variation_list;
 	}
