@@ -374,7 +374,7 @@ class Notification extends \WC_Data {
 	 *
 	 * Wrapper of the `wc_get_formatted_variation` function.
 	 *
-	 * @param  bool   $flat Flatten the list.
+	 * @param bool $flat Flatten the list.
 	 * @return string
 	 */
 	public function get_product_formatted_variation_list( bool $flat = false ) {
