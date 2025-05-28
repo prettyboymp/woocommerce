@@ -109,7 +109,7 @@ jobs:
                 issue_number: newPR.number,
                 body: "⚠️ Backport contains conflicts that must be resolved before merging!"
               });
-            } elseif (hasFuzz) {
+            } else if (hasFuzz) {
               await github.rest.issues.createComment({
                 owner,
                 repo,
