@@ -493,4 +493,18 @@ CREATE TABLE $meta_table_name (
 			$results
 		);
 	}
+
+	/**
+	 * Check if the product has active notifications.
+	 *
+	 * @param int $product_id The product ID.
+	 * @return bool True if the product has active notifications, false otherwise.
+	 */
+	public function product_has_active_notifications( int $product_id ): bool {
+		global $wpdb;
+
+		$table = $this->get_table_name();
+		$sql   = $wpdb->prepare( "SELECT 1 FROM $table WHERE product_id = %d AND status = %s LIMIT 1", absint( $product_id ), NotificationStatus::ACTIVE );
+		return (int) $wpdb->get_var( $sql ) > 0;
+	}
 }

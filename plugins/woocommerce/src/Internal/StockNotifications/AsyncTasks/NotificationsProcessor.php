@@ -11,6 +11,7 @@ use Automattic\WooCommerce\Internal\StockNotifications\Factory;
 use Automattic\WooCommerce\Enums\ProductStatus;
 use Automattic\WooCommerce\Enums\ProductType;
 use Automattic\WooCommerce\Enums\ProductStockStatus;
+use Automattic\WooCommerce\Internal\StockNotifications\Enums\NotificationCancellationSource;
 use Automattic\WooCommerce\Internal\StockNotifications\Notification;
 use WC_Product;
 use Exception;
@@ -57,13 +58,6 @@ class NotificationsProcessor {
 	protected const STATE_OPTION_PREFIX = 'wc_stock_notifications_cycle_state_';
 
 	/**
-	 * The cycle state manager.
-	 *
-	 * @var CycleStateManager
-	 */
-	private CycleStateManager $state;
-
-	/**
 	 * Initialize the controller.
 	 *
 	 * @internal
@@ -71,15 +65,7 @@ class NotificationsProcessor {
 	final public function init(): void {
 		add_action( 'woocommerce_stock_notifications_product_sync', array( $this, 'schedule' ) );
 		add_action( self::AS_JOB_SEND_STOCK_NOTIFICATIONS, array( $this, 'process_batch' ) );
-
-		$this->state = new CycleStateManager(); // @todo: DI.
 	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| Initial Schedule (via StockSyncController).
-	|--------------------------------------------------------------------------
-	*/
 
 	/**
 	 * Schedule a notification job for a specific product.
@@ -92,7 +78,7 @@ class NotificationsProcessor {
 		$args = array( 'product_id' => $product_id );
 
 		try {
-			// @todo: Or if running.
+
 			if ( WC()->queue()->get_next( self::AS_JOB_SEND_STOCK_NOTIFICATIONS, array( 'args' => $args ), self::AS_JOB_GROUP) ) {
 				return false;
 			}
@@ -148,12 +134,6 @@ class NotificationsProcessor {
 
 		return ! empty( $scheduled );
 	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| Batch processing.
-	|--------------------------------------------------------------------------
-	*/
 
 	/**
 	 * Get the batch size for processing notifications.
@@ -232,22 +212,65 @@ class NotificationsProcessor {
 	 * @return array
 	 * @throws \Exception If the cycle state is invalid.
 	 */
-	private function parse_state( int $product_id ): array {
-		$this->state->set_product_id( $product_id );
-		if ( ! $this->state->exists() ) {
-			return $this->state->initialize();
+	private function parse_cycle_state( int $product_id ): array {
+
+		$default_state = array(
+			'cycle_start_time' => time(),
+			'product_ids'      => array( $product_id ),
+			'total_count'      => 0,
+			'skipped_count'    => 0,
+			'sent_count'       => 0,
+			'failed_count'     => 0,
+			'duration'         => 0,
+		);
+
+		$option_name = self::STATE_OPTION_PREFIX . $product_id;
+		$cycle_state = get_option( $option_name, false );
+		if ( ! is_array( $cycle_state ) ) {
+			return $default_state;
 		}
 
-		if ( ! $this->state->validate() ) {
+		if ( array_diff_key( $default_state, $cycle_state ) || empty( $cycle_state['cycle_start_time'] ) ) {
 			throw new \Exception( 'Invalid cycle state.' );
 		}
+
+		$cycle_state = wp_parse_args( $cycle_state, $default_state );
 
 		// @todo
 		// if ( $product->is_type( ProductType::VARIABLE ) ) {
 		// 	$this->handle_variable_product( $product ); // @todo: Maybe incorporate this int the state initialization.
 		// }
 
-		return $this->state->get();
+		return $cycle_state;
+	}
+
+	/**
+	 * Complete the cycle.
+	 *
+	 * @param int   $product_id The product ID.
+	 * @param array $cycle_state The cycle state.
+	 * @return void
+	 */
+	private function complete_cycle( int $product_id, array $cycle_state ): void {
+
+		$cycle_state['duration'] = time() - $cycle_state['cycle_start_time'];
+		wc_get_logger()->info(
+			sprintf( 'Completed cycle for product %d. Sent: %d, Skipped: %d, Failed: %d, Duration: %d seconds. Total notifications processed: %d', $product_id, $cycle_state['sent_count'], $cycle_state['skipped_count'], $cycle_state['failed_count'], $cycle_state['duration'], $cycle_state['total_count'] ),
+			array( 'source' => 'wc-stock-notifications' )
+		);
+
+		delete_option( self::STATE_OPTION_PREFIX . $product_id );
+	}
+
+	/**
+	 * Save the cycle state.
+	 *
+	 * @param int   $product_id The product ID.
+	 * @param array $cycle_state The cycle state.
+	 * @return void
+	 */
+	private function save_cycle_state( int $product_id, array $cycle_state ): void {
+		update_option( self::STATE_OPTION_PREFIX . $product_id, $cycle_state, false );
 	}
 
 	/**
@@ -261,8 +284,8 @@ class NotificationsProcessor {
 		// Sanity checks.
 		try {
 			$product_id  = $this->parse_args( $args );
+			$cycle_state = $this->parse_cycle_state( $product_id );
 			$product     = $this->parse_product( $product_id );
-			$cycle_state = $this->parse_state( $product_id );
 		} catch ( \Throwable $e ) {
 			$product_id = $args['product_id'] ?? 'unknown';
 			wc_get_logger()->error(
@@ -274,12 +297,8 @@ class NotificationsProcessor {
 				)
 			);
 
-			// Clean up state if it was initialized.
-			if ( isset( $product ) && $product instanceof \WC_Product ) {
-				$this->state->set_product_id( $product->get_id() );
-				if ( $this->state->exists() ) {
-					$this->state->delete();
-				}
+			if ( isset( $cycle_state ) && is_array( $cycle_state ) ) {
+				$this->complete_cycle( $product_id, $cycle_state );
 			}
 
 			return;
@@ -299,7 +318,7 @@ class NotificationsProcessor {
 		);
 
 		if ( empty( $notifications ) ) {
-			$this->state->complete();
+			$this->complete_cycle( $product_id, $cycle_state );
 			return;
 		}
 
@@ -320,6 +339,14 @@ class NotificationsProcessor {
 			$notification->set_date_last_attempt( time() );
 			$cycle_state['total_count']++;
 
+				// ==== TEST ====
+				error_log( print_r( $cycle_state, true ) );
+				if ( $cycle_state['total_count'] > 10 ) {
+					$this->complete_cycle( $product_id, $cycle_state );
+					return;
+				}
+				// ==== TEST ====
+
 			if ( $this->should_skip_notification( $notification ) ) {
 				$cycle_state['skipped_count']++;
 				$notification->save();
@@ -328,22 +355,15 @@ class NotificationsProcessor {
 
 			$is_sent = true;
 			try {
-				$res = $email_manager->send_stock_notification_email( $notification );
-				if ( ! $res ) {
-					$is_sent = false;
-				}
+				$email_manager->send_stock_notification_email( $notification );
 			} catch ( \Throwable $e ) {
 				$is_sent = false;
 			}
 
 			if ( ! $is_sent ) {
-				wc_get_logger()->error(
-					sprintf( 'Failed to send stock notification ID: %d', $notification->get_id() ),
-					array( 'source' => 'wc-stock-notifications' )
-				);
 				$cycle_state['failed_count']++;
 				$notification->set_status( NotificationStatus::CANCELLED );
-				$notification->set_cancellation_source( 'system' ); // @todo: make this reusable.
+				$notification->set_cancellation_source( NotificationCancellationSource::SYSTEM );
 			} else {
 				$notification->set_date_notified( time() );
 				$notification->set_status( NotificationStatus::SENT );
@@ -352,166 +372,16 @@ class NotificationsProcessor {
 
 			// Always save the notification to reflect last attempt time.
 			$notification->save();
-
-			// ==== TEST ====
-			error_log( print_r( $cycle_state, true ) );
-			if ( $cycle_state['total_count'] > 10 ) {
-				$this->state->complete();
-				return;
-			}
-			// ==== TEST ====
 		}
 
 		if ( count( $notifications ) === $this->get_batch_size() ) {
-			$this->state->save( $cycle_state );
+			$this->save_cycle_state( $product_id, $cycle_state );
 			$this->schedule_next_batch( $product_id );
 			return;
 		}
 
-		$this->state->complete();
+		$this->complete_cycle( $product_id, $cycle_state );
 	}
-
-	// /**
-	//  * Process a batch of notifications.
-	//  *
-	//  * @param array $args The arguments for the batch.
-	//  * @return void
-	//  */
-	// public function process_batch( $args ) {
-
-	// 	if ( empty( $args['product_id'] ) || ! is_numeric( $args['product_id'] ) ) {
-	// 		wc_get_logger()->error(
-	// 			'NotificationsAsyncProcessor: Invalid product ID provided',
-	// 			array( 'source' => 'wc-stock-notifications' )
-	// 		);
-	// 		return;
-	// 	}
-
-	// 	$product_id = (int) $args['product_id'];
-	// 	$product    = wc_get_product( $product_id );
-	// 	if ( ! $product ) {
-	// 		wc_get_logger()->error(
-	// 			sprintf( 'NotificationsAsyncProcessor: Product %d not found', $product_id ),
-	// 			array( 'source' => 'wc-stock-notifications' )
-	// 		);
-	// 		return;
-	// 	}
-
-	// 	if ( ! $this->is_product_valid( $product ) ) {
-	// 		wc_get_logger()->debug(
-	// 			sprintf( 'NotificationsAsyncProcessor: Product %d is not valid for notifications', $product_id ),
-	// 			array( 'source' => 'wc-stock-notifications' )
-	// 		);
-	// 		return;
-	// 	}
-
-	// 	if ( $product->is_type( ProductType::VARIABLE ) ) {
-	// 		$this->handle_variable_product( $product ); // @todo: Maybe incorporate this int the state initialization.
-	// 	}
-
-	// 	// Get or initialize cycle state.
-	// 	$this->state->set_product_id( $product_id );
-	// 	if ( ! $this->state->exists() ) {
-	// 		$cycle_state = $this->state->initialize();
-	// 	} else {
-	// 		$cycle_state = $this->state->get();
-	// 	}
-
-	// 	if ( ! $this->state->validate() ) {
-	// 		wc_get_logger()->error(
-	// 			sprintf( 'NotificationsAsyncProcessor: Invalid cycle state for product %d', $product_id ),
-	// 			array( 'source' => 'wc-stock-notifications' )
-	// 		);
-	// 		$this->state->delete();
-	// 		return;
-	// 	}
-
-	// 	$notifications = NotificationQuery::get_notifications(
-	// 		array(
-	// 			'product_id'         => $product_id,
-	// 			'status'             => NotificationStatus::ACTIVE,
-	// 			'last_attempt_limit' => (int) $cycle_state['cycle_start_time'],
-	// 			'limit'              => $this->get_batch_size(),
-	// 			'return'             => 'objects',
-	// 		)
-	// 	);
-
-	// 	if ( empty( $notifications ) ) {
-	// 		$this->state->complete();
-	// 		return;
-	// 	}
-
-	// 	$container     = wc_get_container();
-	// 	$email_manager = $container->get( EmailManager::class ); // @todo: DI.
-
-	// 	foreach ( $notifications as $notification ) {
-	// 		$notification->set_date_last_attempt( time() );
-	// 		$cycle_state['total_count']++;
-
-	// 		if ( $this->is_spam_throttled( $notification ) ) {
-	// 			$cycle_state['spare_count']++;
-	// 			$notification->save();
-	// 			continue;
-	// 		}
-
-	// 		/**
-	// 		 * Filter: woocommerce_stock_notification_pre_send
-	// 		 *
-	// 		 * @since 0.0.0
-	// 		 *
-	// 		 * Prevent or manage sending a specific notification.
-	// 		 *
-	// 		 * @param bool|null $pre_send       Whether to skip sending (null = don't skip).
-	// 		 * @param int       $notification_id The notification ID.
-	// 		 * @return bool|null
-	// 		 */
-	// 		$pre_send = apply_filters( 'woocommerce_stock_notification_pre_send', null, $notification->get_id() );
-	// 		if ( ! is_null( $pre_send ) ) {
-	// 			$cycle_state['skipped_count']++;
-	// 			$notification->save();
-	// 			continue;
-	// 		}
-
-	// 		$is_sent = true;
-	// 		try {
-	// 			$res = $email_manager->send_stock_notification_email( $notification );
-	// 			if ( ! $res ) {
-	// 				$is_sent = false;
-	// 			}
-	// 		} catch ( Exception $e ) {
-	// 			$is_sent = false;
-	// 		}
-
-	// 		if ( ! $is_sent ) {
-	// 			wc_get_logger()->error(
-	// 				sprintf( 'NotificationsAsyncProcessor: Failed to send stock notification for product %d: %s', $product_id, $e->getMessage() ),
-	// 				array( 'source' => 'wc-stock-notifications' )
-	// 			);
-	// 		} else {
-	// 			$notification->set_date_notified( time() );
-	// 			$notification->set_status( NotificationStatus::SENT );
-	// 			$cycle_state['sent_count']++;
-	// 		}
-
-	// 		// Always save the notification to reflect last attempt time.
-	// 		$notification->save();
-
-	// 		// ==== TEST ====
-	// 		error_log( print_r( $cycle_state, true ) );
-	// 		if ( $cycle_state['total_count'] > 10 ) {
-	// 			$this->state->complete();
-	// 			return;
-	// 		}
-	// 		// ==== TEST ====
-	// 	}
-
-	// 	if ( count( $notifications ) === $this->get_batch_size() ) {
-	// 		$this->state->save( $cycle_state );
-	// 		$this->schedule_next_batch( $product_id );
-	// 	} else {
-	// 		$this->state->complete();
-	// 	}
-	// }
 
 	/**
 	 * Check if a notification should be skipped.
@@ -522,8 +392,8 @@ class NotificationsProcessor {
 	private function should_skip_notification( Notification $notification ): bool {
 
 		$is_throttled         = $this->is_notification_throttled( $notification );
-		$is_product_published = $notification->get_product()->get_status() === ProductStatus::PUBLISHED;
-		$should_skip          = $is_throttled || $is_product_published;
+		$is_product_published = $notification->get_product()->get_status() === ProductStatus::PUBLISH;
+		$should_skip          = $is_throttled || ! $is_product_published;
 
 		// Bypass for privileged users.
 		if ( $should_skip ) {
@@ -537,7 +407,7 @@ class NotificationsProcessor {
 		}
 
 		/**
-		 * Filter: woocommerce_stock_notification_pre_send
+		 * Filter: woocommerce_stock_notification_should_skip_sending
 		 *
 		 * @since 0.0.0
 		 *
@@ -554,10 +424,9 @@ class NotificationsProcessor {
 	 * Check if notification is throttled.
 	 *
 	 * @param Notification $notification The notification object.
-	 * @return void
-	 * @throws \Exception If the notification is throttled.
+	 * @return bool
 	 */
-	private function is_notification_throttled( $notification ): void {
+	private function is_notification_throttled( Notification $notification ): bool {
 
 		/**
 		 * Filter: woocommerce_stock_notifications_throttle_threshold
@@ -567,17 +436,18 @@ class NotificationsProcessor {
 		 * @param int $threshold Throttle time in seconds should pass from the last notification delivery time.
 		 */
 		$threshold = (int) apply_filters( 'woocommerce_stock_notifications_throttle_threshold', self::SPAM_THRESHOLD );
-
 		if ( $threshold <= 0 ) {
-			return;
+			return false;
 		}
 
 		$last_notified = $notification->get_date_notified();
-		$is_throttled = $last_notified instanceof \WC_DateTime && $last_notified->getTimestamp() > ( time() - $threshold );
+		$is_throttled  = $last_notified instanceof \WC_DateTime && $last_notified->getTimestamp() > ( time() - $threshold );
 
 		if ( $is_throttled ) {
-			throw new \Exception( sprintf( 'Notification %d is throttled.', $notification->get_id() ) );
+			return true;
 		}
+
+		return false;
 	}
 
 	/*

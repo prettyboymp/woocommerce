@@ -4,6 +4,7 @@ declare( strict_types = 1 );
 
 namespace Automattic\WooCommerce\Internal\StockNotifications;
 
+use Automattic\WooCommerce\Enums\ProductType;
 use Exception;
 use WC_Product;
 
@@ -48,7 +49,7 @@ class StockSyncController {
 		}
 
 		try {
-			if ( ! NotificationQuery::has_active_notifications( $product_id ) ) {
+			if ( ! NotificationQuery::product_has_active_notifications( $product_id ) ) {
 				return;
 			}
 
@@ -126,6 +127,6 @@ class StockSyncController {
 	 * @return array<string> Array of supported product type slugs.
 	 */
 	protected function get_supported_product_types(): array {
-		return array( 'simple', 'variable', 'variation' );
+		return array( ProductType::SIMPLE, ProductType::VARIABLE, ProductType::VARIATION );
 	}
 }
