@@ -9,6 +9,7 @@ namespace Automattic\WooCommerce\Internal\DataStores\StockNotifications;
 
 use Automattic\WooCommerce\Internal\StockNotifications\Notification;
 use Automattic\WooCommerce\Internal\Utilities\DatabaseUtil;
+use Automattic\WooCommerce\Internal\StockNotifications\Enums\NotificationStatus;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -411,14 +412,15 @@ CREATE TABLE $meta_table_name (
 		$args = wp_parse_args(
 			$args,
 			array(
-				'status'     => '',
-				'product_id' => array(),
-				'user_id'    => 0,
-				'user_email' => '',
-				'is_queued'  => '',
-				'limit'      => -1,
-				'offset'     => 0,
-				'return'     => 'objects',
+				'status'             => '',
+				'product_id'         => array(),
+				'user_id'            => 0,
+				'user_email'         => '',
+				'is_queued'          => '',
+				'limit'              => -1,
+				'offset'             => 0,
+				'last_attempt_limit' => 0,
+				'return'             => 'objects',
 			)
 		);
 
@@ -457,6 +459,11 @@ CREATE TABLE $meta_table_name (
 			$where_values[] = true === $args['is_queued'] ? 1 : 0;
 		}
 
+		if ( $args['last_attempt_limit'] > 0 ) {
+			$where[]        = '(date_last_attempt_gmt IS NULL OR date_last_attempt_gmt < %s)';
+			$where_values[] = gmdate( 'Y-m-d H:i:s', $args['last_attempt_limit'] );
+		}
+
 		// Assemble the query.
 		$where  = implode( ' AND ', $where );
 		$where  = $where ? ' WHERE ' . $where : '';
@@ -473,6 +480,7 @@ CREATE TABLE $meta_table_name (
 		}
 
 		$results = $wpdb->get_results( $prepared_sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		error_log( print_r( $wpdb->last_query, true ) );
 		if ( empty( $results ) ) {
 			return array();
 		}
@@ -483,5 +491,21 @@ CREATE TABLE $meta_table_name (
 		}
 
 		return $notifications;
+	}
+
+	/**
+	 * Check if a product has active notifications.
+	 *
+	 * @param int $product_id The product ID.
+	 * @return bool True if the product has active notifications, false otherwise.
+	 */
+	public function product_has_active_notifications( int $product_id ): bool {
+		global $wpdb;
+
+		// @todo: manage variations here.
+
+		$table = $this->get_table_name();
+		$sql   = $wpdb->prepare( "SELECT 1 FROM $table WHERE product_id = %d AND status = %s", $product_id, NotificationStatus::ACTIVE );
+		return $wpdb->get_var( $sql ) > 0;
 	}
 }

@@ -6,6 +6,7 @@ namespace Automattic\WooCommerce\Internal\StockNotifications;
 
 use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificationsDataStore;
 use Automattic\WooCommerce\Internal\StockNotifications\Emails\EmailManager;
+use Automattic\WooCommerce\Internal\StockNotifications\AsyncTasks\NotificationsProcessor;
 
 /**
  * The controller for the stock notifications.
@@ -32,6 +33,8 @@ class Controller {
 
 		$container = wc_get_container();
 		$container->get( EmailManager::class );
+		$container->get( StockSyncController::class );
+		$container->get( NotificationsProcessor::class );
 	}
 
 	/**

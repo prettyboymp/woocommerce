@@ -13,7 +13,9 @@ use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificat
 use Automattic\WooCommerce\Internal\StockNotifications\Controller;
 use Automattic\WooCommerce\Internal\StockNotifications\Emails\EmailManager;
 use Automattic\WooCommerce\Internal\StockNotifications\Emails\EmailTemplatesController;
+use Automattic\WooCommerce\Internal\StockNotifications\StockSyncController;
 use Automattic\WooCommerce\Internal\Utilities\DatabaseUtil;
+use Automattic\WooCommerce\Internal\StockNotifications\NotificationsAsyncProcessor;
 
 /**
  * Service provider for Back in Stock Notification classes.
@@ -31,6 +33,8 @@ class StockNotificationsServiceProvider extends AbstractServiceProvider {
 		EmailTemplatesController::class,
 		StockNotificationsDataStore::class,
 		StockNotificationsMetaDataStore::class,
+		StockSyncController::class,
+		NotificationsAsyncProcessor::class,
 	);
 
 	/**
@@ -41,5 +45,7 @@ class StockNotificationsServiceProvider extends AbstractServiceProvider {
 		$this->share( Controller::class );
 		$this->share( EmailManager::class );
 		$this->share( EmailTemplatesController::class );
+		$this->share( StockSyncController::class );
+		$this->share( NotificationsAsyncProcessor::class );
 	}
 }
