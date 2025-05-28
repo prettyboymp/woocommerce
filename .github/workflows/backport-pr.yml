@@ -49,7 +49,16 @@ jobs:
               return;
             }
 
-            const tempBranch = `backport-${prNumber}-to-${targetBranch}`;
+            // Check if merge_commit_sha exists
+            if (!pr.merge_commit_sha) {
+              core.setFailed(`PR #${prNumber} has no merge commit (may be squashed or rebased)`);
+              return;
+            }
+
+            // Fetch the original PR's branch to get the commit
+            execSync(`git fetch origin ${pr.head.ref}:${pr.head.ref}`);
+
+            const tempBranch = `backport-${prNumber}-to-${targetBranch.replace(/\//g, '-')}`;
 
             // Git operations
             execSync(`git fetch origin ${targetBranch}`);
