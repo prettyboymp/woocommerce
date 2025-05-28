@@ -29,7 +29,6 @@ jobs:
       with:
         script: |
           const { execSync } = require('child_process');
-          const core = require('@actions/core');
           
           const { owner, repo } = context.repo;
           const prNumber = context.payload.inputs.pr_number;
