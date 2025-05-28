@@ -93,11 +93,11 @@ CREATE TABLE $table_name (
 	date_last_attempt_gmt datetime NULL,
 	date_notified_gmt datetime NULL,
 	date_cancelled_gmt datetime NULL,
-	cancellation_source varchar(255) NULL,
+	cancellation_source varchar(30) NULL,
 	PRIMARY KEY  (id),
 	KEY product_status_attempt (product_id, status, date_last_attempt_gmt, id),
 	KEY user_lookup (user_id, product_id, status),
-	KEY email_lookup (user_email(100), product_id, status)
+	KEY email_lookup (user_email, product_id, status)
 ) $collate;
 CREATE TABLE $meta_table_name (
 	id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -265,9 +265,9 @@ CREATE TABLE $meta_table_name (
 		$changes = $notification->get_changes();
 		$result  = 0;
 
-		if ( array_intersect( array( 'product_id', 'user_id', 'user_email', 'status', 'is_queued', 'date_modified', 'date_subscribed', 'date_notified' ), array_keys( $changes ) ) ) {
+		if ( array_intersect( array( 'product_id', 'user_id', 'user_email', 'status', 'date_modified', 'date_confirmed', 'date_last_attempt', 'date_notified', 'date_cancelled', 'cancellation_source' ), array_keys( $changes ) ) ) {
 
-			if ( ! in_array( 'date_modified', array_keys( $changes ), true ) ) {
+			if ( ! array_key_exists( 'date_modified', $changes ) ) {
 				$notification->set_date_modified( time() );
 			}
 
@@ -319,9 +319,11 @@ CREATE TABLE $meta_table_name (
 	public function delete( &$notification, $args = array() ) {
 		global $wpdb;
 
-		$wpdb->delete( $this->get_table_name(), array( 'id' => $notification->get_id() ), array( '%d' ) );
+		$deleted = $wpdb->delete( $this->get_table_name(), array( 'id' => $notification->get_id() ), array( '%d' ) );
 
-		$this->data_store_meta->delete_by_notification_id( $notification->get_id() );
+		if ( $deleted > 0 ) {
+			$this->data_store_meta->delete_by_notification_id( $notification->get_id() );
+		}
 	}
 
 	/**
@@ -393,8 +395,8 @@ CREATE TABLE $meta_table_name (
 
 		if ( $should_save ) {
 			$notification->set_date_modified( $current_time );
-			$notification->save();
-			return true;
+			$saved = $notification->save();
+			return ! is_wp_error( $saved );
 		}
 
 		return false;
@@ -404,7 +406,7 @@ CREATE TABLE $meta_table_name (
 	 * Query the stock notifications.
 	 *
 	 * @param array $args The arguments.
-	 * @return array|int An array of notifications or the number of notifications.
+	 * @return array<int>|array<Notification>|int An array of notifications or the number of notifications.
 	 */
 	public function query( array $args ) {
 		global $wpdb;
@@ -412,22 +414,22 @@ CREATE TABLE $meta_table_name (
 		$args = wp_parse_args(
 			$args,
 			array(
-				'status'             => '',
-				'product_id'         => array(),
-				'user_id'            => 0,
-				'user_email'         => '',
-				'is_queued'          => '',
-				'limit'              => -1,
-				'offset'             => 0,
-				'last_attempt_limit' => 0,
-				'return'             => 'objects',
+				'status'     => '',
+				'product_id' => array(),
+				'user_id'    => 0,
+				'user_email' => '',
+				'limit'      => -1,
+				'offset'     => 0,
+				'return'     => 'ids', // i.e. 'count', 'ids', 'objects'.
 			)
 		);
 
 		$table  = $this->get_table_name();
 		$select = 'id';
 		if ( 'count' === $args['return'] ) {
-			$select = 'COUNT(*)';
+			$select = 'COUNT(id)';
+		} elseif ( 'objects' === $args['return'] ) {
+			$select = '*';
 		}
 
 		// WHERE clauses.
@@ -439,7 +441,7 @@ CREATE TABLE $meta_table_name (
 		}
 
 		if ( ! empty( $args['product_id'] ) ) {
-			$product_ids  = array_map( 'absint', is_array( $args['product_id'] ) ? $args['product_id'] : array( $args['product_id'] ) );
+			$product_ids  = array_map( 'absint', (array) $args['product_id'] );
 			$where[]      = 'product_id IN (' . implode( ',', array_fill( 0, count( $product_ids ), '%d' ) ) . ')';
 			$where_values = array_merge( $where_values, $product_ids );
 		}
@@ -452,16 +454,6 @@ CREATE TABLE $meta_table_name (
 		if ( $args['user_email'] ) {
 			$where[]        = 'user_email = %s';
 			$where_values[] = esc_sql( $args['user_email'] );
-		}
-
-		if ( '' !== $args['is_queued'] ) {
-			$where[]        = 'is_queued = %d';
-			$where_values[] = true === $args['is_queued'] ? 1 : 0;
-		}
-
-		if ( $args['last_attempt_limit'] > 0 ) {
-			$where[]        = '(date_last_attempt_gmt IS NULL OR date_last_attempt_gmt < %s)';
-			$where_values[] = gmdate( 'Y-m-d H:i:s', $args['last_attempt_limit'] );
 		}
 
 		// Assemble the query.
@@ -480,32 +472,25 @@ CREATE TABLE $meta_table_name (
 		}
 
 		$results = $wpdb->get_results( $prepared_sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		error_log( print_r( $wpdb->last_query, true ) );
-		if ( empty( $results ) ) {
+		if ( empty( $results ) || ! is_array( $results ) ) {
 			return array();
 		}
 
-		$notifications = array();
-		foreach ( $results as $result ) {
-			$notifications[] = new Notification( absint( $result['id'] ) );
+		if ( 'objects' === $args['return'] ) {
+
+			return array_map(
+				function ( $result ) {
+					return new Notification( $result );
+				},
+				$results
+			);
 		}
 
-		return $notifications;
-	}
-
-	/**
-	 * Check if a product has active notifications.
-	 *
-	 * @param int $product_id The product ID.
-	 * @return bool True if the product has active notifications, false otherwise.
-	 */
-	public function product_has_active_notifications( int $product_id ): bool {
-		global $wpdb;
-
-		// @todo: manage variations here.
-
-		$table = $this->get_table_name();
-		$sql   = $wpdb->prepare( "SELECT 1 FROM $table WHERE product_id = %d AND status = %s", $product_id, NotificationStatus::ACTIVE );
-		return $wpdb->get_var( $sql ) > 0;
+		return array_map(
+			function ( $result ) {
+				return absint( $result['id'] );
+			},
+			$results
+		);
 	}
 }
