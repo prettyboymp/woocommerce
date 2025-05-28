@@ -1,0 +1,141 @@
+name: Backport PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull request number to backport'
+        required: true
+      target_branch:
+        description: 'Branch to backport into'
+        required: true
+
+jobs:
+  backport:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js (for octokit script)
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Install Octokit
+      run: npm install @octokit/core
+
+    - name: Run backport logic
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPO: ${{ github.repository }}
+        PR_NUMBER: ${{ inputs.pr_number }}
+        TARGET_BRANCH: ${{ inputs.target_branch }}
+      run: |
+        node <<'EOF'
+        const { Octokit } = require("@octokit/core");
+        const { execSync } = require("child_process");
+
+        const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+        const [owner, repo] = process.env.REPO.split("/");
+        const prNumber = process.env.PR_NUMBER;
+        const targetBranch = process.env.TARGET_BRANCH;
+
+        async function main() {
+          const pr = await octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}', {
+            owner, repo, pull_number: prNumber,
+          });
+
+          if (pr.data.base.ref === targetBranch) {
+            console.log("PR already targets branch:", targetBranch);
+            return;
+          }
+
+          const headBranch = pr.data.head.ref;
+          const tempBranch = `backport-${prNumber}-to-${targetBranch}`;
+
+          // Fetch and create branch
+          execSync(`git fetch origin ${targetBranch}`);
+          execSync(`git checkout -b ${tempBranch} origin/${targetBranch}`);
+
+          try {
+            execSync(`git cherry-pick -x ${pr.data.merge_commit_sha}`, { stdio: 'inherit' });
+          } catch (err) {
+            const conflictFile = `conflicts-${tempBranch}.txt`;
+            execSync(`git status > ${conflictFile}`);
+            await octokit.request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
+              owner, repo,
+              issue_number: prNumber,
+              body: `⚠️ Backport to \`${targetBranch}\` has conflicts. See branch \`${tempBranch}\` for details.`,
+            });
+            execSync(`git cherry-pick --abort`);
+            return;
+          }
+
+          // Check for fuzziness
+          const cherryPickOutput = execSync(`git log -1`).toString();
+          const hasFuzz = cherryPickOutput.includes('fuzzy');
+
+          execSync(`git push origin ${tempBranch}`);
+
+          const newPR = await octokit.request('POST /repos/{owner}/{repo}/pulls', {
+            owner, repo,
+            head: tempBranch,
+            base: targetBranch,
+            title: `[Backport ${targetBranch}] ${pr.data.title}`,
+            body: `This PR backports #${prNumber} to \`${targetBranch}\`.\n\n---\n\n${pr.data.body}`,
+          });
+
+          const newPrNumber = newPR.data.number;
+
+          // Get original PR creator or merger
+          let assignee = pr.data.user.login;
+          if (!pr.data.user.permissions?.push && pr.data.merged_by) {
+            assignee = pr.data.merged_by.login;
+          }
+
+          await octokit.request('POST /repos/{owner}/{repo}/issues/{issue_number}/assignees', {
+            owner, repo,
+            issue_number: newPrNumber,
+            assignees: [assignee],
+          });
+
+          await octokit.request('POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers', {
+            owner, repo,
+            pull_number: newPrNumber,
+            reviewers: [assignee],
+          });
+
+          if (hasFuzz) {
+            await octokit.request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
+              owner, repo,
+              issue_number: newPrNumber,
+              body: `⚠️ This backport applied with *fuzzy* matches. Please double-check the changes.`,
+            });
+          } else {
+            // Try to auto-merge
+            await octokit.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge', {
+              owner, repo,
+              pull_number: newPrNumber,
+              merge_method: "squash",
+            });
+          }
+
+          // Comment on original PR
+          await octokit.request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
+            owner, repo,
+            issue_number: prNumber,
+            body: `✅ Backported to \`${targetBranch}\` in #${newPrNumber}.`,
+          });
+        }
+
+        main().catch(err => {
+          console.error(err);
+          process.exit(1);
+        });
+        EOF
