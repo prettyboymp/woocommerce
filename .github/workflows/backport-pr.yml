@@ -34,7 +34,7 @@ jobs:
           const prNumber = context.payload.inputs.pr_number;
           const targetBranch = context.payload.inputs.target_branch;
 
-          console.log("Starting backport of PR#($prNumber) to branch ($targetBranch)")
+          console.log("Starting backport of PR#{$prNumber} to branch {$targetBranch}")
 
           async function main() {
             // Get original PR details
@@ -59,8 +59,9 @@ jobs:
             try {
               execSync(`git cherry-pick -x ${pr.merge_commit_sha}`, { stdio: 'inherit' });
             } catch (err) {
-
-              hasConflicts = true;
+              // Log detailed error diagnostics
+              core.error(`Cherry-pick failed for commit ${pr.data.merge_commit_sha}:`);
+              core.error(err.stderr || err.message);
 
               // Stage all files with conflicts (unmerged)
               const statusOutput = execSync('git status --porcelain').toString();
@@ -71,9 +72,11 @@ jobs:
                 .filter(f => f.length > 0);
 
               if (conflictedFiles.length === 0) {
-                core.setFailed("Cherry-pick failed, but no conflicted files found. Error: " + err);
+                core.setFailed("Cherry-pick failed, but no conflicted files found. " + err);
                 return;
               }
+
+              hasConflicts = true;
 
               // Stage the conflicted files as-is (with conflict markers)
               execSync(`git add ${conflictedFiles.map(f => `"${f}"`).join(' ')}`);
