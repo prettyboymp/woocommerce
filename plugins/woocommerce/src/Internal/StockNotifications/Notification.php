@@ -29,7 +29,7 @@ class Notification extends \WC_Data {
 	 *
 	 * @var \WC_Product
 	 */
-	private $product;
+	public $product;
 
 	/**
 	 * Default data.
@@ -370,5 +370,79 @@ class Notification extends \WC_Data {
 		}
 
 		return $this->get_id();
+	}
+
+	/**
+	 * Retrieves the formatted attributes of the product based on the notification's posted attributes.
+	 *
+	 * Wrapper of the `wc_get_formatted_variation` function.
+	 *
+	 * @param bool $flat Flatten the list.
+	 * @return string
+	 */
+	public function get_product_formatted_variation_list( bool $flat = false ) {
+
+		$product = $this->get_product();
+		if ( ! $product || ! $product->is_type( array( 'variation' ) ) ) {
+			return '';
+		}
+
+		// Replace list with custom data.
+		$attributes = $this->get_meta( 'posted_attributes' );
+		if ( ! $attributes ) {
+			$attributes = $product->get_attributes();
+		}
+
+		if ( empty( $attributes ) ) {
+			return '';
+		}
+
+		$attrs = array();
+		foreach ( $attributes as $key => $value ) {
+
+			if ( 0 === strpos( $key, 'attribute_pa_' ) ) {
+				$attrs[ str_replace( 'attribute_', '', $key ) ] = $value;
+			} else {
+				// By pass converting global product attributes.
+				$attrs[ wc_attribute_label( str_replace( 'attribute_', '', $key ), $product ) ] = $value;
+			}
+		}
+
+		$formatted_variation_list = wc_get_formatted_variation( $attrs, $flat, true, true );
+
+		return $formatted_variation_list;
+	}
+
+	/**
+	 * Get product link.
+	 *
+	 * @return string
+	 */
+	public function get_product_permalink() {
+
+		$product = $this->get_product();
+		if ( ! $product ) {
+			return '';
+		}
+
+		if ( $product->is_type( 'variation' ) && ! empty( $this->get_meta( 'posted_attributes' ) ) ) {
+			return $product->get_permalink( array( 'item_meta_array' => $this->get_meta( 'posted_attributes' ) ) );
+		} else {
+			return $product->get_permalink();
+		}
+	}
+
+	/**
+	 * Get product name.
+	 *
+	 * @return string
+	 */
+	public function get_product_name() {
+		$product = $this->get_product();
+		if ( ! $product ) {
+			return '';
+		}
+
+		return $product->get_parent_id() ? $product->get_name() : $product->get_title();
 	}
 }
