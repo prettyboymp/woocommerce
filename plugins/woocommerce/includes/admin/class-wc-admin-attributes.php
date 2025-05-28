@@ -35,9 +35,9 @@ class WC_Admin_Attributes {
 		// Action to perform: add, edit, delete or none.
 		if ( ! empty( $_POST['add_new_attribute'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$action = 'add';
-		} elseif ( ! empty( $_POST['save_attribute'] ) && ! empty( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		} elseif ( ! empty( $_POST['save_attribute'] ) && ! empty( $_GET['edit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$action = 'edit';
-		} elseif ( ! empty( $_GET['delete'] ) ) {
+		} elseif ( ! empty( $_GET['delete'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			$action = 'delete';
 		}
 

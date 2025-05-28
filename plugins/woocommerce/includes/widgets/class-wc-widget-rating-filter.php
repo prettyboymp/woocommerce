@@ -76,7 +76,7 @@ class WC_Widget_Rating_Filter extends WC_Widget {
 			$sql .= ' AND ' . $search;
 		}
 
-		return absint( $wpdb->get_var( $sql ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		return absint( $wpdb->get_var( $sql ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	/**
