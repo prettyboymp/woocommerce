@@ -1024,7 +1024,7 @@ class WC_Product extends WC_Abstract_Legacy_Product {
 	public function set_stock_status( $status = ProductStockStatus::IN_STOCK ) {
 		$valid_statuses = wc_get_product_stock_status_options();
 
-		// Check if status is a scalar or a stringable object
+		// Check if status is a scalar or a stringable object.
 		if ( is_scalar( $status ) || ( is_object( $status ) && method_exists( $status, '__toString' ) ) ) {
 			$status = (string) $status;
 
@@ -1034,21 +1034,24 @@ class WC_Product extends WC_Abstract_Legacy_Product {
 			}
 		}
 
-		// Log warning about invalid input
+		// Log warning about invalid input.
 		if ( function_exists( 'wc_get_logger' ) ) {
-			$logger = wc_get_logger();
-			$context = [ 'source' => 'wc-product' ];
-			$logger->warning(
-				sprintf(
-					'Invalid stock status received in set_stock_status(): %s. Falling back to default (%s).',
-					is_scalar( $status ) || is_object( $status ) ? var_export( $status, true ) : gettype( $status ),
-					ProductStockStatus::IN_STOCK
-				),
-				$context
-			);
+			$logger  = wc_get_logger();
+			$context = array( 'source' => 'wc-product' );
+
+			// Use only when WP_DEBUG is enabled.
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			    $logger->warning(
+			        sprintf(
+						'Invalid stock status received: %s.',
+						is_scalar( $status ) || is_object( $status ) ? maybe_serialize( $status ) : gettype( $status )
+					),
+			        $context
+			    );
+			}
 		}
 
-		// Fallback to default
+		// Fallback to default.
 		$this->set_prop( 'stock_status', ProductStockStatus::IN_STOCK );
 	}
 
