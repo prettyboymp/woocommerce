@@ -34,7 +34,7 @@ jobs:
           const prNumber = context.payload.inputs.pr_number;
           const targetBranch = context.payload.inputs.target_branch;
 
-          console.log("Starting backport of PR#{$prNumber} to branch {$targetBranch}")
+          core.info(`Starting backport of PR#${prNumber} to branch ${targetBranch}`);
 
           async function main() {
             // Get original PR details
@@ -57,6 +57,7 @@ jobs:
 
             let hasConflicts = false;
             try {
+              core.info(`cherry-picking ${pr.merge_commit_sha}`);
               execSync(`git cherry-pick -x ${pr.merge_commit_sha}`, { stdio: 'inherit' });
             } catch (err) {
               // Log detailed error diagnostics
@@ -81,12 +82,14 @@ jobs:
               // Stage the conflicted files as-is (with conflict markers)
               execSync(`git add ${conflictedFiles.map(f => `"${f}"`).join(' ')}`);
 
+              core.info('Committing unresolved conflicts.');
               // Commit the unresolved conflicts
               execSync(`git commit -m "Cherry-pick ${pr.merge_commit_sha} with unresolved conflicts from #${prNumber}"`);
             }
 
             // Check for fuzzy matches
             const hasFuzz = ! hasConflicts && execSync(`git log -1`).toString().includes('fuzzy');
+            core.info(`Pushing branch ${tempBranch} to origin.`);
             execSync(`git push origin ${tempBranch}`);
 
             // Create new PR
@@ -99,6 +102,8 @@ jobs:
               body: `Backport of #${prNumber}\n\n${pr.body}`
             });
 
+            core.info('PR#${newPR.number} created.')
+
             // Assign and notify
             const assignee = pr.merged_by?.login || pr.user.login;
             await github.rest.issues.addAssignees({
@@ -107,6 +112,8 @@ jobs:
               issue_number: newPR.number,
               assignees: [assignee]
             });
+
+            core.info('PR#${newPR.number} assigned to ${assignee}.')
 
             if (hasConflicts) {
               await github.rest.issues.createComment({
