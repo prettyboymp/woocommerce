@@ -88,7 +88,7 @@ class ReviewsCommentsOverrides {
 				<?php endif; ?>
 
 				<?php if ( ! empty( $_GET['paged'] ) ): ?>
-					<input type="hidden" name="paged" value="<?php echo esc_attr( $_GET['paged'] ); ?>" />
+					<input type="hidden" name="paged" value="<?php echo esc_attr( absint( $_GET['paged'] ) ); ?>" />
 				<?php endif; ?>
 
 				<?php wp_nonce_field( 'woocommerce_hide_notices_nonce', '_wc_notice_nonce' ); ?>
