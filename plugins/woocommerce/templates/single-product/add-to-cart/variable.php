@@ -67,7 +67,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); // phpcs:ignore WooCommerce.
 				/**
 				 * Hook: woocommerce_before_single_variation.
 				 */
-				do_action( 'woocommerce_before_single_variation' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WooCommerce.Commenting.CommentHooks.MissingSinceVersionComment
+				do_action( 'woocommerce_before_single_variation' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WooCommerce.Commenting.CommentHooks.MissingSinceComment
 
 				/**
 				 * Hook: woocommerce_single_variation. Used to output the cart button and placeholder for variation data.
@@ -81,7 +81,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); // phpcs:ignore WooCommerce.
 				/**
 				 * Hook: woocommerce_after_single_variation.
 				 */
-				do_action( 'woocommerce_after_single_variation' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WooCommerce.Commenting.CommentHooks.MissingSinceVersionComment
+				do_action( 'woocommerce_after_single_variation' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment, WooCommerce.Commenting.CommentHooks.MissingSinceComment
 			?>
 		</div>
 	<?php endif; ?>
