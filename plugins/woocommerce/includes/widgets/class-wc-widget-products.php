@@ -160,14 +160,14 @@ class WC_Widget_Products extends WC_Widget {
 				$query_args['orderby'] = 'menu_order';
 				break;
 			case 'price':
-				$query_args['meta_key'] = '_price'; // phpcs:ignore WordPress.DB.SlowDBQuery.meta_key
+				$query_args['meta_key'] = '_price'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				$query_args['orderby']  = 'meta_value_num';
 				break;
 			case 'rand':
 				$query_args['orderby'] = 'rand';
 				break;
 			case 'sales':
-				$query_args['meta_key'] = 'total_sales'; // phpcs:ignore WordPress.DB.SlowDBQuery.meta_key
+				$query_args['meta_key'] = 'total_sales'; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				$query_args['orderby']  = 'meta_value_num';
 				break;
 			default:
