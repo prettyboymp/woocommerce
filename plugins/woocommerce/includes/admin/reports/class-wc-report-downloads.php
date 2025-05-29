@@ -61,8 +61,8 @@ class WC_Report_Downloads extends WP_List_Table {
 		$this->prepare_items();
 
 		// Subtitle for permission if set.
-		if ( ! empty( $_GET['permission_id'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$permission_id = absint( $_GET['permission_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( ! empty( $_GET['permission_id'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
+			$permission_id = absint( $_GET['permission_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 
 			// Load the permission, order, etc. so we can render more information.
 			$permission = null;
@@ -263,12 +263,12 @@ class WC_Report_Downloads extends WP_List_Table {
 	 * @return object
 	 */
 	protected function get_filter_vars() {
-		$product_id      = ! empty( $_GET['product_id'] ) ? absint( wp_unslash( $_GET['product_id'] ) ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$download_id     = ! empty( $_GET['download_id'] ) ? wc_clean( wp_unslash( $_GET['download_id'] ) ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$permission_id   = ! empty( $_GET['permission_id'] ) ? absint( wp_unslash( $_GET['permission_id'] ) ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$order_id        = ! empty( $_GET['order_id'] ) ? absint( wp_unslash( $_GET['order_id'] ) ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$user_id         = ! empty( $_GET['user_id'] ) ? absint( wp_unslash( $_GET['user_id'] ) ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$user_ip_address = ! empty( $_GET['user_ip_address'] ) ? wc_clean( wp_unslash( $_GET['user_ip_address'] ) ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$product_id      = ! empty( $_GET['product_id'] ) ? absint( wp_unslash( $_GET['product_id'] ) ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
+		$download_id     = ! empty( $_GET['download_id'] ) ? wc_clean( wp_unslash( $_GET['download_id'] ) ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
+		$permission_id   = ! empty( $_GET['permission_id'] ) ? absint( wp_unslash( $_GET['permission_id'] ) ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
+		$order_id        = ! empty( $_GET['order_id'] ) ? absint( wp_unslash( $_GET['order_id'] ) ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
+		$user_id         = ! empty( $_GET['user_id'] ) ? absint( wp_unslash( $_GET['user_id'] ) ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
+		$user_ip_address = ! empty( $_GET['user_ip_address'] ) ? wc_clean( wp_unslash( $_GET['user_ip_address'] ) ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 
 		return (object) array(
 			'product_id'      => $product_id,

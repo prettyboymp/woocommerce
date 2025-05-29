@@ -608,7 +608,7 @@ class WC_Admin_List_Table_Orders extends WC_Admin_List_Table {
 		global $wp_post_statuses;
 
 		// Filter the orders by the posted customer.
-		if ( ! empty( $_GET['_customer_user'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( ! empty( $_GET['_customer_user'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 			// @codingStandardsIgnoreStart.
 			$query_vars['meta_query'] = array(
 				array(
@@ -676,7 +676,7 @@ class WC_Admin_List_Table_Orders extends WC_Admin_List_Table {
 			return $query;
 		}
 
-		return wc_clean( wp_unslash( $_GET['s'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		return wc_clean( wp_unslash( $_GET['s'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
