@@ -35,7 +35,7 @@ class StockSyncControllerTests extends \WC_Unit_Test_Case {
 	public function test_handle_product_stock_status_change_to_in_stock() {
 
 		// Create a product with out of stock status and a notification.
-		$product = \WC_Helper_Product::create_simple_product(
+		$product      = \WC_Helper_Product::create_simple_product(
 			true,
 			array(
 				'stock_status' => ProductStockStatus::OUT_OF_STOCK,
@@ -56,9 +56,14 @@ class StockSyncControllerTests extends \WC_Unit_Test_Case {
 
 		// Check that the product runs the sync.
 		$run_product_id = false;
-		tests_add_filter( 'woocommerce_stock_notifications_product_sync', function( $product_id ) use ( &$run_product_id ) {
-			$run_product_id = $product_id;
-		}, 100, 3 );
+		tests_add_filter(
+			'woocommerce_stock_notifications_product_sync',
+			function ( $product_id ) use ( &$run_product_id ) {
+				$run_product_id = $product_id;
+			},
+			100,
+			3
+		);
 		$this->sut->process_queue();
 		$this->assertEquals( $product->get_id(), $run_product_id );
 	}
@@ -113,7 +118,7 @@ class StockSyncControllerTests extends \WC_Unit_Test_Case {
 	 * Test that the controller handles variation products stock status changes.
 	 */
 	public function test_handle_variation_product_stock_status_change_to_in_stock() {
-		$product = \WC_Helper_Product::create_variation_product();
+		$product   = \WC_Helper_Product::create_variation_product();
 		$variation = $product->get_children()[0];
 		$variation = wc_get_product( $variation );
 		$variation->set_stock_status( ProductStockStatus::OUT_OF_STOCK );
@@ -170,7 +175,7 @@ class StockSyncControllerTests extends \WC_Unit_Test_Case {
 	 */
 	public function get_private_property( $object, $property ) {
 		$reflection = new \ReflectionClass( $object );
-		$property = $reflection->getProperty( $property );
+		$property   = $reflection->getProperty( $property );
 		$property->setAccessible( true );
 		return $property->getValue( $object );
 	}

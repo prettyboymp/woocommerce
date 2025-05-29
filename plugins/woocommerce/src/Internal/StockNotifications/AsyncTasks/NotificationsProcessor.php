@@ -75,6 +75,9 @@ class NotificationsProcessor {
 	 * Initialize the controller.
 	 *
 	 * @internal
+	 *
+	 * @param EmailManager $email_manager The email manager.
+	 * @return void
 	 */
 	final public function init( EmailManager $email_manager ): void {
 		$this->email_manager = $email_manager;
@@ -93,8 +96,7 @@ class NotificationsProcessor {
 	/**
 	 * Schedule a notification job for a specific product.
 	 *
-	 * @param int   $product_id  The product ID.
-	 * @param array $product_ids All product IDs being processed (for filter context).
+	 * @param int $product_id  The product ID.
 	 * @return bool True if job was scheduled, false otherwise.
 	 */
 	public function schedule( $product_id ) {
@@ -102,7 +104,7 @@ class NotificationsProcessor {
 
 		try {
 
-			if ( WC()->queue()->get_next( self::AS_JOB_SEND_STOCK_NOTIFICATIONS, array( 'args' => $args ), self::AS_JOB_GROUP) ) {
+			if ( WC()->queue()->get_next( self::AS_JOB_SEND_STOCK_NOTIFICATIONS, array( 'args' => $args ), self::AS_JOB_GROUP ) ) {
 				return false;
 			}
 
@@ -215,8 +217,8 @@ class NotificationsProcessor {
 			throw new \Exception( sprintf( 'Product %d not found.', $product_id ) );
 		}
 
-		$valid_types      = Config::get_supported_product_types();
-		$has_valid_type   = in_array( $product->get_type(), $valid_types, true );
+		$valid_types    = Config::get_supported_product_types();
+		$has_valid_type = in_array( $product->get_type(), $valid_types, true );
 
 		if ( ! $has_valid_type ) {
 			throw new \Exception( sprintf( 'Product %d is not a valid type for notifications.', $product->get_id() ) );
@@ -317,9 +319,9 @@ class NotificationsProcessor {
 			$this->logger->error(
 				sprintf( 'Background process for product %s terminated. Reason: %s', $product_id, $e->getMessage() ),
 				array(
-					'source' => 'wc-stock-notifications',
+					'source'     => 'wc-stock-notifications',
 					'product_id' => $product_id,
-					'exception' => get_class( $e )
+					'exception'  => get_class( $e ),
 				)
 			);
 
@@ -366,17 +368,17 @@ class NotificationsProcessor {
 			}
 
 			$notification->set_date_last_attempt( time() );
-			$cycle_state['total_count']++;
+			++$cycle_state['total_count'];
 
 				// ==== TEST ====
-				if ( $cycle_state['total_count'] > 10 ) {
-					$this->complete_cycle( $product_id, $cycle_state );
-					return;
-				}
+			if ( $cycle_state['total_count'] > 10 ) {
+				$this->complete_cycle( $product_id, $cycle_state );
+				return;
+			}
 				// ==== TEST ====
 
 			if ( $this->should_skip_notification( $notification ) ) {
-				$cycle_state['skipped_count']++;
+				++$cycle_state['skipped_count'];
 				$notification->save();
 				continue;
 			}
@@ -391,11 +393,11 @@ class NotificationsProcessor {
 			if ( $is_sent ) {
 				$notification->set_date_notified( time() );
 				$notification->set_status( NotificationStatus::SENT );
-				$cycle_state['sent_count']++;
+				++$cycle_state['sent_count'];
 			} else {
 				$notification->set_status( NotificationStatus::CANCELLED );
 				$notification->set_cancellation_source( NotificationCancellationSource::SYSTEM );
-				$cycle_state['failed_count']++;
+				++$cycle_state['failed_count'];
 			}
 
 			// Always save the notification to reflect last attempt time.

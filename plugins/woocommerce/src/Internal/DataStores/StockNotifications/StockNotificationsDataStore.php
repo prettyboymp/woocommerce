@@ -515,6 +515,6 @@ CREATE TABLE $meta_table_name (
 			"SELECT 1 FROM $table WHERE product_id IN $query_in AND status = %s LIMIT 1",
 			array_merge( $product_ids, array( NotificationStatus::ACTIVE ) )
 		);
-		return (int) $wpdb->get_var( $sql ) > 0;
+		return (int) $wpdb->get_var( $sql ) > 0; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 }
