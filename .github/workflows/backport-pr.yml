@@ -46,7 +46,7 @@ jobs:
             }
 
             if( !pr.merged ) {
-              core.setFailed(`PR #${prNumber} cannot be backported until it has been merged.)
+              core.setFailed(`PR #${prNumber} cannot be backported until it has been merged.`)
               return;
             }
 
@@ -89,7 +89,7 @@ jobs:
 
             try {
               core.info(`cherry-picking ${process.env.PR_SHA}`);
-              execSync(`git cherry-pick -x ${process.env.PR_SHA}`, { stdio: 'inherit' });
+              execSync(`git cherry-pick -m1 ${process.env.PR_SHA}`, { stdio: 'inherit' });
             } catch (err) {
               core.error(`Cherry-pick failed for commit ${process.env.PR_SHA}:`);
               core.error(err.stderr || err.message);
