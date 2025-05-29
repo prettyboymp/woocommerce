@@ -1,3 +1,3 @@
 Shared line 1
-// base trunk change
+// conflicting change in branch
 Shared line 2
