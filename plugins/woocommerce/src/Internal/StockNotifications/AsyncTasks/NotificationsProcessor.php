@@ -54,7 +54,7 @@ class NotificationsProcessor {
 	/**
 	 * The spam threshold for processing notifications.
 	 */
-	protected const SPAM_THRESHOLD = MINUTE_IN_SECONDS;
+	protected const SPAM_THRESHOLD = HOUR_IN_SECONDS;
 
 	/**
 	 * State option prefix.
@@ -336,7 +336,7 @@ class NotificationsProcessor {
 		// For variable products, check if we're only processing the parent product.
 		// If so, add any variations that inherit stock management from the parent to the cycle state.
 		if ( $product->is_type( ProductType::VARIABLE ) && 1 === count( $cycle_state['product_ids'] ) ) {
-			$cycle_state['product_ids'] = array_merge( $cycle_state['product_ids'], StockManagementHelper::get_products_not_managing_stock( $product->get_children() ) );
+			$cycle_state['product_ids'] = array_merge( $cycle_state['product_ids'], StockManagementHelper::get_products_for_stock_sync( $product ) );
 		}
 
 		// Get notifications.
@@ -369,13 +369,6 @@ class NotificationsProcessor {
 
 			$notification->set_date_last_attempt( time() );
 			++$cycle_state['total_count'];
-
-				// ==== TEST ====
-			if ( $cycle_state['total_count'] > 10 ) {
-				$this->complete_cycle( $product_id, $cycle_state );
-				return;
-			}
-				// ==== TEST ====
 
 			if ( $this->should_skip_notification( $notification ) ) {
 				++$cycle_state['skipped_count'];

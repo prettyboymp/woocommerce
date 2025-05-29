@@ -6,6 +6,8 @@
 declare( strict_types = 1 );
 
 namespace Automattic\WooCommerce\Internal\StockNotifications\Utilities;
+use Automattic\WooCommerce\Enums\ProductType;
+use WC_Product;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -15,12 +17,21 @@ defined( 'ABSPATH' ) || exit;
 class StockManagementHelper {
 
 	/**
-	 * Get manage stock status for a list of products.
+	 * Get a list of product IDs for stock sync.
 	 *
-	 * @param array<int> $children An array of product ID to check if they manage stock.
+	 * If the product is a variable product, we need sync the children that don't manage stock.
+	 *
+	 * @param WC_Product $product The product to check.
 	 * @return array<int> Array of product IDs that don't manage stock.
 	 */
-	public static function get_products_not_managing_stock( array $children ): array {
+	public static function get_products_for_stock_sync( WC_Product $product ): array {
+
+		if ( ! $product->is_type( ProductType::VARIABLE ) ) {
+			return array();
+		}
+
+		$children = $product->get_children();
+
 		global $wpdb;
 
 		$format           = array_fill( 0, count( $children ), '%d' );
