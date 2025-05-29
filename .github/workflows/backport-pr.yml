@@ -94,23 +94,25 @@ jobs:
               core.error(`Cherry-pick failed for commit ${process.env.PR_SHA}:`);
               core.error(err.stderr || err.message);
 
-              // Stage all files with conflicts (unmerged)
-              const statusOutput = execSync('git status --porcelain').toString();
-              const conflictedFiles = statusOutput
+              // Get ALL conflicted files (including modify/delete)
+              const conflictedFiles = execSync('git diff --name-only --diff-filter=U')
+                .toString()
+                .trim()
                 .split('\n')
-                .filter(line => line.startsWith('UU '))
-                .map(line => line.slice(3).trim())
                 .filter(f => f.length > 0);
 
               if (conflictedFiles.length === 0) {
                 core.setFailed("Cherry-pick failed, but no conflicted files found. " + err);
-                core.setOutput('hasConflicts', true);
-                core.setOutput('hasFuzz', false);
                 return;
               }
 
               hasConflicts = true;
-              execSync(`git add ${conflictedFiles.map(f => `"${f}"`).join(' ')}`);
+
+              // Stage conflicted files (including deleted/modified)
+              conflictedFiles.forEach(file => {
+                execSync(`git add "${file}"`);
+              });
+
               core.info('Committing unresolved conflicts.');
               execSync(`git commit -m "Cherry-pick ${process.env.PR_SHA} with unresolved conflicts from #${process.env.PR_NUMBER}"`);
             }
@@ -119,7 +121,6 @@ jobs:
             hasFuzz = !hasConflicts && execSync(`git log -1`).toString().includes('fuzzy');
             core.setOutput('hasConflicts', hasConflicts);
             core.setOutput('hasFuzz', hasFuzz);
-
 
       - name: Push cherry pick branch up
         run: git push origin $CHERRY_PICK_BRANCH
