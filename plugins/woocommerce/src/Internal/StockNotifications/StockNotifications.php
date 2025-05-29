@@ -8,6 +8,9 @@ use Automattic\WooCommerce\Internal\DataStores\StockNotifications\StockNotificat
 use Automattic\WooCommerce\Internal\StockNotifications\Emails\EmailManager;
 use Automattic\WooCommerce\Internal\StockNotifications\AsyncTasks\NotificationsProcessor;
 use Automattic\WooCommerce\Internal\StockNotifications\StockSyncController;
+use Automattic\WooCommerce\Enums\ProductType;
+use Automattic\WooCommerce\Enums\ProductStockStatus;
+use Automattic\WooCommerce\Internal\StockNotifications\Config;
 
 /**
  * The controller for the stock notifications.
@@ -16,10 +19,8 @@ class StockNotifications {
 
 	/**
 	 * Initialize the controller.
-	 *
-	 * @internal
 	 */
-	final public function init() {
+	public function __construct() {
 		add_action( 'plugins_loaded', array( $this, 'init_hooks' ) );
 	}
 

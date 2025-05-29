@@ -5,7 +5,8 @@ declare( strict_types = 1 );
 namespace Automattic\WooCommerce\Internal\StockNotifications;
 
 use Automattic\WooCommerce\Enums\ProductType;
-use Exception;
+use Automattic\WooCommerce\Internal\StockNotifications\Config;
+use Automattic\WooCommerce\Internal\StockNotifications\Utilities\StockManagementHelper;
 use WC_Product;
 
 /**
@@ -21,11 +22,17 @@ class StockSyncController {
 	private array $queue = array();
 
 	/**
-	 * Initialize the controller.
+	 * Logger instance.
 	 *
-	 * @internal
+	 * @var \WC_Logger
 	 */
-	final public function init(): void {
+	protected $logger;
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		$this->logger = \wc_get_logger();
 
 		// Event handlers.
 		add_action( 'woocommerce_product_set_stock_status', array( $this, 'handle_product_stock_status_change' ), 100, 3 );
@@ -44,18 +51,15 @@ class StockSyncController {
 	 * @return void
 	 */
 	public function handle_product_stock_status_change( $product_id, $stock_status, $product = null ) {
-		if ( ! in_array( (string) $stock_status, array( 'instock', 'onbackorder' ), true ) ) {
-			return;
-		}
-
 		try {
-			if ( ! NotificationQuery::product_has_active_notifications( $product_id ) ) {
+
+			if ( ! in_array( (string) $stock_status, Config::get_eligible_stock_statuses(), true ) ) {
 				return;
 			}
 
 			// Get product if not provided
 			if ( null === $product ) {
-				$product = wc_get_product( $product_id );
+				$product = \wc_get_product( $product_id );
 			}
 
 			// Validate product exists and is supported
@@ -63,11 +67,22 @@ class StockSyncController {
 				return;
 			}
 
+			$lookup_ids = array( $product_id );
+			// If product is variable, check for the variations that inherit stock management from the parent.
+			if ( $product->is_type( ProductType::VARIABLE ) ) {
+				$children_ids = StockManagementHelper::get_products_not_managing_stock( $product->get_children() );
+				$lookup_ids = array_merge( $lookup_ids, $children_ids );
+			}
+
+			if ( ! NotificationQuery::product_has_active_notifications( $lookup_ids ) ) {
+				return;
+			}
+
 			// Add to queue.
 			$this->queue[ $product_id ] = true;
 
 		} catch ( \Throwable $e ) {
-			wc_get_logger()->error(
+			$this->logger->error(
 				sprintf( 'StockSyncController: Failed to process product %d: %s', $product_id, $e->getMessage() ),
 				array( 'source' => 'wc-stock-notifications' )
 			);
@@ -95,7 +110,6 @@ class StockSyncController {
 		$this->queue = array();
 	}
 
-
 	/**
 	 * Validate product to be synced.
 	 *
@@ -107,8 +121,7 @@ class StockSyncController {
 			return false;
 		}
 
-		// @todo: globalize the supported types.
-		$valid = $product->is_type( $this->get_supported_product_types() );
+		$valid = $product->is_type( Config::get_supported_product_types() );
 
 		/**
 		 * Filter: woocommerce_stock_notifications_product_sync_validate
@@ -119,14 +132,5 @@ class StockSyncController {
 		 * @param WC_Product $product The product object.
 		 */
 		return (bool) apply_filters( 'woocommerce_stock_notifications_product_sync_validate', $valid, $product );
-	}
-
-	/**
-	 * Get the supported product types.
-	 *
-	 * @return array<string> Array of supported product type slugs.
-	 */
-	protected function get_supported_product_types(): array {
-		return array( ProductType::SIMPLE, ProductType::VARIABLE, ProductType::VARIATION );
 	}
 }

@@ -1,0 +1,32 @@
+<?php
+/**
+ * StockManagementHelper class file.
+ */
+
+declare( strict_types = 1 );
+
+namespace Automattic\WooCommerce\Internal\StockNotifications\Utilities;
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Utility class for stock management related queries.
+ */
+class StockManagementHelper {
+
+	/**
+	 * Get manage stock status for a list of products.
+	 *
+	 * @param array<int> $children An array of product ID to check if they manage stock.
+	 * @return array<int> Array of product IDs that don't manage stock.
+	 */
+	public static function get_products_not_managing_stock( array $children ): array {
+		global $wpdb;
+
+		$format           = array_fill( 0, count( $children ), '%d' );
+		$query_in         = '(' . implode( ',', $format ) . ')';
+		$managed_children = array_unique( $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_manage_stock' AND meta_value != 'yes' AND post_id IN {$query_in}", $children ) ) ); // @codingStandardsIgnoreLine.
+
+		return array_map( 'intval', $managed_children );
+	}
+}
