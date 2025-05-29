@@ -45,6 +45,11 @@ jobs:
               return;
             }
 
+            if( !pr.merged ) {
+              core.setFailed(`PR #${prNumber} cannot be backported until it has been merged.)
+              return;
+            }
+
             if (!pr.merge_commit_sha) {
               core.setFailed(`PR #${prNumber} has no merge commit (may be squashed or rebased)`);
               return;
