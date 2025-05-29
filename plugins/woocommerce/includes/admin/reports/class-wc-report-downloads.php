@@ -330,7 +330,7 @@ class WC_Report_Downloads extends WP_List_Table {
 		$query_from  = apply_filters( 'woocommerce_report_downloads_query_from', $query_from );
 		$query_order = $wpdb->prepare( 'ORDER BY timestamp DESC LIMIT %d, %d;', ( $current_page - 1 ) * $per_page, $per_page );
 
-		$this->items     = $wpdb->get_results( "SELECT * {$query_from} {$query_order}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
-		$this->max_items = $wpdb->get_var( "SELECT COUNT( DISTINCT download_log_id ) {$query_from};" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+		$this->items     = $wpdb->get_results( "SELECT * {$query_from} {$query_order}" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$this->max_items = $wpdb->get_var( "SELECT COUNT( DISTINCT download_log_id ) {$query_from};" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 }

@@ -180,9 +180,9 @@ class WC_Admin_Menus {
 		$current_section = empty( $_REQUEST['section'] ) ? '' : sanitize_title( wp_unslash( $_REQUEST['section'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Recommended
 
 		// Save settings if data has been posted.
-		if ( '' !== $current_section && apply_filters( "woocommerce_save_settings_{$current_tab}_{$current_section}", ! empty( $_POST['save'] ) ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
+		if ( '' !== $current_section && apply_filters( "woocommerce_save_settings_{$current_tab}_{$current_section}", ! empty( $_POST['save'] ) ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing, WooCommerce.Commenting.CommentHooks.HookCommentWrongStyle
 			WC_Admin_Settings::save();
-		} elseif ( '' === $current_section && apply_filters( "woocommerce_save_settings_{$current_tab}", ! empty( $_POST['save'] ) ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing
+		} elseif ( '' === $current_section && apply_filters( "woocommerce_save_settings_{$current_tab}", ! empty( $_POST['save'] ) ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing, WooCommerce.Commenting.CommentHooks.MissingHookComment
 			WC_Admin_Settings::save();
 		}
 	}
@@ -236,13 +236,13 @@ class WC_Admin_Menus {
 		switch ( $post_type ) {
 			case 'shop_order':
 			case 'shop_coupon':
-				$parent_file = 'woocommerce'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
+				$parent_file = 'woocommerce'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 				break;
 			case 'product':
 				$screen = get_current_screen();
 				if ( $screen && taxonomy_is_product_attribute( $screen->taxonomy ) ) {
-					$submenu_file = 'product_attributes'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
-					$parent_file  = 'edit.php?post_type=product'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
+					$submenu_file = 'product_attributes'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+					$parent_file  = 'edit.php?post_type=product'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 				}
 				break;
 		}

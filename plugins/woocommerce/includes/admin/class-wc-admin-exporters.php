@@ -169,7 +169,7 @@ class WC_Admin_Exporters {
 		}
 
 		if ( ! empty( $_POST['export_category'] ) && is_array( $_POST['export_category'] ) ) {// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$exporter->set_product_category_to_export( wp_unslash( array_values( $_POST['export_category'] ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$exporter->set_product_category_to_export( wp_unslash( array_values( $_POST['export_category'] ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 		}
 
 		// Set specific product IDs if provided.
