@@ -57,12 +57,12 @@ class StockSyncController {
 				return;
 			}
 
-			// Get product if not provided
+			// Get product if not provided.
 			if ( null === $product ) {
 				$product = \wc_get_product( $product_id );
 			}
 
-			// Validate product exists and is supported
+			// Validate product exists and is supported.
 			if ( ! $this->validate_product( $product ) ) {
 				return;
 			}
@@ -104,6 +104,14 @@ class StockSyncController {
 
 		$product_ids = array_keys( $this->queue );
 		foreach ( $product_ids as $product_id ) {
+
+			/**
+			 * Action: woocommerce_stock_notifications_product_sync
+			 *
+			 * @since 0.0.0
+			 *
+			 * @param int $product_id The product ID.
+			 */
 			do_action( 'woocommerce_stock_notifications_product_sync', $product_id );
 		}
 
@@ -125,6 +133,8 @@ class StockSyncController {
 
 		/**
 		 * Filter: woocommerce_stock_notifications_product_sync_validate
+		 *
+		 * @since 0.0.0
 		 *
 		 * Allow plugins to modify product validation logic.
 		 *

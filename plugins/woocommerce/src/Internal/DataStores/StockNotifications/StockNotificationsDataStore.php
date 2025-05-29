@@ -512,9 +512,9 @@ CREATE TABLE $meta_table_name (
 		$format   = array_fill( 0, count( $product_ids ), '%d' );
 		$query_in = '(' . implode( ',', $format ) . ')';
 		$sql      = $wpdb->prepare(
-			"SELECT 1 FROM $table WHERE product_id IN $query_in AND status = %s LIMIT 1",
-			array_merge( $product_ids, array( NotificationStatus::ACTIVE ) )
-		);
+			"SELECT 1 FROM %i WHERE product_id IN $query_in AND status = %s LIMIT 1",
+			array_merge( array( $table ), $product_ids, array( NotificationStatus::ACTIVE ) )
+		); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		return (int) $wpdb->get_var( $sql ) > 0; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 }

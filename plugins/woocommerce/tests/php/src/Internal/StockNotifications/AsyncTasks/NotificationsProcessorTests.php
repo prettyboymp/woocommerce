@@ -217,6 +217,9 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		);
 	}
 
+	/**
+	 * Test process_batch method on a variation product.
+	 */
 	public function test_process_batch_variation_product() {
 		$product   = WC_Helper_Product::create_variation_product();
 		$variation = $product->get_children()[0];
@@ -240,6 +243,9 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$this->assertEquals( NotificationStatus::SENT, $notification->get_status() );
 	}
 
+	/**
+	 * Test process_batch method on a variable product.
+	 */
 	public function test_process_batch_variable() {
 		$variable = WC_Helper_Product::create_variation_product();
 		$variable->set_manage_stock( true );
@@ -546,9 +552,13 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 
 	/**
 	 * Get private method.
+	 *
+	 * @param object $instance The object.
+	 * @param string $method_name The method name.
+	 * @return \ReflectionMethod
 	 */
-	private function get_private_method( $object, $method_name ) {
-		$method = new \ReflectionMethod( $object, $method_name );
+	private function get_private_method( $instance, $method_name ) {
+		$method = new \ReflectionMethod( $instance, $method_name );
 		$method->setAccessible( true );
 		return $method;
 	}

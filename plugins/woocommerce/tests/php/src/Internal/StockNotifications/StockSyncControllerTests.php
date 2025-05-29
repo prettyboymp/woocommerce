@@ -19,11 +19,17 @@ class StockSyncControllerTests extends \WC_Unit_Test_Case {
 	 */
 	private $sut;
 
+	/**
+	 * Set up the test.
+	 */
 	public function setUp(): void {
 		parent::setUp();
 		$this->sut = new StockSyncController();
 	}
 
+	/**
+	 * Tear down the test.
+	 */
 	public function tearDown(): void {
 		parent::tearDown();
 		unset( $this->sut );

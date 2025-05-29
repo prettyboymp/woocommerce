@@ -214,21 +214,21 @@ class NotificationsProcessor {
 
 		$product = wc_get_product( $product_id );
 		if ( ! $product instanceof WC_Product ) {
-			throw new \Exception( sprintf( 'Product %d not found.', $product_id ) );
+			throw new \Exception( sprintf( 'Product %d not found.', absint( $product_id ) ) );
 		}
 
 		$valid_types    = Config::get_supported_product_types();
 		$has_valid_type = in_array( $product->get_type(), $valid_types, true );
 
 		if ( ! $has_valid_type ) {
-			throw new \Exception( sprintf( 'Product %d is not a valid type for notifications.', $product->get_id() ) );
+			throw new \Exception( sprintf( 'Product %d is not a valid type for notifications.', $product->get_id() ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 
 		$valid_statuses   = Config::get_eligible_stock_statuses();
 		$has_valid_status = in_array( $product->get_stock_status(), $valid_statuses, true );
 
 		if ( ! $has_valid_status ) {
-			throw new \Exception( sprintf( 'Product %d is not valid for notifications (i.e. not in stock).', $product->get_id() ) );
+			throw new \Exception( sprintf( 'Product %d is not valid for notifications (i.e. not in stock).', $product->get_id() ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 
 		return $product;
@@ -430,7 +430,7 @@ class NotificationsProcessor {
 			$user_id = $notification->get_user_id();
 			if ( $user_id ) {
 				$user = get_user_by( 'id', $user_id );
-				if ( $user && ( user_can( $user, 'manage_woocommerce' ) || user_can( $user, 'administrator' ) ) ) {
+				if ( $user && ( user_can( $user, 'manage_woocommerce' ) || user_can( $user, 'manage_options' ) ) ) {
 					$should_skip = false;
 				}
 			}
