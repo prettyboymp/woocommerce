@@ -229,7 +229,7 @@ if ( ! function_exists( 'is_order_received_page' ) ) {
 
 		$page_id = wc_get_page_id( 'checkout' );
 
-		return apply_filters( 'woocommerce_is_filtered', ( count( WC_Query::get_layered_nav_chosen_attributes() ) > 0 || isset( $_GET['max_price'] ) || isset( $_GET['min_price'] ) || isset( $_GET['rating_filter'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WooCommerce.Commenting.CommentHooks.MissingHookComment;
+		return apply_filters( 'woocommerce_is_filtered', ( count( WC_Query::get_layered_nav_chosen_attributes() ) > 0 || isset( $_GET['max_price'] ) || isset( $_GET['min_price'] ) || isset( $_GET['rating_filter'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WooCommerce.Commenting.CommentHooks.MissingHookComment
 	}
 }
 
