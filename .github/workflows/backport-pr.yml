@@ -54,23 +54,20 @@ jobs:
             core.setOutput('CHERRY_PICK_BRANCH', `backport-PR-${prNumber}-to-${targetBranch.replace(/\//g, '-')}`);
 
       # Checkout the PR Merge Commit it is accessible later without having to clone the full repository.
-      - name: Checkout Merge Commit
+      - name: Checkout Target Branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ steps.fetch_pr_details.outputs.PR_SHA }}
-
-      - name: Checkout Target Branch
-        run: |
-           git fetch origin $TARGET_BRANCH
-           git checkout $TARGET_BRANCH
-        env:
-          TARGET_BRANCH: ${{ github.event.inputs.target_branch }}
+          ref: ${{ github.event.inputs.target_branch }}
 
       - name: Create a cherry pick branch based on the target branch
         run: git checkout -b $CHERRY_PICK_BRANCH
         env:
           CHERRY_PICK_BRANCH: ${{ steps.fetch_pr_details.outputs.CHERRY_PICK_BRANCH }}
 
+      - name: Fetch PR SHA
+        run: git fetch origin $PR_SHA
+        env:
+          PR_SHA: ${{ steps.fetch_pr_details.outputs.PR_SHA }}
 
       - name: Cherry pick
         id: cherry-pick
