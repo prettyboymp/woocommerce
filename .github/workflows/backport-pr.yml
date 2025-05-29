@@ -10,156 +10,204 @@ on:
         description: 'Branch to backport into'
         required: true
 
+env:
+    GIT_COMMITTER_NAME: 'WooCommerce Bot'
+    GIT_COMMITTER_EMAIL: 'no-reply@woocommerce.com'
+    GIT_AUTHOR_NAME: 'WooCommerce Bot'
+    GIT_AUTHOR_EMAIL: 'no-reply@woocommerce.com'
+
+permissions: {}
+
 jobs:
-  backport:
+  verify:
+    name: Verify
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: write
-      issues: write
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Run backport logic
+        contents: read
+        pull-requests: read
+    outputs:
+        run: ${{ steps.check.outputs.run }}
+        base_ref: ${{ steps.fetch_pr_details.outputs.base_ref }}
+  steps:
+    - name: Fetch and Validate PR
+      id: fetch_pr_details
       uses: actions/github-script@v7
       with:
         script: |
+          const { data: pr } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: process.env.PR_NUMBER
+          })
+
+          if (pr.base.ref === targetBranch) {
+            core.info("PR already targets branch: " + targetBranch);
+            return;
+          }
+
+          // Check if merge_commit_sha exists
+          if (!pr.merge_commit_sha) {
+            core.setFailed(`PR #${prNumber} has no merge commit (may be squashed or rebased)`);
+            return;
+          }
+
+          core.setOutput( 'PR_SHA', pr.merge_commit_sha )
+        env:
+          PR_NUMBER: ${{ context.payload.inputs.pr_number }}
+          TARGET_BRANCH: ${{ context.payload.inputs.target_branch }}
+
+    # Checkout the PR Merge Commit it is accessible later without having to clone the full repository.
+    - name: Checkout Merge Commit
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ steps.fetch_pr_details.outputs.PR_SHA }}
+
+    - name: Checkout Target Branch
+      run: |
+         git fetch origin $TARGET_BRANCH
+         git checkout $TARGET_BRANCH
+      env:
+        TARGET_BRANCH: ${{ context.payload.inputs.target_branch }}
+
+    - name: Create a cherry pick branch based on the target branch
+      run: git checkout -b backport-PR-$PR_NUMBER-to-$TARGET_BRANCH
+      env:
+        TARGET_BRANCH: ${{ context.payload.inputs.target_branch }}
+        PR_NUMBER: ${{ context.payload.inputs.pr_number }}
+
+    - name: Cherry pick
+      id: cherry-pick
+      script: |
           const { execSync } = require('child_process');
-          
-          const { owner, repo } = context.repo;
-          const prNumber = context.payload.inputs.pr_number;
-          const targetBranch = context.payload.inputs.target_branch;
 
-          core.info(`Starting backport of PR#${prNumber} to branch ${targetBranch}`);
+          // Get original PR details
+          const { data: pr } = await github.rest.pulls.get({
+            owner,
+            repo,
+            pull_number: process.env.PR_NUMBER
+          });
 
-          async function main() {
-            // Get original PR details
-            const { data: pr } = await github.rest.pulls.get({
-              owner,
-              repo,
-              pull_number: prNumber
-            });
+          let hasConflicts = false;
+          try {
+            core.info(`cherry-picking ${process.env.PR_SHA}`);
+            execSync(`git cherry-pick -x ${process.env.PR_SHA}`, { stdio: 'inherit' });
+          } catch (err) {
+            // Log detailed error diagnostics
+            core.error(`Cherry-pick failed for commit ${process.env.PR_SHA}:`);
+            core.error(err.stderr || err.message);
 
-            if (pr.base.ref === targetBranch) {
-              core.info("PR already targets branch: " + targetBranch);
+            // Stage all files with conflicts (unmerged)
+            const statusOutput = execSync('git status --porcelain').toString();
+            const conflictedFiles = statusOutput
+              .split('\n')
+              .filter(line => line.startsWith('UU '))
+              .map(line => line.slice(3).trim())
+              .filter(f => f.length > 0);
+
+            if (conflictedFiles.length === 0) {
+              core.setFailed("Cherry-pick failed, but no conflicted files found. " + err);
               return;
             }
 
-            // Check if merge_commit_sha exists
-            if (!pr.merge_commit_sha) {
-              core.setFailed(`PR #${prNumber} has no merge commit (may be squashed or rebased)`);
-              return;
-            }
+            hasConflicts = true;
 
-            // Fetch the original PR's branch to get the commit
-            execSync(`git fetch origin ${pr.head.ref}:${pr.head.ref}`);
+            // Stage the conflicted files as-is (with conflict markers)
+            execSync(`git add ${conflictedFiles.map(f => `"${f}"`).join(' ')}`);
 
-            const tempBranch = `backport-${prNumber}-to-${targetBranch.replace(/\//g, '-')}`;
-
-            // Git operations
-            execSync(`git fetch origin ${targetBranch}`);
-            execSync(`git checkout -b ${tempBranch} origin/${targetBranch}`);
-
-            let hasConflicts = false;
-            try {
-              core.info(`cherry-picking ${pr.merge_commit_sha}`);
-              execSync(`git cherry-pick -x ${pr.merge_commit_sha}`, { stdio: 'inherit' });
-            } catch (err) {
-              // Log detailed error diagnostics
-              core.error(`Cherry-pick failed for commit ${pr.data.merge_commit_sha}:`);
-              core.error(err.stderr || err.message);
-
-              // Stage all files with conflicts (unmerged)
-              const statusOutput = execSync('git status --porcelain').toString();
-              const conflictedFiles = statusOutput
-                .split('\n')
-                .filter(line => line.startsWith('UU '))
-                .map(line => line.slice(3).trim())
-                .filter(f => f.length > 0);
-
-              if (conflictedFiles.length === 0) {
-                core.setFailed("Cherry-pick failed, but no conflicted files found. " + err);
-                return;
-              }
-
-              hasConflicts = true;
-
-              // Stage the conflicted files as-is (with conflict markers)
-              execSync(`git add ${conflictedFiles.map(f => `"${f}"`).join(' ')}`);
-
-              core.info('Committing unresolved conflicts.');
-              // Commit the unresolved conflicts
-              execSync(`git commit -m "Cherry-pick ${pr.merge_commit_sha} with unresolved conflicts from #${prNumber}"`);
-            }
+            core.info('Committing unresolved conflicts.');
+            // Commit the unresolved conflicts
+            execSync(`git commit -m "Cherry-pick ${process.env.PR_SHA} with unresolved conflicts from #${process.env.PR_NUMBER}"`);
 
             // Check for fuzzy matches
             const hasFuzz = ! hasConflicts && execSync(`git log -1`).toString().includes('fuzzy');
+            core.setOutput('hasConflicts', hasConflicts );
+            core.setOutuput('hasFuzz', hasFuzz );
             core.info(`Pushing branch ${tempBranch} to origin.`);
             execSync(`git push origin ${tempBranch}`);
+      env:
+        SHA: ${{ steps.fetch_pr_details.outputs.PR_SHA }}
+        PR_NUMBER: ${{ context.payload.inputs.pr_number }}
 
-            // Create new PR
-            const { data: newPR } = await github.rest.pulls.create({
-              owner,
-              repo,
-              head: tempBranch,
-              base: targetBranch,
-              title: `[Backport ${targetBranch}] ${pr.title}`,
-              body: `Backport of #${prNumber}\n\n${pr.body}`
-            });
+    - name: Push cherry pick branch up
+      run: git push origin backport-PR-$PR_NUMBER-to-$TARGET_BRANCH
+      env:
+        TARGET_BRANCH: ${{ context.payload.inputs.target_branch }}
+        PR_NUMBER: ${{ context.payload.inputs.pr_number }}
+    - name: Create Cherry Pick Pull Request
+      script: |
+        const { execSync } = require('child_process');
+          
+        const { owner, repo } = context.repo;
+        const prNumber = ${process.env.PR_NUMBER};
+        const targetBranch = ${process.env.TARGET_BRANCH};
 
-            core.info('PR#${newPR.number} created.')
+        const { data: original_pr } = await github.rest.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: process.env.PR_NUMBER
+          })
 
-            // Assign and notify
-            const assignee = pr.merged_by?.login || pr.user.login;
-            await github.rest.issues.addAssignees({
-              owner,
-              repo,
-              issue_number: newPR.number,
-              assignees: [assignee]
-            });
+        async function main() {
+          // Create new PR
+          const { data: newPR } = await github.rest.pulls.create({
+            owner,
+            repo,
+            head: tempBranch,
+            base: targetBranch,
+            title: `[Backport ${targetBranch}] ${original_pr.title}`,
+            body: `Backport of #${prNumber}\n\n${original_pr.body}`
+          });
 
-            core.info('PR#${newPR.number} assigned to ${assignee}.')
+          core.info('PR#${newPR.number} created.')
 
-            if (hasConflicts) {
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: newPR.number,
-                body: "⚠️ Backport contains conflicts that must be resolved before merging!"
-              });
-            } else if (hasFuzz) {
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: newPR.number,
-                body: "⚠️ Backport contains fuzzy matches - manual review needed!"
-              });
-            } else {
-              try {
-                await github.rest.pulls.merge({
-                  owner,
-                  repo,
-                  pull_number: newPR.number,
-                  merge_method: "squash"
-                });
-              } catch (mergeErr) {
-                core.info("Auto-merge failed: " + mergeErr.message);
-              }
-            }
+          // Assign and notify
+          const assignee = original_pr.merged_by?.login || original_pr.user.login;
+          await github.rest.issues.addAssignees({
+            owner,
+            repo,
+            issue_number: newPR.number,
+            assignees: [assignee]
+          });
 
-            // Update original PR
+          core.info('PR#${newPR.number} assigned to ${assignee}.')
+
+          if (${process.env.CHERRY_PICK_HAD_CONFLICTS}) {
             await github.rest.issues.createComment({
               owner,
               repo,
-              issue_number: prNumber,
-              body: `✅ Backport created: #${newPR.number}`
+              issue_number: newPR.number,
+              body: "⚠️ Backport contains conflicts that must be resolved before merging!"
             });
+          } else if (${process.env.CHERRY_PICK_HAD_FUZZ}) {
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: newPR.number,
+              body: "⚠️ Backport contains fuzzy matches - manual review needed!"
+            });
+          } else {
+            try {
+              await github.rest.pulls.merge({
+                owner,
+                repo,
+                pull_number: newPR.number,
+                merge_method: "squash"
+              });
+            } catch (mergeErr) {
+              core.setFailed("Auto-merge failed: " + mergeErr.message);
+              return;
+            }
           }
 
-          main().catch(err => {
-            core.setFailed(err.message);
+          // Update original PR
+          await github.rest.issues.createComment({
+            owner,
+            repo,
+            issue_number: prNumber,
+            body: `✅ Backport created: #${newPR.number}`
           });
+      env:
+        TARGET_BRANCH: ${{ context.payload.inputs.target_branch }}
+        PR_NUMBER: ${{ context.payload.inputs.pr_number }}
+        CHERRY_PICK_HAD_FUZZ: ${{ steps.cherry-pick.outputs.hasFuzz }}
+        CHERRY_PICK_HAD_CONFLICTS: ${{ steps.cherry-pick.outputs.hasConflicts }}
