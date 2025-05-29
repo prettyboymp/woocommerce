@@ -599,7 +599,7 @@ class WC_Coupon_Data_Store_CPT extends WC_Data_Store_WP implements WC_Coupon_Dat
 		 * We will try to insert 3 times before giving up to recover from deadlock.
 		 */
 		for ( $count = 0; $count < 3; $count++ ) {
-			$result = $wpdb->query( $insert_statement ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$result = $wpdb->query( $insert_statement ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			if ( false !== $result ) {
 				// Clear meta cache.
 				$this->refresh_coupon_data( $coupon );
@@ -696,7 +696,7 @@ class WC_Coupon_Data_Store_CPT extends WC_Data_Store_WP implements WC_Coupon_Dat
 		// high concurrency, in which case DB will abort the query which has done less work to resolve deadlock.
 		// We will try up to 3 times before giving up.
 		for ( $count = 0; $count < 3; $count++ ) {
-			$result = $wpdb->query( $insert_statement ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$result = $wpdb->query( $insert_statement ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			if ( false !== $result ) {
 				// Clear meta cache.
 				$this->refresh_coupon_data( $coupon );
