@@ -175,14 +175,14 @@ class StockSyncControllerTests extends \WC_Unit_Test_Case {
 	/**
 	 * Get a private property of an object.
 	 *
-	 * @param object $object The object to get the property from.
+	 * @param object $instance The object to get the property from.
 	 * @param string $property The name of the property to get.
 	 * @return mixed The value of the property.
 	 */
-	public function get_private_property( $object, $property ) {
-		$reflection = new \ReflectionClass( $object );
+	private function get_private_property( $instance, $property ) {
+		$reflection = new \ReflectionClass( $instance );
 		$property   = $reflection->getProperty( $property );
 		$property->setAccessible( true );
-		return $property->getValue( $object );
+		return $property->getValue( $instance );
 	}
 }
