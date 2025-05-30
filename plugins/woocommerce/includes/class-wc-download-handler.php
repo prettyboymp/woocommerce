@@ -641,7 +641,7 @@ class WC_Download_Handler {
 					$read_length = $end - $p + 1;
 				}
 
-				echo @fread( $handle, $read_length ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				echo @fread( $handle, $read_length ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations, WordPress.Security.EscapeOutput.OutputNotEscaped
 				$p = @ftell( $handle ); // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 
 				if ( ob_get_length() ) {
