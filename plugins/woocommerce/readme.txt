@@ -169,7 +169,7 @@ WooCommerce comes with some sample data you can use to see how products look; im
 
 == Changelog ==
 
-= 9.9.0 2025-06-02 =
+= 9.9.0 2025-06-18 =
 
 **WooCommerce**
 
@@ -335,6 +335,9 @@ WooCommerce comes with some sample data you can use to see how products look; im
 * Fix - When using local pickup during block checkout, persist the correct shipping address to the order. [#55968](https://github.com/woocommerce/woocommerce/pull/55968)
 * Fix - Workaround for a bug present in WP 6.6's Interactivity API. It can be removed once Woo doesn't need to support WP 6.6 anymore. [#56154](https://github.com/woocommerce/woocommerce/pull/56154)
 * Fix - `wc_get_gallery_image_html`: prevent errors when retrieving image attributes. [#57090](https://github.com/woocommerce/woocommerce/pull/57090)
+* Fix - Fix browser alert when interacting with offline payment methods settings forms [#58269](https://github.com/woocommerce/woocommerce/pull/58269)
+* Fix - Fix insufficient detection of email template overrides [#58286](https://github.com/woocommerce/woocommerce/pull/58286)
+* Fix - Fix the default country in the business step to match the selected one in NOX [#58269](https://github.com/woocommerce/woocommerce/pull/58269)
 * Add - Mark the test account step as completed when presenting the success step state [#58112](https://github.com/woocommerce/woocommerce/pull/58112)
 * Add - Add product preview modal on marketplace pages. [#56678](https://github.com/woocommerce/woocommerce/pull/56678)
 * Add - Add: ProductFilters services to power the new filter blocks and product filtering and in general. [#52403](https://github.com/woocommerce/woocommerce/pull/52403)
@@ -385,6 +388,7 @@ WooCommerce comes with some sample data you can use to see how products look; im
 * Add - Product Specifications: Add settings to control the visibility of weight/dimensions/attribute. [#57387](https://github.com/woocommerce/woocommerce/pull/57387)
 * Add - Restrict blueprint imports to coming soon mode [#57344](https://github.com/woocommerce/woocommerce/pull/57344)
 * Add - Show a notification when there is a mismatch in WooCommerce.com connection URL [#56327](https://github.com/woocommerce/woocommerce/pull/56327)
+* Add - Improve the NOX test account step by animating the progress bar during the initialization phase [#58269](https://github.com/woocommerce/woocommerce/pull/58269)
 * Update - Form updates to validation rules and styling fixes for offline payment method forms. [#58157](https://github.com/woocommerce/woocommerce/pull/58157)
 * Update - Removing subheading from offline payments management page. [#58157](https://github.com/woocommerce/woocommerce/pull/58157)
 * Update - Update MailPoet and Klaviyo variant assignment to 50/50 split. This change updates the visibility configuration for MailPoet and Klaviyo plugins to create an equal 50/50 split in visibility, replacing the previous 70/30 split configuration. [#58071](https://github.com/woocommerce/woocommerce/pull/58071)
@@ -464,6 +468,8 @@ WooCommerce comes with some sample data you can use to see how products look; im
 * Update - Updates to tracking event upon payment method selection. [#57829](https://github.com/woocommerce/woocommerce/pull/57829)
 * Update - Update tooltips on the Payments Settings page to work on click instead of hover [#57856](https://github.com/woocommerce/woocommerce/pull/57856)
 * Update - Use only wp options table for saving WooCommerce email type - email editor post association [#57532](https://github.com/woocommerce/woocommerce/pull/57532)
+* Update - Remove unused woocommerce_product_availability filter [#58391](https://github.com/woocommerce/woocommerce/pull/58391)
+* Update - Show db update nudge when auto updates fail. [#58325](https://github.com/woocommerce/woocommerce/pull/58325)
 * Dev - CI: remove release-checks jobs [#58235](https://github.com/woocommerce/woocommerce/pull/58235)
 * Dev - Introduce a new /clean endpoint and update the server implementation for other steps. [#58068](https://github.com/woocommerce/woocommerce/pull/58068)
 * Dev - Remove the feature flag and bake in the new Payments Settings page. [#58153](https://github.com/woocommerce/woocommerce/pull/58153)
@@ -538,6 +544,9 @@ WooCommerce comes with some sample data you can use to see how products look; im
 * Dev - Update items store import to use `itemsStore` from `@woocommerce/data` [#56424](https://github.com/woocommerce/woocommerce/pull/56424)
 * Dev - Update reports store import to use `reportsStore` from `@woocommerce/data` [#56421](https://github.com/woocommerce/woocommerce/pull/56421)
 * Dev - Update the document describing the WooCommerce git flow [#55973](https://github.com/woocommerce/woocommerce/pull/55973)
+* Dev - Fix broken styles on recommended payment methods step on Atomic sites. [#58269](https://github.com/woocommerce/woocommerce/pull/58269)
+* Dev - Initialize payment gateway logic for WooPayments API actions. [#58269](https://github.com/woocommerce/woocommerce/pull/58269)
+* Dev - Remove the duplicate “Activate Payments” screens in NOX In-context flow. [#58269](https://github.com/woocommerce/woocommerce/pull/58269)
 * Tweak - Add a composite index to wc_order_product_lookup to improve the response time of some queries [#53940](https://github.com/woocommerce/woocommerce/pull/53940)
 * Tweak - Adjust irish eircode to be mandatory [#56292](https://github.com/woocommerce/woocommerce/pull/56292)
 * Tweak - Always render the Advanced tat as the last tab. [#56531](https://github.com/woocommerce/woocommerce/pull/56531)
@@ -614,6 +623,7 @@ WooCommerce comes with some sample data you can use to see how products look; im
 * Enhancement - Update blueprint feature to only display WordPress.org plugins [#57807](https://github.com/woocommerce/woocommerce/pull/57807)
 * Enhancement - Update Quantity Selector and Grouped Product Selector Item CTA blocks to have only Stepper mode. [#57442](https://github.com/woocommerce/woocommerce/pull/57442)
 * Enhancement - Update styles of Download section in order email [#57785](https://github.com/woocommerce/woocommerce/pull/57785)
+* Enhancement - Resolved issue where KYC data was not prefilled in the NOX In-Context onboarding flow. [#58269](https://github.com/woocommerce/woocommerce/pull/58269)
 
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/changelog.txt).
