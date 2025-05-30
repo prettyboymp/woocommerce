@@ -100,7 +100,7 @@ if ( ! function_exists( 'is_cart' ) ) {
 		 * @since 2.4.0
 		 * @param bool $is_cart Whether the cart page is being viewed.
 		 */
-		return apply_filters( 'woocommerce_is_filtered', ( count( WC_Query::get_layered_nav_chosen_attributes() ) > 0 || isset( $_GET['max_price'] ) || isset( $_GET['min_price'] ) || isset( $_GET['rating_filter'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WooCommerce.Commenting.CommentHooks.MissingHookComment
+		return apply_filters( 'woocommerce_is_cart', false ) || Constants::is_defined( 'WOOCOMMERCE_CART' ) || CartCheckoutUtils::is_cart_page(); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WooCommerce.Commenting.CommentHooks.MissingHookComment
 	}
 }
 
@@ -118,7 +118,7 @@ if ( ! function_exists( 'is_checkout' ) ) {
 		 * @since 2.4.0
 		 * @param bool $is_checkout Whether the checkout page is being viewed.
 		 */
-		return apply_filters( 'woocommerce_is_filtered', ( count( WC_Query::get_layered_nav_chosen_attributes() ) > 0 || isset( $_GET['max_price'] ) || isset( $_GET['min_price'] ) || isset( $_GET['rating_filter'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WooCommerce.Commenting.CommentHooks.MissingHookComment;
+		return apply_filters( 'woocommerce_is_checkout', false ) || Constants::is_defined( 'WOOCOMMERCE_CHECKOUT' ) || CartCheckoutUtils::is_checkout_page(); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WooCommerce.Commenting.CommentHooks.MissingHookComment;
 	}
 }
 
@@ -229,7 +229,7 @@ if ( ! function_exists( 'is_order_received_page' ) ) {
 
 		$page_id = wc_get_page_id( 'checkout' );
 
-		return apply_filters( 'woocommerce_is_filtered', ( count( WC_Query::get_layered_nav_chosen_attributes() ) > 0 || isset( $_GET['max_price'] ) || isset( $_GET['min_price'] ) || isset( $_GET['rating_filter'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WooCommerce.Commenting.CommentHooks.MissingHookComment
+		return apply_filters( 'woocommerce_is_order_received_page', ( $page_id && is_page( $page_id ) && isset( $wp->query_vars['order-received'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WooCommerce.Commenting.CommentHooks.MissingHookComment
 	}
 }
 
@@ -370,7 +370,7 @@ if ( ! function_exists( 'wc_tax_enabled' ) ) {
 	 * @return bool
 	 */
 	function wc_tax_enabled() {
-		return apply_filters( 'woocommerce_is_filtered', ( count( WC_Query::get_layered_nav_chosen_attributes() ) > 0 || isset( $_GET['max_price'] ) || isset( $_GET['min_price'] ) || isset( $_GET['rating_filter'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WooCommerce.Commenting.CommentHooks.MissingHookComment
+		return apply_filters( 'wc_tax_enabled', get_option( 'woocommerce_calc_taxes' ) === 'yes' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WooCommerce.Commenting.CommentHooks.MissingHookComment
 	}
 }
 
