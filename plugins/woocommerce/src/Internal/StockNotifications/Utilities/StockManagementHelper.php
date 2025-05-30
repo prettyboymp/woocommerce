@@ -25,7 +25,7 @@ class StockManagementHelper {
 	 * @param WC_Product $product The product to check.
 	 * @return array<int> Array of product IDs that don't manage stock.
 	 */
-	public static function get_products_for_stock_sync( WC_Product $product ): array {
+	public static function get_variations_without_stock_management( WC_Product $product ): array {
 
 		if ( ! $product->is_type( ProductType::VARIABLE ) ) {
 			return array();
