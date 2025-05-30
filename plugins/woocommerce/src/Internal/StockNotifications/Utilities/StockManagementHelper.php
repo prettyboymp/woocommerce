@@ -32,6 +32,9 @@ class StockManagementHelper {
 		}
 
 		$children = $product->get_children();
+		if ( empty( $children ) ) {
+			return array();
+		}
 
 		global $wpdb;
 
