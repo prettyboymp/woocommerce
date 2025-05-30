@@ -53,7 +53,7 @@ class WC_Webhook_Data_Store implements WC_Webhook_Data_Store_Interface {
 			'pending_delivery' => $webhook->get_pending_delivery( 'edit' ),
 		);
 
-		$wpdb->insert( $wpdb->prefix . 'wc_webhooks', $data ); // WPCS: DB call ok.
+		$wpdb->insert( $wpdb->prefix . 'wc_webhooks', $data ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 		$webhook_id = $wpdb->insert_id;
 		$webhook->set_id( $webhook_id );
@@ -148,7 +148,7 @@ class WC_Webhook_Data_Store implements WC_Webhook_Data_Store_Interface {
 			array(
 				'webhook_id' => $webhook->get_id(),
 			)
-		); // WPCS: DB call ok.
+		); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 		$webhook->apply_changes();
 
