@@ -13,17 +13,14 @@ import { Logger } from '../../../../core/logger';
 import { checkoutRemoteBranch } from '../../../../core/git';
 import { createPullRequest } from '../../../../core/github/repo';
 import { Options } from '../types';
-import {
-	getToday,
-	DAYS_BETWEEN_CODE_FREEZE_AND_RELEASE,
-} from '../../get-version/lib';
+import { getToday } from '../../get-version/lib';
 
 /**
  * Perform changelog adjustments after Jetpack Changelogger has run.
  *
- * @param {string} override    Time override.
+ * @param {string} 	override    Time override.
  * @param {boolean} appendChangelog Whether to append the changelog or replace it.
- * @param {string} tmpRepoPath Path where the temporary repo is cloned.
+ * @param {string} 	tmpRepoPath Path where the temporary repo is cloned.
  */
 const updateReleaseChangelogs = async (
 	override: string,
@@ -62,13 +59,18 @@ const updateReleaseChangelogs = async (
 
 	if ( appendChangelog ) {
 		// Append: Insert new changelog after "== Changelog ==" but before existing entries
-		const changelogEntries = nextLog.replace(/^= \d+\.\d+\.\d+ \d{4}-\d{2}-\d{2} =\n\n\*\*WooCommerce\*\*\n\n/, '').trim();
+		const changelogEntries = nextLog
+			.replace(
+				/^= \d+\.\d+\.\d+ \d{4}-\d{2}-\d{2} =\n\n\*\*WooCommerce\*\*\n\n/,
+				''
+			)
+			.trim();
 		readme = readme.replace(
 			/\n+(\[See changelog for all versions\])/,
 			`\n${ changelogEntries }\n\n$1`
 		);
 	} else {
-		// Replace: Replace all existing changelog content with new changelog
+		// Replace: Replace all existing changelog content with the new changelog
 		readme = readme.replace(
 			/== Changelog ==\n(.*?)\[See changelog for all versions\]/s,
 			`== Changelog ==\n\n${ nextLog }\n\n[See changelog for all versions]`
@@ -79,7 +81,7 @@ const updateReleaseChangelogs = async (
 };
 
 /**
- * Perform changelog operations on release branch by submitting a pull request. The release branch is a remote branch.
+ * Perform changelog operations on the release branch by submitting a pull request. The release branch is a remote branch.
  *
  * @param {Object} options       CLI options
  * @param {string} tmpRepoPath   temp repo path
@@ -137,7 +139,11 @@ export const updateReleaseBranchChangelogs = async (
 		Logger.notice( `git deletion hash: ${ deletionCommitHash }` );
 
 		Logger.notice( `Updating readme.txt in ${ tmpRepoPath }` );
-		await updateReleaseChangelogs( options.override, options.appendChangelog, tmpRepoPath );
+		await updateReleaseChangelogs(
+			options.override,
+			options.appendChangelog,
+			tmpRepoPath
+		);
 
 		Logger.notice(
 			`Committing readme.txt changes in ${ branch } on ${ tmpRepoPath }`
