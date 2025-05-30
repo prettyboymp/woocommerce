@@ -382,7 +382,7 @@ if ( ! function_exists( 'wc_shipping_enabled' ) ) {
 	 * @return bool
 	 */
 	function wc_shipping_enabled() {
-		return apply_filters( 'woocommerce_is_filtered', ( count( WC_Query::get_layered_nav_chosen_attributes() ) > 0 || isset( $_GET['max_price'] ) || isset( $_GET['min_price'] ) || isset( $_GET['rating_filter'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WooCommerce.Commenting.CommentHooks.MissingHookComment
+		return apply_filters( 'wc_shipping_enabled', get_option( 'woocommerce_ship_to_countries' ) !== 'disabled' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WooCommerce.Commenting.CommentHooks.MissingHookComment
 	}
 }
 
