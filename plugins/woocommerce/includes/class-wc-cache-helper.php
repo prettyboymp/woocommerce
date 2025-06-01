@@ -128,7 +128,7 @@ class WC_Cache_Helper {
 		if ( ! is_blog_installed() ) {
 			return;
 		}
-		$page_ids = array_filter( array( wc_get_page_id( 'cart' ), wc_get_page_id( 'checkout' ), wc_get_page_id( 'myaccount' ) ) );
+		$page_ids = array_filter( array( wc_get_page_id( 'checkout' ), wc_get_page_id( 'myaccount' ) ) );
 
 		if ( is_page( $page_ids ) ) {
 			self::set_nocache_constants();
