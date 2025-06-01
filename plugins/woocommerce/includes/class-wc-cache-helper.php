@@ -52,7 +52,17 @@ class WC_Cache_Helper {
 		$set_cache = (bool) apply_filters( 'woocommerce_enable_nocache_headers', false );
 
 		if ( $set_cache ) {
-			$headers['Cache-Control'] = 'no-transform, no-cache, no-store, must-revalidate';
+			$new_directives = array(
+				'no-transform',
+				'no-cache',
+				'no-store',
+				'must-revalidate',
+			);
+			$old_directives = array();
+			if ( isset( $headers['Cache-Control'] ) ) {
+				$old_directives = preg_split( '/\s*,\s*/', $headers['Cache-Control'] );
+			}
+			$headers['Cache-Control'] = implode( ', ', array_unique( array_merge( $old_directives, $new_directives ) ) );
 		}
 		return $headers;
 	}
