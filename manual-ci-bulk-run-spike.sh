@@ -20,13 +20,13 @@ skipped=( $( printf '%s\n' "${skipped[@]}" | sort ) )
 echo ''
 
 # Report the skipped repositories.
-echo "Skipping due to missing target workflows (${#skipped[@]} repos)"
+echo "Skipping due to missing target workflows (${#skipped[@]} repo(s))"
 for repository in ${skipped[@]}; do
 	echo "    -- $repository"
 done
 
 # Run checks for the target repositories.
-echo "Launching checks (${#filtered[@]} repos)"
+echo "Launching checks (${#filtered[@]} repo(s))"
 for repository in ${filtered[@]}; do
 	echo -n "    -- $repository:"
 
