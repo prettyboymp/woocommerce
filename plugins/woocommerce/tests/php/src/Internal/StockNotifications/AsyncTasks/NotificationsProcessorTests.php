@@ -490,7 +490,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$this->assertNotEmpty(
 			WC()->queue()->get_next(
 				NotificationsProcessor::AS_JOB_SEND_STOCK_NOTIFICATIONS,
-				array( 'args' => array( 'product_id' => $product->get_id() ) ),
+				array( 'product_id' => $product->get_id() ),
 				NotificationsProcessor::AS_JOB_GROUP
 			)
 		);
@@ -508,7 +508,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$this->assertNotEmpty(
 			WC()->queue()->get_next(
 				NotificationsProcessor::AS_JOB_SEND_STOCK_NOTIFICATIONS,
-				array( 'args' => array( 'product_id' => $product->get_id() ) ),
+				array( 'product_id' => $product->get_id() ),
 				NotificationsProcessor::AS_JOB_GROUP
 			)
 		);
@@ -521,7 +521,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$this->assertEmpty(
 			WC()->queue()->get_next(
 				NotificationsProcessor::AS_JOB_SEND_STOCK_NOTIFICATIONS,
-				array( 'args' => array( 'product_id' => $product->get_id() ) ),
+				array( 'product_id' => $product->get_id() ),
 				NotificationsProcessor::AS_JOB_GROUP
 			)
 		);
@@ -541,7 +541,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$this->assertEmpty(
 			WC()->queue()->get_next(
 				NotificationsProcessor::AS_JOB_SEND_STOCK_NOTIFICATIONS,
-				array( 'args' => array( 'product_id' => $product->get_id() ) ),
+				array( 'product_id' => $product->get_id() ),
 				NotificationsProcessor::AS_JOB_GROUP
 			)
 		);
