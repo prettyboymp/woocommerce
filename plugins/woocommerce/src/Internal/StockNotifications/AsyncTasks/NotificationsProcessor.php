@@ -104,7 +104,7 @@ class NotificationsProcessor {
 
 		try {
 
-			if ( WC()->queue()->get_next( self::AS_JOB_SEND_STOCK_NOTIFICATIONS, array( 'args' => $args ), self::AS_JOB_GROUP ) ) {
+			if ( WC()->queue()->get_next( self::AS_JOB_SEND_STOCK_NOTIFICATIONS, $args, self::AS_JOB_GROUP ) ) {
 				return false;
 			}
 
@@ -124,7 +124,7 @@ class NotificationsProcessor {
 			$action_id = WC()->queue()->schedule_single(
 				time() + $delay,
 				self::AS_JOB_SEND_STOCK_NOTIFICATIONS,
-				array( 'args' => $args ),
+				$args,
 				self::AS_JOB_GROUP
 			);
 
@@ -157,7 +157,7 @@ class NotificationsProcessor {
 	private function schedule_next_batch( int $product_id ): bool {
 		$scheduled = WC()->queue()->add(
 			self::AS_JOB_SEND_STOCK_NOTIFICATIONS,
-			array( 'args' => array( 'product_id' => $product_id ) ),
+			array( 'product_id' => $product_id ),
 			self::AS_JOB_GROUP
 		);
 
