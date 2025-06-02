@@ -535,6 +535,14 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 	 * Test process_batch method on a product with a notification that is skipped.
 	 */
 	public function test_process_batch_skipped() {
+
+		tests_add_filter(
+			'woocommerce_stock_notifications_batch_size',
+			function () {
+				return 1;
+			}
+		);
+
 		$product = WC_Helper_Product::create_simple_product();
 		$product->set_status( ProductStatus::DRAFT );
 		$product->save();
@@ -546,6 +554,25 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$notification->save();
 
 		$this->assertTrue( $product->is_in_stock() );
+		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
+
+		// Test that the notification is not sent.
+		$notification = new Notification( $notification->get_id() );
+		$this->assertEquals( NotificationStatus::ACTIVE, $notification->get_status() );
+		$this->assertEmpty( $notification->get_date_notified() );
+		$this->assertEqualsWithDelta( time(), $notification->get_date_last_attempt()->getTimestamp(), 5 );
+
+		// Considering batch size is 1, there will be another job scheduled to wrap up the cycle.
+		$this->assertNotEmpty(
+			WC()->queue()->get_next(
+				NotificationsProcessor::AS_JOB_SEND_STOCK_NOTIFICATIONS,
+				array( 'product_id' => $product->get_id() ),
+				NotificationsProcessor::AS_JOB_GROUP
+			)
+		);
+		WC()->queue()->cancel_all( NotificationsProcessor::AS_JOB_SEND_STOCK_NOTIFICATIONS );
+
+		// Run the next job.
 		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
 
 		// Test that the notification is not sent.
