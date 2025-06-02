@@ -186,16 +186,16 @@ class NotificationsProcessor {
 	/**
 	 * Parse the product ID from the arguments.
 	 *
-	 * @param array $args The arguments for the batch.
+	 * @param int $product_id The product ID.
 	 * @return int
 	 * @throws \Exception If the product is not found.
 	 */
-	private function parse_args( $args ): int {
-		if ( ! is_array( $args ) || ! isset( $args['product_id'] ) || ! is_numeric( $args['product_id'] ) ) {
+	private function parse_args( $product_id ): int {
+		if ( empty( $product_id ) || ! is_numeric( $product_id ) ) {
 			throw new \Exception( 'Invalid arguments.' );
 		}
 
-		$product_id = (int) $args['product_id'];
+		$product_id = (int) $product_id;
 		if ( $product_id <= 0 ) {
 			throw new \Exception( 'Product ID is required.' );
 		}
