@@ -397,6 +397,10 @@ class NotificationsProcessor {
 			$notification->save();
 		}
 
+		print_r( 'count: ' . count( $notifications ) );
+		print_r( 'cycle_state: ' . print_r( $cycle_state, true ) );
+		print_r( 'batch_size: ' . $this->get_batch_size() );
+
 		if ( count( $notifications ) === $this->get_batch_size() ) {
 			$this->save_cycle_state( $product_id, $cycle_state );
 			$this->schedule_next_batch( $product_id );

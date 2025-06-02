@@ -414,13 +414,14 @@ CREATE TABLE $meta_table_name (
 		$args = wp_parse_args(
 			$args,
 			array(
-				'status'     => '',
-				'product_id' => array(),
-				'user_id'    => 0,
-				'user_email' => '',
-				'limit'      => -1,
-				'offset'     => 0,
-				'return'     => 'ids', // i.e. 'count', 'ids', 'objects'.
+				'status'             => '',
+				'product_id'         => array(),
+				'user_id'            => 0,
+				'user_email'         => '',
+				'last_attempt_limit' => 0,
+				'limit'              => -1,
+				'offset'             => 0,
+				'return'             => 'ids', // i.e. 'count', 'ids', 'objects'.
 			)
 		);
 
@@ -454,6 +455,11 @@ CREATE TABLE $meta_table_name (
 		if ( $args['user_email'] ) {
 			$where[]        = 'user_email = %s';
 			$where_values[] = esc_sql( $args['user_email'] );
+		}
+
+		if ( $args['last_attempt_limit'] > 0 ) {
+			$where[]        = '(date_last_attempt_gmt < %s OR date_last_attempt_gmt IS NULL)';
+			$where_values[] = gmdate( 'Y-m-d H:i:s', $args['last_attempt_limit'] );
 		}
 
 		// Assemble the query.
