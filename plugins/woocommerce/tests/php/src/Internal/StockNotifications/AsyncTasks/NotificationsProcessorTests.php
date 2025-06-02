@@ -106,22 +106,22 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 	 * Test parse_args method.
 	 */
 	public function test_parse_args() {
-		$args   = array( 'product_id' => 123 );
-		$method = $this->get_private_method( $this->sut, 'parse_args' );
-		$result = $method->invokeArgs( $this->sut, array( $args ) );
+		$product_id = 123;
+		$method     = $this->get_private_method( $this->sut, 'parse_args' );
+		$result     = $method->invokeArgs( $this->sut, array( $product_id ) );
 		$this->assertEquals( 123, $result );
 
-		$args = array( 'product_id' => 0 );
+		$product_id = 0;
 		$this->expectException( \Exception::class );
-		$method->invokeArgs( $this->sut, array( $args ) );
+		$method->invokeArgs( $this->sut, array( $product_id ) );
 
-		$args = array( 'product_id' => 'test' );
+		$product_id = 'test';
 		$this->expectException( \Exception::class );
-		$method->invokeArgs( $this->sut, array( $args ) );
+		$method->invokeArgs( $this->sut, array( $product_id ) );
 
-		$args = array( 'product_id' => array() );
+		$product_id = array();
 		$this->expectException( \Exception::class );
-		$method->invokeArgs( $this->sut, array( $args ) );
+		$method->invokeArgs( $this->sut, array( $product_id ) );
 	}
 
 	/**
@@ -198,7 +198,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$notification->set_status( NotificationStatus::ACTIVE );
 		$notification->save();
 
-		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
+		$this->sut->process_batch( $product->get_id() );
 		$this->assertFalse( get_option( NotificationsProcessor::STATE_OPTION_PREFIX . $product->get_id() ) );
 
 		// Test that the notification is sent.
@@ -211,7 +211,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$this->assertEmpty(
 			WC()->queue()->get_next(
 				NotificationsProcessor::AS_JOB_SEND_STOCK_NOTIFICATIONS,
-				array( 'args' => array( 'product_id' => $product->get_id() ) ),
+				array( 'product_id' => $product->get_id() ),
 				NotificationsProcessor::AS_JOB_GROUP
 			)
 		);
@@ -236,7 +236,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$notification->set_status( NotificationStatus::ACTIVE );
 		$notification->save();
 
-		$this->sut->process_batch( array( 'product_id' => $variation->get_id() ) );
+		$this->sut->process_batch( $variation->get_id() );
 
 		// Refetch notification.
 		$notification = new Notification( $notification->get_id() );
@@ -275,7 +275,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$notification_on_variation->set_status( NotificationStatus::ACTIVE );
 		$notification_on_variation->save();
 
-		$this->sut->process_batch( array( 'product_id' => $variable->get_id() ) );
+		$this->sut->process_batch( $variable->get_id() );
 
 		// Refetch notifications.
 		$notification              = new Notification( $notification->get_id() );
@@ -298,7 +298,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$notification->set_status( NotificationStatus::ACTIVE );
 		$notification->save();
 
-		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
+		$this->sut->process_batch( $product->get_id() );
 		$this->assertFalse( get_option( NotificationsProcessor::STATE_OPTION_PREFIX . $product->get_id() ) );
 
 		// Test that the notification is not sent.
@@ -311,7 +311,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$this->assertEmpty(
 			WC()->queue()->get_next(
 				NotificationsProcessor::AS_JOB_SEND_STOCK_NOTIFICATIONS,
-				array( 'args' => array( 'product_id' => $product->get_id() ) ),
+				array( 'product_id' => $product->get_id() ),
 				NotificationsProcessor::AS_JOB_GROUP
 			)
 		);
@@ -331,7 +331,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$notification->set_status( NotificationStatus::ACTIVE );
 		$notification->save();
 
-		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
+		$this->sut->process_batch( $product->get_id() );
 		$this->assertFalse( get_option( NotificationsProcessor::STATE_OPTION_PREFIX . $product->get_id() ) );
 
 		// Test that the notification is not sent.
@@ -344,7 +344,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$this->assertEmpty(
 			WC()->queue()->get_next(
 				NotificationsProcessor::AS_JOB_SEND_STOCK_NOTIFICATIONS,
-				array( 'args' => array( 'product_id' => $product->get_id() ) ),
+				array( 'product_id' => $product->get_id() ),
 				NotificationsProcessor::AS_JOB_GROUP
 			)
 		);
@@ -361,7 +361,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$notification->set_status( NotificationStatus::PENDING );
 		$notification->save();
 
-		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
+		$this->sut->process_batch( $product->get_id() );
 		$this->assertFalse( get_option( NotificationsProcessor::STATE_OPTION_PREFIX . $product->get_id() ) );
 
 		// Test that the notification is not sent.
@@ -374,7 +374,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$this->assertEmpty(
 			WC()->queue()->get_next(
 				NotificationsProcessor::AS_JOB_SEND_STOCK_NOTIFICATIONS,
-				array( 'args' => array( 'product_id' => $product->get_id() ) ),
+				array( 'product_id' => $product->get_id() ),
 				NotificationsProcessor::AS_JOB_GROUP
 			)
 		);
@@ -391,7 +391,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$notification->set_status( NotificationStatus::CANCELLED );
 		$notification->save();
 
-		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
+		$this->sut->process_batch( $product->get_id() );
 
 		// Test that the notification is not sent.
 		$notification = new Notification( $notification->get_id() );
@@ -403,7 +403,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$this->assertEmpty(
 			WC()->queue()->get_next(
 				NotificationsProcessor::AS_JOB_SEND_STOCK_NOTIFICATIONS,
-				array( 'args' => array( 'product_id' => $product->get_id() ) ),
+				array( 'product_id' => $product->get_id() ),
 				NotificationsProcessor::AS_JOB_GROUP
 			)
 		);
@@ -420,7 +420,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$notification->set_status( NotificationStatus::ACTIVE );
 		$notification->save();
 
-		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
+		$this->sut->process_batch( $product->get_id() );
 
 		// Test that the notification is sent the first time.
 		$notification = new Notification( $notification->get_id() );
@@ -432,7 +432,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$notification->set_status( NotificationStatus::ACTIVE );
 		$notification->save();
 
-		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
+		$this->sut->process_batch( $product->get_id() );
 
 		// Test that the notification is throttled for the second time.
 		$notification = new Notification( $notification->get_id() );
@@ -443,7 +443,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$this->assertEmpty(
 			WC()->queue()->get_next(
 				NotificationsProcessor::AS_JOB_SEND_STOCK_NOTIFICATIONS,
-				array( 'args' => array( 'product_id' => $product->get_id() ) ),
+				array( 'product_id' => $product->get_id() ),
 				NotificationsProcessor::AS_JOB_GROUP
 			)
 		);
@@ -472,7 +472,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$notification2->set_status( NotificationStatus::ACTIVE );
 		$notification2->save();
 
-		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
+		$this->sut->process_batch( $product->get_id() );
 
 		// Test that the notification is sent.
 		$notification = new Notification( $notification->get_id() );
@@ -500,7 +500,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$this->assertNotEmpty( get_option( NotificationsProcessor::STATE_OPTION_PREFIX . $product->get_id() ) );
 
 		// Run the next job.
-		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
+		$this->sut->process_batch( $product->get_id() );
 
 		// Test that the notification is sent.
 		$notification2 = new Notification( $notification2->get_id() );
@@ -518,7 +518,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		WC()->queue()->cancel_all( NotificationsProcessor::AS_JOB_SEND_STOCK_NOTIFICATIONS );
 
 		// Run the next job.
-		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
+		$this->sut->process_batch( $product->get_id() );
 
 		// Test there is no next job.
 		$this->assertEmpty(
@@ -554,7 +554,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		$notification->save();
 
 		$this->assertTrue( $product->is_in_stock() );
-		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
+		$this->sut->process_batch( $product->get_id() );
 
 		// Test that the notification is not sent.
 		$notification = new Notification( $notification->get_id() );
@@ -573,7 +573,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 		WC()->queue()->cancel_all( NotificationsProcessor::AS_JOB_SEND_STOCK_NOTIFICATIONS );
 
 		// Run the next job.
-		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
+		$this->sut->process_batch( $product->get_id() );
 
 		// Test that the notification is not sent.
 		$notification = new Notification( $notification->get_id() );
@@ -597,7 +597,7 @@ class NotificationsProcessorTests extends WC_Unit_Test_Case {
 	public function test_process_batch_no_notifications() {
 		$product = WC_Helper_Product::create_simple_product();
 
-		$this->sut->process_batch( array( 'product_id' => $product->get_id() ) );
+		$this->sut->process_batch( $product->get_id() );
 
 		$this->assertFalse( get_option( NotificationsProcessor::STATE_OPTION_PREFIX . $product->get_id() ) );
 

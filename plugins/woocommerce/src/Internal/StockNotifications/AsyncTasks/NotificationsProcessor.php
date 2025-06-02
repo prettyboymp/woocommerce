@@ -275,8 +275,8 @@ class NotificationsProcessor {
 	/**
 	 * Complete the cycle.
 	 *
-	 * @param int   $product_id The product ID.
-	 * @param array $cycle_state The cycle state.
+	 * @param int|string $product_id The product ID.
+	 * @param array      $cycle_state The cycle state.
 	 * @return void
 	 */
 	private function complete_cycle( int $product_id, array $cycle_state ): void {
@@ -287,7 +287,9 @@ class NotificationsProcessor {
 			array( 'source' => 'wc-stock-notifications' )
 		);
 
-		delete_option( self::STATE_OPTION_PREFIX . $product_id );
+		if ( $product_id > 0 ) {
+			delete_option( self::STATE_OPTION_PREFIX . $product_id );
+		}
 	}
 
 	/**
@@ -298,24 +300,28 @@ class NotificationsProcessor {
 	 * @return void
 	 */
 	private function save_cycle_state( int $product_id, array $cycle_state ): void {
+		if ( $product_id <= 0 ) {
+			return;
+		}
+
 		update_option( self::STATE_OPTION_PREFIX . $product_id, $cycle_state, false );
 	}
 
 	/**
 	 * Process a batch of notifications.
 	 *
-	 * @param array $args The arguments for the batch.
+	 * @param int $product_id The product ID from AS job args.
 	 * @return void
 	 */
-	public function process_batch( $args ) {
+	public function process_batch( $product_id ) {
 
 		// Sanity checks.
 		try {
-			$product_id  = $this->parse_args( $args );
+			$product_id  = $this->parse_args( $product_id );
 			$cycle_state = $this->parse_cycle_state( $product_id );
 			$product     = $this->parse_product( $product_id );
 		} catch ( \Throwable $e ) {
-			$product_id = $args['product_id'] ?? 'unknown';
+			$product_id = (int) $product_id ?? 0;
 			$this->logger->error(
 				sprintf( 'Background process for product %s terminated. Reason: %s', $product_id, $e->getMessage() ),
 				array(
