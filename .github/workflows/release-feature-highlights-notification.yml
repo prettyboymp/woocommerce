@@ -1,0 +1,83 @@
+name: 'Release: Feature highlight notification'
+on:
+  schedule:
+    - cron: '0 9 * * *' # Every day at 9 AM UTC
+  workflow_dispatch:
+
+jobs:
+  check-ff-releases:
+    runs-on: ubuntu-latest
+    outputs:
+      ff-event: ${{ steps.ff-check.outputs.ff-event }}
+      ff-version: ${{ steps.ff-check.outputs.ff-version }}
+    steps:
+      - name: Check for Feature Freeze events in a week
+        id: ff-check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const aWeekFromNow = new Date();
+            aWeekFromNow.setDate((new Date()).getDate() + 7);
+            const ffDayStart = new Date(aWeekFromNow.setUTCHours(0, 0, 0, 0)).toISOString();
+            const ffDayEnd = new Date(aWeekFromNow.setUTCHours(23, 59, 59, 999)).toISOString();
+            
+            console.log('Checking for Feature Freeze events in a week...');
+            
+            try {
+              const url = `https://www.googleapis.com/calendar/v3/calendars/${{ secrets.CALENDAR_ID }}/events?key=${{ secrets.GOOGLE_API_KEY }}&timeMin=${ffDayStart}&timeMax=${ffDayEnd}&singleEvents=true&orderBy=startTime&q=Feature%20Freeze&fields=items(summary,start/date)`;
+              const response = await fetch(url);
+              const data = await response.json();
+              
+              if (data.items && data.items.length > 0) {
+                console.log(`Found ${data.items.length} events`);
+                
+                const ffEvent = data.items.find(event => {
+                  if (!event.summary) return false;
+                  // Match pattern: "WooCommerce X.Y Feature Freeze" where X and Y are numbers
+                  const pattern = /^WooCommerce \d+\.\d+ Feature Freeze$/i;
+                  return pattern.test(event.summary);
+                });
+                
+                if (ffEvent) {
+                  console.log(`Found Feature Freeze event: ${ffEvent.summary}`);
+
+                  const versionMatch = ffEvent.summary.match(/WooCommerce (\d+\.\d+) Feature Freeze/i);
+                  const version = versionMatch ? versionMatch[1] : '';
+
+                  core.setOutput('ff-event', JSON.stringify(ffEvent));
+                  core.setOutput('ff-version', version);
+                  console.log(`Feature Freeze event for version ${version} found:`, ffEvent);
+                } else {
+                  console.log('No Feature Freeze events found in the filtered results.');
+                  core.setOutput('ff-event', '');
+                }
+              } else {
+                console.log('No events found in the next week.');
+                core.setOutput('ff-event', '');
+              }
+              
+            } catch (error) {
+              console.error('Error fetching calendar events:', error);
+              core.setFailed(`Failed to fetch calendar events: ${error.message}`);
+            }
+
+  notify-upcoming-ff:
+    needs: check-ff-releases
+    if: needs.check-ff-releases.outputs.ff-event != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Feature Freeze reminder notification
+        uses: archive/github-actions-slack@v2.10.0
+        with:
+          slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
+          slack-channel: ${{ secrets.WOO_RELEASE_SLACK_CHANNEL }}
+          slack-optional-unfurl_links: false
+          slack-text: |
+            :megaphone1: Hey teams!
+            The feature freeze for *${{ fromJson(needs.check-ff-releases.outputs.ff-event).summary }}* is scheduled for *${{ fromJson(needs.check-ff-releases.outputs.ff-event).start.date }}, by EOD (UTC)*.
+            If your team has contributed changes to *${{ needs.check-ff-releases.outputs.ff-version }}* kindly review your work and, if needed, share a *Feature Highlight* or *Developer Advisory* for the beta announcement post by <https://woocorerelease.wordpress.com/?start=feature-highlight|using the format in the release P2>.
+            You can <https://github.com/woocommerce/woocommerce/pulls?q=is%3Apr+milestone%3A${{ needs.check-ff-releases.outputs.ff-version }}.0+is%3Aclosed+author%3A%40me+|review a list of your own ${{ needs.check-ff-releases.outputs.ff-version }} PRs> to identify if any of those contributions merits a post.
+            
+            :scribbl-clock: *Please aim to submit your highlights by ${{ fromJson(needs.check-ff-releases.outputs.ff-event).start.date }}, end of day*. Thanks!
+            
+            cc <@woo-developer-advocacy-team>
