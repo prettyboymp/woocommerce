@@ -30,7 +30,7 @@ jobs:
         env:
             CANONICAL_EXTENSIONS: ${{ vars.CANONICAL_EXTENSIONS }}
         run: |
-            readarray -t repositories < <(echo $CANONICAL_EXTENSIONS)
+            IFS=$'\n'; readarray -t repositories < <(echo $CANONICAL_EXTENSIONS)
             for repository in ${repositories[@]}; do
                 echo "$repository"
             done
