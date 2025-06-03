@@ -33,6 +33,7 @@ jobs:
         env:
             # TODO: move from vars to secrets after testing is complete
             CANONICAL_EXTENSIONS: ${{ vars.CANONICAL_EXTENSIONS }}
+            GH_TOKEN: ${{ github.token }}
         run: |
             IFS=$'\n' readarray -t repositories < <(echo $CANONICAL_EXTENSIONS)
           
