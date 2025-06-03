@@ -39,7 +39,7 @@ for repository in ${filtered[@]}; do
 
 	# Report last run details.
 	previous_run=$( gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${repository/"https://github.com/"/}/actions/workflows/${workflow_id}/runs?per_page=1 --jq '.workflow_runs.[].id' )
-	echo -n " new run #${previous_run} "
+	echo -n " previous run #${previous_run} "
 
 	# Start a new run and report back.
 	echo '{"wc-version":"9.9.0-rc.1", "qit-tests":"WooCommerce Pre-Release Tests (includes Activation, WooCommerce E2E and API tests)"}' | gh workflow run ${workflow_id} --json --repo $repository >/dev/null 2>&1
@@ -48,7 +48,7 @@ for repository in ${filtered[@]}; do
 	    last_run=$( gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${repository/"https://github.com/"/}/actions/workflows/${workflow_id}/runs?per_page=1 --jq '.workflow_runs.[].id' )
 	    if [[ $last_run != $previous_run ]]; then
 	    	running+=( "$repository;${last_run}" )
-	    	echo -n " running #${last_run}"
+	    	echo -n " new run #${last_run}"
 	    	break
 	    fi
 	done
