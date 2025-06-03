@@ -1,17 +1,34 @@
 name: 'Release: Notify in Slack when a new (pre)release is published'
 on:
-  release:
-    types: [published]
+  #release:
+  #  types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version.'
+        required: true
 
 jobs:
   notify-release-published:
     runs-on: ubuntu-latest
-
     steps:
       - name: 'Notify to Slack when a new release is published'
+        if: ${{ 'false' }}
         uses: archive/github-actions-slack@v2.10.0
         with:
           slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
           slack-channel: ${{ secrets.WOO_RELEASE_SLACK_CHANNEL }},${{ secrets.WOO_ANNOUNCEMENTS_SLACK_CHANNEL }}
           slack-optional-unfurl_links: false
           slack-text: ':woo-bounce: *<${{ github.event.release.html_url }}|WooCommerce ${{ github.event.release.name }}>* has been released! :rocket:'
+
+  run-canonical-extensions-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Run tests on the canonical extensions'
+        shell: bash
+        run: |
+            readarray -t repositories < <(echo $CANONICAL_EXTENSIONS)
+            for repository in ${repositories[@]}; do
+                echo "$repository"
+            done
+            exit 0
