@@ -43,7 +43,6 @@ jobs:
             skipped=()
             echo -n "Looking up repositories (${#repositories[@]}): "
             for repository in ${repositories[@]}; do
-                # TODO: for testing purposes we treat access issues as skipped repos
                 match=$( ( gh workflow list --json path --jq '.[].path' --repo $repository | grep -E '.github/workflows/(manual-ci.yml|ci-manual.yml)' | wc -l ) || echo '0' )
                 if [[ $match == '1' ]]; then
                     filtered+=( $repository )
@@ -57,7 +56,7 @@ jobs:
             echo ''
   
             # Report the skipped repositories.
-            echo "Skipping due to missing target workflows (${#skipped[@]} repo(s))"
+            echo "Skipping due to missing target workflows or access permissions (${#skipped[@]} repo(s))"
             for repository in ${skipped[@]}; do
                 echo "    -- ${repository##*/}"
             done
