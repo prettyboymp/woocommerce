@@ -56,7 +56,7 @@ for repository in ${filtered[@]}; do
 	echo ''
 done
 
-echo "Waiting for completion (${#running[@]} run(s), 1 min check interval, takes at least 40 min): "
+echo "Waiting for completion (${#running[@]} run(s), 1 min check interval, takes at least 40 min):" && echo -n '    '
 result=()
 while [ ${#running[@]} -gt 0 ]; do
 	echo -n '.' && sleep 1m
@@ -66,12 +66,13 @@ while [ ${#running[@]} -gt 0 ]; do
 		repository=${fragments[0]}
 		id=${fragments[1]}
 		status=$( gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${repository/"https://github.com/"/}/actions/runs/$id --jq '.status' )
+		# https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/about-status-checks#check-statuses-and-conclusions
 		if [[ $status == 'completed' ]] || [[ $status == 'failure' ]] || [[ $status == 'startup_failure' ]]; then
 			if [[ $status == 'completed' ]]; then
 				conclusion=$( gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${repository/"https://github.com/"/}/actions/runs/$id --jq '.conclusion' )
 				status="$status:$conclusion"
 			fi
-			echo -n '*'
+			echo -n '✓'
 			result+=( "$entry;$status" )
 		else
 			temp+=( $entry )
@@ -79,8 +80,10 @@ while [ ${#running[@]} -gt 0 ]; do
 	done
 	running=( "${temp[@]}" )
 done
+echo ''
 
 echo "All runs completed:"
 for entry in ${result[@]}; do
-	echo $entry
+	fragments=( ${entry//;/ } )
+	echo "    -- ${fragments[0]##*/}: status ${fragments[2]} (run ##${fragments[1]})"
 done
