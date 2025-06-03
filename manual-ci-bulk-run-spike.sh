@@ -66,8 +66,9 @@ while [ ${#running[@]} -gt 0 ]; do
 		id=${fragments[1]}
 		status=$( gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${repository/"https://github.com/"/}/actions/runs/$id --jq '.status' )
 		if [[ $status == 'completed' ]] || [[ $status == 'failure' ]] || [[ $status == 'startup_failure' ]]; then
+			echo -n "*($status)"
+		else
 			updated+=( $entry )
-			echo -n '*'
 		fi
 	done
 	running=( "${updated[@]}" )
