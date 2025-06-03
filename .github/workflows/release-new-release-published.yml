@@ -35,7 +35,7 @@ jobs:
             CANONICAL_EXTENSIONS: ${{ vars.CANONICAL_EXTENSIONS }}
             GH_TOKEN: ${{ github.token }}
         run: |
-            IFS=$'\n' readarray -t repositories < <(echo $CANONICAL_EXTENSIONS)
+            IFS=$'\n' readarray -t repositories < <( echo $CANONICAL_EXTENSIONS | tr -d '\r' )
           
             # Sort out which repositories provide the necessary workflows first.
             filtered=()
