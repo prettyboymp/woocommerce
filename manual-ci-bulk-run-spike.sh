@@ -81,6 +81,6 @@ while [ ${#running[@]} -gt 0 ]; do
 done
 
 echo "All runs completed:"
-for entry in ${running[@]}; do
+for entry in ${result[@]}; do
 	echo $entry
 done
