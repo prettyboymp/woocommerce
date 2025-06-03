@@ -33,7 +33,8 @@ jobs:
         env:
             # TODO: move from vars to secrets after testing is complete
             CANONICAL_EXTENSIONS: ${{ vars.CANONICAL_EXTENSIONS }}
-            GH_TOKEN: ${{ secrets.PR_ASSIGN_TOKEN }}
+            # TODO: use PAT, so the script can reach max of orgs hosting the extensions
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
             IFS=$'\n' readarray -t repositories < <( echo $CANONICAL_EXTENSIONS | tr -d '\r' )
           
@@ -42,8 +43,8 @@ jobs:
             skipped=()
             echo -n "Looking up repositories (${#repositories[@]}): "
             for repository in ${repositories[@]}; do
-                echo "Looking up $repository"
-                match=$( gh workflow list --json path --jq '.[].path' --repo $repository | grep -E '.github/workflows/(manual-ci.yml|ci-manual.yml)' | wc -l )
+                # TODO: for testing purposes we treat access issues as skipped repos
+                match=$( ( gh workflow list --json path --jq '.[].path' --repo $repository | grep -E '.github/workflows/(manual-ci.yml|ci-manual.yml)' | wc -l ) || echo '0' )
                 if [[ $match == '1' ]]; then
                     filtered+=( $repository )
                 else
