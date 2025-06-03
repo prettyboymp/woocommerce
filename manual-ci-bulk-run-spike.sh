@@ -56,7 +56,7 @@ for repository in ${filtered[@]}; do
 	echo ''
 done
 
-echo "Waiting for completion (${#running[@]} run(s), 1 min check interval, takes at least 40 mins): "
+echo "Waiting for completion (${#running[@]} run(s), 1 min check interval, takes at least 40 min): "
 result=()
 while [ ${#running[@]} -gt 0 ]; do
 	echo -n '.' && sleep 1m
