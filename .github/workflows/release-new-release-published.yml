@@ -28,9 +28,9 @@ jobs:
       - name: 'Run tests on the canonical extensions'
         shell: bash
         env:
-          CANONICAL_EXTENSIONS: ${{ env.CANONICAL_EXTENSIONS }}
+          LIST: ${{ CANONICAL_EXTENSIONS }}
         run: |
-            readarray -t repositories < <(echo $CANONICAL_EXTENSIONS)
+            readarray -t repositories < <(echo $LIST)
             for repository in ${repositories[@]}; do
                 echo "$repository"
             done
