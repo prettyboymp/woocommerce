@@ -57,9 +57,10 @@ for repository in ${filtered[@]}; do
 done
 
 echo "Waiting for completion (${#running[@]} run(s), 1 min check interval, takes at least 45 mins): "
+result=()
 while [ ${#running[@]} -gt 0 ]; do
 	echo -n '.' && sleep 1m
-	updated=()
+	temp=()
 	for entry in ${running[@]}; do
 		fragments=( ${entry//;/ } )
 		repository=${fragments[0]}
@@ -70,10 +71,11 @@ while [ ${#running[@]} -gt 0 ]; do
 				conclusion=$( gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${repository/"https://github.com/"/}/actions/runs/$id --jq '.conclusion' )
 				status="$status:$conclusion"
 			fi
-			echo -n "*($status)"
+			echo -n '*'
+			result+=( "$entry;$status" )
 		else
-			updated+=( $entry )
+			temp+=( $entry )
 		fi
 	done
-	running=( "${updated[@]}" )
+	running=( "${temp[@]}" )
 done
