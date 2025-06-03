@@ -22,20 +22,20 @@ echo ''
 # Report the skipped repositories.
 echo "Skipping due to missing target workflows (${#skipped[@]} repo(s))"
 for repository in ${skipped[@]}; do
-	echo "    -- $repository"
+	echo "    -- ${repository##*/}"
 done
 
 # Run checks for the target repositories.
 running=()
 echo "Launching checks (${#filtered[@]} repo(s))"
 for repository in ${filtered[@]}; do
-	echo -n "    -- $repository:"
+	echo -n "    -- ${repository##*/}:"
 
 	# Report identified workflow details.
 	workflow=$( gh workflow list --json path,id --repo $repository | jq --compact-output '.[]' | grep -E '.github/workflows/(manual-ci.yml|ci-manual.yml)' )
 	workflow_path=$( echo $workflow | jq --raw-output '( .path )' )
 	workflow_id=$( echo $workflow | jq --raw-output '( .id )' )
-	echo -n " workflow ${workflow_path}(${workflow_id})"
+	echo -n " workflow ${workflow_path} (#${workflow_id})"
 
 	# Report last run details.
 	previous_run=$( gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${repository/"https://github.com/"/}/actions/workflows/${workflow_id}/runs?per_page=1 --jq '.workflow_runs.[].id' )
