@@ -34,7 +34,7 @@ jobs:
             # TODO: move from vars to secrets after testing is complete
             CANONICAL_EXTENSIONS: ${{ vars.CANONICAL_EXTENSIONS }}
             # TODO: use PAT, so the script can reach max of orgs hosting the extensions
-            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GH_TOKEN: ${{ secrets.PAT_CANONICAL_EXTENSIONS_TESTING }}
         run: |
             IFS=$'\n' readarray -t repositories < <( echo $CANONICAL_EXTENSIONS | tr -d '\r' )
           
