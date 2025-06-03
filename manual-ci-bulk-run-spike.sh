@@ -79,3 +79,8 @@ while [ ${#running[@]} -gt 0 ]; do
 	done
 	running=( "${temp[@]}" )
 done
+
+echo "All runs completed:"
+for entry in ${running[@]}; do
+	echo $entry
+done
