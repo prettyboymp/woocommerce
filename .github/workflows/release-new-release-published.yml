@@ -31,10 +31,32 @@ jobs:
       - name: 'Run tests on the canonical extensions'
         shell: bash
         env:
+            # TODO: move from vars to secrets after testing is complete
             CANONICAL_EXTENSIONS: ${{ vars.CANONICAL_EXTENSIONS }}
         run: |
             IFS=$'\n' readarray -t repositories < <(echo $CANONICAL_EXTENSIONS)
+          
+            # Sort out which repositories provide the necessary workflows first.
+            filtered=()
+            skipped=()
+            echo -n "Looking up repositories (${#repositories[@]}): "
             for repository in ${repositories[@]}; do
-                echo "Repo: $repository"
+                match=$( gh workflow list --json path --jq '.[].path' --repo $repository | grep -E '.github/workflows/(manual-ci.yml|ci-manual.yml)' | wc -l )
+                if [[ $match == '1' ]]; then
+                    filtered+=( $repository )
+                else
+                    skipped+=( $repository )
+                fi
+                echo -n '.'
             done
-            exit 0
+            filtered=( $( printf '%s\n' "${filtered[@]}" | sort ) )
+            skipped=( $( printf '%s\n' "${skipped[@]}" | sort ) )
+            echo ''
+  
+            # Report the skipped repositories.
+            echo "Skipping due to missing target workflows (${#skipped[@]} repo(s))"
+            for repository in ${skipped[@]}; do
+                echo "    -- ${repository##*/}"
+            done
+
+            # TODO: further relocate the test script.
