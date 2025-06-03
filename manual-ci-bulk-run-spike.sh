@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# TODO: read from CI env-variable
 readarray -t repositories < manual-ci-bulk-run-spike.txt
 
 # Sort out which repositories provide the necessary workflows first.
