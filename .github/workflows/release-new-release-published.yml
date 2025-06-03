@@ -35,6 +35,6 @@ jobs:
         run: |
             IFS=$'\n'; readarray -t repositories < <(echo $CANONICAL_EXTENSIONS)
             for repository in ${repositories[@]}; do
-                echo "$repository"
+                echo "Repo: $repository"
             done
             exit 0
