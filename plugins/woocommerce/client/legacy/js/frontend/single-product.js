@@ -263,6 +263,24 @@ jQuery( function( $ ) {
 				$( this ).trigger( 'load' );
 			}
 		} );
+
+		// Add custom keyboard navigation that applies only to the slider container.
+		$target
+			.on( 'keydown', function ( e ) {
+				if ( e.which === 39 ) {
+					// Right arrow
+					$( this ).flexslider( 'next' );
+					e.preventDefault();
+					e.stopPropagation();
+				} else if ( e.which === 37 ) {
+					// Left arrow
+					$( this ).flexslider( 'prev' );
+					e.preventDefault();
+					e.stopPropagation();
+				}
+			} )
+			// Make the slider focusable.
+			.attr( 'tabindex', '0' );
 	};
 
 	/**
