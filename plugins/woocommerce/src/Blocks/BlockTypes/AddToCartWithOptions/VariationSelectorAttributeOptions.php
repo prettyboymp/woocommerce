@@ -158,6 +158,8 @@ class VariationSelectorAttributeOptions extends AbstractBlock {
 						'data-wp-context'        => array(
 							'option' => $attribute_term,
 						),
+						'data-wp-bind--aria-checked' => 'state.isPillSelected',
+						'data-wp-bind--tabindex'     => 'state.pillTabIndex',
 					),
 				),
 				$attribute_term['label']
