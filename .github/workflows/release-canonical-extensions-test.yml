@@ -11,6 +11,7 @@ on:
 
 jobs:
   run-canonical-extensions-tests:
+    runs-on: ubuntu-latest
     steps:
       - name: 'Run tests on the canonical extensions'
         shell: bash
