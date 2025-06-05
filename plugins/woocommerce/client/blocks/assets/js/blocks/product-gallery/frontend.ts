@@ -455,12 +455,38 @@ const productGallery = {
 			const imageId = Number( imageIdValue );
 
 			if ( selectedImageId === imageId ) {
-				element.classList.add( 'is-active' );
+				element.classList.add(
+					'wc-block-product-gallery-thumbnails__thumbnail__image--is-active'
+				);
 				element.setAttribute( 'tabIndex', '0' );
 			} else {
-				element.classList.remove( 'is-active' );
+				element.classList.remove(
+					'wc-block-product-gallery-thumbnails__thumbnail__image--is-active'
+				);
 				element.setAttribute( 'tabIndex', '-1' );
 			}
+		},
+		initResizeObserver: () => {
+			const scrollableElement = getElement()?.ref;
+			if ( ! scrollableElement ) {
+				return;
+			}
+
+			const context = getContext();
+			const resizeObserver = new ResizeObserver( () => {
+				const overflowState = checkOverflow( scrollableElement );
+				context.thumbnailsOverflow = overflowState;
+			} );
+
+			// Observe both the scrollable element and its parent for size changes
+			resizeObserver.observe( scrollableElement );
+			if ( scrollableElement.parentElement ) {
+				resizeObserver.observe( scrollableElement.parentElement );
+			}
+
+			return () => {
+				resizeObserver.disconnect();
+			};
 		},
 	},
 };
