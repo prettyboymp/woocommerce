@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
+# Request the target WooCommerce release version
+echo "Which WooCommerce version should we use for testing (e.g., 9.9.0-rc.1)?"
+read version
+echo -n 'Verifying: '
+gh release view $version --json tagName --jq '.tagName' || exit 1
+
 # Fetch canonical extensions list.
 file='/tmp/WOOCOMMERCE_CANONICAL_EXTENSIONS'
 echo -n 'Fetching extensions list: ';
 # The variable can be actualized under https://github.com/woocommerce/woocommerce/settings/variables/actions (mix of public and private repository URLs)
 ( gh variable get CANONICAL_EXTENSIONS  | tr -d '\r' > $file && sed -i '/^$/d' $file && echo 'done' )|| ( echo 'error' && exit 1 )
 readarray -t repositories < $file
-
-# Request the target WooCommerce release version
-echo "Which WooCommerce version should we use for testing (e.g., 9.9.0-rc.1)?"
-read version
-echo -n 'Verifying: '
-gh release view $version --json tagName --jq '.tagName' || exit 1
 
 # Sort out which repositories provide the necessary workflows first.
 filtered=()
