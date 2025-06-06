@@ -2,12 +2,16 @@ name: 'Release: Run canonical extensions testing'
 on:
   #release:
   #  types: [published]
-  workflow_dispatch:
+  workflow_call:  
     inputs:
       version:
         description: 'Release version.'
+        type: string
         required: true
-  pull_request:
+    secrets:
+      personal_access_token:
+        description: "Personal access token (GitHub CLI token is recommended, run `gh auth token` to reveal)"
+        required: true
 
 jobs:
   run-canonical-extensions-tests:
@@ -17,7 +21,7 @@ jobs:
         shell: bash
         env:
             CANONICAL_EXTENSIONS: ${{ vars.CANONICAL_EXTENSIONS }}
-            GH_TOKEN: ${{ secrets.PAT_CANONICAL_EXTENSIONS_TESTING }}
+            GH_TOKEN: ${{ secrets.personal_access_token }}
         run: |
             IFS=$'\n' readarray -t repositories < <( echo $CANONICAL_EXTENSIONS | tr -d '\r' )
           
