@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-readarray -t repositories < manual-ci-bulk-run-spike.txt
+file='/tmp/WOOCOMMERCE_CANONICAL_EXTENSIONS'
+echo -n 'Fetching extensions list: ';
+# The variable can be actualized under https://github.com/woocommerce/woocommerce/settings/variables/actions (mix of public and private repository URLs)
+( gh variable get CANONICAL_EXTENSIONS  | tr -d '\r' > $file && sed -i '/^$/d' $file && echo 'done' )|| ( echo 'error' && exit 1 )
+readarray -t repositories < $file
 
 # Sort out which repositories provide the necessary workflows first.
 filtered=()
@@ -22,14 +26,14 @@ echo ''
 # Report the skipped repositories.
 echo "Skipping due to missing target workflows or access permissions (${#skipped[@]} repo(s))"
 for repository in ${skipped[@]}; do
-	echo "    -- ${repository##*/}"
+	echo "    -- $repository"
 done
 
 # Run checks for the target repositories.
 running=()
 echo "Launching checks (${#filtered[@]} repo(s))"
 for repository in ${filtered[@]}; do
-	echo -n "    -- ${repository##*/}:"
+	echo -n "    -- $repository:"
 
 	# Report identified workflow details.
 	workflow=$( gh workflow list --json path,id --repo $repository | jq --compact-output '.[]' | grep -E '.github/workflows/(manual-ci.yml|ci-manual.yml)' )
