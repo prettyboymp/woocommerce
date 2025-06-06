@@ -1,7 +1,5 @@
 name: 'Release: Run canonical extensions testing'
 on:
-  #release:
-  #  types: [published]
   workflow_call:  
     inputs:
       version:
