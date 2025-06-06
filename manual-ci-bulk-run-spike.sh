@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 
+# Fetch canonical extensions list.
 file='/tmp/WOOCOMMERCE_CANONICAL_EXTENSIONS'
 echo -n 'Fetching extensions list: ';
 # The variable can be actualized under https://github.com/woocommerce/woocommerce/settings/variables/actions (mix of public and private repository URLs)
 ( gh variable get CANONICAL_EXTENSIONS  | tr -d '\r' > $file && sed -i '/^$/d' $file && echo 'done' )|| ( echo 'error' && exit 1 )
 readarray -t repositories < $file
+
+# Request the target WooCommerce release version
+echo "Which WooCommerce version should we use for testing (e.g., 9.9.0-rc.1)?"
+read version
 
 # Sort out which repositories provide the necessary workflows first.
 filtered=()
@@ -46,7 +51,7 @@ for repository in ${filtered[@]}; do
 	echo -n " previous run #${previous_run} "
 
 	# Start a new run and report back.
-	echo '{"wc-version":"9.9.0-rc.1", "qit-tests":"WooCommerce Pre-Release Tests (includes Activation, WooCommerce E2E and API tests)"}' | gh workflow run ${workflow_id} --json --repo $repository >/dev/null
+	echo "{\"wc-version\":\"$version\", \"qit-tests\":\"WooCommerce Pre-Release Tests (includes Activation, WooCommerce E2E and API tests)\"}" | gh workflow run ${workflow_id} --json --repo $repository >/dev/null
 	for i in {1..10}; do
 	    echo -n '.' && sleep 1s
 	    last_run=$( gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${repository/"https://github.com/"/}/actions/workflows/${workflow_id}/runs?per_page=1 --jq '.workflow_runs.[].id' )
