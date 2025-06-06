@@ -684,7 +684,6 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 			'_virtual'               => 'virtual',
 			'_downloadable'          => 'downloadable',
 			'_product_image_gallery' => 'gallery_image_ids',
-			'_product_video_gallery' => 'gallery_video_ids',
 			'_download_limit'        => 'download_limit',
 			'_download_expiry'       => 'download_expiry',
 			'_thumbnail_id'          => 'image_id',
@@ -715,7 +714,6 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 					$value = wc_bool_to_string( $value );
 					break;
 				case 'gallery_image_ids':
-				case 'gallery_video_ids':
 					$value = implode( ',', $value );
 					break;
 				case 'date_on_sale_from':
