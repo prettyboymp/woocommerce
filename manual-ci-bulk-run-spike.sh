@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# TODO: read from CI env-variable
 readarray -t repositories < manual-ci-bulk-run-spike.txt
 
 # Sort out which repositories provide the necessary workflows first.
@@ -8,7 +7,7 @@ filtered=()
 skipped=()
 echo -n "Looking up repositories (${#repositories[@]}): "
 for repository in ${repositories[@]}; do
-	match=$( gh workflow list --json path --jq '.[].path' --repo $repository | grep -E '.github/workflows/(manual-ci.yml|ci-manual.yml)' | wc -l )
+	match=$( ( gh workflow list --json path --jq '.[].path' --repo $repository | grep -E '.github/workflows/(manual-ci.yml|ci-manual.yml)' | wc -l ) || echo '0' )
 	if [[ $match == '1' ]]; then
 		filtered+=( $repository )
 	else
@@ -21,7 +20,7 @@ skipped=( $( printf '%s\n' "${skipped[@]}" | sort ) )
 echo ''
 
 # Report the skipped repositories.
-echo "Skipping due to missing target workflows (${#skipped[@]} repo(s))"
+echo "Skipping due to missing target workflows or access permissions (${#skipped[@]} repo(s))"
 for repository in ${skipped[@]}; do
 	echo "    -- ${repository##*/}"
 done
@@ -43,14 +42,14 @@ for repository in ${filtered[@]}; do
 	echo -n " previous run #${previous_run} "
 
 	# Start a new run and report back.
-	echo '{"wc-version":"9.9.0-rc.1", "qit-tests":"WooCommerce Pre-Release Tests (includes Activation, WooCommerce E2E and API tests)"}' | gh workflow run ${workflow_id} --json --repo $repository >/dev/null 2>&1
+	echo '{"wc-version":"9.9.0-rc.1", "qit-tests":"WooCommerce Pre-Release Tests (includes Activation, WooCommerce E2E and API tests)"}' | gh workflow run ${workflow_id} --json --repo $repository >/dev/null
 	for i in {1..10}; do
 	    echo -n '.' && sleep 1s
 	    last_run=$( gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${repository/"https://github.com/"/}/actions/workflows/${workflow_id}/runs?per_page=1 --jq '.workflow_runs.[].id' )
 	    if [[ $last_run != $previous_run ]]; then
-	    	running+=( "$repository;${last_run}" )
-	    	echo -n " new run #${last_run}"
-	    	break
+            running+=( "$repository;${last_run}" )
+            echo -n " new run #${last_run}"
+            break
 	    fi
 	done
 
@@ -88,4 +87,3 @@ for entry in ${result[@]}; do
 	fragments=( ${entry//;/ } )
 	echo "    -- ${fragments[0]##*/}: status ${fragments[2]} (run #${fragments[1]})"
 done
-# TODO: Slack message from workflow
