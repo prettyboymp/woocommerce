@@ -1,4 +1,8 @@
 name: Backport PR
+# CONSIDER: adding milestone when backporting from a release branch to trunk to make sure it isn't missed.
+# Adding milestones where it makes sense at all - both may be best to do outside of this or use arguments.
+#
+#
 
 on:
   workflow_dispatch:
