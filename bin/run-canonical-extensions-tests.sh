@@ -10,8 +10,8 @@ gh release view $version --json tagName --jq '.tagName' || exit 1
 file='/tmp/WOOCOMMERCE_CANONICAL_EXTENSIONS'
 echo -n 'Fetching extensions list: ';
 # The variable can be actualized under https://github.com/woocommerce/woocommerce/settings/variables/actions (mix of public and private repository URLs)
-( gh variable get CANONICAL_EXTENSIONS  | tr -d '\r' > $file && sed -i '/^$/d' $file && echo 'done' )|| ( echo 'error' && exit 1 )
-readarray -t repositories < $file
+( gh variable get CANONICAL_EXTENSIONS > $file && echo 'done' )|| ( echo 'error' && exit 1 )
+repositories=( $( cat $file | tr -d '\r' | tr "\n" " " ) )
 
 # Sort out which repositories provide the necessary workflows first.
 filtered=()
