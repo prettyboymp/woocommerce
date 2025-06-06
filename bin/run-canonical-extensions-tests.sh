@@ -96,5 +96,5 @@ echo ''
 echo "All runs completed:"
 for entry in ${result[@]}; do
 	fragments=( ${entry//;/ } )
-	echo "    -- ${fragments[0]##*/}: status ${fragments[2]} (run #${fragments[1]})"
+	echo "    -- ${fragments[0]}: status ${fragments[2]} (${fragments[0]}/actions/runs/${fragments[1]})"
 done
