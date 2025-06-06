@@ -239,7 +239,9 @@ jQuery( function( $ ) {
 			},
 			after: function( slider ) {
 				gallery.initZoomForTarget( gallery.$images.eq( slider.currentSlide ) );
-			}
+			},
+			// Disable the built-in keyboard navigation and use custom keyboard navigation instead.
+			keyboard: false,
 		}, args );
 
 		$target.flexslider( options );
@@ -264,7 +266,7 @@ jQuery( function( $ ) {
 			}
 		} );
 
-		// Add custom keyboard navigation that applies only to the slider container.
+		// Custom keyboard navigation that applies only when the slider container is focused.
 		$target
 			.on( 'keydown', function ( e ) {
 				if ( e.which === 39 ) {
@@ -279,7 +281,6 @@ jQuery( function( $ ) {
 					e.stopPropagation();
 				}
 			} )
-			// Make the slider focusable.
 			.attr( 'tabindex', '0' );
 	};
 
