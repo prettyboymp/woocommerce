@@ -44,38 +44,34 @@ class WC_Meta_Box_Product_Images {
 
 				if ( ! empty( $attachments ) ) {
 					foreach ( $attachments as $attachment_id ) {
-						$attachment = wp_get_attachment_image( $attachment_id, 'thumbnail' );
-						$mime_type  = get_post_mime_type( $attachment_id );
-						$is_video   = strpos( $mime_type, 'video/' ) === 0;
+						$mime_type = get_post_mime_type( $attachment_id );
+						$is_video  = strpos( $mime_type, 'video/' ) === 0;
+
+						if ( $is_video ) {
+							$video_url  = wp_get_attachment_url( $attachment_id );
+							$attachment = '<div class="video-placeholder" data-video-src="' . esc_url( $video_url ) . '" style="width: 80px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f7f7f7; border: 1px solid #ddd; border-radius: 4px;">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false" style="margin-bottom: 4px;">
+									<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+								</svg>
+								<span style="font-size: 12px;">' . esc_html__( 'Video', 'woocommerce' ) . '</span>
+							</div>';
+						} else {
+							$attachment = wp_get_attachment_image( $attachment_id, 'thumbnail' );
+						}
 
 						// Skip if neither image nor video.
-						if ( empty( $attachment ) && ! $is_video ) {
+						if ( empty( $attachment ) ) {
 							$update_meta = true;
 							continue;
 						}
-
-						// Get video thumbnail if it's a video.
-						if ( $is_video ) {
-							$video_metadata = wp_get_attachment_metadata( $attachment_id );
-							$thumbnail      = isset( $video_metadata['thumbnail'] ) ? $video_metadata['thumbnail'] : '';
-							$video_url      = wp_get_attachment_url( $attachment_id );
-							$attachment     = $thumbnail
-								? '<img src="' . esc_url( $thumbnail ) . '" alt="" data-video-src="' . esc_url( $video_url ) . '" />'
-								: '<div class="video-placeholder" data-video-src="' . esc_url( $video_url ) . '">' . esc_html__( 'Video', 'woocommerce' ) . '</div>';
-						}
 						?>
-						<li class="image" data-attachment_id="<?php echo esc_attr( $attachment_id ); ?>">
+						<li class="image" data-attachment_id="<?php echo esc_attr( $attachment_id ); ?>" data-attachment_type="<?php echo $is_video ? 'video' : 'image'; ?>">
 							<?php echo $attachment; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 							<ul class="actions">
 								<li><a href="#" class="delete tips" data-tip="<?php esc_attr_e( 'Delete attachment', 'woocommerce' ); ?>"><?php esc_html_e( 'Delete', 'woocommerce' ); ?></a></li>
 							</ul>
 							<?php
-							/**
-							 * Allow for extra info to be exposed or extra action to be executed for this attachment.
-							 *
-							 * @param int $thepostid The post ID.
-							 * @param int $attachment_id The attachment ID.
-							 */
+							// Allow for extra info to be exposed or extra action to be executed for this attachment.
 							do_action( 'woocommerce_admin_after_product_gallery_item', $thepostid, $attachment_id );
 							?>
 						</li>
@@ -85,7 +81,7 @@ class WC_Meta_Box_Product_Images {
 						$updated_gallery_ids[] = $attachment_id;
 					}
 
-					// need to update product meta to set new gallery ids.
+					// need to update product meta to set new gallery ids
 					if ( $update_meta ) {
 						update_post_meta( $post->ID, '_product_image_gallery', implode( ',', $updated_gallery_ids ) );
 					}

@@ -1163,16 +1163,15 @@ jQuery( function ( $ ) {
 			states: [
 				new wp.media.controller.Library( {
 					title: $el.data( 'choose' ),
-					filterable: 'all',
+					library: wp.media.query( { type: [ 'image', 'video' ] } ),
 					multiple: true,
-					library: {
-						type: [ 'image', 'video' ],
-					},
+					priority: 20,
+					filterable: 'all',
 				} ),
 			],
 		} );
 
-		// When an attachment is selected, run a callback.
+		// When an image is selected, run a callback.
 		product_gallery_frame.on( 'select', function () {
 			var selection = product_gallery_frame.state().get( 'selection' );
 			var attachment_ids = $image_gallery_ids.val();
@@ -1185,39 +1184,50 @@ jQuery( function ( $ ) {
 						? attachment_ids + ',' + attachment.id
 						: attachment.id;
 
-					var attachment_html = '';
-					if ( attachment.type === 'video' ) {
-						// For videos, use a video thumbnail or placeholder
-						var thumbnail =
-							attachment.sizes && attachment.sizes.thumbnail
-								? attachment.sizes.thumbnail.url
-								: '';
-						attachment_html = thumbnail
-							? '<img src="' + thumbnail + '" />'
-							: '<div class="video-placeholder">' +
-							  woocommerce_admin_meta_boxes_vars.i18n_video +
-							  '</div>';
-					} else {
-						// For images, use the thumbnail
-						attachment_html =
-							attachment.sizes && attachment.sizes.thumbnail
-								? '<img src="' +
-								  attachment.sizes.thumbnail.url +
-								  '" />'
-								: '<img src="' + attachment.url + '" />';
-					}
+					var is_video =
+						attachment.type === 'video' ||
+						( attachment.mime &&
+							attachment.mime.indexOf( 'video/' ) === 0 );
+					var html = '';
 
-					$product_images.append(
-						'<li class="image" data-attachment_id="' +
+					if ( is_video ) {
+						html =
+							'<li class="image" data-attachment_id="' +
 							attachment.id +
-							'">' +
-							attachment_html +
+							'" data-attachment_type="video">' +
+							'<div class="video-placeholder" data-video-src="' +
+							attachment.url +
+							'" style="width: 80px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f7f7f7; border: 1px solid #ddd; border-radius: 4px;">' +
+							'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false" style="margin-bottom: 4px;">' +
+							'<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>' +
+							'</svg>' +
+							'<span style="font-size: 12px;">Video</span>' +
+							'</div>' +
 							'<ul class="actions"><li><a href="#" class="delete" title="' +
 							$el.data( 'delete' ) +
 							'">' +
 							$el.data( 'text' ) +
-							'</a></li></ul></li>'
-					);
+							'</a></li></ul></li>';
+					} else {
+						var attachment_image =
+							attachment.sizes && attachment.sizes.thumbnail
+								? attachment.sizes.thumbnail.url
+								: attachment.url;
+						html =
+							'<li class="image" data-attachment_id="' +
+							attachment.id +
+							'" data-attachment_type="image">' +
+							'<img src="' +
+							attachment_image +
+							'" />' +
+							'<ul class="actions"><li><a href="#" class="delete" title="' +
+							$el.data( 'delete' ) +
+							'">' +
+							$el.data( 'text' ) +
+							'</a></li></ul></li>';
+					}
+
+					$product_images.append( html );
 				}
 			} );
 
