@@ -10,6 +10,8 @@ readarray -t repositories < $file
 # Request the target WooCommerce release version
 echo "Which WooCommerce version should we use for testing (e.g., 9.9.0-rc.1)?"
 read version
+echo -n 'Verifying: '
+gh release view $version --json tagName --jq '.tagName' || exit 1
 
 # Sort out which repositories provide the necessary workflows first.
 filtered=()
