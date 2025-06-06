@@ -54,7 +54,7 @@ const scrollImageIntoView = ( imageId: number ) => {
 	}
 
 	const imageElement = galleryContainer.querySelector(
-		`.wp-block-woocommerce-product-gallery-large-image img[data-image-id="${ imageId }"]`
+		`.wp-block-woocommerce-product-gallery-large-image [data-image-id="${ imageId }"]`
 	);
 
 	if ( imageElement ) {
@@ -183,9 +183,8 @@ const productGallery = {
 			if ( ! imageIdValue ) {
 				return;
 			}
-			const imageId = parseInt( imageIdValue, 10 );
 			const { imageData } = getContext();
-			const newImageIndex = imageData.indexOf( imageId );
+			const newImageIndex = imageData.indexOf( imageIdValue );
 			actions.selectImage( newImageIndex );
 		},
 		selectNextImage: ( event?: MouseEvent ) => {

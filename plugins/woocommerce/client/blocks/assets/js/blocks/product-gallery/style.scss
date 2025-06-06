@@ -37,7 +37,7 @@ $dialog-padding: 20px;
 		margin-left: auto;
 	}
 
-	img {
+	img, video {
 		display: block;
 		position: relative;
 		margin: 0 auto;
@@ -54,6 +54,17 @@ $dialog-padding: 20px;
 
 		&.wc-block-woocommerce-product-gallery-large-image__image--hoverZoom {
 			cursor: zoom-in;
+		}
+	}
+
+	video {
+		background: #000;
+		&::-webkit-media-controls {
+			opacity: 0;
+			transition: opacity 0.3s;
+		}
+		&:hover::-webkit-media-controls {
+			opacity: 1;
 		}
 	}
 
@@ -263,68 +274,76 @@ body.wc-block-product-gallery-dialog-open {
 }
 
 .wc-block-product-gallery-dialog {
-	height: 100vh;
-	width: 100vw;
-	padding: 0;
 	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: 0;
-	z-index: 1000;
-	overflow: hidden;
+	z-index: 999999;
+	display: none;
 
-	.admin-bar & {
-		// Subtract the admin bar height.
-		height: calc(100vh - $admin-bar-height);
-		top: $admin-bar-height;
+	&.is-open {
+		display: block;
 	}
 
-	&__close-button {
-		padding: 5px;
+	&__overlay {
 		position: absolute;
-		right: 25px;
-		top: 25px;
-		background: none;
-		border: none;
-		cursor: pointer;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: rgba(0, 0, 0, 0.8);
 	}
 
 	&__content {
-		// Subtract the top and bottom padding.
-		height: calc(100vh - ($dialog-padding * 2));
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 90%;
+		max-width: 1200px;
+		max-height: 90vh;
+		background: #fff;
+		border-radius: 4px;
 		overflow: hidden;
-		padding: 20px 0;
+	}
 
-		@media (min-width: 765px) {
-			padding: 20px 0;
-		}
+	&__close {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		z-index: 1;
+		background: none;
+		border: none;
+		padding: 8px;
+		cursor: pointer;
+		color: #fff;
+		background: rgba(0, 0, 0, 0.5);
+		border-radius: 50%;
+		transition: background 0.3s;
 
-		.admin-bar & {
-			// Subtract the admin bar height.
-			height: calc(100vh - ($dialog-padding * 2) - $admin-bar-height);
+		&:hover {
+			background: rgba(0, 0, 0, 0.8);
 		}
 	}
 
-	&__images-container {
+	&__body {
+		width: 100%;
 		height: 100%;
-		overflow-y: auto;
-		box-sizing: border-box;
-		padding: 3px 0;
-	}
-
-	&__images {
 		display: flex;
-		flex-direction: column;
 		align-items: center;
+		justify-content: center;
 
-		img {
+		img, video {
 			max-width: 100%;
-			height: auto;
-			margin-bottom: 20px;
+			max-height: 90vh;
+			object-fit: contain;
+		}
 
-			&:last-child {
-				margin-bottom: 0;
+		video {
+			background: #000;
+			&::-webkit-media-controls {
+				opacity: 1;
 			}
 		}
 	}

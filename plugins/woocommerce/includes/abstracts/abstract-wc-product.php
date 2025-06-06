@@ -107,6 +107,7 @@ class WC_Product extends WC_Abstract_Legacy_Product {
 		'downloads'          => array(),
 		'image_id'           => '',
 		'gallery_image_ids'  => array(),
+		'gallery_video_ids'  => array(),
 		'download_limit'     => -1,
 		'download_expiry'    => -1,
 		'rating_counts'      => array(),
@@ -629,6 +630,16 @@ class WC_Product extends WC_Abstract_Legacy_Product {
 	 */
 	public function get_gallery_image_ids( $context = 'view' ) {
 		return $this->get_prop( 'gallery_image_ids', $context );
+	}
+
+	/**
+	 * Returns the gallery video ids.
+	 *
+	 * @param  string $context What the value is for. Valid values are view and edit.
+	 * @return array
+	 */
+	public function get_gallery_video_ids( $context = 'view' ) {
+		return $this->get_prop( 'gallery_video_ids', $context );
 	}
 
 	/**
@@ -1378,6 +1389,18 @@ class WC_Product extends WC_Abstract_Legacy_Product {
 		$image_ids = wp_parse_id_list( $image_ids );
 
 		$this->set_prop( 'gallery_image_ids', $image_ids );
+	}
+
+	/**
+	 * Set gallery video ids.
+	 *
+	 * @since 10.0.0
+	 * @param array $video_ids List of video ids.
+	 */
+	public function set_gallery_video_ids( $video_ids ) {
+		$video_ids = wp_parse_id_list( $video_ids );
+
+		$this->set_prop( 'gallery_video_ids', $video_ids );
 	}
 
 	/**
