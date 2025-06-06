@@ -51,15 +51,6 @@ function setAttribute( name: string, value: string | null ) {
 
 function setDefaultSelectedAttribute() {
 	const context = getContext< Context >();
-
-	// Select the first attribute option if no value is selected.
-	if ( ! context.selectedValue && context.options.length > 0 ) {
-		const firstAttribute = context.options[ 0 ];
-		if ( firstAttribute.value ) {
-			context.selectedValue = firstAttribute.value;
-		}
-	}
-
 	setAttribute( context.name, context.selectedValue );
 }
 
@@ -162,8 +153,12 @@ const { state } = store(
 				} );
 			},
 			get pillTabIndex(): number {
-				const { isPillSelected } = state;
-				return isPillSelected ? 0 : -1;
+				const { selectedValue } = getContext< Context >();
+				const { isPillSelected, index } = state;
+				if ( isPillSelected || ( index === 0 && ! selectedValue ) ) {
+					return 0;
+				}
+				return -1;
 			},
 			get index() {
 				const context = getContext< Context >();
