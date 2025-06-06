@@ -480,18 +480,14 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 		$set_props = array();
 
 		foreach ( $meta_key_to_props as $meta_key => $prop ) {
-			$meta_value = $post_meta_values[ $meta_key ][0] ?? null;
-			if ( 'gallery_image_ids' === $prop ) {
-				$meta_value = $meta_value ? array_filter( explode( ',', $meta_value ) ) : array();
-			} else {
-				$meta_value = maybe_unserialize( $meta_value );
-			}
-			$set_props[ $prop ] = $meta_value;
+			$meta_value         = $post_meta_values[ $meta_key ][0] ?? null;
+			$set_props[ $prop ] = maybe_unserialize( $meta_value ); // get_post_meta only unserializes single values.
 		}
 
 		$set_props['category_ids']      = $this->get_term_ids( $product, 'product_cat' );
 		$set_props['tag_ids']           = $this->get_term_ids( $product, 'product_tag' );
 		$set_props['shipping_class_id'] = current( $this->get_term_ids( $product, 'product_shipping_class' ) );
+		$set_props['gallery_image_ids'] = array_filter( explode( ',', $set_props['gallery_image_ids'] ?? '' ) );
 
 		$product->set_props( $set_props );
 
