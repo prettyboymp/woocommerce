@@ -151,8 +151,8 @@ class ProductGalleryUtils {
 					$variation = wc_get_product( $variation_id );
 					if ( $variation ) {
 						$variation_image_id = $variation->get_image_id();
-						if ( ! empty( $variation_image_id ) && ! in_array( strval( $variation_image_id ), $variation_image_ids, true ) ) {
-							$variation_image_ids[] = strval( $variation_image_id );
+						if ( ! empty( $variation_image_id ) && ! in_array( $variation_image_id, $variation_image_ids, true ) ) {
+							$variation_image_ids[] = $variation_image_id;
 						}
 					}
 				}
@@ -191,11 +191,7 @@ class ProductGalleryUtils {
 
 		// If the Product image is not set and there are no gallery images, we need to set it to a placeholder image.
 		if ( ! $featured_image_id && empty( $product_gallery_image_ids ) ) {
-			$product_image_ids[] = '0';
-		}
-
-		foreach ( $product_image_ids as $key => $image_id ) {
-			$product_image_ids[ $key ] = strval( $image_id );
+			$product_image_ids[] = 0;
 		}
 
 		// Reindex array.

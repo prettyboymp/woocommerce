@@ -183,8 +183,9 @@ const productGallery = {
 			if ( ! imageIdValue ) {
 				return;
 			}
+			const imageId = parseInt( imageIdValue, 10 );
 			const { imageData } = getContext();
-			const newImageIndex = imageData.indexOf( imageIdValue );
+			const newImageIndex = imageData.indexOf( imageId );
 			actions.selectImage( newImageIndex );
 		},
 		selectNextImage: ( event?: MouseEvent ) => {
@@ -280,7 +281,10 @@ const productGallery = {
 				}
 			}
 		},
-		openDialog: () => {
+		openDialog: ( event?: MouseEvent ) => {
+			if ( event ) {
+				event.preventDefault();
+			}
 			const context = getContext();
 			context.isDialogOpen = true;
 			document.body.classList.add(

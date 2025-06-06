@@ -47,7 +47,7 @@ class ProductGallery extends AbstractBlock {
 
 			if ( isset( $image['type'] ) && 'video' === $image['type'] ) {
 				$images_html .= sprintf(
-					'<video data-image-id="%s" src="%s" alt="%s" controls preload="metadata" %s decoding="async" />',
+					'<video data-image-id="%s" src="%s" alt="%s" controls preload="metadata" %s decoding="async" autoplay loop muted playsinline style="pointer-events: none;" />',
 					esc_attr( $id ),
 					esc_attr( $src ),
 					esc_attr( $alt ),
@@ -67,19 +67,30 @@ class ProductGallery extends AbstractBlock {
 		}
 		ob_start();
 		?>
-		<div class="wc-block-product-gallery-dialog">
-			<div class="wc-block-product-gallery-dialog__overlay"></div>
+		<dialog
+			data-wp-bind--open="context.isDialogOpen"
+			data-wp-bind--inert="!context.isDialogOpen"
+			data-wp-on--close="actions.closeDialog"
+			data-wp-on--keydown="actions.onDialogKeyDown"
+			data-wp-watch="callbacks.dialogStateChange"
+			class="wc-block-product-gallery-dialog"
+			role="dialog"
+			aria-modal="true"
+			aria-label="Product Gallery">
 			<div class="wc-block-product-gallery-dialog__content">
-				<button class="wc-block-product-gallery-dialog__close" aria-label="<?php esc_attr_e( 'Close dialog', 'woocommerce' ); ?>">
+				<button class="wc-block-product-gallery-dialog__close-button" data-wp-on--click="actions.closeDialog" aria-label="<?php echo esc_attr__( 'Close dialog', 'woocommerce' ); ?>">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
 						<path d="M13 11.8l6.1-6.3-1-1-6.1 6.2-6.1-6.2-1 1 6.1 6.3-6.5 6.7 1 1 6.5-6.6 6.5 6.6 1-1z"></path>
 					</svg>
 				</button>
-				<div class="wc-block-product-gallery-dialog__body">
-					<?php echo $images_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<div class="wc-block-product-gallery-dialog__images-container">
+					<div class="wc-block-product-gallery-dialog__images">
+						<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is already escaped by WooCommerce. ?>
+						<?php echo $images_html; ?>
+					</div>
 				</div>
 			</div>
-		</div>
+		</dialog>
 		<?php
 		return ob_get_clean();
 	}
