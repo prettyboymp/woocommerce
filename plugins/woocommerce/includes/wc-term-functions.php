@@ -580,8 +580,8 @@ function wc_change_term_counts( $terms, $taxonomies ) {
 		if ( $term instanceof WP_Term && in_array( $term->taxonomy, $current_taxonomies, true ) ) {
 			$count = get_term_meta( $term->term_id, 'product_count_' . $term->taxonomy, true );
 			if ( '' !== $count ) {
-				$count               = absint( $count );
-				$term->count         = $count;
+				$count       = absint( $count );
+				$term->count = $count;
 			}
 		}
 	}
