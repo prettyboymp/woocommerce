@@ -530,8 +530,6 @@ function _wc_term_recount( $terms, $taxonomy, $callback = true, $terms_are_term_
 		// Update the count.
 		update_term_meta( $term_id, 'product_count_' . $taxonomy->name, absint( $count ) );
 	}
-
-	delete_transient( 'wc_term_counts' );
 }
 
 /**
@@ -576,28 +574,16 @@ function wc_change_term_counts( $terms, $taxonomies ) {
 		return $terms;
 	}
 
-	$o_term_counts = get_transient( 'wc_term_counts' );
-	$term_counts   = false === $o_term_counts ? array() : $o_term_counts;
+	wp_lazyload_term_meta( array_column( $terms, 'term_id' ) );
 
 	foreach ( $terms as &$term ) {
 		if ( $term instanceof WP_Term && in_array( $term->taxonomy, $current_taxonomies, true ) ) {
-			$key = $term->term_id . '_' . $term->taxonomy;
-			if ( isset( $term_counts[ $key ] ) ) {
-				continue;
-			}
-
 			$count = get_term_meta( $term->term_id, 'product_count_' . $term->taxonomy, true );
 			if ( '' !== $count ) {
 				$count               = absint( $count );
 				$term->count         = $count;
-				$term_counts[ $key ] = $count;
 			}
 		}
-	}
-
-	// Update transient.
-	if ( $term_counts !== $o_term_counts ) {
-		set_transient( 'wc_term_counts', $term_counts, MONTH_IN_SECONDS );
 	}
 
 	return $terms;
