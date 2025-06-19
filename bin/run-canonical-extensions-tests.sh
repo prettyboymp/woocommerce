@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
 # Request the target WooCommerce release version
-read -r -p "Which WooCommerce version should we use for testing (e.g., 9.9.0-rc.1, 9.9.0, nightly, stable)?: " version
-if [[ $version != 'nightly' ]] && [[ $version != 'stable' ]]; then
+read -r -p "Which WooCommerce version should we use for testing (e.g., 9.9.0-rc.1, 9.9.0, nightly, rc or stable)?: " version
+if [[ $version != 'nightly' ]] && [[ $version != 'rc' ]] && [[ $version != 'stable' ]]; then
 	echo -n 'Verifying: '
 	gh release view $version --json tagName --jq '.tagName' || exit 1
 fi
+
+read -r -p "Which WordPress version should we use for testing (e.g., 6.8, latest or empty to use defaults)?: " wordpress
+read -r -p "Which PHP version should we use for testing (e.g., 7.4, 8.4 or empty to use defaults)?: " php
 
 # Fetch canonical extensions list.
 file='/tmp/WOOCOMMERCE_CANONICAL_EXTENSIONS'
@@ -54,7 +57,7 @@ for repository in ${filtered[@]}; do
 	echo -n " previous run #${previous_run} "
 
 	# Start a new run and report back.
-	echo "{\"wc-version\":\"$version\", \"qit-tests\":\"WooCommerce Pre-Release Tests (includes Activation, WooCommerce E2E and API tests)\"}" | gh workflow run ${workflow_id} --json --repo $repository >/dev/null
+	echo "{\"wc-version\":\"$version\", \"wp-version\":\"$wordpress\",  \"php-version\":\"$php\", \"qit-tests\":\"WooCommerce Pre-Release Tests (includes Activation, WooCommerce E2E and API tests)\"}" | gh workflow run ${workflow_id} --json --repo $repository >/dev/null
 	for i in {1..10}; do
 	    echo -n '.' && sleep 1s
 	    last_run=$( gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${repository##https://github.com/}/actions/workflows/${workflow_id}/runs?per_page=1 --jq '.workflow_runs.[].id' )
