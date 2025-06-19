@@ -11,7 +11,7 @@ read -r -p "Which PHP version should we use for testing (e.g., 7.4, 8.4 or empty
 
 read -r -p "Which GitHub repositories needs to be tested (e.g. https://github.com/woocommerce/woocommerce, space separated list or empty to use defaults)?: " -a repositories
 if [[ ${#repositories[@]} -eq 0 ]]; then
-	# Fetch canonical extensions list.
+	# Fetch canonical extensions list: needs access privileges higher that 'Maintain' to work - therefore it fallback strategy.
 	file='/tmp/WOOCOMMERCE_CANONICAL_EXTENSIONS'
 	echo -n 'Fetching extensions list: ';
 	# The variable can be actualized under https://github.com/woocommerce/woocommerce/settings/variables/actions (mix of public and private repository URLs)
@@ -59,7 +59,7 @@ for repository in ${filtered[@]}; do
 	echo -n " previous run #${previous_run} "
 
 	# Start a new run and report back.
-	echo "{\"wc-version\":\"$version\", \"wp-version\":\"$wordpress\",  \"php-version\":\"$php\", \"qit-tests\":\"WooCommerce Pre-Release Tests (includes Activation, WooCommerce E2E and API tests)\"}" | gh workflow run ${workflow_id} --json --repo $repository >/dev/null
+	echo "{\"wc-version\":\"$version\", \"wp-version\":\"$wordpress\", \"php-version\":\"$php\", \"qit-tests\":\"WooCommerce Pre-Release Tests (includes Activation, WooCommerce E2E and API tests)\"}" | gh workflow run ${workflow_id} --json --repo $repository >/dev/null
 	for i in {1..10}; do
 	    echo -n '.' && sleep 1s
 	    last_run=$( gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${repository##https://github.com/}/actions/workflows/${workflow_id}/runs?per_page=1 --jq '.workflow_runs.[].id' )
