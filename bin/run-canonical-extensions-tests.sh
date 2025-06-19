@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
 # Request the target WooCommerce release version
-echo "Which WooCommerce version should we use for testing (e.g., 9.9.0-rc.1)?"
-read version
-echo -n 'Verifying: '
-gh release view $version --json tagName --jq '.tagName' || exit 1
+read -r -p "Which WooCommerce version should we use for testing (e.g., 9.9.0-rc.1, 9.9.0, nightly, stable)?: " version
+if [[ $version != 'nightly' ]] && [[ $version != 'stable' ]]; then
+	echo -n 'Verifying: '
+    gh release view $version --json tagName --jq '.tagName' || exit 1
+fi
 
 # Fetch canonical extensions list.
 file='/tmp/WOOCOMMERCE_CANONICAL_EXTENSIONS'
