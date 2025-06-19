@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# Request and sanitize testing parameters inputs.
 read -r -p "Which WooCommerce version should we use for testing (e.g., 9.9.0-rc.1, 9.9.0, nightly, rc or stable)?: " version
 if [[ $version != 'nightly' ]] && [[ $version != 'rc' ]] && [[ $version != 'stable' ]]; then
 	echo -n 'Verifying: '
