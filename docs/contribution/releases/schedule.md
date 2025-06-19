@@ -13,9 +13,15 @@ and this page aims to provide necessary context about those events for release l
 
 ## Call for testing notification
 
+TBD
+
 ## Feature freeze
 
+TBD
+
 ## Anticipated final RC dates
+
+TBD
 
 ## Delays
 
