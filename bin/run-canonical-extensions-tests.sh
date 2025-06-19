@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# Request the target WooCommerce release version
 read -r -p "Which WooCommerce version should we use for testing (e.g., 9.9.0-rc.1, 9.9.0, nightly, rc or stable)?: " version
 if [[ $version != 'nightly' ]] && [[ $version != 'rc' ]] && [[ $version != 'stable' ]]; then
 	echo -n 'Verifying: '
@@ -8,7 +7,6 @@ if [[ $version != 'nightly' ]] && [[ $version != 'rc' ]] && [[ $version != 'stab
 fi
 read -r -p "Which WordPress version should we use for testing (e.g., 6.8, latest or empty to use defaults)?: " wordpress
 read -r -p "Which PHP version should we use for testing (e.g., 7.4, 8.4 or empty to use defaults)?: " php
-
 read -r -p "Which GitHub repositories needs to be tested (e.g. https://github.com/woocommerce/woocommerce, space separated list or empty to use defaults)?: " -a repositories
 if [[ ${#repositories[@]} -eq 0 ]]; then
 	# Fetch canonical extensions list: needs access privileges higher that 'Maintain' to work - therefore it fallback strategy.
