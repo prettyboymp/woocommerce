@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Use-cases for this script:
+# - Testing WooCommerce core RCs: passing tests allows to reduce the number of teams involved and simplify coordination
+# - Testing new WordPress releases: passing tests allows to reduce the number of teams involved and simplify coordination
+
 # Request and sanitize testing parameters inputs.
 read -r -p "Which WooCommerce version should we use for testing (e.g., 9.9.0-rc.1, 9.9.0, nightly, rc or stable)?: " version
 if [[ $version != 'nightly' ]] && [[ $version != 'rc' ]] && [[ $version != 'stable' ]]; then
