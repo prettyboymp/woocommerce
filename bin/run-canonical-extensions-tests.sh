@@ -4,6 +4,10 @@
 # - Testing WooCommerce core RCs: passing tests allows to reduce the number of teams involved and simplify coordination
 # - Testing new WordPress releases: passing tests allows to reduce the number of teams involved and simplify coordination
 
+echo 'Notice: If the testing focuses on a new WooCommerce version, please note that QIT E2E/API test synchronization is not instantaneous (as of June 2025).'
+echo '        If unsure, reach out to #qit for clarifications or run the tests for a single repository and ensure E2E/API tests are not failing with the "Invalid parameter(s): woocommerce_version" error.'
+echo ''
+
 # Request and sanitize testing parameters inputs.
 read -r -p "Which WooCommerce version should we use for testing (e.g., 9.9.0-rc.1, 9.9.0, nightly, rc or stable)?: " version
 if [[ $version != 'nightly' ]] && [[ $version != 'rc' ]] && [[ $version != 'stable' ]]; then
