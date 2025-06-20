@@ -495,44 +495,53 @@ jobs:
 
   # Aggregate the results for the two jobs so we have clear output by calling workflows.
   aggregate-results:
-    name: Aggregate results and set final status
-    id: aggregate-status
+    name: Aggregate Results
+    runs-on: ubuntu-latest
+    needs: [verify, cherry-pick]
     if: ${{ always() }}
-    env:
-      STEPS_CONTEXT: ${{ toJson(steps) }}
-    run: |
-      sudo apt-get update && sudo apt-get install -y jq
-      
-      critical_steps=("checkout" "create-branch" "fetch-sha" "cherry-pick" "push-branch" "create-pr")
-      
-      status="success"
-      errorMessage=""
-      cherryPickPR=""
-      
-      for step_id in "${critical_steps[@]}"; do
-        # Safe property access with jq
-        outcome=$(echo "$STEPS_CONTEXT" | jq -r ".[\"$step_id\"]? | .outcome // \"skipped\"")
-        
-        if [ "$outcome" = "failure" ]; then
-          status="failed"
-          error_output=$(echo "$STEPS_CONTEXT" | jq -r ".[\"$step_id\"]? | .outputs.errorMessage // \"\"")
+    outputs:
+      status: ${{ steps.set-outputs.outputs.status }}
+      error_message: ${{ steps.set-outputs.outputs.error_message }}
+      cherry_pick_pr_number: ${{ steps.set-outputs.outputs.cherry_pick_pr_number }}
+    steps:
+      - name: Aggregate results and set final status
+        id: aggregate-status
+        if: ${{ always() }}
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq
           
-          if [ -n "$error_output" ] && [ "$error_output" != "null" ]; then
-            errorMessage="$error_output"
-          else
-            errorMessage="Step '$step_id' failed"
-          fi
-          break
-        fi
-      done
-      
-      if [ "$status" = "success" ]; then
-        cherryPickPR=$(echo "$STEPS_CONTEXT" | jq -r ".[\"create-pr\"]? | .outputs.pr-number // \"\"")
-        if [ "$cherryPickPR" = "null" ]; then
+          critical_steps=("checkout" "create-branch" "fetch-sha" "cherry-pick" "push-branch" "create-pr")
+          
+          status="success"
+          errorMessage=""
           cherryPickPR=""
-        fi
-      fi
-      
-      echo "status=$status" >> $GITHUB_OUTPUT
-      echo "errorMessage=$errorMessage" >> $GITHUB_OUTPUT
-      echo "cherryPickPR=$cherryPickPR" >> $GITHUB_OUTPUT
+          
+          for step_id in "${critical_steps[@]}"; do
+            # Safe property access with jq
+            outcome=$(echo "$STEPS_CONTEXT" | jq -r ".[\"$step_id\"]? | .outcome // \"skipped\"")
+            
+            if [ "$outcome" = "failure" ]; then
+              status="failed"
+              error_output=$(echo "$STEPS_CONTEXT" | jq -r ".[\"$step_id\"]? | .outputs.errorMessage // \"\"")
+              
+              if [ -n "$error_output" ] && [ "$error_output" != "null" ]; then
+                errorMessage="$error_output"
+              else
+                errorMessage="Step '$step_id' failed"
+              fi
+              break
+            fi
+          done
+          
+          if [ "$status" = "success" ]; then
+            cherryPickPR=$(echo "$STEPS_CONTEXT" | jq -r ".[\"create-pr\"]? | .outputs.pr-number // \"\"")
+            if [ "$cherryPickPR" = "null" ]; then
+              cherryPickPR=""
+            fi
+          fi
+          
+          echo "status=$status" >> $GITHUB_OUTPUT
+          echo "errorMessage=$errorMessage" >> $GITHUB_OUTPUT
+          echo "cherryPickPR=$cherryPickPR" >> $GITHUB_OUTPUT
