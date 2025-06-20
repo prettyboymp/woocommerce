@@ -71,31 +71,41 @@ jobs:
               return;
             }
 
-            // Fetch the pull request
-            const {  pr } = await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: prNumber
-            });
+            try {
+              // Fetch the pull request with correct destructuring
+              const {  pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber
+              });
 
-            if (!pr) {
-              failWithMessage(`Pull request #${prNumber} does not exist.`);
-              return;
+              if (!pr) {
+                failWithMessage(`Pull request #${prNumber} does not exist.`);
+                return;
+              }
+
+              if (!pr.merged) {
+                failWithMessage(`Pull request #${prNumber} is not merged.`);
+                return;
+              }
+
+              const mergeCommitSha = pr.merge_commit_sha;
+              if (!mergeCommitSha) {
+                failWithMessage(`Pull request #${prNumber} does not have a merge_commit_sha.`);
+                return;
+              }
+
+              core.setOutput('merge_commit_sha', mergeCommitSha);
+              core.info(`PR #${prNumber} is merged with merge commit SHA: ${mergeCommitSha}`);
+
+            } catch (error) {
+              if (error.status === 404) {
+                failWithMessage(`Pull request #${prNumber} does not exist.`);
+              } else {
+                failWithMessage(`Error fetching PR: ${error.message}`);
+              }
             }
 
-            if (!pr.merged) {
-              failWithMessage(`Pull request #${prNumber} is not merged.`);
-              return;
-            }
-
-            const mergeCommitSha = pr.merge_commit_sha;
-            if (!mergeCommitSha) {
-              failWithMessage(`Pull request #${prNumber} does not have a merge_commit_sha.`);
-              return;
-            }
-
-            core.setOutput('merge_commit_sha', mergeCommitSha);
-            core.info(`PR #${prNumber} is merged with merge commit SHA: ${mergeCommitSha}`);
 
       - name: Verify target branch exists
         id: verify-target-branch
