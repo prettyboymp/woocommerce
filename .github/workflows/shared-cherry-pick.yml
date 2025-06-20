@@ -72,18 +72,19 @@ jobs:
             }
 
             try {
-              // Fetch the pull request with correct destructuring
+              // DEBUG: Print repository context
+              core.info(`Checking PR #${prNumber} in repo: ${context.repo.owner}/${context.repo.repo}`);
+              
+              // Fetch the pull request
               const {  pr } = await github.rest.pulls.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: prNumber
               });
 
-              if (!pr) {
-                failWithMessage(`Pull request #${prNumber} does not exist.`);
-                return;
-              }
-
+              // DEBUG: Print PR data
+              core.info(`PR  ${JSON.stringify(pr, null, 2)}`);
+              
               if (!pr.merged) {
                 failWithMessage(`Pull request #${prNumber} is not merged.`);
                 return;
@@ -99,13 +100,15 @@ jobs:
               core.info(`PR #${prNumber} is merged with merge commit SHA: ${mergeCommitSha}`);
 
             } catch (error) {
+              // DEBUG: Print full error
+              core.error(`API Error: ${error.message}\n${error.stack}`);
+              
               if (error.status === 404) {
-                failWithMessage(`Pull request #${prNumber} does not exist.`);
+                failWithMessage(`Pull request #${prNumber} does not exist in ${context.repo.owner}/${context.repo.repo}.`);
               } else {
                 failWithMessage(`Error fetching PR: ${error.message}`);
               }
             }
-
 
       - name: Verify target branch exists
         id: verify-target-branch
