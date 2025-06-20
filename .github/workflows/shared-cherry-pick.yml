@@ -450,66 +450,6 @@ jobs:
         env:
           STEPS_CONTEXT: ${{ toJson(steps) }}
         run: |
-          # Install jq for JSON parsing
-          sudo apt-get update && sudo apt-get install -y jq
-
-          # Define critical steps
-          critical_steps=("checkout" "create-branch" "fetch-sha" "cherry-pick" "push-branch" "create-pr")
-
-          status="success"
-          errorMessage=""
-          cherryPickPR=""
-
-          # Loop through critical steps
-          for step_id in "${critical_steps[@]}"; do
-            # Extract step outcome from JSON context
-            outcome=$(echo "$STEPS_CONTEXT" | jq -r ".$step_id.outcome")
-            
-            if [ "$outcome" = "failure" ]; then
-              status="failed"
-              # Extract error message if available
-              error_output=$(echo "$STEPS_CONTEXT" | jq -r ".$step_id.outputs.errorMessage")
-              if [ "$error_output" != "null" ] && [ -n "$error_output" ]; then
-                errorMessage="$error_output"
-              else
-                errorMessage="Step '$step_id' failed"
-              fi
-              break
-            fi
-          done
-
-          # If no failures, get PR number
-          if [ "$status" = "success" ]; then
-            cherryPickPR=$(echo "$STEPS_CONTEXT" | jq -r ".create-pr.outputs.pr-number")
-            # Handle null value
-            if [ "$cherryPickPR" = "null" ]; then
-              cherryPickPR=""
-            fi
-          fi
-
-          # Set outputs
-          echo "status=$status" >> $GITHUB_OUTPUT
-          echo "errorMessage=$errorMessage" >> $GITHUB_OUTPUT
-          echo "cherryPickPR=$cherryPickPR" >> $GITHUB_OUTPUT
-
-
-  # Aggregate the results for the two jobs so we have clear output by calling workflows.
-  aggregate-results:
-    name: Aggregate Results
-    runs-on: ubuntu-latest
-    needs: [verify, cherry-pick]
-    if: ${{ always() }}
-    outputs:
-      status: ${{ steps.set-outputs.outputs.status }}
-      error_message: ${{ steps.set-outputs.outputs.error_message }}
-      cherry_pick_pr_number: ${{ steps.set-outputs.outputs.cherry_pick_pr_number }}
-    steps:
-      - name: Aggregate results and set final status
-        id: aggregate-status
-        if: ${{ always() }}
-        env:
-          STEPS_CONTEXT: ${{ toJson(steps) }}
-        run: |
           sudo apt-get update && sudo apt-get install -y jq
           
           critical_steps=("checkout" "create-branch" "fetch-sha" "cherry-pick" "push-branch" "create-pr")
@@ -545,3 +485,39 @@ jobs:
           echo "status=$status" >> $GITHUB_OUTPUT
           echo "errorMessage=$errorMessage" >> $GITHUB_OUTPUT
           echo "cherryPickPR=$cherryPickPR" >> $GITHUB_OUTPUT
+
+  # Aggregate the results for the two jobs so we have clear output by calling workflows.
+  aggregate-results:
+    name: Aggregate Results
+    runs-on: ubuntu-latest
+    needs: [verify, cherry-pick]
+    if: ${{ always() }}
+    outputs:
+      status: ${{ steps.set-outputs.outputs.status }}
+      error_message: ${{ steps.set-outputs.outputs.error_message }}
+      cherry_pick_pr_number: ${{ steps.set-outputs.outputs.cherry_pick_pr_number }}
+    steps:
+      - name: Set aggregated outputs
+        id: set-outputs
+        run: |
+          # Get outputs from both jobs
+          verify_status="${{ needs.verify.outputs.status }}"
+          verify_error="${{ needs.verify.outputs.errorMessage }}"
+          cherry_status="${{ needs.cherry-pick.outputs.status }}"
+          cherry_error="${{ needs.cherry-pick.outputs.errorMessage }}"
+          cherry_pr_number="${{ needs.cherry-pick.outputs.cherryPickPR }}"
+  
+          # Determine final status
+          if [[ "$verify_status" != "success" ]]; then
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "error_message=$verify_error" >> $GITHUB_OUTPUT
+            echo "cherry_pick_pr_number=" >> $GITHUB_OUTPUT
+          elif [[ "$cherry_status" != "success" ]]; then
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "error_message=$cherry_error" >> $GITHUB_OUTPUT
+            echo "cherry_pick_pr_number=" >> $GITHUB_OUTPUT
+          else
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "error_message=" >> $GITHUB_OUTPUT
+            echo "cherry_pick_pr_number=$cherry_pr_number" >> $GITHUB_OUTPUT
+          fi
