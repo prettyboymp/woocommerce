@@ -519,7 +519,7 @@ jobs:
           cherryPickPR=""
           
           for step_id in "${critical_steps[@]}"; do
-            # Safe property access with jq
+            # Use BRACKET NOTATION with quoted keys
             outcome=$(echo "$STEPS_CONTEXT" | jq -r ".[\"$step_id\"]? | .outcome // \"skipped\"")
             
             if [ "$outcome" = "failure" ]; then
