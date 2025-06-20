@@ -163,7 +163,7 @@ jobs:
               return;
             }
             
-            const cherryPickBranch = `cherry-pick-${targetBranch}/${prNumber}`;
+            const cherryPickBranch = `cherry-pick-PR${prNumber}-to-${targetBranch}`;
             
             try {
               await github.rest.repos.getBranch({
