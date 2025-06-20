@@ -70,19 +70,21 @@ jobs:
             echo "Cherry-picking PR #$ORIGINAL_PR_NUMBER to $branch"
           
             # Trigger shared cherry-pick workflow
-            run_url=$(gh workflow run shared-cherry-pick.yml \
+            output=$(gh workflow run shared-cherry-pick.yml \
               --ref main \
               -f pr_number=$ORIGINAL_PR_NUMBER \
-              -f target_branch="$branch" \
-              --json url -q '.[0].url' 2>&1 | grep -o 'https://github.com/[^ ]*')
+              -f target_branch="$branch" 2>&1)
             
-            # Extract run ID from URL
+            # Extract run ID from URL in output
+            run_url=$(echo "$output" | grep -o 'https://github.com/[^ ]*/actions/runs/[0-9]\+')
             run_id=$(basename "$run_url")
             
             if [ -z "$run_id" ]; then
-              echo "::warning::Failed to get run ID for $branch"
+              echo "::warning::Failed to trigger workflow for $branch: $output"
               continue
             fi
+            
+            echo "Triggered run: $run_id"
             
             # Wait for workflow completion
             gh run watch "$run_id"
@@ -99,3 +101,4 @@ jobs:
               echo "::warning::Failed to get PR number for $branch"
             fi
           done
+
