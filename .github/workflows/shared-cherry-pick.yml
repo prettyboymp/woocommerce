@@ -72,17 +72,22 @@ jobs:
             }
 
             try {
-              // DEBUG: Print repository context
               core.info(`Checking PR #${prNumber} in repo: ${context.repo.owner}/${context.repo.repo}`);
               
-              // Fetch the pull request
-              const {  pr } = await github.rest.pulls.get({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
+              // Fetch with explicit repository
+              const response = await github.rest.pulls.get({
+                owner: "prettyboymp",
+                repo: "woocommerce",
                 pull_number: prNumber
               });
 
-              // DEBUG: Print PR data
+              // Handle undefined response
+              if (!response.data) {
+                failWithMessage(`API returned empty response for PR #${prNumber}`);
+                return;
+              }
+
+              const pr = response.data;
               core.info(`PR  ${JSON.stringify(pr, null, 2)}`);
               
               if (!pr.merged) {
@@ -100,11 +105,9 @@ jobs:
               core.info(`PR #${prNumber} is merged with merge commit SHA: ${mergeCommitSha}`);
 
             } catch (error) {
-              // DEBUG: Print full error
-              core.error(`API Error: ${error.message}\n${error.stack}`);
-              
+              core.error(`Full API error: ${JSON.stringify(error)}`);
               if (error.status === 404) {
-                failWithMessage(`Pull request #${prNumber} does not exist in ${context.repo.owner}/${context.repo.repo}.`);
+                failWithMessage(`Pull request #${prNumber} does not exist in prettyboymp/woocommerce.`);
               } else {
                 failWithMessage(`Error fetching PR: ${error.message}`);
               }
