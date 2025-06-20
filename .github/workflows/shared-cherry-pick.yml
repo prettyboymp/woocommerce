@@ -459,12 +459,13 @@ jobs:
           cherryPickPR=""
           
           for step_id in "${critical_steps[@]}"; do
-            # Use BRACKET NOTATION with quoted keys
+            # Use bracket notation for step IDs with dashes
             outcome=$(echo "$STEPS_CONTEXT" | jq -r ".[\"$step_id\"]? | .outcome // \"skipped\"")
             
             if [ "$outcome" = "failure" ]; then
               status="failed"
-              error_output=$(echo "$STEPS_CONTEXT" | jq -r ".[\"$step_id\"]? | .outputs.errorMessage // \"\"")
+              # Use bracket notation for output keys with dashes
+              error_output=$(echo "$STEPS_CONTEXT" | jq -r ".[\"$step_id\"]? | .outputs[\"errorMessage\"]? // \"\"")
               
               if [ -n "$error_output" ] && [ "$error_output" != "null" ]; then
                 errorMessage="$error_output"
@@ -476,7 +477,8 @@ jobs:
           done
           
           if [ "$status" = "success" ]; then
-            cherryPickPR=$(echo "$STEPS_CONTEXT" | jq -r ".[\"create-pr\"]? | .outputs.pr-number // \"\"")
+            # Use bracket notation for output keys with dashes
+            cherryPickPR=$(echo "$STEPS_CONTEXT" | jq -r ".[\"create-pr\"]? | .outputs[\"pr-number\"]? // \"\"")
             if [ "$cherryPickPR" = "null" ]; then
               cherryPickPR=""
             fi
@@ -485,6 +487,7 @@ jobs:
           echo "status=$status" >> $GITHUB_OUTPUT
           echo "errorMessage=$errorMessage" >> $GITHUB_OUTPUT
           echo "cherryPickPR=$cherryPickPR" >> $GITHUB_OUTPUT
+
 
   # Aggregate the results for the two jobs so we have clear output by calling workflows.
   aggregate-results:
