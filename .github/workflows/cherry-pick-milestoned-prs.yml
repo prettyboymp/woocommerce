@@ -71,7 +71,7 @@ jobs:
           
             # Trigger shared cherry-pick workflow
             output=$(gh workflow run shared-cherry-pick.yml \
-              --ref main \
+              --ref $GITHUB_REF_NAME \
               -f pr_number=$ORIGINAL_PR_NUMBER \
               -f target_branch="$branch" 2>&1)
             
