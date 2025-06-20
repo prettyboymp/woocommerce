@@ -114,11 +114,6 @@ const restrictedImports = [
 		message:
 			'This Lodash method is not recommended. Please use native functionality instead. If using `memoize`, please use `memize` instead.',
 	},
-	{
-		name: 'classnames',
-		message:
-			"Please use `clsx` instead. It's a lighter and faster drop-in replacement for `classnames`.",
-	},
 ];
 
 const coreModules = [
@@ -137,6 +132,7 @@ const coreModules = [
 	'@woocommerce/shared-hocs',
 	'@woocommerce/stores/store-notices',
 	'@woocommerce/stores/woocommerce/cart',
+	'@woocommerce/stores/woocommerce/product-data',
 	'@woocommerce/tracks',
 	'@woocommerce/data',
 	'@woocommerce/customer-effort-score',
