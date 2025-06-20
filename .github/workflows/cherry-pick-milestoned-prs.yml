@@ -1,0 +1,91 @@
+name: Cherry-pick Milestoned PRs to Release Branches
+on:
+  pull_request:
+    types: 
+      - closed
+      - milestoned
+    branches:
+      - trunk
+
+jobs:
+  cherry-pick-to-release-branches:
+    if: |
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'trunk' &&
+      github.event.pull_request.milestone != null
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read  # Required for reusing workflows
+    steps:
+      - name: Extract version from milestone
+        id: extract-version
+        run: |
+          MILESTONE="${{ github.event.pull_request.milestone.title }}"
+          if [[ "$MILESTONE" =~ ^([0-9]+\.[0-9]+)\.[0-9]+$ ]]; then
+            echo "base_version=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+          else
+            echo "::error::Invalid milestone format: $MILESTONE"
+            exit 1
+          fi
+
+      - name: Get release branches
+        id: get-branches
+        env:
+          BASE_VERSION: ${{ steps.extract-version.outputs.base_version }}
+        run: |
+          MAJOR=$(echo $BASE_VERSION | cut -d. -f1)
+          MINOR=$(echo $BASE_VERSION | cut -d. -f2)
+          
+          branches=()
+          current_minor=$MINOR
+          
+          while true; do
+            branch="release/$MAJOR.$current_minor"
+            response=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/branches/$branch")
+          
+            if [ "$response" -eq 200 ]; then
+              branches+=("$branch")
+              current_minor=$((current_minor + 1))
+            else
+              break
+            fi
+          done
+          
+          echo "branches=${branches[*]}" >> $GITHUB_OUTPUT
+
+      - name: Cherry-pick to release branches
+        id: cherry-pick
+        env:
+          ORIGINAL_PR_NUMBER: ${{ github.event.pull_request.number }}
+          MILESTONE: ${{ github.event.pull_request.milestone.title }}
+          BRANCHES: ${{ steps.get-branches.outputs.branches }}
+        run: |
+          IFS=' ' read -ra release_branches <<< "$BRANCHES"
+          
+          for branch in "${release_branches[@]}"; do
+            echo "Cherry-picking PR #$ORIGINAL_PR_NUMBER to $branch"
+          
+            # Trigger shared cherry-pick workflow
+            run_id=$(gh workflow run shared-cherry-pick.yml \
+              --ref main \
+              -f pr_number=$ORIGINAL_PR_NUMBER \
+              -f target_branch="$branch" \
+              --json id -q '.id')
+          
+            # Wait for workflow completion
+            gh run watch $run_id
+          
+            # Get created PR number
+            pr_number=$(gh run view $run_id \
+              --json jobs \
+              -q '.jobs[0].steps[-1].outputs.cherry_pick_pr_number')
+          
+            if [ -n "$pr_number" ] && [ "$pr_number" != "null" ]; then
+              echo "Adding milestone $MILESTONE to PR #$pr_number"
+              gh issue edit $pr_number --milestone "$MILESTONE"
+            fi
+          done
