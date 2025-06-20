@@ -434,37 +434,51 @@ jobs:
       - name: Aggregate results and set final status
         id: aggregate-status
         if: ${{ always() }}
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
         run: |
-          # Initialize status
+          # Install jq for JSON parsing
+          sudo apt-get update && sudo apt-get install -y jq
+
+          # Define critical steps
+          critical_steps=("checkout" "create-branch" "fetch-sha" "cherry-pick" "push-branch" "create-pr")
+
           status="success"
           errorMessage=""
           cherryPickPR=""
-          
-          # Check critical steps for failure
-          critical_steps=("checkout" "create-branch" "fetch-sha" "cherry-pick" "push-branch" "create-pr")
-          
+
+          # Loop through critical steps
           for step_id in "${critical_steps[@]}"; do
-            if [[ "${{ steps.$step_id.conclusion }}" == "failure" ]]; then
+            # Extract step outcome from JSON context
+            outcome=$(echo "$STEPS_CONTEXT" | jq -r ".$step_id.outcome")
+            
+            if [ "$outcome" = "failure" ]; then
               status="failed"
-              # Capture actual error message if available
-              if [[ -n "${{ steps.$step_id.outputs.errorMessage }}" ]]; then
-                errorMessage="${{ steps.$step_id.outputs.errorMessage }}"
+              # Extract error message if available
+              error_output=$(echo "$STEPS_CONTEXT" | jq -r ".$step_id.outputs.errorMessage")
+              if [ "$error_output" != "null" ] && [ -n "$error_output" ]; then
+                errorMessage="$error_output"
               else
                 errorMessage="Step '$step_id' failed"
               fi
               break
             fi
           done
-          
-          # If all critical steps passed, get PR number
-          if [[ "$status" == "success" ]]; then
-            cherryPickPR="${{ steps.create-pr.outputs.pr-number }}"
+
+          # If no failures, get PR number
+          if [ "$status" = "success" ]; then
+            cherryPickPR=$(echo "$STEPS_CONTEXT" | jq -r ".create-pr.outputs.pr-number")
+            # Handle null value
+            if [ "$cherryPickPR" = "null" ]; then
+              cherryPickPR=""
+            fi
           fi
-          
+
           # Set outputs
           echo "status=$status" >> $GITHUB_OUTPUT
           echo "errorMessage=$errorMessage" >> $GITHUB_OUTPUT
           echo "cherryPickPR=$cherryPickPR" >> $GITHUB_OUTPUT
+
 
   # Aggregate the results for the two jobs so we have clear output by calling workflows.
   aggregate-results:
