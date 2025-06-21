@@ -33,6 +33,9 @@ jobs:
             exit 1
           fi
 
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Get release branches
         id: get-branches
         env:
@@ -43,8 +46,10 @@ jobs:
           
           branches=()
           current_minor=$MINOR
+          branch_count=0
+          max_branches=2
           
-          while true; do
+          while [ $branch_count -lt $max_branches ]; do
             branch="release/$MAJOR.$current_minor"
             response=$(curl -s -o /dev/null -w "%{http_code}" \
               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
@@ -53,17 +58,18 @@ jobs:
             if [ "$response" -eq 200 ]; then
               branches+=("$branch")
               current_minor=$((current_minor + 1))
+              branch_count=$((branch_count + 1))
             else
               break
             fi
           done
           
-          # Output as JSON array
-          echo "branches=$(jq -c -n '$ARGS.positional' --args "${branches[@]}")" >> $GITHUB_OUTPUT
+          # Create valid JSON array
+          json_branches=$(printf '%s\n' "${branches[@]}" | jq -R . | jq -s -c .)
+          echo "branches=$json_branches" >> $GITHUB_OUTPUT
 
   cherry-pick:
     needs: prepare
-    # Call reusable workflow at JOB level (not step level)
     uses: ./.github/workflows/shared-cherry-pick.yml
     with:
       pr_number: ${{ needs.prepare.outputs.pr_number }}
