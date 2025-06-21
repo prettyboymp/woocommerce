@@ -1,0 +1,4 @@
+Significance: patch
+Type: dev
+
+convert cat merchant e2e test to integration test

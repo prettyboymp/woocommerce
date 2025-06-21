@@ -1,0 +1,526 @@
+# This is a shared workflow used to cherry-pick PRs into another branch and generate a new PR.
+# The original PR must be merged 
+name: Shared Cherry Pick
+on:
+  workflow_call:
+    inputs:
+      pr_number:
+        description: 'Pull request number to backport'
+        required: true
+        type: number
+      target_branch:
+        description: 'Branch to backport into'
+        required: true
+        type: string
+    outputs:
+      status:
+        description: 'Status of PR creation (success/failure)'
+        value: ${{ jobs.aggregate-results.outputs.status }}
+      error_message:
+        description: 'Error message if PR creation failed'
+        value: ${{ jobs.aggregate-results.outputs.error_message }}
+      cherry_pick_pr_number:
+        description: 'PR number created (if successful)'
+        value: ${{ jobs.aggregate-results.outputs.cherry_pick_pr_number }}
+
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull request number to backport'
+        required: true
+        type: number
+      target_branch:
+        description: 'Branch to backport into'
+        required: true
+
+env:
+  GIT_COMMITTER_NAME: 'WooCommerce Bot'
+  GIT_COMMITTER_EMAIL: 'no-reply@woocommerce.com'
+  GIT_AUTHOR_NAME: 'WooCommerce Bot'
+  GIT_AUTHOR_EMAIL: 'no-reply@woocommerce.com'
+
+jobs:
+  verify:
+    name: Verify requirements
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      status: ${{ steps.aggregate-status.outputs.status }}
+      errorMessage: ${{ steps.aggregate-status.outputs.errorMessage }}
+      cherryPickBranch: ${{ steps.aggregate-status.outputs.cherryPickBranch }}
+      mergeCommitSHA: ${{ steps.check-pr.outputs.merge_commit_sha }}
+    steps:
+      - name: Check PR exists, merged, and get merge_commit_sha
+        id: check-pr
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.inputs.pr_number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            function failWithMessage(message) {
+              core.setOutput('errorMessage', message);
+              core.setFailed(message);
+            }
+
+            const prNumber = parseInt(process.env.PR_NUMBER, 10);
+            if (isNaN(prNumber)) {
+              failWithMessage('PR_NUMBER is not a valid integer');
+              return;
+            }
+
+            try {
+              // DEBUG: Print repository context
+              core.info(`Checking PR #${prNumber} in repo: ${context.repo.owner}/${context.repo.repo}`);
+              
+              // Fetch the pull request
+              const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber
+              });
+
+              // DEBUG: Print PR data
+              core.info(`PR  ${JSON.stringify(pr, null, 2)}`);
+              
+              if (!pr.merged) {
+                failWithMessage(`Pull request #${prNumber} is not merged.`);
+                return;
+              }
+
+              const mergeCommitSha = pr.merge_commit_sha;
+              if (!mergeCommitSha) {
+                failWithMessage(`Pull request #${prNumber} does not have a merge_commit_sha.`);
+                return;
+              }
+
+              core.setOutput('merge_commit_sha', mergeCommitSha);
+              core.info(`PR #${prNumber} is merged with merge commit SHA: ${mergeCommitSha}`);
+
+            } catch (error) {
+              // DEBUG: Print full error
+              core.error(`API Error: ${error.message}\n${error.stack}`);
+              
+              if (error.status === 404) {
+                failWithMessage(`Pull request #${prNumber} does not exist in ${context.repo.owner}/${context.repo.repo}.`);
+              } else {
+                failWithMessage(`Error fetching PR: ${error.message}`);
+              }
+            }
+
+      - name: Verify target branch exists
+        id: verify-target-branch
+        uses: actions/github-script@v7
+        env:
+          TARGET_BRANCH: ${{ github.event.inputs.target_branch }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        with:
+          script: |
+            function failWithMessage(message) {
+              core.setOutput('errorMessage', message);
+              core.setFailed(message);
+            }
+            
+            const { owner, repo } = context.repo;
+            const targetBranch = process.env.TARGET_BRANCH;
+            
+            try {
+              await github.rest.repos.getBranch({
+                owner,
+                repo,
+                branch: targetBranch,
+              });
+              core.info(`Target branch '${targetBranch}' exists`);
+            } catch (error) {
+              if (error.status === 404) {
+                failWithMessage(`Target branch '${targetBranch}' does not exist`);
+              } else {
+                failWithMessage(`Error checking target branch: ${error.message}`);
+              }
+            }
+
+      - name: Check cherry-pick branch does not exist
+        id: check-cherry-pick-branch
+        uses: actions/github-script@v7
+        env:
+          TARGET_BRANCH: ${{ github.event.inputs.target_branch }}
+          PR_NUMBER: ${{ github.event.inputs.pr_number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Added missing token
+        with:
+          script: |
+            function failWithMessage(message) {
+              core.setOutput('errorMessage', message);
+              core.setFailed(message);
+            }
+            
+            const targetBranch = process.env.TARGET_BRANCH;
+            const prNumber = process.env.PR_NUMBER;
+            
+            if (!targetBranch || !prNumber) {
+              failWithMessage('Missing required input: target_branch or pr_number');
+              return;
+            }
+            
+            const cherryPickBranch = `cherry-pick-PR${prNumber}-to-${targetBranch}`;
+            
+            try {
+              await github.rest.repos.getBranch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                branch: cherryPickBranch,
+              });
+              failWithMessage(`Branch '${cherryPickBranch}' already exists. Please delete it first.`);
+            } catch (error) {
+              if (error.status === 404) {
+                core.setOutput('cherryPickBranch', cherryPickBranch);
+                core.info(`Branch '${cherryPickBranch}' does not exist. Proceeding.`);
+              } else {
+                failWithMessage(`Error checking branch: ${error.message}`);
+              }
+            }
+
+      - name: Aggregate verification results and set final status
+        id: aggregate-status
+        if: ${{ always() }}
+        run: |
+          # Check for errors in priority order
+          if [[ -n "${{ steps.check-pr.outputs.errorMessage }}" ]]; then
+            echo "errorMessage=${{ steps.check-pr.outputs.errorMessage }}" >> $GITHUB_OUTPUT
+            echo "status=failed" >> $GITHUB_OUTPUT
+          elif [[ -n "${{ steps.verify-target-branch.outputs.errorMessage }}" ]]; then
+            echo "errorMessage=${{ steps.verify-target-branch.outputs.errorMessage }}" >> $GITHUB_OUTPUT
+            echo "status=failed" >> $GITHUB_OUTPUT
+          elif [[ -n "${{ steps.check-cherry-pick-branch.outputs.errorMessage }}" ]]; then
+            echo "errorMessage=${{ steps.check-cherry-pick-branch.outputs.errorMessage }}" >> $GITHUB_OUTPUT
+            echo "status=failed" >> $GITHUB_OUTPUT
+          else
+            echo "status=success" >> $GITHUB_OUTPUT
+            # Pass through cherryPickBranch from previous step
+            echo "cherryPickBranch=${{ steps.check-cherry-pick-branch.outputs.cherryPickBranch }}" >> $GITHUB_OUTPUT
+          fi
+
+
+
+  cherry-pick:
+    name: Cherry Pick
+    runs-on: ubuntu-latest
+    needs: verify
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      status: ${{ steps.aggregate-status.outputs.status }}
+      errorMessage: ${{ steps.aggregate-status.outputs.errorMessage }}
+      cherryPickPR: ${{ steps.aggregate-status.outputs.cherryPickPR }}
+    steps:
+      - name: Checkout Target Branch
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_branch }}
+  
+      - name: Create a cherry pick branch based on the target branch
+        id: create-branch
+        run: git checkout -b $CHERRY_PICK_BRANCH
+        env:
+          CHERRY_PICK_BRANCH: ${{ needs.verify.outputs.cherryPickBranch }}
+  
+      - name: Fetch PR SHA
+        id: fetch-sha
+        run: git fetch origin $PR_SHA
+        env:
+          PR_SHA: ${{ needs.verify.outputs.mergeCommitSHA }}
+  
+      - name: Cherry pick
+        id: cherry-pick
+        uses: actions/github-script@v7
+        env:
+          PR_SHA: ${{ needs.verify.outputs.mergeCommitSHA }}
+          PR_NUMBER: ${{ github.event.inputs.pr_number }}
+          CHERRY_PICK_BRANCH: ${{ needs.verify.outputs.cherryPickBranch }}
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            let hasConflicts = false;
+            let hasFuzz = false;
+  
+            try {
+              core.info(`cherry-picking ${process.env.PR_SHA}`);
+              execSync(`git cherry-pick -m1 ${process.env.PR_SHA}`, { stdio: 'inherit' });
+            } catch (err) {
+              core.error(`Cherry-pick failed for commit ${process.env.PR_SHA}:`);
+              core.error(err.message);
+  
+              // Get conflicted files
+              const conflictedFiles = execSync('git diff --name-only --diff-filter=U')
+                .toString()
+                .trim()
+                .split('\n')
+                .filter(f => f.length > 0);
+  
+              if (conflictedFiles.length === 0) {
+                core.setFailed("Cherry-pick failed, but no conflicted files found. " + err);
+                return;
+              }
+  
+              hasConflicts = true;
+  
+              // Stage conflicted files
+              conflictedFiles.forEach(file => {
+                const safeFile = file.replace(/[^a-zA-Z0-9_\-\/.]/g, '')
+                execSync(`git add ${safeFile}`);
+              });
+  
+              core.info('Committing unresolved conflicts.');
+              execSync(`git commit -m "Cherry-pick ${process.env.PR_SHA} with unresolved conflicts from #${process.env.PR_NUMBER}"`);
+            }
+  
+            // Check for fuzzy matches
+            const lastCommitMsg = execSync('git log -1 --pretty=%B').toString();
+            hasFuzz = !hasConflicts && (
+              lastCommitMsg.includes('with fuzzy patch') || 
+              lastCommitMsg.includes('patch applied with fuzz')
+            );
+            core.setOutput('hasConflicts', hasConflicts);
+            core.setOutput('hasFuzz', hasFuzz);
+  
+      - name: Push Cherry Pick Branch
+        id: push-branch
+        run: git push origin $CHERRY_PICK_BRANCH
+        env:
+          CHERRY_PICK_BRANCH: ${{ needs.verify.outputs.cherryPickBranch }}
+  
+      - name: Create Cherry Pick Pull Request
+        id: create-pr
+        uses: actions/github-script@v7
+        env:
+          TARGET_BRANCH: ${{ github.event.inputs.target_branch }}
+          PR_NUMBER: ${{ github.event.inputs.pr_number }}
+          CHERRY_PICK_BRANCH: ${{ needs.verify.outputs.cherryPickBranch }}
+          CHERRY_PICK_HAD_FUZZ: ${{ steps.cherry-pick.outputs.hasFuzz }}
+          CHERRY_PICK_HAD_CONFLICTS: ${{ steps.cherry-pick.outputs.hasConflicts }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const prNumber = process.env.PR_NUMBER;
+            const targetBranch = process.env.TARGET_BRANCH;
+            const cherryPickBranch = process.env.CHERRY_PICK_BRANCH;
+            const hadFuzz = process.env.CHERRY_PICK_HAD_FUZZ === 'true';
+            const hadConflicts = process.env.CHERRY_PICK_HAD_CONFLICTS === 'true';
+  
+            try {
+              // Get original PR details
+              const {  data: original_pr } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: prNumber
+              });
+  
+              // Create PR body
+              let prBody = `This PR is a backport of #${prNumber} to \`${targetBranch}\`.\n\n`;
+            
+              // Add warning about conflicts or fuzz
+              if (hadConflicts) {
+                prBody += `⚠️ **WARNING**: This cherry-pick contained conflicts that were automatically resolved. Please review the changes carefully before merging!\n\n`;
+              } else if (hadFuzz) {
+                prBody += `⚠️ **WARNING**: This cherry-pick had fuzzy patches applied. Please verify that the changes are correct before merging!\n\n`;
+              }
+            
+              // Add original PR body
+              prBody += `## Original PR Description\n\n${original_pr.body || '*No description provided*'}`;
+  
+              // Create new PR
+              const { data: newPR } = await github.rest.pulls.create({
+                owner,
+                repo,
+                head: cherryPickBranch,
+                base: targetBranch,
+                title: `[Backport to ${targetBranch}] ${original_pr.title}`,
+                body: prBody
+              });
+  
+              core.info(`PR#${newPR.number} created.`);
+            
+              // Set outputs
+              core.setOutput('pr-number', newPR.number);
+              core.setOutput('pr-url', newPR.html_url);
+              core.setOutput('original-merger', original_pr.merged_by?.login || '');
+              core.setOutput('original-author', original_pr.user?.login || '');
+            } catch (error) {
+              core.setOutput('errorMessage', `Failed to create PR: ${error.message}`); 
+              core.setFailed(`Failed to create PR: ${error.message}`);
+            }
+  
+      - name: Assign PR to original merger and author
+        id: assign-pr
+        continue-on-error: true
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.create-pr.outputs.pr-number }}
+          ORIGINAL_MERGER: ${{ steps.create-pr.outputs.original-merger }}
+          ORIGINAL_AUTHOR: ${{ steps.create-pr.outputs.original-author }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const prNumber = process.env.PR_NUMBER;
+            const originalMerger = process.env.ORIGINAL_MERGER;
+            const originalAuthor = process.env.ORIGINAL_AUTHOR;
+            
+            // Create array of assignees
+            const assignees = [];
+            
+            if (originalMerger && originalMerger.trim() !== '') {
+              assignees.push(originalMerger);
+            }
+            
+            if (originalAuthor && originalAuthor.trim() !== '' && !assignees.includes(originalAuthor)) {
+              assignees.push(originalAuthor);
+            }
+            
+            if (assignees.length > 0) {
+              await github.rest.issues.addAssignees({
+                owner,
+                repo,
+                issue_number: prNumber,
+                assignees: assignees
+              });
+              core.info(`PR#${prNumber} assigned to ${assignees.join(', ')}.`);
+            }
+  
+      - name: Add warning comment if conflicts or fuzz
+        id: warning-comment
+        if: steps.cherry-pick.outputs.hasConflicts == 'true' || steps.cherry-pick.outputs.hasFuzz == 'true'
+        continue-on-error: true
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.create-pr.outputs.pr-number }}
+          HAD_CONFLICTS: ${{ steps.cherry-pick.outputs.hasConflicts }}
+          HAD_FUZZ: ${{ steps.cherry-pick.outputs.hasFuzz }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const prNumber = process.env.PR_NUMBER;
+            const hadConflicts = process.env.HAD_CONFLICTS === 'true';
+            const hadFuzz = process.env.HAD_FUZZ === 'true';
+            
+            let commentBody = '';
+            
+            if (hadConflicts) {
+              commentBody = "⚠️ This backport contains conflicts that were automatically resolved. Please review the changes carefully before merging!";
+            } else if (hadFuzz) {
+              commentBody = "⚠️ This backport contains fuzzy patches. Please verify that the changes are correct before merging!";
+            }
+            
+            if (commentBody) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: prNumber,
+                body: commentBody
+              });
+            }
+  
+      - name: Update original PR with backport info
+        id: update-original
+        continue-on-error: true 
+        uses: actions/github-script@v7
+        env:
+          ORIGINAL_PR_NUMBER: ${{ github.event.inputs.pr_number }}
+          NEW_PR_NUMBER: ${{ steps.create-pr.outputs.pr-number }}
+          NEW_PR_URL: ${{ steps.create-pr.outputs.pr-url }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const originalPrNumber = process.env.ORIGINAL_PR_NUMBER;
+            const newPrNumber = process.env.NEW_PR_NUMBER;
+            const newPrUrl = process.env.NEW_PR_URL;
+            
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: originalPrNumber,
+              body: `✅ Backport created: [#${newPrNumber}](${newPrUrl})`
+            });
+  
+      - name: Aggregate results and set final status
+        id: aggregate-status
+        if: ${{ always() }}
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq
+          
+          critical_steps=("checkout" "create-branch" "fetch-sha" "cherry-pick" "push-branch" "create-pr")
+          
+          status="success"
+          errorMessage=""
+          cherryPickPR=""
+          
+          for step_id in "${critical_steps[@]}"; do
+            # Use bracket notation for step IDs with dashes
+            outcome=$(echo "$STEPS_CONTEXT" | jq -r ".[\"$step_id\"]? | .outcome // \"skipped\"")
+            
+            if [ "$outcome" = "failure" ]; then
+              status="failed"
+              # Use bracket notation for output keys with dashes
+              error_output=$(echo "$STEPS_CONTEXT" | jq -r ".[\"$step_id\"]? | .outputs[\"errorMessage\"]? // \"\"")
+              
+              if [ -n "$error_output" ] && [ "$error_output" != "null" ]; then
+                errorMessage="$error_output"
+              else
+                errorMessage="Step '$step_id' failed"
+              fi
+              break
+            fi
+          done
+          
+          if [ "$status" = "success" ]; then
+            # Use bracket notation for output keys with dashes
+            cherryPickPR=$(echo "$STEPS_CONTEXT" | jq -r ".[\"create-pr\"]? | .outputs[\"pr-number\"]? // \"\"")
+            if [ "$cherryPickPR" = "null" ]; then
+              cherryPickPR=""
+            fi
+          fi
+          
+          echo "status=$status" >> $GITHUB_OUTPUT
+          echo "errorMessage=$errorMessage" >> $GITHUB_OUTPUT
+          echo "cherryPickPR=$cherryPickPR" >> $GITHUB_OUTPUT
+
+
+  # Aggregate the results for the two jobs so we have clear output by calling workflows.
+  aggregate-results:
+    name: Aggregate Results
+    runs-on: ubuntu-latest
+    needs: [verify, cherry-pick]
+    if: ${{ always() }}
+    outputs:
+      status: ${{ steps.set-outputs.outputs.status }}
+      error_message: ${{ steps.set-outputs.outputs.error_message }}
+      cherry_pick_pr_number: ${{ steps.set-outputs.outputs.cherry_pick_pr_number }}
+    steps:
+      - name: Set aggregated outputs
+        id: set-outputs
+        run: |
+          # Get outputs from both jobs
+          verify_status="${{ needs.verify.outputs.status }}"
+          verify_error="${{ needs.verify.outputs.errorMessage }}"
+          cherry_status="${{ needs.cherry-pick.outputs.status }}"
+          cherry_error="${{ needs.cherry-pick.outputs.errorMessage }}"
+          cherry_pr_number="${{ needs.cherry-pick.outputs.cherryPickPR }}"
+  
+          # Determine final status
+          if [[ "$verify_status" != "success" ]]; then
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "error_message=$verify_error" >> $GITHUB_OUTPUT
+            echo "cherry_pick_pr_number=" >> $GITHUB_OUTPUT
+          elif [[ "$cherry_status" != "success" ]]; then
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "error_message=$cherry_error" >> $GITHUB_OUTPUT
+            echo "cherry_pick_pr_number=" >> $GITHUB_OUTPUT
+          else
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "error_message=" >> $GITHUB_OUTPUT
+            echo "cherry_pick_pr_number=$cherry_pr_number" >> $GITHUB_OUTPUT
+          fi

@@ -583,6 +583,8 @@ function wc_change_term_counts( $terms, $taxonomies ) {
 				$count       = absint( $count );
 				$term->count = $count;
 			}
+
+			$term->count = $term_counts[ $key ];
 		}
 	}
 

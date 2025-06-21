@@ -1,0 +1,88 @@
+name: Cherry-pick Milestoned PRs to Release Branches
+on:
+  pull_request:
+    types: [closed, milestoned]
+    branches: [trunk]
+
+jobs:
+  prepare:
+    if: |
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'trunk' &&
+      github.event.pull_request.milestone != null
+    runs-on: ubuntu-latest
+    outputs:
+      branches: ${{ steps.get-branches.outputs.branches }}
+      pr_number: ${{ steps.set-vars.outputs.pr_number }}
+      milestone: ${{ steps.set-vars.outputs.milestone }}
+    steps:
+      - name: Set variables
+        id: set-vars
+        run: |
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "milestone=${{ github.event.pull_request.milestone.title }}" >> $GITHUB_OUTPUT
+
+      - name: Extract version from milestone
+        id: extract-version
+        run: |
+          MILESTONE="${{ github.event.pull_request.milestone.title }}"
+          if [[ "$MILESTONE" =~ ^([0-9]+\.[0-9]+)\.[0-9]+$ ]]; then
+            echo "base_version=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+          else
+            echo "::error::Invalid milestone format: $MILESTONE"
+            exit 1
+          fi
+
+      - name: Get release branches
+        id: get-branches
+        env:
+          BASE_VERSION: ${{ steps.extract-version.outputs.base_version }}
+        run: |
+          MAJOR=$(echo $BASE_VERSION | cut -d. -f1)
+          MINOR=$(echo $BASE_VERSION | cut -d. -f2)
+          
+          branches=()
+          current_minor=$MINOR
+          
+          while true; do
+            branch="release/$MAJOR.$current_minor"
+            response=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/branches/$branch")
+          
+            if [ "$response" -eq 200 ]; then
+              branches+=("$branch")
+              current_minor=$((current_minor + 1))
+            else
+              break
+            fi
+          done
+          
+          # Output as JSON array
+          echo "branches=$(jq -c -n '$ARGS.positional' --args "${branches[@]}")" >> $GITHUB_OUTPUT
+
+  cherry-pick:
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch: ${{ fromJson(needs.prepare.outputs.branches) }}
+    steps:
+      - name: Run cherry-pick workflow
+        id: run-cherry-pick
+        uses: ./.github/workflows/shared-cherry-pick.yml
+        with:
+          pr_number: ${{ needs.prepare.outputs.pr_number }}
+          target_branch: ${{ matrix.branch }}
+
+      - name: Add milestone to created PR
+        if: ${{ success() && steps.run-cherry-pick.outputs.cherry_pick_pr_number }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.run-cherry-pick.outputs.cherry_pick_pr_number }},
+              milestone: '${{ needs.prepare.outputs.milestone }}'
+            })
