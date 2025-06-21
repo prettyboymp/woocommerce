@@ -327,7 +327,7 @@ jobs:
             
               // Add warning about conflicts or fuzz
               if (hadConflicts) {
-                prBody += `⚠️ **WARNING**: This cherry-pick contained conflicts that were automatically resolved. Please review the changes carefully before merging!\n\n`;
+                prBody += `⚠️ **WARNING**: This cherry-pick contained conflicts that have not been resolved. Please review the changes carefully before merging!\n\n`;
               } else if (hadFuzz) {
                 prBody += `⚠️ **WARNING**: This cherry-pick had fuzzy patches applied. Please verify that the changes are correct before merging!\n\n`;
               }
@@ -412,7 +412,7 @@ jobs:
             let commentBody = '';
             
             if (hadConflicts) {
-              commentBody = "⚠️ This backport contains conflicts that were automatically resolved. Please review the changes carefully before merging!";
+              commentBody = "⚠️ This backport contains conflicts that have not been resolved. Please review the changes carefully before merging!";
             } else if (hadFuzz) {
               commentBody = "⚠️ This backport contains fuzzy patches. Please verify that the changes are correct before merging!";
             }

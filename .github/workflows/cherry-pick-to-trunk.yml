@@ -1,0 +1,72 @@
+name: Cherry-pick to Trunk from Release Branches
+on:
+  pull_request:
+    types: [closed, labeled]
+    branches-ignore: [trunk]
+
+jobs:
+  cherry-pick-to-trunk:
+    if: |
+      (github.event.action == 'closed' && github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'cherry-pick to trunk')) ||
+      (github.event.action == 'labeled' && github.event.pull_request.merged == true && github.event.label.name == 'cherry-pick to trunk')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    outputs:
+      pr_number: ${{ steps.set-vars.outputs.pr_number }}
+      status: ${{ steps.cherry-pick-status.outputs.status }}
+      error_message: ${{ steps.cherry-pick-status.outputs.error_message }}
+    steps:
+      - name: Set variables
+        id: set-vars
+        run: |
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+
+      - name: Run cherry-pick workflow
+        id: run-cherry-pick
+        uses: ./.github/workflows/shared-cherry-pick.yml
+        with:
+          pr_number: ${{ steps.set-vars.outputs.pr_number }}
+          target_branch: trunk
+
+      - name: Set cherry-pick status outputs
+        id: cherry-pick-status
+        if: ${{ failure() }}
+        run: |
+          echo "status=failed" >> $GITHUB_OUTPUT
+          echo "error_message=Cherry-pick workflow failed" >> $GITHUB_OUTPUT
+        else:
+          run: |
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "error_message=" >> $GITHUB_OUTPUT
+
+  handle-failure:
+    needs: cherry-pick-to-trunk
+    runs-on: ubuntu-latest
+    if: ${{ needs.cherry-pick-to-trunk.outputs.status == 'failed' }}
+    steps:
+      - name: Add "cherry-pick-failed" label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt('${{ needs.cherry-pick-to-trunk.outputs.pr_number }}'),
+              labels: ['cherry-pick-failed']
+            })
+
+      - name: Get PR merger and comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: parseInt('${{ needs.cherry-pick-to-trunk.outputs.pr_number }}')
+            });
+            const errorMsg = `${{ needs.cherry-pick-to-trunk.outputs.error_message || 'Unknown error' }}`;
+            const merger = pr.data.merged_by?.login ? `@${pr.data.merged_by.login}` : '';
+            const body = `${merger ? merger + ' ' : ''}⚠️ **Cherry-pick to trunk failed.**\n\nError: ${errorMsg}`;
