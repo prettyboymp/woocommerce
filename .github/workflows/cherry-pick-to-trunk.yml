@@ -4,7 +4,7 @@ name: Cherry-pick to Trunk from Release Branches
 on:
   pull_request:
     types: [closed, labeled]
-    branches-ignore: [trunk-foo]
+    # branches-ignore: [trunk-foo]
 
 jobs:
   cherry-pick-to-trunk:
