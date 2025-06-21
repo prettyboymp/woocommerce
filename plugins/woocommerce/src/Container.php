@@ -10,6 +10,10 @@ namespace Automattic\WooCommerce;
 use Automattic\WooCommerce\Internal\DependencyManagement\ContainerException;
 use Automattic\WooCommerce\Internal\DependencyManagement\ExtendedContainer;
 use Automattic\WooCommerce\Internal\DependencyManagement\RuntimeContainer;
+<<<<<<< HEAD
+=======
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AddressProviderServiceProvider;
+>>>>>>> 6bb4f109f0 (TESTING: MIC: Introduce stock tracking hooks and AS scheduling for Back in Stock Notifications (#44))
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AdminSettingsServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\CostOfGoodsSoldServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\COTMigrationServiceProvider;
@@ -42,6 +46,11 @@ use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\Coming
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\StatsServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ImportExportServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\EmailEditorServiceProvider;
+<<<<<<< HEAD
+=======
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductFiltersServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\StockNotificationsServiceProvider;
+>>>>>>> 6bb4f109f0 (TESTING: MIC: Introduce stock tracking hooks and AS scheduling for Back in Stock Notifications (#44))
 
 /**
  * PSR11 compliant dependency injection container for WooCommerce.
@@ -137,7 +146,11 @@ final class Container {
 	/**
 	 * The list of service provider classes to register.
 	 *
+<<<<<<< HEAD
 	 * @var string[]
+=======
+	 * @return array<int,class-string>
+>>>>>>> 6bb4f109f0 (TESTING: MIC: Introduce stock tracking hooks and AS scheduling for Back in Stock Notifications (#44))
 	 */
 	private function get_service_providers(): array {
 		return array(
@@ -173,6 +186,12 @@ final class Container {
 			AdminSettingsServiceProvider::class,
 			AdminSuggestionsServiceProvider::class,
 			EmailEditorServiceProvider::class,
+<<<<<<< HEAD
+=======
+			ProductFiltersServiceProvider::class,
+			AddressProviderServiceProvider::class,
+			StockNotificationsServiceProvider::class,
+>>>>>>> 6bb4f109f0 (TESTING: MIC: Introduce stock tracking hooks and AS scheduling for Back in Stock Notifications (#44))
 		);
 	}
 }
