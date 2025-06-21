@@ -67,7 +67,7 @@ jobs:
 
             const prNumber = parseInt(process.env.PR_NUMBER, 10);
             if (isNaN(prNumber)) {
-              failWithMessage('PR_NUMBER is not a valid integer');
+              failWithMessage('PR_NUMBER (${process.env.PR_NUMBER}) is not a valid integer');
               return;
             }
 
