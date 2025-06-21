@@ -541,7 +541,7 @@ class WC_REST_System_Status_Tools_V2_Controller extends WC_REST_Controller {
 				$result = absint( $wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE meta_key='_woocommerce_persistent_cart_" . get_current_blog_id() . "';" ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 				wp_cache_flush();
 				/* translators: %d: amount of sessions */
-				$message = sprintf( __( 'Deleted all active sessions, and %d saved carts.', 'woocommerce' ), absint( $result ) );
+				$message = __( 'Deleted all active sessions', 'woocommerce' );
 				break;
 
 			case 'install_pages':

@@ -23,7 +23,7 @@ class Utils {
 		$pattern = '/(<input[^>]*id="quantity_[^"]*"[^>]*\/>)/';
 		// Replacement string to add button BEFORE the matched <input> element.
 		/* translators: %s refers to the item name in the cart. */
-		$minus_button = '<button aria-label="' . esc_attr( sprintf( __( 'Reduce quantity of %s', 'woocommerce' ), $product_name ) ) . '"type="button" data-wp-on--click="actions.decreaseQuantity" class="wc-block-components-quantity-selector__button wc-block-components-quantity-selector__button--minus">-</button>$1';
+		$minus_button = '<button aria-label="' . esc_attr( sprintf( __( 'Reduce quantity of %s', 'woocommerce' ), $product_name ) ) . '" type="button" data-wp-on--click="actions.decreaseQuantity" class="wc-block-components-quantity-selector__button wc-block-components-quantity-selector__button--minus">-</button>$1';
 		// Replacement string to add button AFTER the matched <input> element.
 		/* translators: %s refers to the item name in the cart. */
 		$plus_button = '$1<button aria-label="' . esc_attr( sprintf( __( 'Increase quantity of %s', 'woocommerce' ), $product_name ) ) . '" type="button" data-wp-on--click="actions.increaseQuantity" class="wc-block-components-quantity-selector__button wc-block-components-quantity-selector__button--plus">+</button>';
@@ -53,34 +53,6 @@ class Utils {
 		}
 
 		return $html->get_updated_html();
-	}
-
-	/**
-	 * Get standardized quantity input arguments for WooCommerce quantity input.
-	 *
-	 * @param \WC_Product $product The product object.
-	 * @return array Arguments for woocommerce_quantity_input().
-	 */
-	public static function get_quantity_input_args( $product ) {
-		return array(
-			/**
-			 * Filter the minimum quantity value allowed for the product.
-			 *
-			 * @since 2.0.0
-			 * @param int        $min_value Minimum quantity value.
-			 * @param WC_Product $product   Product object.
-			 */
-			'min_value'   => apply_filters( 'woocommerce_quantity_input_min', $product->get_min_purchase_quantity(), $product ),
-			/**
-			 * Filter the maximum quantity value allowed for the product.
-			 *
-			 * @since 2.0.0
-			 * @param int        $max_value Maximum quantity value.
-			 * @param WC_Product $product   Product object.
-			 */
-			'max_value'   => apply_filters( 'woocommerce_quantity_input_max', $product->get_max_purchase_quantity(), $product ),
-			'input_value' => isset( $_POST['quantity'] ) ? wc_stock_amount( wp_unslash( $_POST['quantity'] ) ) : $product->get_min_purchase_quantity(), // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		);
 	}
 
 	/**
@@ -125,13 +97,19 @@ class Utils {
 	}
 
 	/**
-	 * Check if a product is a simple product that is not purchasable or not in stock.
+	 * Check if a product is not purchasable or not in stock.
 	 *
 	 * @param \WC_Product $product The product to check.
-	 * @return bool True if the product is a simple product that is not purchasable or not in stock.
+	 * @return bool True if the product is not purchasable or not in stock.
 	 */
-	public static function is_not_purchasable_simple_product( $product ) {
-		return ProductType::SIMPLE === $product->get_type() && ( ! $product->is_in_stock() || ! $product->is_purchasable() );
+	public static function is_not_purchasable_product( $product ) {
+		if ( $product->is_type( 'simple' ) ) {
+			return ! $product->is_in_stock() || ! $product->is_purchasable();
+		} elseif ( $product->is_type( 'variable' ) ) {
+			return ! $product->is_in_stock() || ! $product->has_purchasable_variations();
+		}
+
+		return false;
 	}
 
 	/**

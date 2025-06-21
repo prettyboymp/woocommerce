@@ -44,37 +44,25 @@ class WC_Cache_Helper {
 	 * @since 3.6.0
 	 */
 	public static function additional_nocache_headers( $headers ) {
-		global $wp_query;
-
-		$agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-
-		$set_cache = false;
-
 		/**
-		 * Allow plugins to enable nocache headers. Enabled for Google weblight.
+		 * Allow plugins to enable nocache headers.
 		 *
 		 * @param bool $enable_nocache_headers Flag indicating whether to add nocache headers. Default: false.
 		 */
-		if ( apply_filters( 'woocommerce_enable_nocache_headers', false ) ) {
-			$set_cache = true;
-		}
-
-		/**
-		 * Enabled for Google weblight.
-		 *
-		 * @see https://support.google.com/webmasters/answer/1061943?hl=en
-		 */
-		if ( false !== strpos( $agent, 'googleweblight' ) ) {
-			// no-transform: Opt-out of Google weblight. https://support.google.com/webmasters/answer/6211428?hl=en.
-			$set_cache = true;
-		}
-
-		if ( false !== strpos( $agent, 'Chrome' ) && isset( $wp_query ) && is_cart() ) {
-			$set_cache = true;
-		}
+		$set_cache = (bool) apply_filters( 'woocommerce_enable_nocache_headers', false );
 
 		if ( $set_cache ) {
-			$headers['Cache-Control'] = 'no-transform, no-cache, no-store, must-revalidate';
+			$new_directives = array(
+				'no-transform',
+				'no-cache',
+				'no-store',
+				'must-revalidate',
+			);
+			$old_directives = array();
+			if ( isset( $headers['Cache-Control'] ) ) {
+				$old_directives = preg_split( '/\s*,\s*/', $headers['Cache-Control'] );
+			}
+			$headers['Cache-Control'] = implode( ', ', array_unique( array_merge( $old_directives, $new_directives ) ) );
 		}
 		return $headers;
 	}
@@ -150,7 +138,7 @@ class WC_Cache_Helper {
 		if ( ! is_blog_installed() ) {
 			return;
 		}
-		$page_ids = array_filter( array( wc_get_page_id( 'cart' ), wc_get_page_id( 'checkout' ), wc_get_page_id( 'myaccount' ) ) );
+		$page_ids = array_filter( array( wc_get_page_id( 'checkout' ), wc_get_page_id( 'myaccount' ) ) );
 
 		if ( is_page( $page_ids ) ) {
 			self::set_nocache_constants();

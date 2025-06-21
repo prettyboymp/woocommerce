@@ -1,8 +1,9 @@
 # This workflow is used to cherry pick PRs from release branch into trunk.
 name: 'Release: CFE workflow'
 on:
-    pull_request:
-        types: [closed]
+    # Disabled in favor of cherry-pick-to-trunk.yml as we deprecate teh cfe workflow
+    #pull_request:
+    #    types: [closed]
     workflow_dispatch:
         inputs:
             skipSlackPing:
@@ -214,7 +215,7 @@ jobs:
 
             - name: Notify Slack on failure
               if: ${{ failure() && inputs.skipSlackPing != true }}
-              uses: archive/github-actions-slack@v2.0.0
+              uses: archive/github-actions-slack@f530f3aa696b2eef0e5aba82450e387bd7723903 #v2.0.0
               with:
                   slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
                   slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
@@ -224,7 +225,7 @@ jobs:
                       :warning: *Cherry pick <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|failed> (${{ needs.prep.outputs.version }} → `trunk`)* Please resolve before releasing. Source PR: _<${{ needs.prep.outputs.prURL }}|#${{ needs.prep.outputs.pr }} - ${{ needs.prep.outputs.prTitle }}>_.
             - name: Notify Slack on success
               if: ${{ success() && inputs.skipSlackPing != true }}
-              uses: archive/github-actions-slack@v2.0.0
+              uses: archive/github-actions-slack@f530f3aa696b2eef0e5aba82450e387bd7723903 #v2.0.0
               with:
                   slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
                   slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
