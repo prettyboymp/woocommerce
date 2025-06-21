@@ -8,6 +8,7 @@
 }
 
 .wc-block-add-to-cart-with-options-variation-selector-attribute-options__pill {
+<<<<<<< HEAD
 	border-width: 1px;
 	border-style: solid;
 	border-radius: 2px;
@@ -39,6 +40,52 @@
 		border-color: var(--wc-subtext);
 		color: var(--wc-subtext);
 		text-decoration: line-through;
+=======
+	--pill-color: currentColor;
+	--pill-background-color: transparent;
+	background-color: var(--pill-background-color);
+	border-radius: 2px;
+	border: 1px solid color-mix(in srgb, var(--pill-color) 40%, transparent);
+	color: var(--pill-color);
+	cursor: pointer;
+	font-size: 0.8em;
+	padding: 0.25em 0.75em;
+	user-select: none;
+
+	&:has(.wc-block-add-to-cart-with-options-variation-selector-attribute-options__pill-input:disabled) {
+		color: color-mix(in srgb, var(--pill-color) 40%, transparent);
+		cursor: not-allowed;
+		text-decoration: line-through;
+	}
+
+	&:hover {
+		&:not(:has(.wc-block-add-to-cart-with-options-variation-selector-attribute-options__pill-input:disabled)) {
+			background-color: color-mix(
+				in srgb,
+				var(--pill-color) 10%,
+				transparent
+			);
+		}
+	
+		&:has(.wc-block-add-to-cart-with-options-variation-selector-attribute-options__pill-input:checked) {
+			background-color: color-mix(
+				in srgb,
+				var(--pill-background-color) 85%,
+				transparent
+			);
+		}
+	}
+
+	&:focus-within {
+		outline: 1px solid var(--pill-color);
+		outline-offset: 1px;
+
+		&:has(
+			.wc-block-add-to-cart-with-options-variation-selector-attribute-options__pill-input:checked
+		) {
+			outline-color: var(--pill-background-color);
+		}
+>>>>>>> 850d8cc737 (TESTING: Add to Cart + Options block: simplify and fix pills colors (#36))
 	}
 }
 
