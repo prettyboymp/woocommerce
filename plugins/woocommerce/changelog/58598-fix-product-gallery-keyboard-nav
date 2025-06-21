@@ -1,0 +1,4 @@
+Significance: minor
+Type: fix
+
+Blockified Add to Cart with Options block: only allow the product gallery to navigate via the keyboard left and right arrows when the gallery is in focus.

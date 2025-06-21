@@ -275,7 +275,9 @@ jQuery( function( $ ) {
 			},
 			after: function( slider ) {
 				gallery.initZoomForTarget( gallery.$images.eq( slider.currentSlide ) );
-			}
+			},
+			// Disable the built-in keyboard navigation and use custom keyboard navigation instead.
+			keyboard: false,
 		}, args );
 
 		$target.flexslider( options );
@@ -299,6 +301,23 @@ jQuery( function( $ ) {
 				$( this ).trigger( 'load' );
 			}
 		} );
+
+		// Custom keyboard navigation that applies only when the slider container is focused.
+		$target
+			.on( 'keydown', function ( e ) {
+				if ( e.which === 39 ) {
+					// Right arrow
+					$( this ).flexslider( 'next' );
+					e.preventDefault();
+					e.stopPropagation();
+				} else if ( e.which === 37 ) {
+					// Left arrow
+					$( this ).flexslider( 'prev' );
+					e.preventDefault();
+					e.stopPropagation();
+				}
+			} )
+			.attr( 'tabindex', '0' );
 	};
 
 	/**
