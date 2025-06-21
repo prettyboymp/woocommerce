@@ -63,26 +63,29 @@ jobs:
 
   cherry-pick:
     needs: prepare
+    # Call reusable workflow at JOB level (not step level)
+    uses: ./.github/workflows/shared-cherry-pick.yml
+    with:
+      pr_number: ${{ needs.prepare.outputs.pr_number }}
+      target_branch: ${{ matrix.branch }}
+    strategy:
+      matrix:
+        branch: ${{ fromJson(needs.prepare.outputs.branches) }}
+
+  add-milestone:
+    needs: [prepare, cherry-pick]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         branch: ${{ fromJson(needs.prepare.outputs.branches) }}
     steps:
-      - name: Run cherry-pick workflow
-        id: run-cherry-pick
-        uses: ./.github/workflows/shared-cherry-pick.yml
-        with:
-          pr_number: ${{ needs.prepare.outputs.pr_number }}
-          target_branch: ${{ matrix.branch }}
-
-      - name: Add milestone to created PR
-        if: ${{ success() && steps.run-cherry-pick.outputs.cherry_pick_pr_number }}
+      - name: Add milestone
         uses: actions/github-script@v7
         with:
           script: |
             github.rest.issues.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: ${{ steps.run-cherry-pick.outputs.cherry_pick_pr_number }},
+              issue_number: ${{ needs.cherry-pick.outputs.cherry_pick_pr_number }},
               milestone: '${{ needs.prepare.outputs.milestone }}'
             })
