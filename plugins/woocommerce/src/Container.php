@@ -7,9 +7,7 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce;
 
-use Automattic\WooCommerce\Admin\Features\Features;
 use Automattic\WooCommerce\Internal\DependencyManagement\ContainerException;
-use Automattic\WooCommerce\Internal\DependencyManagement\ExtendedContainer;
 use Automattic\WooCommerce\Internal\DependencyManagement\RuntimeContainer;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AddressProviderServiceProvider;
 use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AdminSettingsServiceProvider;
@@ -60,14 +58,10 @@ use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\StockN
  * Classes in the `includes` directory should use the `wc_get_container` function to get the instance of the container when
  * they need to get an instance of a class from the `src` directory.
  *
- * Class registration should be done via service providers that inherit from Automattic\WooCommerce\Internal\DependencyManagement
- * and those should go in the `src\Internal\DependencyManagement\ServiceProviders` folder unless there's a good reason
- * to put them elsewhere. All the service provider class names must be in the `SERVICE_PROVIDERS` constant.
- *
- * IMPORTANT NOTE: By default an instance of RuntimeContainer will be used as the underlying container,
- * but it's possible to use the old ExtendedContainer (backed by the PHP League's container package) instead,
- * see RuntimeContainer::should_use() for configuration instructions.
- * The League's container, the ExtendedContainer class and the related support code will be removed in WooCommerce 10.0.
+ * Internally, an instance of RuntimeContainer will be used for the actual class resolution. This class uses reflection
+ * to instantiate classes and figure out dependencies, so there's no need for explicit class registration.
+ * When running the unit tests suite this will be replaced with an instance of TestingContainer,
+ * which provides additional functionality.
  */
 final class Container {
 	/**
@@ -81,43 +75,26 @@ final class Container {
 	 * Class constructor.
 	 */
 	public function __construct() {
-		if ( RuntimeContainer::should_use() ) {
-			// When the League container was in use we allowed to retrieve the container itself
-			// by using 'Psr\Container\ContainerInterface' as the class identifier,
-			// we continue allowing that for compatibility.
-			$this->container = new RuntimeContainer(
-				array(
-					__CLASS__                          => $this,
-					'Psr\Container\ContainerInterface' => $this,
-				)
-			);
-			return;
-		}
-
-		$this->container = new ExtendedContainer();
-
-		// Add ourselves as the shared instance of ContainerInterface,
-		// register everything else using service providers.
-
-		$this->container->share( __CLASS__, $this );
-
-		foreach ( $this->get_service_providers() as $service_provider_class ) {
-			$this->container->addServiceProvider( $service_provider_class );
-		}
+		// When the League container was in use we allowed to retrieve the container itself
+		// by using 'Psr\Container\ContainerInterface' as the class identifier,
+		// we continue allowing that for compatibility.
+		$this->container = new RuntimeContainer(
+			array(
+				__CLASS__                          => $this,
+				'Psr\Container\ContainerInterface' => $this,
+			)
+		);
 	}
 
 	/**
-	 * Finds an entry of the container by its identifier and returns it.
+	 * Returns an instance of the specified class.
 	 * See the comment about ContainerException in RuntimeContainer::get.
 	 *
-	 * @template T
-	 * @param string|class-string<T> $id Identifier of the entry to look for.
+	 * @param string $id Class name.
 	 *
-	 * @return T Resolved entry.
+	 * @return object Object instance.
 	 *
-	 * @throws NotFoundExceptionInterface No entry was found for the supplied identifier (only when using ExtendedContainer).
-	 * @throws Psr\Container\ContainerExceptionInterface Error while retrieving the entry.
-	 * @throws ContainerException Error when resolving the class to an object instance, or (when using RuntimeContainer) class not found.
+	 * @throws ContainerException Error when resolving the class to an object instance, or class not found.
 	 * @throws \Exception Exception thrown in the constructor or in the 'init' method of one of the resolved classes.
 	 */
 	public function get( string $id ) {
@@ -125,13 +102,10 @@ final class Container {
 	}
 
 	/**
-	 * Returns true if the container can return an entry for the given identifier.
-	 * Returns false otherwise.
+	 * Returns true if the container can return an instance of the given class or false otherwise.
+	 * See the comment in RuntimeContainer::has.
 	 *
-	 * `has($id)` returning true does not mean that `get($id)` will not throw an exception.
-	 * It does however mean that `get($id)` will not throw a `NotFoundExceptionInterface`.
-	 *
-	 * @param class-string $id Identifier of the entry to look for.
+	 * @param class-string $id Class name.
 	 *
 	 * @return bool
 	 */

@@ -16,6 +16,10 @@ import { navigateTo, getNewPath } from '@woocommerce/navigation';
 import WooPaymentsStepHeader from '../../components/header';
 import { useOnboardingContext } from '../../data/onboarding-context';
 import { WC_ASSET_URL } from '~/utils/admin-settings';
+import {
+	disableWooPaymentsTestMode,
+	recordPaymentsOnboardingEvent,
+} from '~/settings-payments/utils';
 import './style.scss';
 
 interface StepCheckResponse {
@@ -25,8 +29,9 @@ interface StepCheckResponse {
 
 const TestDriveLoader: React.FunctionComponent< {
 	progress: number;
+	title?: string;
 	message?: string;
-} > = ( { progress, message } ) => (
+} > = ( { progress, title, message } ) => (
 	<Loader className="woocommerce-payments-test-account-step__preloader">
 		<Loader.Layout className="woocommerce-payments-test-account-step__preloader-layout">
 			<Loader.Illustration>
@@ -38,7 +43,7 @@ const TestDriveLoader: React.FunctionComponent< {
 			</Loader.Illustration>
 
 			<Loader.Title>
-				{ __( 'Finishing payments setup', 'woocommerce' ) }
+				{ title || __( 'Finishing payments setup', 'woocommerce' ) }
 			</Loader.Title>
 			<Loader.ProgressBar progress={ progress ?? 0 } />
 			<Loader.Sequence interval={ 0 }>
@@ -61,6 +66,10 @@ const MAX_INITIAL_PROGRESS = 90; // Cap progress at 90% for the initial phase
 const MAX_EXTENDED_PHASE_1_PROGRESS = 96; // Cap progress at 96% for the extended phase 1
 const INITIAL_PHASE_INCREMENT = 5; // Increment progress by 20% for the initial phase
 const EXTENDED_PHASE_1_INCREMENT = 1; // Increment progress by 1% for the extended phase 1
+const INIT_PROGRESS_START = 10; // Start progress at 10% during init
+const INIT_PROGRESS_INCREMENT = 2; // Increment by 2% every second during init
+const INIT_PROGRESS_MAX = 30; // Cap progress at 30% during init
+const TITLE_CHANGE_INTERVAL = 5000; // The time interval for the title to change
 
 // Status types for the component
 type Status =
@@ -72,9 +81,20 @@ type Status =
 	| 'blocked'
 	| 'failed';
 
+const PHASE_MESSAGES = [
+	__( 'Setting up your test account', 'woocommerce' ),
+	__( 'Finishing payments setup', 'woocommerce' ),
+	__( 'Almost there!', 'woocommerce' ),
+];
+
 const TestAccountStep = () => {
-	const { currentStep, navigateToNextStep, closeModal, refreshStoreData } =
-		useOnboardingContext();
+	const {
+		currentStep,
+		navigateToNextStep,
+		closeModal,
+		refreshStoreData,
+		setJustCompletedStepId,
+	} = useOnboardingContext();
 
 	// Component State
 	const [ status, setStatus ] = useState< Status >( 'idle' );
@@ -82,10 +102,40 @@ const TestAccountStep = () => {
 	const [ errorMessage, setErrorMessage ] = useState< string | undefined >();
 	const [ pollingPhase, setPollingPhase ] = useState( 0 ); // 0: initial, 1: extended 1, 2: extended 2
 	const [ retryCounter, setRetryCounter ] = useState( 0 );
+	const [ loaderTitle, setLoaderTitle ] = useState< string | undefined >(
+		PHASE_MESSAGES[ 0 ]
+	);
 
 	// Refs for timers and phase tracking
 	const pollingTimeoutRef = useRef< number | null >( null );
 	const phase1StartTimeRef = useRef< number | null >( null );
+	const initializingTimeoutRef = useRef< number | null >( null );
+	const titlePhaseRef = useRef< number >( 0 );
+
+	// Update loader title based on time intervals
+	useEffect( () => {
+		if ( status !== 'polling' && status !== 'initializing' ) {
+			titlePhaseRef.current = 0;
+			return;
+		}
+
+		// Start with first title
+		if ( titlePhaseRef.current === 0 ) {
+			setLoaderTitle( PHASE_MESSAGES[ 0 ] );
+		}
+
+		// Increment title phase every TITLE_CHANGE_INTERVAL
+		const timer = setTimeout( () => {
+			titlePhaseRef.current += 1;
+			if ( titlePhaseRef.current < PHASE_MESSAGES.length ) {
+				setLoaderTitle( PHASE_MESSAGES[ titlePhaseRef.current ] );
+			}
+		}, TITLE_CHANGE_INTERVAL );
+
+		return () => {
+			clearTimeout( timer );
+		};
+	}, [ status ] );
 
 	// Helper to clear timers
 	const clearTimers = () => {
@@ -93,6 +143,40 @@ const TestAccountStep = () => {
 			clearTimeout( pollingTimeoutRef.current );
 			pollingTimeoutRef.current = null;
 		}
+		if ( initializingTimeoutRef.current !== null ) {
+			clearTimeout( initializingTimeoutRef.current );
+			initializingTimeoutRef.current = null;
+		}
+	};
+
+	const [ isContinueButtonLoading, setIsContinueButtonLoading ] =
+		useState( false );
+
+	const handleContinue = () => {
+		recordPaymentsOnboardingEvent( 'woopayments_onboarding_modal_click', {
+			step: currentStep?.id || 'unknown',
+			action: 'activate_payments',
+		} );
+
+		// Set the continue button loading state to true.
+		setIsContinueButtonLoading( true );
+
+		// Disable test mode and redirect to the live account setup link.
+		disableWooPaymentsTestMode()
+			.then( () => {
+				// Set the continue button loading state to false.
+				setIsContinueButtonLoading( false );
+
+				// This will refresh the steps and move the modal to the next step
+				navigateToNextStep();
+
+				// Refresh the store data
+				return refreshStoreData();
+			} )
+			.catch( () => {
+				// Handle any errors that occur during the process.
+				setIsContinueButtonLoading( false );
+			} );
 	};
 
 	// Reset state function
@@ -111,6 +195,8 @@ const TestAccountStep = () => {
 		if ( status === 'idle' ) {
 			if ( currentStep?.status === 'completed' ) {
 				setStatus( 'success' );
+				setJustCompletedStepId( currentStep.id );
+
 				setProgress( 100 ); // Show success state immediately
 				return;
 			}
@@ -133,6 +219,7 @@ const TestAccountStep = () => {
 				currentStep?.status === 'failed'
 			) {
 				setStatus( 'initializing' );
+				setProgress( INIT_PROGRESS_START ); // Start at 10%
 
 				const cleanStepIfNeeded = async () => {
 					// We only need to clean the step if it has been retried or failed.
@@ -203,6 +290,9 @@ const TestAccountStep = () => {
 								() => {
 									setStatus( 'success' );
 									setProgress( 100 ); // Visually complete
+									setJustCompletedStepId(
+										currentStep?.id || ''
+									);
 								},
 								1000
 							);
@@ -290,11 +380,43 @@ const TestAccountStep = () => {
 			poll();
 		}
 
+		// -- Progress animation during Initializing Phase --
+		if ( status === 'initializing' ) {
+			// Start progress animation from 10% to 30%, increment by 2% every second
+			if ( initializingTimeoutRef.current === null ) {
+				initializingTimeoutRef.current = window.setInterval( () => {
+					setProgress( ( current ) => {
+						if ( current < INIT_PROGRESS_MAX ) {
+							return Math.min(
+								current + INIT_PROGRESS_INCREMENT,
+								INIT_PROGRESS_MAX
+							);
+						}
+						return current;
+					} );
+				}, 1000 );
+			}
+		}
+		// Clear the initializing timer if not in initializing phase
+		if (
+			status !== 'initializing' &&
+			initializingTimeoutRef.current !== null
+		) {
+			clearTimeout( initializingTimeoutRef.current );
+			initializingTimeoutRef.current = null;
+		}
+
 		// Cleanup function for the effect
 		return () => {
 			clearTimers(); // Clear any pending timeouts
 		};
-	}, [ status, currentStep, retryCounter, pollingPhase ] );
+	}, [
+		status,
+		currentStep,
+		retryCounter,
+		pollingPhase,
+		setJustCompletedStepId,
+	] );
 
 	const getPhaseMessage = ( phase: number ) => {
 		if ( phase === 1 ) {
@@ -397,7 +519,7 @@ const TestAccountStep = () => {
 											<p>
 												{ interpolateComponents( {
 													mixedString: __(
-														'Provide some additional details about your business so you can being accepting real payments. {{link}}Learn more{{/link}}',
+														'Provide some additional details about your business so you can begin accepting real payments. {{link}}Learn more{{/link}}',
 														'woocommerce'
 													),
 													components: {
@@ -419,6 +541,14 @@ const TestAccountStep = () => {
 							<Button
 								variant="primary"
 								onClick={ () => {
+									recordPaymentsOnboardingEvent(
+										'woopayments_onboarding_modal_click',
+										{
+											step: currentStep?.id || 'unknown',
+											action: 'continue_store_setup',
+										}
+									);
+
 									// Navigate to wc-admin page
 									navigateTo( {
 										url: getNewPath( {}, '', {
@@ -437,13 +567,9 @@ const TestAccountStep = () => {
 
 							<Button
 								variant="secondary"
-								onClick={ () => {
-									// This will refresh the steps and move the modal to the next step
-									navigateToNextStep();
-
-									// Refresh the store data
-									refreshStoreData();
-								} }
+								isBusy={ isContinueButtonLoading }
+								disabled={ isContinueButtonLoading }
+								onClick={ handleContinue }
 							>
 								{ __( 'Activate payments', 'woocommerce' ) }
 							</Button>
@@ -472,6 +598,17 @@ const TestAccountStep = () => {
 										label: __( 'Try Again', 'woocommerce' ),
 										variant: 'primary',
 										onClick: () => {
+											recordPaymentsOnboardingEvent(
+												'woopayments_onboarding_modal_click',
+												{
+													step:
+														currentStep?.id ||
+														'unknown',
+													action: 'try_again_on_error',
+													retries: retryCounter + 1,
+												}
+											);
+
 											resetState();
 											setRetryCounter( ( c ) => c + 1 );
 										},
@@ -481,7 +618,20 @@ const TestAccountStep = () => {
 										variant: 'secondary',
 										className:
 											'woocommerce-payments-test-account-step__error-cancel-button',
-										onClick: closeModal,
+										onClick: () => {
+											recordPaymentsOnboardingEvent(
+												'woopayments_onboarding_modal_click',
+												{
+													step:
+														currentStep?.id ||
+														'unknown',
+													action: 'cancel_on_error',
+													retries: retryCounter,
+												}
+											);
+
+											closeModal();
+										},
 									},
 							  ]
 							: []
@@ -502,6 +652,7 @@ const TestAccountStep = () => {
 			{ ( status === 'initializing' || status === 'polling' ) && (
 				<TestDriveLoader
 					progress={ progress }
+					title={ loaderTitle }
 					message={ getPhaseMessage( pollingPhase ) }
 				/>
 			) }

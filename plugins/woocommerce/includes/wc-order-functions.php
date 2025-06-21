@@ -109,6 +109,7 @@ function wc_get_order_statuses() {
 		OrderInternalStatus::CANCELLED  => _x( 'Cancelled', 'Order status', 'woocommerce' ),
 		OrderInternalStatus::REFUNDED   => _x( 'Refunded', 'Order status', 'woocommerce' ),
 		OrderInternalStatus::FAILED     => _x( 'Failed', 'Order status', 'woocommerce' ),
+		OrderInternalStatus::DRAFT      => _x( 'Draft', 'Order status', 'woocommerce' ),
 	);
 	return apply_filters( 'wc_order_statuses', $order_statuses );
 }
@@ -703,7 +704,13 @@ function wc_create_refund( $args = array() ) {
 			 * @param int  $order_id The order id.
 			 * @param int  $refund_id The refund id.
 			 */
-			if ( (bool) apply_filters( 'woocommerce_order_is_partially_refunded', ( $remaining_refund_amount - $args['amount'] ) > 0 || ( $order->has_free_item() && ( $remaining_refund_items - $refund_item_count ) > 0 ), $order->get_id(), $refund->get_id() ) ) {
+			if ( (bool) apply_filters(
+				'woocommerce_order_is_partially_refunded',
+				( $remaining_refund_amount - $args['amount'] ) > 0 ||
+				( ! empty( $args['line_items'] ) && $order->has_free_item() && ( $remaining_refund_items - $refund_item_count ) > 0 ),
+				$order->get_id(),
+				$refund->get_id()
+			) ) {
 				do_action( 'woocommerce_order_partially_refunded', $order->get_id(), $refund->get_id() );
 			} else {
 				do_action( 'woocommerce_order_fully_refunded', $order->get_id(), $refund->get_id() );

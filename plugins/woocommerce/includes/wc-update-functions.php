@@ -2973,6 +2973,33 @@ function wc_update_940_remove_help_panel_highlight_shown() {
 }
 
 /**
+ * Set multisite customer visibility option for existing sites.
+ *
+ * If WooCommerce is updated from an earlier version to 10.0.0, and if it is a multisite network,
+ * then set 'woocommerce_network_wide_customers' to 'yes' (but only if it has not already been
+ * set).
+ *
+ * This preserves WooCommerce's historic handling of cross-network user visibility for existing
+ * networks. New sites, or sites that are newly turned into networks at some later point, will
+ * instead use updated and stricter handling.
+ *
+ * @return void
+ */
+function wc_update_1000_multisite_visibility_setting(): void {
+	if ( ! is_multisite() ) {
+		return;
+	}
+
+	$existing_site_option = get_site_option( 'woocommerce_network_wide_customers', '' );
+
+	if ( is_string( $existing_site_option ) && strlen( $existing_site_option ) > 0 ) {
+		return;
+	}
+
+	update_site_option( 'woocommerce_network_wide_customers', 'yes' );
+}
+
+/**
  * Autoloads woocommerce_allow_tracking option.
  */
 function wc_update_950_tracking_option_autoload() {
@@ -2996,7 +3023,7 @@ function wc_update_961_migrate_default_email_base_color() {
 /**
  * Add old refunded order items to the product_lookup_table.
  */
-function wc_update_990_add_old_refunded_order_items_to_product_lookup_table() {
+function wc_update_1000_add_old_refunded_order_items_to_product_lookup_table() {
 	global $wpdb;
 
 	// Get every order ID where:
@@ -3019,7 +3046,7 @@ function wc_update_990_add_old_refunded_order_items_to_product_lookup_table() {
 			// If the refund order has no line items, mark it as a full refund in orders_meta table.
 			// In the above query we already excluded orders for refunded shipping and tax, so it's safe to assume that the refund order without items is a full refund.
 			// Note that the "full" refund here means it's created by changing the order status to "Refunded", not partially refund all the items in the order.
-			if ( $order && empty( $order->get_items() ) ) {
+			if ( empty( $order->get_items() ) ) {
 				$order->update_meta_data( '_refund_type', 'full' );
 				$order->save_meta_data();
 			}
@@ -3038,9 +3065,11 @@ function wc_update_990_add_old_refunded_order_items_to_product_lookup_table() {
 /**
  * Update primary key to composite (order_item_id, order_id) in the wc_order_product_lookup table.
  */
-function wc_update_990_update_primary_key_to_composite_in_order_product_lookup_table() {
+function wc_update_1000_update_primary_key_to_composite_in_order_product_lookup_table() {
 	global $wpdb;
-	$wpdb->query( "ALTER TABLE {$wpdb->prefix}wc_order_product_lookup DROP PRIMARY KEY, ADD PRIMARY KEY (order_item_id, order_id)" );
+	if ( 2 > $wpdb->get_var( "SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '{$wpdb->prefix}wc_order_product_lookup' AND INDEX_NAME = 'PRIMARY'" ) ) {
+		$wpdb->query( "ALTER TABLE {$wpdb->prefix}wc_order_product_lookup DROP PRIMARY KEY, ADD PRIMARY KEY (order_item_id, order_id)" );
+	}
 }
 
 /**
@@ -3080,4 +3109,15 @@ function wc_update_990_remove_email_notes() {
 		),
 		array( '%s' )
 	);
+}
+
+/**
+ * Remove the transient ptk_patterns.
+ * This was used to store the Patterns Toolkit patterns in the database.
+ * The patterns are now stored in the option ptk_patterns.
+ *
+ * @return void
+ */
+function wc_update_1000_remove_patterns_toolkit_transient() {
+	delete_transient( 'ptk_patterns' );
 }
