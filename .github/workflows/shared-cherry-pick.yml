@@ -65,9 +65,13 @@ jobs:
               core.setFailed(message);
             }
 
+            // Debug: Log raw value and type
+            core.info(`Raw PR_NUMBER value: '${process.env.PR_NUMBER}'`);
+            core.info(`Type of PR_NUMBER: ${typeof process.env.PR_NUMBER}`);
+
             const prNumber = parseInt(process.env.PR_NUMBER, 10);
             if (isNaN(prNumber)) {
-              failWithMessage('PR_NUMBER (${process.env.PR_NUMBER}) is not a valid integer');
+              failWithMessage('PR_NUMBER is not a valid integer');
               return;
             }
 
