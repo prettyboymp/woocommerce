@@ -82,6 +82,7 @@ jobs:
 
   add-milestone:
     needs: [prepare, cherry-pick]
+    if: ${{ always() && needs.cherry-pick.result == 'success' && needs.cherry-pick.outputs.cherry_pick_pr_number }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -95,5 +96,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: ${{ needs.cherry-pick.outputs.cherry_pick_pr_number }},
-              milestone: '${{ needs.prepare.outputs.milestone }}'
+              milestone: '${{ github.event.pull_request.milestone.number }}'
             })
