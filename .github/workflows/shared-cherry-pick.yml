@@ -7,7 +7,7 @@ on:
       pr_number:
         description: 'Pull request number to backport'
         required: true
-        type: number
+        type: string # Can't pass non-string into reusable workflow https://github.com/orgs/community/discussions/67182
       target_branch:
         description: 'Branch to backport into'
         required: true
