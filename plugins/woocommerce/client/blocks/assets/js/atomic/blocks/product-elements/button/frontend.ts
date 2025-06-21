@@ -23,6 +23,7 @@ interface Context {
 	tempQuantity: number;
 	animationStatus: AnimationStatus;
 	hasPressedButton: boolean;
+	inTheCartText: string;
 }
 
 enum AnimationStatus {
@@ -75,6 +76,7 @@ const productButtonStore = {
 				productType,
 				groupedProductIds,
 				hasPressedButton,
+				inTheCartText,
 			} = getContext< Context >();
 
 			// We use the temporary quantity when there's no animation, or
@@ -99,13 +101,13 @@ const productButtonStore = {
 					groupedProductIdsInCart?.some( ( qty ) => qty > 0 ) &&
 					hasPressedButton
 				) {
-					return state.inTheCartText;
+					return inTheCartText;
 				}
 				return addToCartText;
 			}
 
 			if ( quantity > 0 ) {
-				return state.inTheCartText.replace(
+				return inTheCartText.replace(
 					'###',
 					quantity.toString()
 				);
