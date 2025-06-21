@@ -33,9 +33,6 @@ jobs:
             exit 1
           fi
 
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
-
       - name: Get release branches
         id: get-branches
         env:
@@ -43,18 +40,16 @@ jobs:
         run: |
           MAJOR=$(echo $BASE_VERSION | cut -d. -f1)
           MINOR=$(echo $BASE_VERSION | cut -d. -f2)
-          
           branches=()
           current_minor=$MINOR
           branch_count=0
           max_branches=2
-          
+
           while [ $branch_count -lt $max_branches ]; do
             branch="release/$MAJOR.$current_minor"
             response=$(curl -s -o /dev/null -w "%{http_code}" \
               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
               "https://api.github.com/repos/${{ github.repository }}/branches/$branch")
-          
             if [ "$response" -eq 200 ]; then
               branches+=("$branch")
               current_minor=$((current_minor + 1))
@@ -63,16 +58,23 @@ jobs:
               break
             fi
           done
-          
-          # Create valid JSON array
-          json_branches=$(printf '%s\n' "${branches[@]}" | jq -R . | jq -s -c .)
-          echo "branches=$json_branches" >> $GITHUB_OUTPUT
+
+          # Output as a JSON array without jq
+          json="["
+          sep=""
+          for b in "${branches[@]}"; do
+            json="$json$sep\"$b\""
+            sep=","
+          done
+          json="$json]"
+          echo "branches=$json" >> $GITHUB_OUTPUT
+
 
   cherry-pick:
     needs: prepare
     uses: ./.github/workflows/shared-cherry-pick.yml
     with:
-      pr_number: ${{ needs.prepare.outputs.pr_number }}
+      pr_number: ${{ fromJson(needs.prepare.outputs.pr_number) }}
       target_branch: ${{ matrix.branch }}
     strategy:
       matrix:
