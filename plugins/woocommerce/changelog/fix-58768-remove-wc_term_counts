@@ -1,0 +1,4 @@
+Significance: minor
+Type: fix
+
+Remove usage of wc_term_counts transient in favor of priming term meta cache

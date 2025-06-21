@@ -102,7 +102,6 @@ class WC_Term_Functions_Tests extends \WC_Unit_Test_Case {
 		$this->products['product1']->save();
 
 		wc_recount_all_terms();
-		delete_transient( 'wc_term_counts' );
 
 		$terms       = get_terms(
 			array(
@@ -126,7 +125,6 @@ class WC_Term_Functions_Tests extends \WC_Unit_Test_Case {
 		update_option( 'woocommerce_hide_out_of_stock_items', 'yes' );
 
 		wc_recount_all_terms( false );
-		delete_transient( 'wc_term_counts' );
 
 		$terms       = get_terms(
 			array(

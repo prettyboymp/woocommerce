@@ -67,7 +67,6 @@ class AssignDefaultCategory {
 			);
 			if ( $affected_rows > 0 ) {
 				wp_cache_flush();
-				delete_transient( 'wc_term_counts' );
 				wp_update_term_count_now( array( $default_category ), 'product_cat' );
 			}
 		}
