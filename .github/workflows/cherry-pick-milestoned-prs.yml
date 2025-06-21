@@ -67,6 +67,7 @@ jobs:
             sep=","
           done
           json="$json]"
+          echo "JSON output: $json"
           echo "branches=$json" >> $GITHUB_OUTPUT
 
 
