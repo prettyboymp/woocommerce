@@ -9,6 +9,41 @@ namespace Automattic\WooCommerce;
 
 use Automattic\WooCommerce\Internal\DependencyManagement\ContainerException;
 use Automattic\WooCommerce\Internal\DependencyManagement\RuntimeContainer;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AddressProviderServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AdminSettingsServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\CostOfGoodsSoldServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\COTMigrationServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\DownloadPermissionsAdjusterServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AssignDefaultCategoryServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\EmailPreviewServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\EnginesServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\FeaturesServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\LoggingServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\MarketingServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\MarketplaceServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrdersControllersServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrderAdminServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrderMetaBoxServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ObjectCacheServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrdersDataStoreServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OptionSanitizerServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\OrderAttributionServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductAttributesLookupServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductDownloadsServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductImageBySKUServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductReviewsServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProxiesServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\RestockRefundedItemsAdjusterServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\AdminSuggestionsServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\UtilsClassesServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\BatchProcessingServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\LayoutTemplatesServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ComingSoonServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\StatsServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ImportExportServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\EmailEditorServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\ProductFiltersServiceProvider;
+use Automattic\WooCommerce\Internal\DependencyManagement\ServiceProviders\StockNotificationsServiceProvider;
 
 /**
  * PSR11 compliant dependency injection container for WooCommerce.
@@ -76,5 +111,50 @@ final class Container {
 	 */
 	public function has( string $id ): bool {
 		return $this->container->has( $id );
+	}
+
+	/**
+	 * The list of service provider classes to register.
+	 *
+	 * @return array<int,class-string>
+	 */
+	private function get_service_providers(): array {
+		return array(
+			AssignDefaultCategoryServiceProvider::class,
+			DownloadPermissionsAdjusterServiceProvider::class,
+			EmailPreviewServiceProvider::class,
+			OptionSanitizerServiceProvider::class,
+			OrdersDataStoreServiceProvider::class,
+			ProductAttributesLookupServiceProvider::class,
+			ProductDownloadsServiceProvider::class,
+			ProductImageBySKUServiceProvider::class,
+			ProductReviewsServiceProvider::class,
+			ProxiesServiceProvider::class,
+			RestockRefundedItemsAdjusterServiceProvider::class,
+			UtilsClassesServiceProvider::class,
+			COTMigrationServiceProvider::class,
+			OrdersControllersServiceProvider::class,
+			OrderAttributionServiceProvider::class,
+			ObjectCacheServiceProvider::class,
+			BatchProcessingServiceProvider::class,
+			OrderMetaBoxServiceProvider::class,
+			OrderAdminServiceProvider::class,
+			FeaturesServiceProvider::class,
+			MarketingServiceProvider::class,
+			MarketplaceServiceProvider::class,
+			LayoutTemplatesServiceProvider::class,
+			LoggingServiceProvider::class,
+			EnginesServiceProvider::class,
+			ComingSoonServiceProvider::class,
+			StatsServiceProvider::class,
+			ImportExportServiceProvider::class,
+			CostOfGoodsSoldServiceProvider::class,
+			AdminSettingsServiceProvider::class,
+			AdminSuggestionsServiceProvider::class,
+			EmailEditorServiceProvider::class,
+			ProductFiltersServiceProvider::class,
+			AddressProviderServiceProvider::class,
+			StockNotificationsServiceProvider::class,
+		);
 	}
 }
