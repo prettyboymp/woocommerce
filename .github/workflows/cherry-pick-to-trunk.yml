@@ -2,13 +2,13 @@ name: Cherry-pick to Trunk from Release Branches
 on:
   pull_request:
     types: [closed, labeled]
-    branches-ignore: [trunk]
+    branches-ignore: [trunk-foo] #change
 
 jobs:
   cherry-pick-to-trunk:
     if: |
-      (github.event.action == 'closed' && github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'cherry-pick to trunk')) ||
-      (github.event.action == 'labeled' && github.event.pull_request.merged == true && github.event.label.name == 'cherry-pick to trunk')
+      (github.event.action == 'closed' && github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'cherry pick to trunk')) ||
+      (github.event.action == 'labeled' && github.event.pull_request.merged == true && github.event.label.name == 'cherry pick to trunk')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -29,7 +29,7 @@ jobs:
         uses: ./.github/workflows/shared-cherry-pick.yml
         with:
           pr_number: ${{ steps.set-vars.outputs.pr_number }}
-          target_branch: trunk
+          target_branch: trunk-foo #change
 
       - name: Set cherry-pick status outputs
         id: cherry-pick-status
