@@ -29,6 +29,11 @@ use Automattic\WooCommerce\Internal\Admin\Marketplace;
 use Automattic\WooCommerce\Proxies\LegacyProxy;
 use Automattic\WooCommerce\Utilities\{LoggingUtil, RestApiUtil, TimeUtil};
 use Automattic\WooCommerce\Internal\Logging\RemoteLogger;
+<<<<<<< HEAD
+=======
+use Automattic\WooCommerce\Caches\OrderCountCacheService;
+use Automattic\WooCommerce\Internal\StockNotifications\StockNotifications;
+>>>>>>> 6bb4f109f0 (TESTING: MIC: Introduce stock tracking hooks and AS scheduling for Back in Stock Notifications (#44))
 
 /**
  * Main WooCommerce Class.
@@ -330,6 +335,12 @@ final class WooCommerce {
 		$container->get( ComingSoonAdminBarBadge::class );
 		$container->get( ComingSoonCacheInvalidator::class );
 		$container->get( ComingSoonRequestHandler::class );
+<<<<<<< HEAD
+=======
+		$container->get( OrderCountCacheService::class );
+		$container->get( EmailImprovements::class );
+		$container->get( StockNotifications::class );
+>>>>>>> 6bb4f109f0 (TESTING: MIC: Introduce stock tracking hooks and AS scheduling for Back in Stock Notifications (#44))
 
 		/**
 		 * These classes have a register method for attaching hooks.
