@@ -1,0 +1,147 @@
+name: Cherry-pick Milestoned PRs to Release Branches
+on:
+  pull_request:
+    types: [closed, milestoned]
+    branches: [trunk]
+
+jobs:
+  prepare:
+    if: |
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'trunk' &&
+      github.event.pull_request.milestone != null
+    runs-on: ubuntu-latest
+    outputs:
+      branches: ${{ steps.get-branches.outputs.branches }}
+      pr_number: ${{ steps.set-vars.outputs.pr_number }}
+      milestone: ${{ steps.set-vars.outputs.milestone }}
+    steps:
+      - name: Set variables
+        id: set-vars
+        run: |
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "milestone=${{ github.event.pull_request.milestone.title }}" >> $GITHUB_OUTPUT
+
+      - name: Extract version from milestone
+        id: extract-version
+        run: |
+          MILESTONE="${{ github.event.pull_request.milestone.title }}"
+          if [[ "$MILESTONE" =~ ^([0-9]+\.[0-9]+)\.[0-9]+$ ]]; then
+            echo "base_version=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+          else
+            echo "::error::Invalid milestone format: $MILESTONE"
+            exit 1
+          fi
+
+      - name: Get release branches
+        id: get-branches
+        env:
+          BASE_VERSION: ${{ steps.extract-version.outputs.base_version }}
+        run: |
+          MAJOR=$(echo $BASE_VERSION | cut -d. -f1)
+          MINOR=$(echo $BASE_VERSION | cut -d. -f2)
+          branches=()
+          current_minor=$MINOR
+          branch_count=0
+          max_branches=2 # We limit to 2, but we could increase this to potentially handle backporting security fixes further.
+
+          while [ $branch_count -lt $max_branches ]; do
+            branch="release/$MAJOR.$current_minor"
+            response=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/branches/$branch")
+            if [ "$response" -eq 200 ]; then
+              branches+=("$branch")
+              current_minor=$((current_minor + 1))
+              branch_count=$((branch_count + 1))
+            else
+              break
+            fi
+          done
+
+          # Output as a JSON array without jq
+          json="["
+          sep=""
+          for b in "${branches[@]}"; do
+            json="$json$sep\"$b\""
+            sep=","
+          done
+          json="$json]"
+          echo "JSON output: $json"
+          echo "branches=$json" >> $GITHUB_OUTPUT
+
+
+  cherry-pick:
+    needs: prepare
+    uses: ./.github/workflows/shared-cherry-pick.yml
+    with:
+      pr_number: ${{ needs.prepare.outputs.pr_number }}
+      target_branch: ${{ matrix.branch }}
+    strategy:
+      matrix:
+        branch: ${{ fromJson(needs.prepare.outputs.branches) }}
+
+  add-milestone:
+    needs: [prepare, cherry-pick]
+    if: ${{ always() && needs.cherry-pick.result == 'success' && needs.cherry-pick.outputs.cherry_pick_pr_number }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch: ${{ fromJson(needs.prepare.outputs.branches) }}
+    steps:
+      - name: Add milestone
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ needs.cherry-pick.outputs.cherry_pick_pr_number }},
+              milestone: '${{ github.event.pull_request.milestone.number }}'
+            })
+
+  handle-cherry-pick-failure:
+    needs: [prepare, cherry-pick]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch: ${{ fromJson(needs.prepare.outputs.branches) }}
+    if: ${{ needs.cherry-pick.outputs.status == 'failed' }}
+    steps:
+      - name: Add "cherry-pick-failed" label to original PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt('${{ needs.prepare.outputs.pr_number }}'),
+              labels: ['cherry-pick-failed']
+            })
+
+      - name: Comment on original PR about cherry-pick failure and mention merger
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Get PR details to find who merged it
+            const pr = (await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: parseInt('${{ needs.prepare.outputs.pr_number }}')
+            })).data;
+
+            const merger = pr.merged_by && pr.merged_by.login ? `@${pr.merged_by.login}` : '';
+            const errorMsg = `${{ needs.cherry-pick.outputs.errorMessage }}`;
+            const branch = `${{ matrix.branch }}`;
+
+            let body = `⚠️ **Cherry-pick to \`${branch}\` failed.**\n\nError: ${errorMsg}`;
+            if (merger) {
+              body = `${merger} ${body}`;
+            }
+
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt('${{ needs.prepare.outputs.pr_number }}'),
+              body
+            });
