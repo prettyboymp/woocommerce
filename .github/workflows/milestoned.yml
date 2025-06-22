@@ -7,6 +7,7 @@ on:
 permissions: {}
 
 jobs:
+    if: false # Retired - we will want to be able to milestone PRs on trunk and other release branches as a way to track what must be merged prior to a release.
     remove-milestone-from-unmerged-prs:
         name: "Remove Milestone from Unmerged PRs"
         if: github.event.pull_request.merged != true
