@@ -1,8 +1,9 @@
 # This workflow is used to cherry pick PRs from release branch into trunk.
 name: 'Release: CFE workflow'
 on:
-    pull_request:
-        types: [closed]
+    # Retired in favor of cherry-pick-to-trunk.yml. 
+    #pull_request:
+    #    types: [closed]
     workflow_dispatch:
         inputs:
             skipSlackPing:
@@ -20,7 +21,6 @@ env:
 permissions: {}
 
 jobs:
-    if: false # Retired in favor of cherry-pick-to-trunk.yml. 
     verify:
         name: Verify
         runs-on: ubuntu-latest
