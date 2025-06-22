@@ -1,0 +1,130 @@
+# This workflow can be used to cherry pick a PR that is being merged into a release branch into the frozen release branch.
+# The logic for the frozen release branch is based on the current branch being merged into and incrementing by one release.
+# 
+name: Cherry-pick to Frozen
+on:
+  pull_request:
+    types: [closed, labeled]
+    branches: 
+      - 'release/*'  # Only trigger for release branches
+
+jobs:
+  prepare:
+    if: |
+      (github.event.action == 'closed' && 
+       github.event.pull_request.merged == true && 
+       contains(github.event.pull_request.labels.*.name, 'cherry pick to frozen release')) ||
+      (github.event.action == 'labeled' && 
+       github.event.pull_request.merged == true && 
+       github.event.label.name == 'cherry pick to frozen release')
+    runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.set-vars.outputs.pr_number }}
+      base_branch: ${{ steps.set-vars.outputs.base_branch }}
+      next_branch: ${{ steps.compute-next.outputs.next_branch }}
+      branch_exists: ${{ steps.check-branch.outputs.exists }}
+    steps:
+      - name: Set variables
+        id: set-vars
+        run: |
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "base_branch=${{ github.event.pull_request.base.ref }}" >> $GITHUB_OUTPUT
+          
+      - name: Compute next branch
+        id: compute-next
+        run: |
+          BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
+          VERSION="${BASE_BRANCH#release/}"
+          
+          # Split into major and minor
+          MAJOR="${VERSION%%.*}"
+          MINOR="${VERSION##*.}"
+          
+          # Compute next version
+          if [ "$MINOR" -eq 9 ]; then
+            NEXT_MAJOR=$((MAJOR + 1))
+            NEXT_MINOR=0
+          else
+            NEXT_MAJOR="$MAJOR"
+            NEXT_MINOR=$((MINOR + 1))
+          fi
+          
+          NEXT_BRANCH="release/$NEXT_MAJOR.$NEXT_MINOR"
+          echo "next_branch=$NEXT_BRANCH" >> $GITHUB_OUTPUT
+          echo "Next branch: $NEXT_BRANCH"
+          
+      - name: Check if next branch exists
+        id: check-branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="${{ steps.compute-next.outputs.next_branch }}"
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/branches/$BRANCH")
+          
+          if [ "$RESPONSE" -eq 200 ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Branch $BRANCH does not exist. Skipping cherry-pick."
+          fi
+
+  cherry-pick:
+    needs: prepare
+    if: ${{ needs.prepare.outputs.branch_exists == 'true' }}
+    uses: ./.github/workflows/shared-cherry-pick.yml
+    with:
+      pr_number: ${{ needs.prepare.outputs.pr_number }}
+      target_branch: ${{ needs.prepare.outputs.next_branch }}
+
+  add-milestone:
+    needs: [prepare, cherry-pick]
+    if: ${{ needs.prepare.outputs.branch_exists == 'true' && success() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add milestone to cherry-picked PR
+        uses: actions/github-script@v7
+        env:
+          ORIGINAL_PR_NUMBER: ${{ needs.prepare.outputs.pr_number }}
+          CHERRY_PICK_PR_NUMBER: ${{ needs.cherry-pick.outputs.cherry_pick_pr_number }}
+        with:
+          script: |
+            // Get original PR details
+            const originalPr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: parseInt(process.env.ORIGINAL_PR_NUMBER)
+            });
+            
+            // Check if original PR was MERGED INTO a release branch
+            const targetBranch = originalPr.data.base.ref;
+            if (!targetBranch.startsWith('release/')) {
+              console.log(`Original PR merged into ${targetBranch} (not release branch). Skipping milestone.`);
+              return;
+            }
+            
+            // Get milestone from original PR
+            const milestone = originalPr.data.milestone;
+            if (!milestone) {
+              console.log('Original PR has no milestone. Skipping.');
+              return;
+            }
+            
+            // Add milestone to cherry-picked PR
+            try {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: parseInt(process.env.CHERRY_PICK_PR_NUMBER),
+                milestone: milestone.number
+              });
+              console.log(`Added milestone "${milestone.title}" to cherry-picked PR`);
+            } catch (error) {
+              console.log(`Failed to add milestone: ${error.message}`);
+              // Silently fail - milestone addition is non-critical
+            }
+
+  handle-failure:
+    needs: [prepare, cherry-pick]
+    if: ${{ needs.prepare.outputs.branch_exists ==
