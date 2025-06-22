@@ -1,0 +1,122 @@
+# This workflow can be used to cherry pick any PR to trunk by adding the 'cherry pick to trunk label'.
+# If the original PR is from a release branch, it will attempt to automatically apply the milestone from the original PR
+# so we can be sure to fully backport fixes prior to the next release to avoid any accidental regressions.
+name: Cherry-pick to Trunk
+on:
+  pull_request:
+    types: [closed, labeled]
+    branches-ignore: [trunk]
+
+jobs:
+  prepare:
+    if: |
+      (github.event.action == 'closed' && github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'cherry pick to trunk')) ||
+      (github.event.action == 'labeled' && github.event.pull_request.merged == true && github.event.label.name == 'cherry pick to trunk')
+    runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.set-vars.outputs.pr_number }}
+    steps:
+      - name: Set variables
+        id: set-vars
+        run: |
+          echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+
+  cherry-pick-job:
+    needs: prepare
+    uses: ./.github/workflows/shared-cherry-pick.yml
+    with:
+      pr_number: ${{ needs.prepare.outputs.pr_number }}
+      target_branch: trunk
+    secrets: inherit
+
+  add-milestone:
+    needs: [prepare, cherry-pick-job]
+    if: ${{ success() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add milestone to cherry-picked PR
+        uses: actions/github-script@v7
+        env:
+          ORIGINAL_PR_NUMBER: ${{ needs.prepare.outputs.pr_number }}
+          CHERRY_PICK_PR_NUMBER: ${{ needs.cherry-pick-job.outputs.cherry_pick_pr_number }}
+        with:
+          script: |
+            // Get original PR details
+            const originalPr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: parseInt(process.env.ORIGINAL_PR_NUMBER)
+            });
+            
+            // Check if original PR was MERGED INTO a release branch
+            const targetBranch = originalPr.data.base.ref;
+            if (!targetBranch.startsWith('release/')) {
+              console.log(`Original PR merged into ${targetBranch} (not release branch). Skipping milestone.`);
+              return;
+            }
+            
+            // Get milestone from original PR
+            const milestone = originalPr.data.milestone;
+            if (!milestone) {
+              console.log('Original PR has no milestone. Skipping.');
+              return;
+            }
+            
+            // Add milestone to cherry-picked PR
+            try {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: parseInt(process.env.CHERRY_PICK_PR_NUMBER),
+                milestone: milestone.number
+              });
+              console.log(`Added milestone "${milestone.title}" to cherry-picked PR`);
+            } catch (error) {
+              console.log(`Failed to add milestone: ${error.message}`);
+              // Silently fail - milestone addition is non-critical
+            }
+
+  handle-cherry-pick-failure:
+    needs: [prepare, cherry-pick-job]
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+    steps:
+      - name: Add "cherry pick failed" label
+        uses: actions/github-script@v7
+        env:
+          ORIGINAL_PR_NUMBER: ${{ needs.prepare.outputs.pr_number }}
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt(process.env.ORIGINAL_PR_NUMBER),
+              labels: ['cherry pick failed']
+            })
+
+      - name: Get PR merger and comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Get PR details to find who merged it
+            const pr = (await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: parseInt('${{ needs.prepare.outputs.pr_number }}')
+            })).data;
+
+            const merger = pr.merged_by && pr.merged_by.login ? `@${pr.merged_by.login}` : '';
+            const errorMsg = `${{ needs.cherry-pick.outputs.errorMessage }}`;
+            const branch = `trunk`;
+
+            let body = `⚠️ **Cherry-pick to \`${branch}\` failed.**\n\nError: ${errorMsg}`;
+            if (merger) {
+              body = `${merger} ${body}`;
+            }
+
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt('${{ needs.prepare.outputs.pr_number }}'),
+              body
+            });
