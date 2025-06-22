@@ -434,19 +434,22 @@ jobs:
           ORIGINAL_PR_NUMBER: ${{ inputs.pr_number }}
           NEW_PR_NUMBER: ${{ steps.create-pr.outputs.pr-number }}
           NEW_PR_URL: ${{ steps.create-pr.outputs.pr-url }}
+          TARGET_BRANCH: ${{ inputs.target_branch }}
         with:
           script: |
             const { owner, repo } = context.repo;
             const originalPrNumber = process.env.ORIGINAL_PR_NUMBER;
             const newPrNumber = process.env.NEW_PR_NUMBER;
             const newPrUrl = process.env.NEW_PR_URL;
+            const targetBranch = process.env.TARGET_BRANCH;  // Get target branch
             
             await github.rest.issues.createComment({
               owner,
               repo,
               issue_number: originalPrNumber,
-              body: `✅ Backport created: [#${newPrNumber}](${newPrUrl})`
+              body: `✅ Backport to \`${targetBranch}\` created: [#${newPrNumber}](${newPrUrl})`
             });
+
 
       - name: Aggregate results and set final status
         id: aggregate-status
@@ -463,7 +466,6 @@ jobs:
           cherryPickPR=""
           
           for step_id in "${critical_steps[@]}"; do
-            # Use bracket notation for step IDs with dashes
             outcome=$(echo "$STEPS_CONTEXT" | jq -r ".[\"$step_id\"]? | .outcome // \"skipped\"")
           
             if [ "$outcome" = "failure" ]; then
