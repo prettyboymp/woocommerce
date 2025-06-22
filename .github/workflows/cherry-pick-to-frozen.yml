@@ -1,7 +1,7 @@
 # This workflow can be used to cherry pick a PR that is being merged into a release branch into the frozen release branch.
 # The logic for the frozen release branch is based on the current branch being merged into and incrementing by one release.
 # 
-name: Cherry-pick to Frozen
+name: Cherry-pick to Next Release
 on:
   pull_request:
     types: [closed, labeled]
@@ -127,4 +127,42 @@ jobs:
 
   handle-failure:
     needs: [prepare, cherry-pick]
-    if: ${{ needs.prepare.outputs.branch_exists ==
+    if: ${{ needs.prepare.outputs.branch_exists == 'true' && failure() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add "cherry-pick-failed" label
+        uses: actions/github-script@v7
+        env:
+          ORIGINAL_PR_NUMBER: ${{ needs.prepare.outputs.pr_number }}
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt(process.env.ORIGINAL_PR_NUMBER),
+              labels: ['cherry-pick-failed']
+            })
+
+      - name: Get PR merger and comment
+        uses: actions/github-script@v7
+        env:
+          ORIGINAL_PR_NUMBER: ${{ needs.prepare.outputs.pr_number }}
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: parseInt(process.env.ORIGINAL_PR_NUMBER)
+            });
+            
+            const errorMsg = "Cherry-pick to next release failed";
+            const merger = pr.data.merged_by?.login ? `@${pr.data.merged_by.login}` : '';
+            const nextBranch = "${{ needs.prepare.outputs.next_branch }}";
+            const body = `${merger ? merger + ' ' : ''}⚠️ **Cherry-pick to \`${nextBranch}\` failed.**\n\nError: ${errorMsg}`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt(process.env.ORIGINAL_PR_NUMBER),
+              body: body
+            });
