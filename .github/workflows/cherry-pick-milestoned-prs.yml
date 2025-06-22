@@ -86,6 +86,7 @@ jobs:
     if: ${{ always() && needs.cherry-pick.result == 'success' && needs.cherry-pick.outputs.cherry_pick_pr_number }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false # Make sure we don't fail all jobs because one cherry pick fails.
       matrix:
         branch: ${{ fromJson(needs.prepare.outputs.branches) }}
     steps:
@@ -100,14 +101,19 @@ jobs:
               milestone: '${{ github.event.pull_request.milestone.number }}'
             })
 
-  handle-cherry-pick-failure:
+  handle-failure:
     needs: [prepare, cherry-pick]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         branch: ${{ fromJson(needs.prepare.outputs.branches) }}
-    if: ${{ needs.cherry-pick.outputs.status == 'failed' }}
+    if: ${{ needs.cherry-pick.result == 'failure' }}  # Run only if any matrix job failed
     steps:
+      - name: Handle failure for ${{ matrix.branch }}
+        if: ${{ needs.cherry-pick.outputs.status == 'failed' }}
+        run: |
+          echo "Handling failure for ${{ matrix.branch }}"
+
       - name: Add "cherry-pick-failed" label to original PR
         uses: actions/github-script@v7
         with:
