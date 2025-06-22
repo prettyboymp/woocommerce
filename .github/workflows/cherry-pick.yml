@@ -1,7 +1,8 @@
 name: Cherry Pick Tool
 on:
-    issues:
-        types: [milestoned]
+    # Retired in favor of new cherry-pick-milestoned-prs.yml - will delete
+    #issues:
+    #    types: [milestoned]
     workflow_dispatch:
         inputs:
             release_branch:
@@ -31,7 +32,6 @@ env:
 permissions: {}
 
 jobs:
-    if: false # Retired in favor of new cherry-pick-milestoned-prs.yml - will delete
     verify:
         name: Verify
         runs-on: ubuntu-latest
