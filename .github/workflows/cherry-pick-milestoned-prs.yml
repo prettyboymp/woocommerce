@@ -78,6 +78,7 @@ jobs:
       pr_number: ${{ needs.prepare.outputs.pr_number }}
       target_branch: ${{ matrix.branch }}
     strategy:
+      fail-fast: false # Make sure we don't fail all jobs because one cherry pick fails.
       matrix:
         branch: ${{ fromJson(needs.prepare.outputs.branches) }}
 
@@ -86,7 +87,6 @@ jobs:
     if: ${{ always() && needs.cherry-pick.result == 'success' && needs.cherry-pick.outputs.cherry_pick_pr_number }}
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false # Make sure we don't fail all jobs because one cherry pick fails.
       matrix:
         branch: ${{ fromJson(needs.prepare.outputs.branches) }}
     steps:
