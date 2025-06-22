@@ -1,8 +1,9 @@
 # This workflow is used to cherry pick PRs into a frozen release branch.
 name: New PRR workflow - Cherry pick
 on:
-    pull_request:
-        types: [closed]
+    # Retired in favor of cherry-pick-to-frozen.yml
+    #pull_request:
+    #    types: [closed]
     workflow_dispatch:
         inputs:
             skipSlackPing:
@@ -20,7 +21,6 @@ env:
 permissions: {}
 
 jobs:
-    if: false # Retired in favor of cherry-pick-to-frozen.yml
     verify:
         name: Verify
         runs-on: ubuntu-latest
