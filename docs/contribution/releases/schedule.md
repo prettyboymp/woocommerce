@@ -5,7 +5,7 @@ sidebar_label: Release Schedule
 
 # WooCommerce Release Schedule
 
-The schedule can be found [here](https://developer.woocommerce.com/release-calendar/): the page also explains the types 
+The schedule can be found on [this page](https://developer.woocommerce.com/release-calendar/): the page also explains the types 
 of events in the calendar like `Releases`, `Release Candidates (RC)` and `Feature Freeze Dates`.
 
 While the calendar reflects the events made public, there are specific steps in the release process that are internal, 
