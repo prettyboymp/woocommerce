@@ -23,12 +23,16 @@ At this point, the Developer Advocacy team publishes pre-release updates ([examp
 
 ### RC1 (Feature Freeze + 1 week)
 
-This step is where various internal testing processes are happening: regression testing with canonical extensions,
-regression testing in multiple environments, and exploration testing (incl. by the contributing teams).
+This step is where various testing processes are happening:
 
-### RC2 (RC1 + 2 weeks)
+- internally: regression testing with canonical extensions, regression testing in multiple environments, and exploration testing (incl. by the contributing teams).
+- community: the Developer Advocacy team updates the pre-release announcement so the community can give the RC a try
 
-TODO: not sure, thought is where we communicate RC availability for testing by community, but not sure.
+### RC2 (RC1 + 1 week)
+
+This step is where we release regressions fixes discovered in RC1, as part of the release stabilization.
+
+At this point, the Developer Advocacy team continues to update the pre-release announcement.
 
 ### Final Release (RC2 + 1 week)
 
