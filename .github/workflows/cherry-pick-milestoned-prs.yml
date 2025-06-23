@@ -156,35 +156,30 @@ jobs:
           GITHUB_RUN_ID: ${{ github.run_id }}
         with:
           script: |
-            // Get PR details to find who merged it
             const pr = (await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: parseInt('${{ needs.prepare.outputs.pr_number }}')
             })).data;
 
-            const merger = pr.merged_by && pr.merged_by.login ? `@${pr.merged_by.login}` : '';
+            const merger = pr.merged_by?.login ? `@${pr.merged_by.login}` : '';
             const errorMsg = process.env.ERROR_MESSAGE;
             const targetBranch = process.env.TARGET_BRANCH;
             const workflowLink = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
 
-            const body = `
-${merger ? merger + ' ' : ''}⚠️ **Cherry-pick to \`${targetBranch}\` failed.**
-
-**Error:** ${errorMsg}
-
----
-
-IMPORTANT: Merging this PR to the appropriate branches is critical to the release process and ensures that the bug does not cause regressions in future releases.
-
-Cherry picking failed for ${targetBranch}. Please bring this to the release team's attention.
-
-**Workflow run for debugging:** ${workflowLink}
-          `;
+            // Use string concatenation instead of multi-line template literal
+            const body = 
+              (merger ? merger + ' ' : '') +
+              '⚠️ **Cherry-pick to `' + targetBranch + '` failed.**\n\n' +
+              '**Error:** ' + errorMsg + '\n\n' +
+              '---\n\n' +
+              'IMPORTANT: Merging this PR to the appropriate branches is critical to the release process and ensures that the bug does not cause regressions in future releases.\n\n' +
+              'Cherry picking failed for ' + targetBranch + '. Please bring this to the release team\'s attention.\n\n' +
+              '**Workflow run for debugging:** ' + workflowLink;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: parseInt('${{ needs.prepare.outputs.pr_number }}'),
-              body: body.trim()
+              body: body
             });
