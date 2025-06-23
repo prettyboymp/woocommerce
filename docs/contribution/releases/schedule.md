@@ -25,7 +25,7 @@ At this point, the Developer Advocacy team publishes pre-release updates ([examp
 
 This step is where various testing processes are happening:
 
-- internally: regression testing with canonical extensions, regression testing in multiple environments, and exploration testing (incl. by the contributing teams)
+- internally: regression testing with canonical extensions, regression testing in multiple environments, and exploration testing (including by the contributing teams)
 - community: the Developer Advocacy team updates the pre-release announcement so the community can give the RC a try
 
 ### RC2 (RC1 + 1 week)
@@ -49,7 +49,7 @@ Due to business needs, the release dates may be subject to change. Here are some
 Once the need for changes in the release schedule is confirmed, create an internal Slack thread and communicate the necessary details.
 This thread provides an opportunity for teams to share additional context, which may help invalidate and correct the schedule changes.
 
-> Note: Please refer to Pf59Ax-10U-p2, before starting the thread.
+> Note: Please refer to Pf59Ax-10U-p2 (shorthand, internal link), before starting the thread.
 > The playbook is slightly dated, but it provides valuable insights for informed decision-making and effective outreach to key stakeholders.
 
 Once the thread feedback and release schedule changes have cleared:
