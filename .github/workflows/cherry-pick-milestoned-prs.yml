@@ -44,19 +44,29 @@ jobs:
           MAJOR=$(echo $BASE_VERSION | cut -d. -f1)
           MINOR=$(echo $BASE_VERSION | cut -d. -f2)
           branches=()
-          current_minor=$MINOR
           branch_count=0
           max_branches=2  # Limit to 2 most recent release branches
 
+          current_major=$MAJOR
+          current_minor=$MINOR
+
           while [ $branch_count -lt $max_branches ]; do
-            branch="release/$MAJOR.$current_minor"
+            branch="release/$current_major.$current_minor"
             response=$(curl -s -o /dev/null -w "%{http_code}" \
               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
               "https://api.github.com/repos/${{ github.repository }}/branches/$branch")
+            
             if [ "$response" -eq 200 ]; then
               branches+=("$branch")
-              current_minor=$((current_minor + 1))
               branch_count=$((branch_count + 1))
+              
+              # Compute next version
+              if [ "$current_minor" -eq 9 ]; then
+                current_major=$((current_major + 1))
+                current_minor=0
+              else
+                current_minor=$((current_minor + 1))
+              fi
             else
               break
             fi
@@ -71,6 +81,7 @@ jobs:
           done
           json="$json]"
           echo "branches=$json" >> $GITHUB_OUTPUT
+
 
   # Perform cherry-pick to all target branches
   cherry-pick:
