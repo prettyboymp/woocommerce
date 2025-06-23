@@ -46,8 +46,11 @@ At this point, the Developer Advocacy team publishes release highlights that are
 
 Due to business needs, the release dates may be subject to change. Here are some hints on approaching and effectively wrangling this situation.
 
-Once the need for changes in the release schedule is confirmed, create an internal post and communicate the necessary details.
-This post provides an opportunity for teams to share additional context, which may help invalidate and correct the schedule changes.
+Once the need for changes in the release schedule is confirmed, create an internal Slack thread and communicate the necessary details.
+This thread provides an opportunity for teams to share additional context, which may help invalidate and correct the schedule changes.
+
+> Note: please reference to this playbook: Pf59Ax-10U-p2, for before starting the thread.
+> The playbook is slightly dated, but it provides valuable insights for informed decision-making and effective outreach to key stakeholders.
 
 Once the post feedback and release schedule changes have cleared:
 
