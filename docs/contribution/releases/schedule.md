@@ -25,7 +25,7 @@ At this point, the Developer Advocacy team publishes pre-release updates ([examp
 
 This step is where various testing processes are happening:
 
-- internally: regression testing with canonical extensions, regression testing in multiple environments, and exploration testing (including by the contributing teams)
+- internally: regression testing with Woo maintained extensions, regression testing in multiple environments, and exploration testing (including by the contributing teams)
 - community: the Developer Advocacy team updates the pre-release announcement so the community can give the RC a try
 
 ### RC2 (RC1 + 1 week)
