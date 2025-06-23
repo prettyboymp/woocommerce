@@ -15,13 +15,13 @@ on:
     outputs:
       status:
         description: 'Status of PR creation (success/failure)'
-        value: ${{ jobs.aggregate-results.outputs.status }}
+        value: ${{ jobs.aggregate-overall-status.outputs.status }}
       error_message:
         description: 'Error message if PR creation failed'
-        value: ${{ jobs.aggregate-results.outputs.error_message }}
+        value: ${{ jobs.aggregate-overall-status.outputs.error_message }}
       cherry_pick_pr_number:
         description: 'PR number created (if successful)'
-        value: ${{ jobs.aggregate-results.outputs.cherry_pick_pr_number }}
+        value: ${{ jobs.aggregate-overall-status.outputs.cherry_pick_pr_number }}
 
   workflow_dispatch:
     inputs:
@@ -47,9 +47,9 @@ jobs:
       contents: read
       pull-requests: read
     outputs:
-      status: ${{ steps.aggregate-status.outputs.status }}
-      errorMessage: ${{ steps.aggregate-status.outputs.errorMessage }}
-      cherryPickBranch: ${{ steps.aggregate-status.outputs.cherryPickBranch }}
+      status: ${{ steps.aggregate-cherry-pick-status.outputs.status }}
+      errorMessage: ${{ steps.aggregate-cherry-pick-status.outputs.errorMessage }}
+      cherryPickBranch: ${{ steps.aggregate-cherry-pick-status.outputs.cherryPickBranch }}
       mergeCommitSHA: ${{ steps.check-pr.outputs.merge_commit_sha }}
     steps:
       - name: Check PR exists, merged, and get merge_commit_sha
@@ -186,7 +186,7 @@ jobs:
             }
 
       - name: Aggregate verification results and set final status
-        id: aggregate-status
+        id: aggregate-cherry-pick-status
         if: ${{ always() }}
         run: |
           # Check for errors in priority order
@@ -215,9 +215,9 @@ jobs:
       contents: write
       pull-requests: write
     outputs:
-      status: ${{ steps.aggregate-status.outputs.status }}
-      errorMessage: ${{ steps.aggregate-status.outputs.errorMessage }}
-      cherryPickPR: ${{ steps.aggregate-status.outputs.cherryPickPR }}
+      status: ${{ steps.aggregate-cherry-pick-status.outputs.status }}
+      errorMessage: ${{ steps.aggregate-cherry-pick-status.outputs.errorMessage }}
+      cherryPickPR: ${{ steps.aggregate-cherry-pick-status.outputs.cherryPickPR }}
     steps:
       - name: Checkout Target Branch
         id: checkout
@@ -426,33 +426,9 @@ jobs:
               });
             }
 
-      - name: Update original PR with backport info
-        id: update-original
-        continue-on-error: true
-        uses: actions/github-script@v7
-        env:
-          ORIGINAL_PR_NUMBER: ${{ inputs.pr_number }}
-          NEW_PR_NUMBER: ${{ steps.create-pr.outputs.pr-number }}
-          NEW_PR_URL: ${{ steps.create-pr.outputs.pr-url }}
-          TARGET_BRANCH: ${{ inputs.target_branch }}
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const originalPrNumber = process.env.ORIGINAL_PR_NUMBER;
-            const newPrNumber = process.env.NEW_PR_NUMBER;
-            const newPrUrl = process.env.NEW_PR_URL;
-            const targetBranch = process.env.TARGET_BRANCH;  // Get target branch
-            
-            await github.rest.issues.createComment({
-              owner,
-              repo,
-              issue_number: originalPrNumber,
-              body: `✅ Backport to \`${targetBranch}\` created: [#${newPrNumber}](${newPrUrl})`
-            });
 
-
-      - name: Aggregate results and set final status
-        id: aggregate-status
+      - name: Determining Cherry Pick Status
+        id: aggregate-cherry-pick-status
         if: ${{ always() }}
         env:
           STEPS_CONTEXT: ${{ toJson(steps) }}
@@ -496,8 +472,8 @@ jobs:
 
 
   # Aggregate the results for the two jobs so we have clear output by calling workflows.
-  aggregate-results:
-    name: Aggregate Results
+  aggregate-overall-status:
+    name: Outputting Final Cherry Pick Status
     runs-on: ubuntu-latest
     needs: [verify, cherry-pick]
     if: ${{ always() }}
