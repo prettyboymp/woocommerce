@@ -16,12 +16,14 @@ jobs:
       pr_number: ${{ steps.set-vars.outputs.pr_number }}
       milestone: ${{ steps.set-vars.outputs.milestone }}
     steps:
+      # Set basic PR information
       - name: Set variables
         id: set-vars
         run: |
           echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
           echo "milestone=${{ github.event.pull_request.milestone.title }}" >> $GITHUB_OUTPUT
 
+      # Extract base version from milestone (e.g., 9.9 from 9.9.0)
       - name: Extract version from milestone
         id: extract-version
         run: |
@@ -33,6 +35,7 @@ jobs:
             exit 1
           fi
 
+      # Identify release branches to cherry-pick to
       - name: Get release branches
         id: get-branches
         env:
@@ -43,7 +46,7 @@ jobs:
           branches=()
           current_minor=$MINOR
           branch_count=0
-          max_branches=2 # We limit to 2, but we could increase this to potentially handle backporting security fixes further.
+          max_branches=2  # Limit to 2 most recent release branches
 
           while [ $branch_count -lt $max_branches ]; do
             branch="release/$MAJOR.$current_minor"
@@ -59,7 +62,7 @@ jobs:
             fi
           done
 
-          # Output as a JSON array without jq
+          # Output branches as JSON array
           json="["
           sep=""
           for b in "${branches[@]}"; do
@@ -67,10 +70,9 @@ jobs:
             sep=","
           done
           json="$json]"
-          echo "JSON output: $json"
           echo "branches=$json" >> $GITHUB_OUTPUT
 
-
+  # Perform cherry-pick to all target branches
   cherry-pick:
     needs: prepare
     uses: ./.github/workflows/shared-cherry-pick.yml
@@ -78,10 +80,11 @@ jobs:
       pr_number: ${{ needs.prepare.outputs.pr_number }}
       target_branch: ${{ matrix.branch }}
     strategy:
-      fail-fast: false # Make sure we don't fail all jobs because one cherry pick fails.
+      fail-fast: false  # Continue even if one cherry-pick fails
       matrix:
         branch: ${{ fromJson(needs.prepare.outputs.branches) }}
 
+  # Handle successful cherry-picks
   handle-successes:
     needs: [prepare, cherry-pick]
     if: ${{ always() && needs.cherry-pick.result == 'success' && needs.cherry-pick.outputs.cherry_pick_pr_number }}
@@ -90,8 +93,7 @@ jobs:
       matrix:
         branch: ${{ fromJson(needs.prepare.outputs.branches) }}
     steps:
-
-      # Make sure the newly created PRs have the milestone set to the original milestone that triggered this flow to be sure they are merged prior to next releae of that version.
+      # Add original milestone to new PR
       - name: Add milestone
         uses: actions/github-script@v7
         with:
@@ -102,17 +104,64 @@ jobs:
               issue_number: ${{ needs.cherry-pick.outputs.cherry_pick_pr_number }},
               milestone: '${{ github.event.pull_request.milestone.number }}'
             })
+
+      # Comment on original PR about cherry-pick success
+      - name: Comment on original PR about cherry-pick success
+        uses: actions/github-script@v7
+        env:
+          TARGET_BRANCH: ${{ matrix.branch }}
+          CHERRY_PICK_PR_NUMBER: ${{ needs.cherry-pick.outputs.cherry_pick_pr_number }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          # Fetch the cherry-pick PR title and URL
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            // Fetch cherry-pick PR details
+            const cherryPickPrNumber = process.env.CHERRY_PICK_PR_NUMBER;
+            const targetBranch = process.env.TARGET_BRANCH;
+            const { owner, repo } = context.repo;
+
+            let cherryPickPr;
+            try {
+              cherryPickPr = (await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: parseInt(cherryPickPrNumber)
+              })).data;
+            } catch (e) {
+              core.setFailed("Could not fetch cherry-pick PR details: " + e.message);
+              return;
+            }
+
+            const cherryPickPrUrl = cherryPickPr.html_url;
+            const cherryPickPrTitle = cherryPickPr.title;
+
+            const body =
+              'IMPORTANT: Merging this PR to the appropriate branches is critical to the release process and ensures that the bug does not cause regressions in the future releases.\n\n' +
+              `Cherry picking was successful for \`${targetBranch}\`. Please merge the following PR: <${cherryPickPrUrl}|${cherryPickPrTitle}>`;
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: parseInt('${{ needs.prepare.outputs.pr_number }}'),
+              body
+            });
+      
+      # Notify Slack about successful cherry-pick
       - name: Notify Slack on success
-        if: ${{ success() && inputs.skipSlackPing != true }}
-        uses: archive/github-actions-slack@f530f3aa696b2eef0e5aba82450e387bd7723903 #v2.0.0
+        uses: archive/github-actions-slack@f530f3aa696b2eef0e5aba82450e387bd7723903
+        env:
+          CHERRY_PICK_PR_URL: https://github.com/${{ github.repository }}/pull/${{ needs.cherry-pick.outputs.cherry_pick_pr_number }}
+          SOURCE_PR_URL: ${{ github.event.pull_request.html_url }}
+          SOURCE_PR_NUMBER: ${{ github.event.pull_request.number }}
+          SOURCE_PR_TITLE: ${{ github.event.pull_request.title }}
         with:
           slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
           slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
-          slack-optional-unfurl_links: false
-          slack-optional-unfurl_media: false
           slack-text: |
-            :info: *Cherry pick <${{ steps.cherry-pick-pr.outputs.cherry-pick-pr }}|created> (${{ needs.prep.outputs.version }} → `trunk`)* Please ensure <${{ steps.cherry-pick-pr.outputs.cherry-pick-pr }}|this cherry pick> is merged before releasing. Source PR: _<${{ needs.prep.outputs.prURL }}|#${{ needs.prep.outputs.pr }} - ${{ needs.prep.outputs.prTitle }}>_.
+            :info: *Cherry pick <${{ env.CHERRY_PICK_PR_URL }}|created> (trunk → `${{ matrix.branch }}`)* Please ensure <${{ env.CHERRY_PICK_PR_URL }}|this cherry pick> is merged before releasing. Source PR: _<${{ env.SOURCE_PR_URL }}|#${{ env.SOURCE_PR_NUMBER }} - ${{ env.SOURCE_PR_TITLE }}>_.
 
+  # Handle failed cherry-picks
   handle-failures:
     needs: [prepare, cherry-pick]
     runs-on: ubuntu-latest
@@ -123,10 +172,10 @@ jobs:
     steps:
       - name: Handle failure for ${{ matrix.branch }}
         if: ${{ needs.cherry-pick.outputs.status == 'failed' }}
-        run: |
-          echo "Handling failure for ${{ matrix.branch }}"
+        run: echo "Processing failure for ${{ matrix.branch }}"
 
-      - name: Add "cherry-pick-failed" label to original PR
+      # Label original PR with failure tag
+      - name: Add "cherry pick failed" label
         uses: actions/github-script@v7
         with:
           script: |
@@ -134,10 +183,11 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: parseInt('${{ needs.prepare.outputs.pr_number }}'),
-              labels: ['cherry-pick-failed']
+              labels: ['cherry pick failed']
             })
 
-      - name: Comment on original PR about cherry-pick failure
+      # Comment on original PR about failure
+      - name: Comment on original PR
         uses: actions/github-script@v7
         env:
           ERROR_MESSAGE: ${{ needs.cherry-pick.outputs.errorMessage || 'Unknown error' }}
@@ -156,15 +206,13 @@ jobs:
             const targetBranch = process.env.TARGET_BRANCH;
             const workflowLink = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
 
-            // Use string concatenation instead of multi-line template literal
             const body = 
               (merger ? merger + ' ' : '') +
               '⚠️ **Cherry-pick to `' + targetBranch + '` failed.**\n\n' +
               '**Error:** ' + errorMsg + '\n\n' +
               '---\n\n' +
-              'IMPORTANT: Merging this PR to the appropriate branches is critical to the release process and ensures that the bug does not cause regressions in future releases.\n\n' +
-              'Cherry picking failed for ' + targetBranch + '. Please bring this to the release team\'s attention.\n\n' +
-              '**Workflow run for debugging:** ' + workflowLink;
+              'IMPORTANT: Merging this PR to the appropriate branches is critical to the release process.\n\n' +
+              '**Workflow run:** ' + workflowLink;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -173,13 +221,23 @@ jobs:
               body: body
             });
 
+      # Notify Slack about failed cherry-pick
       - name: Notify Slack on failure
-        if: ${{ failure() && inputs.skipSlackPing != true }}
-        uses: archive/github-actions-slack@f530f3aa696b2eef0e5aba82450e387bd7723903 #v2.0.0
+        uses: archive/github-actions-slack@f530f3aa696b2eef0e5aba82450e387bd7723903
+        env:
+          # Link to the workflow run for debugging
+          WORKFLOW_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          # Source PR details
+          SOURCE_PR_URL: ${{ github.event.pull_request.html_url }}
+          SOURCE_PR_NUMBER: ${{ github.event.pull_request.number }}
+          SOURCE_PR_TITLE: ${{ github.event.pull_request.title }}
+          # Target branch for cherry-pick
+          TARGET_BRANCH: ${{ matrix.branch }}
         with:
           slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
           slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
-          slack-optional-unfurl_links: false
-          slack-optional-unfurl_media: false
           slack-text: |
-            :warning: *Cherry pick <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|failed> (${{ needs.prep.outputs.version }} → `trunk`)* Please resolve before releasing. Source PR: _<${{ needs.prep.outputs.prURL }}|#${{ needs.prep.outputs.pr }} - ${{ needs.prep.outputs.prTitle }}>_.
+            :warning: *Cherry pick to `${{ env.TARGET_BRANCH }}` <${{ env.WORKFLOW_RUN_URL }}|failed>*  
+            Please resolve before releasing.  
+            Source PR: _<${{ env.SOURCE_PR_URL }}|#${{ env.SOURCE_PR_NUMBER }} - ${{ env.SOURCE_PR_TITLE }}>_.
+
