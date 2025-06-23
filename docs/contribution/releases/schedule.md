@@ -30,7 +30,7 @@ regression testing in multiple environments, and exploration testing (incl. by t
 
 TODO: not sure, thought is where we communicate RC availability for testing by community, but not sure.
 
-### Release (aka Final release, RC2 + 1 week)
+### Final Release (RC2 + 1 week)
 
 The final release process includes an additional staging step when it is not marked as stable yet and is deployed to our staging infrastructure.
 If the staging step reveals critical issues, a dot-release will be created and follow the same staging procedure. Once staging is successful, the 
