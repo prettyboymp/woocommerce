@@ -51,4 +51,4 @@ Once the post feedback and release schedule changes have cleared:
 - update [the calendar](https://developer.woocommerce.com/release-calendar/) with the new release dates
 
 > Note: To minimize friction for teams, it's recommended not to change intervals between RCs and the final release but 
-> instead to shift the entire release cycle. The intervals consider multiple factors, including teams capacity.
+> instead to shift the entire release cycle. The intervals consider multiple factors, including the capacity across teams.
