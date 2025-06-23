@@ -82,7 +82,7 @@ jobs:
       matrix:
         branch: ${{ fromJson(needs.prepare.outputs.branches) }}
 
-  add-milestone:
+  handle-successes:
     needs: [prepare, cherry-pick]
     if: ${{ always() && needs.cherry-pick.result == 'success' && needs.cherry-pick.outputs.cherry_pick_pr_number }}
     runs-on: ubuntu-latest
@@ -90,6 +90,8 @@ jobs:
       matrix:
         branch: ${{ fromJson(needs.prepare.outputs.branches) }}
     steps:
+
+      # Make sure the newly created PRs have the milestone set to the original milestone that triggered this flow to be sure they are merged prior to next releae of that version.
       - name: Add milestone
         uses: actions/github-script@v7
         with:
@@ -100,14 +102,24 @@ jobs:
               issue_number: ${{ needs.cherry-pick.outputs.cherry_pick_pr_number }},
               milestone: '${{ github.event.pull_request.milestone.number }}'
             })
+      - name: Notify Slack on success
+        if: ${{ success() && inputs.skipSlackPing != true }}
+        uses: archive/github-actions-slack@f530f3aa696b2eef0e5aba82450e387bd7723903 #v2.0.0
+        with:
+          slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
+          slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
+          slack-optional-unfurl_links: false
+          slack-optional-unfurl_media: false
+          slack-text: |
+            :info: *Cherry pick <${{ steps.cherry-pick-pr.outputs.cherry-pick-pr }}|created> (${{ needs.prep.outputs.version }} → `trunk`)* Please ensure <${{ steps.cherry-pick-pr.outputs.cherry-pick-pr }}|this cherry pick> is merged before releasing. Source PR: _<${{ needs.prep.outputs.prURL }}|#${{ needs.prep.outputs.pr }} - ${{ needs.prep.outputs.prTitle }}>_.
 
-  handle-failure:
+  handle-failures:
     needs: [prepare, cherry-pick]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         branch: ${{ fromJson(needs.prepare.outputs.branches) }}
-    if: ${{ needs.cherry-pick.result == 'failure' }}  # Run only if any matrix job failed
+    if: ${{ needs.cherry-pick.result == 'failure' }}
     steps:
       - name: Handle failure for ${{ matrix.branch }}
         if: ${{ needs.cherry-pick.outputs.status == 'failed' }}
@@ -125,8 +137,22 @@ jobs:
               labels: ['cherry-pick-failed']
             })
 
-      - name: Comment on original PR about cherry-pick failure and mention merger
+      - name: Notify Slack on failure
+        if: ${{ failure() && inputs.skipSlackPing != true }}
+        uses: archive/github-actions-slack@f530f3aa696b2eef0e5aba82450e387bd7723903 #v2.0.0
+        with:
+          slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
+          slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
+          slack-optional-unfurl_links: false
+          slack-optional-unfurl_media: false
+          slack-text: |
+            :warning: *Cherry pick <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|failed> (${{ needs.prep.outputs.version }} → `trunk`)* Please resolve before releasing. Source PR: _<${{ needs.prep.outputs.prURL }}|#${{ needs.prep.outputs.pr }} - ${{ needs.prep.outputs.prTitle }}>_.
+
+      - name: Comment on original PR about cherry-pick failure
         uses: actions/github-script@v7
+        env:
+          ERROR_MESSAGE: ${{ needs.cherry-pick.outputs.errorMessage || 'Unknown error' }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
         with:
           script: |
             // Get PR details to find who merged it
@@ -137,17 +163,27 @@ jobs:
             })).data;
 
             const merger = pr.merged_by && pr.merged_by.login ? `@${pr.merged_by.login}` : '';
-            const errorMsg = `${{ needs.cherry-pick.outputs.errorMessage }}`;
+            const errorMsg = process.env.ERROR_MESSAGE;
             const branch = `${{ matrix.branch }}`;
+            const workflowLink = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
 
-            let body = `⚠️ **Cherry-pick to \`${branch}\` failed.**\n\nError: ${errorMsg}`;
-            if (merger) {
-              body = `${merger} ${body}`;
-            }
+            const body = `
+${merger ? merger + ' ' : ''}⚠️ **Cherry-pick to \`${branch}\` failed.**
 
-            github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: parseInt('${{ needs.prepare.outputs.pr_number }}'),
-              body
-            });
+**Error:** ${errorMsg}
+
+---
+
+IMPORTANT: Merging this PR to the appropriate branches is critical to the release process and ensures that the bug does not cause regressions in future releases.
+
+Cherry picking failed for the ${branch}. Please bring this to the release team's attention.
+
+**Workflow run for debugging:** ${workflowLink}
+          `;
+
+          github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: parseInt('${{ needs.prepare.outputs.pr_number }}'),
+            body: body.trim()
+          });
