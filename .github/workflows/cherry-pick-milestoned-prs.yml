@@ -137,17 +137,6 @@ jobs:
               labels: ['cherry-pick-failed']
             })
 
-      - name: Notify Slack on failure
-        if: ${{ failure() && inputs.skipSlackPing != true }}
-        uses: archive/github-actions-slack@f530f3aa696b2eef0e5aba82450e387bd7723903 #v2.0.0
-        with:
-          slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
-          slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
-          slack-optional-unfurl_links: false
-          slack-optional-unfurl_media: false
-          slack-text: |
-            :warning: *Cherry pick <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|failed> (${{ needs.prep.outputs.version }} → `trunk`)* Please resolve before releasing. Source PR: _<${{ needs.prep.outputs.prURL }}|#${{ needs.prep.outputs.pr }} - ${{ needs.prep.outputs.prTitle }}>_.
-
       - name: Comment on original PR about cherry-pick failure
         uses: actions/github-script@v7
         env:
@@ -183,3 +172,14 @@ jobs:
               issue_number: parseInt('${{ needs.prepare.outputs.pr_number }}'),
               body: body
             });
+
+      - name: Notify Slack on failure
+        if: ${{ failure() && inputs.skipSlackPing != true }}
+        uses: archive/github-actions-slack@f530f3aa696b2eef0e5aba82450e387bd7723903 #v2.0.0
+        with:
+          slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
+          slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
+          slack-optional-unfurl_links: false
+          slack-optional-unfurl_media: false
+          slack-text: |
+            :warning: *Cherry pick <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|failed> (${{ needs.prep.outputs.version }} → `trunk`)* Please resolve before releasing. Source PR: _<${{ needs.prep.outputs.prURL }}|#${{ needs.prep.outputs.pr }} - ${{ needs.prep.outputs.prTitle }}>_.
