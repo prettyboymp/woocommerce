@@ -18,7 +18,7 @@ This section will use the publicly available release schedule as anchors and cla
 
 ### Feature Freeze (start of the release cycle)
 
-This step is mostly automated, and in nut-shell, it creates a dedicated release branch where the future release undergoes testing and stabilization.
+This step is mostly automated, and in a nut-shell, it creates a dedicated release branch where the future release undergoes testing and stabilization.
 At this point, the Developer Advocacy team publishes pre-release updates ([example](https://developer.woocommerce.com/2025/05/12/woocommerce-9-9-pre-release-updates/))
 
 ### RC1 (Feature Freeze + 1 week)
