@@ -111,12 +111,9 @@ jobs:
         env:
           TARGET_BRANCH: ${{ matrix.branch }}
           CHERRY_PICK_PR_NUMBER: ${{ needs.cherry-pick.outputs.cherry_pick_pr_number }}
-          GITHUB_RUN_ID: ${{ github.run_id }}
-          # Fetch the cherry-pick PR title and URL
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            // Fetch cherry-pick PR details
             const cherryPickPrNumber = process.env.CHERRY_PICK_PR_NUMBER;
             const targetBranch = process.env.TARGET_BRANCH;
             const { owner, repo } = context.repo;
@@ -138,7 +135,7 @@ jobs:
 
             const body =
               'IMPORTANT: Merging this PR to the appropriate branches is critical to the release process and ensures that the bug does not cause regressions in the future releases.\n\n' +
-              `Cherry picking was successful for \`${targetBranch}\`. Please merge the following PR: <${cherryPickPrUrl}|${cherryPickPrTitle}>`;
+              `Cherry picking was successful for \`${targetBranch}\`. Please merge the following PR: [${cherryPickPrTitle}](${cherryPickPrUrl})`;
 
             await github.rest.issues.createComment({
               owner,
@@ -146,6 +143,7 @@ jobs:
               issue_number: parseInt('${{ needs.prepare.outputs.pr_number }}'),
               body
             });
+
       
       # Notify Slack about successful cherry-pick
       - name: Notify Slack on success
@@ -159,7 +157,7 @@ jobs:
           slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
           slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
           slack-text: |
-            :info: *Cherry pick <${{ env.CHERRY_PICK_PR_URL }}|created> (trunk → `${{ matrix.branch }}`)* Please ensure <${{ env.CHERRY_PICK_PR_URL }}|this cherry pick> is merged before releasing. Source PR: _<${{ env.SOURCE_PR_URL }}|#${{ env.SOURCE_PR_NUMBER }} - ${{ env.SOURCE_PR_TITLE }}>_.
+            :info: *Cherry pick <${{ env.CHERRY_PICK_PR_URL }}|created> (`trunk` → `${{ matrix.branch }}`)* Please ensure <${{ env.CHERRY_PICK_PR_URL }}|this cherry pick> is merged before releasing. Source PR: _<${{ env.SOURCE_PR_URL }}|#${{ env.SOURCE_PR_NUMBER }} - ${{ env.SOURCE_PR_TITLE }}>_.
 
   # Handle failed cherry-picks
   handle-failures:
@@ -237,7 +235,7 @@ jobs:
           slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
           slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
           slack-text: |
-            :warning: *Cherry pick to `${{ env.TARGET_BRANCH }}` <${{ env.WORKFLOW_RUN_URL }}|failed>*  
+            :warning: *Cherry pick from `trunk` to `${{ env.TARGET_BRANCH }}` <${{ env.WORKFLOW_RUN_URL }}|failed>*  
             Please resolve before releasing.  
             Source PR: _<${{ env.SOURCE_PR_URL }}|#${{ env.SOURCE_PR_NUMBER }} - ${{ env.SOURCE_PR_TITLE }}>_.
 
