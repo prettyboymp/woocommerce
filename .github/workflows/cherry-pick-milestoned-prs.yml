@@ -152,6 +152,7 @@ jobs:
         uses: actions/github-script@v7
         env:
           ERROR_MESSAGE: ${{ needs.cherry-pick.outputs.errorMessage || 'Unknown error' }}
+          TARGET_BRANCH: ${{ matrix.branch }}
           GITHUB_RUN_ID: ${{ github.run_id }}
         with:
           script: |
@@ -164,11 +165,11 @@ jobs:
 
             const merger = pr.merged_by && pr.merged_by.login ? `@${pr.merged_by.login}` : '';
             const errorMsg = process.env.ERROR_MESSAGE;
-            const branch = `${{ matrix.branch }}`;
+            const targetBranch = process.env.TARGET_BRANCH;
             const workflowLink = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
 
             const body = `
-${merger ? merger + ' ' : ''}⚠️ **Cherry-pick to \`${branch}\` failed.**
+${merger ? merger + ' ' : ''}⚠️ **Cherry-pick to \`${targetBranch}\` failed.**
 
 **Error:** ${errorMsg}
 
@@ -176,14 +177,14 @@ ${merger ? merger + ' ' : ''}⚠️ **Cherry-pick to \`${branch}\` failed.**
 
 IMPORTANT: Merging this PR to the appropriate branches is critical to the release process and ensures that the bug does not cause regressions in future releases.
 
-Cherry picking failed for the ${branch}. Please bring this to the release team's attention.
+Cherry picking failed for ${targetBranch}. Please bring this to the release team's attention.
 
 **Workflow run for debugging:** ${workflowLink}
           `;
 
-          github.rest.issues.createComment({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: parseInt('${{ needs.prepare.outputs.pr_number }}'),
-            body: body.trim()
-          });
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt('${{ needs.prepare.outputs.pr_number }}'),
+              body: body.trim()
+            });
