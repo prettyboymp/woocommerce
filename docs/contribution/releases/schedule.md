@@ -52,7 +52,7 @@ This thread provides an opportunity for teams to share additional context, which
 > Note: Please refer to Pf59Ax-10U-p2, before starting the thread.
 > The playbook is slightly dated, but it provides valuable insights for informed decision-making and effective outreach to key stakeholders.
 
-Once the post feedback and release schedule changes have cleared:
+Once the thread feedback and release schedule changes have cleared:
 
 - ask the Developer Advocacy team to communicate the changes publicly ([example](https://developer.woocommerce.com/2025/06/02/woocommerce-9-9-release-is-delayed/))
 - update [the calendar](https://developer.woocommerce.com/release-calendar/) with the new release dates
