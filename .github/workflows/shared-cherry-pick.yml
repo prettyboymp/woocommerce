@@ -492,16 +492,27 @@ jobs:
           cherry_error="${{ needs.cherry-pick.outputs.errorMessage }}"
           cherry_pr_number="${{ needs.cherry-pick.outputs.cherryPickPR }}"
           
+          # Debug output
+          echo "### FINAL OUTPUT ###"
+          echo "Verify Status: $verify_status"
+          echo "Verify Error: $verify_error"
+          echo "Cherry-pick Status: $cherry_status"
+          echo "Cherry-pick Error: $cherry_error"
+          echo "Cherry-pick PR Number: $cherry_pr_number"
+          
           # Determine final status
           if [[ "$verify_status" != "success" ]]; then
+            echo "Final status: failed (verify job)"
             echo "status=failed" >> $GITHUB_OUTPUT
             echo "error_message=$verify_error" >> $GITHUB_OUTPUT
             echo "cherry_pick_pr_number=" >> $GITHUB_OUTPUT
           elif [[ "$cherry_status" != "success" ]]; then
+            echo "Final status: failed (cherry-pick job)"
             echo "status=failed" >> $GITHUB_OUTPUT
             echo "error_message=$cherry_error" >> $GITHUB_OUTPUT
             echo "cherry_pick_pr_number=" >> $GITHUB_OUTPUT
           else
+            echo "Final status: success"
             echo "status=success" >> $GITHUB_OUTPUT
             echo "error_message=" >> $GITHUB_OUTPUT
             echo "cherry_pick_pr_number=$cherry_pr_number" >> $GITHUB_OUTPUT
