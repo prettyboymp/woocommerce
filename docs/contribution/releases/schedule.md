@@ -46,8 +46,9 @@ Once the need for changes in the release schedule is confirmed, create an intern
 This post provides an opportunity for teams to share additional context, which may help invalidate and correct the schedule changes.
 
 Once the post feedback and release schedule changes have cleared:
+
 - ask the Developer Advocacy team to communicate the changes publicly ([example](https://developer.woocommerce.com/2025/06/02/woocommerce-9-9-release-is-delayed/))
-- actualize [the calendar](https://developer.woocommerce.com/release-calendar/)
+- update [the calendar](https://developer.woocommerce.com/release-calendar/) with the new release dates
 
 > Note: To minimize friction for teams, it's recommended not to change intervals between RCs and the final release but 
 > instead to shift the entire release cycle. The intervals consider multiple factors, including teams capacity.
