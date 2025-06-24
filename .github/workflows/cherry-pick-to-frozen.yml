@@ -8,6 +8,11 @@ on:
       - 'release/*'  # Only trigger for release branches
 
 jobs:
+  debug:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Dump context
+      run: echo "${{ toJson(github) }}"
 
   # Only run when a PR is merged into a release branch and has the label 'cherry pick to frozen release' - can happen in any order.
   prepare:
@@ -185,7 +190,7 @@ jobs:
   handle-failures:
     needs: [prepare, cherry-pick, cherry-pick-to-trunk-check]
     runs-on: ubuntu-latest
-    if: ${{ needs.cherry-pick.result == 'failure' }}
+    if: ${{ always() && needs.cherry-pick.result == 'failure' }}
     steps:
       - name: Handle failure
         run: echo "Processing cherry-pick failure"
