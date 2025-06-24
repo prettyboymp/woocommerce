@@ -40,6 +40,7 @@ env:
   GIT_AUTHOR_EMAIL: 'no-reply@woocommerce.com'
 
 jobs:
+
   verify:
     name: Verify requirements
     runs-on: ubuntu-latest
@@ -204,8 +205,6 @@ jobs:
             # Pass through cherryPickBranch from previous step
             echo "cherryPickBranch=${{ steps.check-cherry-pick-branch.outputs.cherryPickBranch }}" >> $GITHUB_OUTPUT
           fi
-
-
 
   cherry-pick:
     name: Cherry Pick
@@ -425,7 +424,6 @@ jobs:
                 body: commentBody
               });
             }
-
 
       - name: Determining Cherry Pick Status
         id: aggregate-cherry-pick-status
