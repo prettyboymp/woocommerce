@@ -1,4 +1,4 @@
-name: Cherry-pick to Trunk
+name: Cherry Pick to Trunk
 on:
   pull_request:
     types: [closed, labeled]
@@ -32,6 +32,7 @@ jobs:
       pr_number: ${{ needs.prepare.outputs.pr_number }}
       target_branch: 'trunk'
 
+  # Check if the original PR was cherry-picked to the frozen release as well.
   frozen-release-check:
     needs: [prepare, cherry-pick]
     runs-on: ubuntu-latest
@@ -144,7 +145,7 @@ jobs:
                        `Cherry picking was successful for \`${targetBranch}\`. Please merge the following PR: [${cherryPickPrTitle}](${cherryPickPrUrl})`;
 
             if (process.env.ADD_CP_TO_FROZEN_NAG === 'true') {
-              body += `\n\nNOTE: This PR might need to be cherry-picked to the frozen release (${process.env.NEXT_BRANCH}). Please check with the release team.`;
+              body += `\n\nNOTE: This PR might need to be cherry-picked to the frozen release (${process.env.NEXT_BRANCH}).`;
             }
 
             await github.rest.issues.createComment({
