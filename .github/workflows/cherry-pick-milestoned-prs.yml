@@ -217,7 +217,7 @@ jobs:
 
             const body = 
               (merger ? merger + ' ' : '') +
-              '⚠️ **Cherry-pick to `' + targetBranch + '` failed.**\n\n' +
+              '❌ **Cherry-pick to `' + targetBranch + '` failed.**\n\n' +
               '**Error:** ' + errorMsg + '\n\n' +
               '---\n\n' +
               'IMPORTANT: Merging this PR to the appropriate branches is critical to the release process.\n\n' +

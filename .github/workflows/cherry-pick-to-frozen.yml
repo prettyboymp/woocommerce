@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Dump context
-        run: echo "${{ toJson(github) }}"
+        run: echo '${{ toJson(github.event) }}'
 
   # Only run when a PR is merged into a release branch and has the label 'cherry pick to frozen release' - can happen in any order.
   prepare:
@@ -226,7 +226,7 @@ jobs:
             const workflowLink = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
 
             let body = (merger ? merger + ' ' : '') +
-                       '⚠️ **Cherry-pick to `trunk` failed.**\n\n' +
+                       '❌ **Cherry-pick to `trunk` failed.**\n\n' +
                        '**Error:** ' + errorMsg + '\n\n' +
                        '---\n\n' +
                        'IMPORTANT: Merging this PR to the appropriate branches is critical to the release process.\n\n' +
