@@ -49,9 +49,6 @@ Due to business needs, the release dates may be subject to change. Here are some
 Once the need for changes in the release schedule is confirmed, create an internal Slack thread and communicate the necessary details.
 This thread provides an opportunity for teams to share additional context, which may help invalidate and correct the schedule changes.
 
-> Note: Please refer to Pf59Ax-10U-p2 (shorthand, internal link), before starting the thread.
-> The playbook is slightly dated, but it provides valuable insights for informed decision-making and effective outreach to key stakeholders.
-
 Once the thread feedback and release schedule changes have cleared:
 
 - ask the Developer Advocacy team to communicate the changes publicly ([example](https://developer.woocommerce.com/2025/06/02/woocommerce-9-9-release-is-delayed/))
