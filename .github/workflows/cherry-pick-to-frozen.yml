@@ -5,9 +5,52 @@ on:
   pull_request:
     types: [closed, labeled]
     branches: 
-      - 'release/*'  # Only trigger for release branches
+      - 'release/*'
 
 jobs:
+
+  condition-debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug condition evaluation
+        env:
+          EVENT_ACTION: ${{ github.event.action }}
+          PR_MERGED: ${{ github.event.pull_request.merged }}
+          LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+          EVENT_LABEL: ${{ github.event.label.name }}
+        run: |
+          echo "Evaluating condition:"
+          echo "1. (github.event.action == 'closed' && github.event.pull_request.merged == true && contains(labels, 'cherry pick to frozen release'))"
+          echo "   OR"
+          echo "2. (github.event.action == 'labeled' && github.event.pull_request.merged == true && github.event.label.name == 'cherry pick to frozen release')"
+          echo ""
+          echo "Actual values:"
+          echo "• EVENT_ACTION: '$EVENT_ACTION'"
+          echo "• PR_MERGED: '$PR_MERGED'"
+          echo "• LABELS: $LABELS"
+          echo "• EVENT_LABEL: '$EVENT_LABEL'"
+          echo ""
+          
+          # Evaluate sub-conditions
+          closed_condition=false
+          labeled_condition=false
+          
+          if [ "$EVENT_ACTION" = "closed" ] && [ "$PR_MERGED" = "true" ]; then
+            if [[ "$LABELS" == *"cherry pick to frozen release"* ]]; then
+              closed_condition=true
+            fi
+          fi
+          
+          if [ "$EVENT_ACTION" = "labeled" ] && [ "$PR_MERGED" = "true" ] && [ "$EVENT_LABEL" = "cherry pick to frozen release" ]; then
+            labeled_condition=true
+          fi
+          
+          echo "Sub-condition evaluations:"
+          echo "• Closed condition: $closed_condition"
+          echo "• Labeled condition: $labeled_condition"
+          echo ""
+          echo "Final OR result: $([ "$closed_condition" = true ] || [ "$labeled_condition" = true ] && echo "true" || echo "false")"
+
   # Only run when a PR is merged into a release branch and has the label 'cherry pick to frozen release' - can happen in any order.
   prepare:
     if: |
