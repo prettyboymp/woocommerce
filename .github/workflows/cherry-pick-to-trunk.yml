@@ -211,7 +211,7 @@ jobs:
             const workflowLink = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
 
             let body = (merger ? merger + ' ' : '') +
-                       '⚠️ **Cherry-pick to `trunk` failed.**\n\n' +
+                       '❌ **Cherry-pick to `trunk` failed.**\n\n' +
                        '**Error:** ' + errorMsg + '\n\n' +
                        '---\n\n' +
                        'IMPORTANT: Merging this PR to the appropriate branches is critical to the release process.\n\n' +
