@@ -9,10 +9,10 @@ on:
 
 jobs:
   debug:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Dump context
-      run: echo "${{ toJson(github) }}"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump context
+        run: echo "${{ toJson(github) }}"
 
   # Only run when a PR is merged into a release branch and has the label 'cherry pick to frozen release' - can happen in any order.
   prepare:
