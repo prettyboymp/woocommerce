@@ -166,7 +166,7 @@ jobs:
             });
 
       - name: Notify Slack on success
-        uses: archive/github-actions-slack@f530f3aa696b2eef0e5aba82450e387bd7723903 # v2.0.0
+        uses: archive/github-actions-slack@c643e5093620d65506466f2c9b317d5d29a5e517 # v2.10.1
         env:
           CHERRY_PICK_PR_URL: https://github.com/${{ github.repository }}/pull/${{ needs.cherry-pick.outputs.cherry_pick_pr_number }}
           SOURCE_PR_URL: ${{ github.event.pull_request.html_url }}
@@ -239,7 +239,7 @@ jobs:
             });
 
       - name: Notify Slack on failure
-        uses: archive/github-actions-slack@f530f3aa696b2eef0e5aba82450e387bd7723903 # v2.0.0
+        uses: archive/github-actions-slack@c643e5093620d65506466f2c9b317d5d29a5e517 # v2.10.1
         env:
           WORKFLOW_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           SOURCE_PR_URL: ${{ github.event.pull_request.html_url }}
