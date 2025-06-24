@@ -40,7 +40,7 @@ The final release process includes an additional staging step when it is not mar
 If the staging step reveals critical issues, a dot-release will be created and follow the same staging procedure. Once staging is successful, the 
 release is marked as stable and becomes available to everyone.
 
-At this point, the Developer Advocacy team publishes release highlights that are prepared in-advance ([example](https://developer.woocommerce.com/2025/06/09/woocommerce-9-9-its-fast-period/))
+At this point, the Developer Advocacy team publishes release highlights that are prepared in-advance ([example](https://developer.woocommerce.com/2025/06/09/woocommerce-9-9-its-fast-period/)).
 
 ## Delays
 
