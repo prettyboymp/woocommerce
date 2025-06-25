@@ -6,15 +6,15 @@ body:
   - type: markdown
     attributes:
       value: |
-        🚧 The code freeze exception approval process is retired. If you need to apply a FIX to the frozen release do one of the following:
+        🚧 The code freeze exception approval process is retired. If you need to apply a FIX to the frozen release do one of the following: 🚧
         
-        ** Make a PR against trunk **
+        **Make a PR against trunk**
         1. Create your pull request against trunk.
         2. Add the milestone corresponding to the release you are fixing.  E.g. use milestone `10.0.0` for targeting the `release/10.0` branch.
         3. Get your pull request reviewed and merged.
         4. A new pull request will be generated against the release branch with your changes. 
         
-        ** Make a PR against the release branch **
+        **Make a PR against the release branch**
         1. Create your pull request against the frozen release branch.
         2. Add the label `cherry pick to trunk` to the PR.
         3. Get your pull request reviewed and merged.
