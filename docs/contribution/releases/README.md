@@ -11,3 +11,4 @@ The WooCommerce release process is managed by a rotating release lead.  The docu
 
 * [Release Candidates](/docs/contribution/releases/rc)
 * [Backporting](/docs/contribution/releases/backporting)
+* [Point Release Requests](/docs/contribution/releases/point-release-fixes)
