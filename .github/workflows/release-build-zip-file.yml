@@ -147,7 +147,7 @@ jobs:
   build:
     name: Build release zip file
     runs-on: ubuntu-latest
-    if: ${{ needs.verify-prs.outputs.runBuildZipJob == 'true' }}
+    if: ${{ needs.verify-prs.outputs.runBuildZipJob == true }}
     needs: [ verify-prs, verify-release-versions ]
     permissions:
       contents: read
