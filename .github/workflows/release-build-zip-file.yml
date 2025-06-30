@@ -94,11 +94,11 @@ jobs:
   verify-release-versions:
     name: 'Verify release and stable tag versions'
     runs-on: ubuntu-latest
-    if: ${{ inputs.skip_verify == 'false' }}
     steps:
       - uses: actions/checkout@v4
 
       - name: 'Pre-build verification'
+        if: ${{ inputs.skip_verify == 'false' }}      
         run: |
             branch_name="${GITHUB_REF#refs/heads/}"
             if  [[ $branch_name != release/* ]] ; then
@@ -147,7 +147,7 @@ jobs:
   build:
     name: Build release zip file
     runs-on: ubuntu-latest
-    if: ${{ needs.verify-prs.outputs.runBuildZipJob == true }}
+    if: ${{ needs.verify-prs.outputs.runBuildZipJob == 'true' }}
     needs: [ verify-prs, verify-release-versions ]
     permissions:
       contents: read
