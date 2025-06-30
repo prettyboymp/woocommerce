@@ -371,7 +371,7 @@ WooCommerce comes with some sample data you can use to see how products look; im
 * Fix - Fix desktop structure of the Order summary title [#59081](https://github.com/woocommerce/woocommerce/pull/59081)
 * Fix - Made coupon code discount total lookup case insensitive [#58918](https://github.com/woocommerce/woocommerce/pull/58918)
 * Fix - Product Gallery: fix large image that may be displaying single image all over for variable products [#59157](https://github.com/woocommerce/woocommerce/pull/59157)
-* Add - Adds a preload call when installing WooPayments in LYS.`` [#59059](https://github.com/woocommerce/woocommerce/pull/59059)
+* Add - Adds a preload call when installing WooPayments in LYS. [#59059](https://github.com/woocommerce/woocommerce/pull/59059)
 * Update - Improve payment gateway status badge logic for the Payments Settings page. [#59103](https://github.com/woocommerce/woocommerce/pull/59103)
 * Update - Update Product Details block to the new version supporting inner blocks. [#59005](https://github.com/woocommerce/woocommerce/pull/59005)
 * Update - Update the test step title when polling is happening to communicate progress to the merchant [#59059](https://github.com/woocommerce/woocommerce/pull/59059)
