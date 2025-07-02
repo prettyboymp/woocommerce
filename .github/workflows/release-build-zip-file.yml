@@ -148,7 +148,7 @@ jobs:
 
   build:
     name: Build release zip file
-    runs-on: ${{ ( github.repository == 'woocommerce/woocommerce' && 'blacksmith-2vcpu-ubuntu-2204' ) || 'ubuntu-latest' }}
+    runs-on: ${{ ( github.repository == 'woocommerce/woocommerce' && 'blacksmith-4vcpu-ubuntu-2204' ) || 'ubuntu-latest' }}
     needs: [ verify-prs, verify-release-versions ]
     permissions:
       contents: read
