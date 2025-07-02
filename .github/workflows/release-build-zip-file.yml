@@ -24,7 +24,7 @@ jobs:
     name: 'Verify if any PR is left open by author:app/github-actions'
     outputs:
       runBuildZipJob: ${{ steps.verify-prs.outputs.runBuildZipJob }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ ( github.repository == 'woocommerce/woocommerce' && 'blacksmith-2vcpu-ubuntu-2204' ) || 'ubuntu-latest' }}
     steps:
         - name: Verify if any PR is left open by author:app/github-actions
           id: verify-prs
@@ -99,7 +99,7 @@ jobs:
 
   verify-release-versions:
     name: 'Verify release and stable tag versions'
-    runs-on: ubuntu-latest
+    runs-on: ${{ ( github.repository == 'woocommerce/woocommerce' && 'blacksmith-2vcpu-ubuntu-2204' ) || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -148,7 +148,7 @@ jobs:
 
   build:
     name: Build release zip file
-    runs-on: ubuntu-latest
+    runs-on: ${{ ( github.repository == 'woocommerce/woocommerce' && 'blacksmith-2vcpu-ubuntu-2204' ) || 'ubuntu-latest' }}
     needs: [ verify-prs, verify-release-versions ]
     permissions:
       contents: read
@@ -189,7 +189,7 @@ jobs:
 
   create-release:
     name: Create GitHub release
-    runs-on: ubuntu-latest
+    runs-on: ${{ ( github.repository == 'woocommerce/woocommerce' && 'blacksmith-2vcpu-ubuntu-2204' ) || 'ubuntu-latest' }}
     needs: build
     if: ${{ inputs.create_github_release }}
     permissions:
