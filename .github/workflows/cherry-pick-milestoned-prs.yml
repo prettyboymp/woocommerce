@@ -24,6 +24,12 @@ jobs:
       pr_number: ${{ steps.set-vars.outputs.pr_number }}
       milestone: ${{ steps.set-vars.outputs.milestone }}
     steps:
+      - name: debug
+        run: |
+          echo "Merged: ${{ github.event.pull_request.merged }}"
+          echo "Base Ref: ${{ github.event.pull_request.base.ref }}"
+          echo "Milestone: ${{ github.event.pull_request.milestone }}"
+
       # Set basic PR information
       - name: Set variables
         id: set-vars
