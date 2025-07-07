@@ -8,6 +8,8 @@ We recommend all developers to follow the [WooCommerce development blog](https:/
 
 ## Getting Started
 
+Test
+
 To get up and running within the WooCommerce Monorepo, you will need to make sure that you have installed all of the prerequisites.
 
 ### Prerequisites
