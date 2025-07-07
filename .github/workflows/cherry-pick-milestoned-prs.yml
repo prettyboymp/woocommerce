@@ -16,10 +16,7 @@ env:
 
 jobs:
   prepare:
-    if: |
-      github.event.pull_request.merged == true &&
-      github.event.pull_request.base.ref == 'trunk' &&
-      github.event.pull_request.milestone != null
+    if: ${{ github.event.pull_request.merged && github.event.pull_request.base.ref == 'trunk' && github.event.pull_request.milestone }}
     runs-on: ubuntu-latest
     outputs:
       milestoned_branch: ${{ steps.get-branches.outputs.milestoned_branch }}
