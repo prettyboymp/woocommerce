@@ -176,6 +176,7 @@ jobs:
           NEXT_BRANCH: ${{ needs.frozen-release-check.outputs.next_branch }}
         with:
           slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
+          slack-optional-unfurl_links: false
           slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
           slack-text: |
             :info: *Cherry pick <${{ env.CHERRY_PICK_PR_URL }}|created> (${{ env.BASE_BRANCH }} → `trunk`)* Please ensure <${{ env.CHERRY_PICK_PR_URL }}|this cherry pick> is merged before releasing. Source PR: _<${{ env.SOURCE_PR_URL }}|#${{ env.SOURCE_PR_NUMBER }} - ${{ env.SOURCE_PR_TITLE }}>_.
@@ -249,6 +250,7 @@ jobs:
           NEXT_BRANCH: ${{ needs.frozen-release-check.outputs.next_branch }}
         with:
           slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
+          slack-optional-unfurl_links: false
           slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
           slack-text: |
             :warning: *Cherry pick from `${{ env.BASE_BRANCH }}` to `trunk` <${{ env.WORKFLOW_RUN_URL }}|failed>*  
