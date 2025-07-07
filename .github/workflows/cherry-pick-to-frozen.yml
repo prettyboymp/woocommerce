@@ -117,7 +117,7 @@ jobs:
 
   handle-successes:
     needs: [prepare, cherry-pick, cherry-pick-to-trunk-check]
-    if: ${{ always() && needs.cherry-pick.ouputs.status == 'success' && needs.cherry-pick.outputs.cherry_pick_pr_number }}
+    if: ${{ always() && needs.cherry-pick.outputs.status == 'success' && needs.cherry-pick.outputs.cherry_pick_pr_number }}
     runs-on: ubuntu-latest
     steps:
 
