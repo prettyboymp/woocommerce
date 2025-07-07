@@ -51,7 +51,7 @@ jobs:
       pull-requests: read
     outputs:
       status: ${{ steps.aggregate-status.outputs.status }}
-      error_message: ${{ steps.aggregate-status.outputs.error_message }}  # ✅ Fixed: Consistent naming
+      error_message: ${{ steps.aggregate-status.outputs.error_message }}
       cherry_pick_branch: ${{ steps.aggregate-status.outputs.cherry_pick_branch }}
       merge_commit_sha: ${{ steps.check-pr.outputs.merge_commit_sha }}
     steps:
@@ -202,9 +202,6 @@ jobs:
             echo "has_conflicts=false" >> $GITHUB_OUTPUT
             echo "Cherry-pick completed successfully"
           else
-            # Check git status to determine what happened
-            git_status=$(git status --porcelain)
-          
             # Look for conflict markers in git status
             if git status --porcelain | grep -E "^(DD|AU|UD|UA|DU|AA|UU)"; then
               echo "has_conflicts=true" >> $GITHUB_OUTPUT
