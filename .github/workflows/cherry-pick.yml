@@ -31,7 +31,6 @@ env:
 permissions: {}
 
 jobs:
-    if: false # Retired in favor of new cherry-pick-milestoned-prs.yml - will delete
     verify:
         name: Verify
         runs-on: ubuntu-latest

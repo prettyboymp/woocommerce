@@ -20,7 +20,6 @@ env:
 permissions: {}
 
 jobs:
-    if: false # Retired in favor of cherry-pick-to-trunk.yml. 
     verify:
         name: Verify
         runs-on: ubuntu-latest
