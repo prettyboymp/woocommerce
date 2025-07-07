@@ -49,54 +49,48 @@ jobs:
       # Identify release branches to cherry-pick to
       - name: Get release branches
         id: get-branches
+        uses: actions/github-script@v7
         env:
           BASE_VERSION: ${{ steps.extract-version.outputs.base_version }}
-        run: |
-          MAJOR=$(echo $BASE_VERSION | cut -d. -f1)
-          MINOR=$(echo $BASE_VERSION | cut -d. -f2)
-          branches=()
-          branch_count=0
-          max_branches=2  # Limit to 2 most recent release branches
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const baseVersion = process.env.BASE_VERSION;
+            const [majorStr, minorStr] = baseVersion.split('.');
+            let major = parseInt(majorStr, 10);
+            let minor = parseInt(minorStr, 10);
 
-          current_major=$MAJOR
-          current_minor=$MINOR
+            async function branchExists(branch) {
+              try {
+                await github.rest.repos.getBranch({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  branch: branch
+                });
+                return true;
+              } catch (error) {
+                if (error.status === 404) return false;
+                throw error;
+              }
+            }
 
-          while [ $branch_count -lt $max_branches ]; do
-            branch="release/$current_major.$current_minor"
-            response=$(curl -s -o /dev/null -w "%{http_code}" \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              "https://api.github.com/repos/${{ github.repository }}/branches/$branch")
-          
-            if [ "$response" -eq 200 ]; then
-              branches+=("$branch")
-              branch_count=$((branch_count + 1))
-          
-              # Compute next version
-              if [ "$current_minor" -eq 9 ]; then
-                current_major=$((current_major + 1))
-                current_minor=0
-              else
-                current_minor=$((current_minor + 1))
-              fi
-            else
-              break
-            fi
-          done
+            // Check milestoned_branch
+            const milestonedBranch = `release/${major}.${minor}`;
+            const milestonedExists = await branchExists(milestonedBranch);
 
-          # Set milestoned_branch (first branch - matches the milestone)
-          if [ ${#branches[@]} -gt 0 ]; then
-            echo "milestoned_branch=${branches[0]}" >> $GITHUB_OUTPUT
-          else
-            echo "milestoned_branch=" >> $GITHUB_OUTPUT
-          fi
-          
-          # Set next_branch (second branch - next release)
-          if [ ${#branches[@]} -gt 1 ]; then
-            echo "next_branch=${branches[1]}" >> $GITHUB_OUTPUT
-          else
-            echo "next_branch=" >> $GITHUB_OUTPUT
-          fi
+            // Compute next version
+            let nextMajor = major;
+            let nextMinor = minor + 1;
+            if (minor === 9) {
+              nextMajor = major + 1;
+              nextMinor = 0;
+            }
+            const nextBranch = `release/${nextMajor}.${nextMinor}`;
+            const nextExists = await branchExists(nextBranch);
 
+            core.setOutput('milestoned_branch', milestonedExists ? milestonedBranch : '');
+            core.setOutput('next_branch', nextExists ? nextBranch : '');
+  
   # Cherry-pick to milestoned branch
   cherry-pick-milestoned:
     needs: prepare
@@ -116,9 +110,9 @@ jobs:
       target_branch: ${{ needs.prepare.outputs.next_branch }}
 
   # Handle successful cherry-pick to milestoned branch
-  handle-successes-milestoned:
+  handle-success-milestoned:
     needs: [prepare, cherry-pick-milestoned]
-    if: ${{ always() && needs.cherry-pick-milestoned.result == 'success' && needs.cherry-pick-milestoned.outputs.cherry_pick_pr_number }}
+    if: ${{ always() && needs.cherry-pick-milestoned.outputs.status == 'success' && needs.cherry-pick-milestoned.outputs.cherry_pick_pr_number }}
     runs-on: ubuntu-latest
     steps:
       # Add original milestone to new PR
@@ -135,6 +129,7 @@ jobs:
 
       # Comment on original PR about cherry-pick success
       - name: Comment on original PR about cherry-pick success
+        if: always()
         uses: actions/github-script@v7
         env:
           TARGET_BRANCH: ${{ needs.prepare.outputs.milestoned_branch }}
@@ -146,17 +141,11 @@ jobs:
             const targetBranch = process.env.TARGET_BRANCH;
             const { owner, repo } = context.repo;
 
-            let cherryPickPr;
-            try {
-              cherryPickPr = (await github.rest.pulls.get({
-                owner,
-                repo,
-                pull_number: parseInt(cherryPickPrNumber)
-              })).data;
-            } catch (e) {
-              core.setFailed("Could not fetch cherry-pick PR details: " + e.message);
-              return;
-            }
+            const cherryPickPr = (await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: parseInt(cherryPickPrNumber)
+            })).data;
 
             const cherryPickPrUrl = cherryPickPr.html_url;
             const cherryPickPrTitle = cherryPickPr.title;
@@ -174,6 +163,7 @@ jobs:
       
       # Notify Slack about successful cherry-pick to milestoned branch
       - name: Notify Slack on success
+        if: always()
         uses: archive/github-actions-slack@c643e5093620d65506466f2c9b317d5d29a5e517 # v2.10.1
         env:
           CHERRY_PICK_PR_URL: https://github.com/${{ github.repository }}/pull/${{ needs.cherry-pick-milestoned.outputs.cherry_pick_pr_number }}
@@ -183,13 +173,14 @@ jobs:
         with:
           slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
           slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
+          slack-optional-unfurl_links: false
           slack-text: |
             :info: *Cherry pick <${{ env.CHERRY_PICK_PR_URL }}|created> (`trunk` → `${{ needs.prepare.outputs.milestoned_branch }}`)* Please ensure <${{ env.CHERRY_PICK_PR_URL }}|this cherry pick> is merged before releasing. Source PR: _<${{ env.SOURCE_PR_URL }}|#${{ env.SOURCE_PR_NUMBER }} - ${{ env.SOURCE_PR_TITLE }}>_.
 
   # Handle successful cherry-pick to next branch
-  handle-successes-next:
+  handle-success-next:
     needs: [prepare, cherry-pick-next]
-    if: ${{ always() && needs.cherry-pick-next.result == 'success' && needs.cherry-pick-next.outputs.cherry_pick_pr_number }}
+    if: ${{ always() && needs.cherry-pick-next.outputs.status == 'success' && needs.cherry-pick-next.outputs.cherry_pick_pr_number }}
     runs-on: ubuntu-latest
     steps:
       # Add original milestone to new PR
@@ -206,6 +197,7 @@ jobs:
 
       # Comment on original PR about cherry-pick success
       - name: Comment on original PR about cherry-pick success
+        if: always()
         uses: actions/github-script@v7
         env:
           TARGET_BRANCH: ${{ needs.prepare.outputs.next_branch }}
@@ -217,17 +209,11 @@ jobs:
             const targetBranch = process.env.TARGET_BRANCH;
             const { owner, repo } = context.repo;
 
-            let cherryPickPr;
-            try {
-              cherryPickPr = (await github.rest.pulls.get({
-                owner,
-                repo,
-                pull_number: parseInt(cherryPickPrNumber)
-              })).data;
-            } catch (e) {
-              core.setFailed("Could not fetch cherry-pick PR details: " + e.message);
-              return;
-            }
+            const cherryPickPr = (await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: parseInt(cherryPickPrNumber)
+            })).data;
 
             const cherryPickPrUrl = cherryPickPr.html_url;
             const cherryPickPrTitle = cherryPickPr.title;
@@ -245,6 +231,7 @@ jobs:
       
       # Notify Slack about successful cherry-pick to next branch
       - name: Notify Slack on success
+        if: always()
         uses: archive/github-actions-slack@c643e5093620d65506466f2c9b317d5d29a5e517 # v2.10.1
         env:
           CHERRY_PICK_PR_URL: https://github.com/${{ github.repository }}/pull/${{ needs.cherry-pick-next.outputs.cherry_pick_pr_number }}
@@ -254,6 +241,7 @@ jobs:
         with:
           slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
           slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
+          slack-optional-unfurl_links: false
           slack-text: |
             :info: *Cherry pick <${{ env.CHERRY_PICK_PR_URL }}|created> (`trunk` → `${{ needs.prepare.outputs.next_branch }}`)* Please ensure <${{ env.CHERRY_PICK_PR_URL }}|this cherry pick> is merged before releasing. Source PR: _<${{ env.SOURCE_PR_URL }}|#${{ env.SOURCE_PR_NUMBER }} - ${{ env.SOURCE_PR_TITLE }}>_.
 
@@ -261,14 +249,14 @@ jobs:
   handle-failures-milestoned:
     needs: [prepare, cherry-pick-milestoned]
     runs-on: ubuntu-latest
-    if: ${{ always() && needs.cherry-pick-milestoned.result == 'failure' }}
+    if: ${{ always() && needs.cherry-pick-milestoned.outputs.status == 'failed' }}
     steps:
       - name: Handle failure for milestoned branch
-        if: ${{ needs.cherry-pick-milestoned.outputs.status == 'failed' }}
         run: echo "Processing failure for ${{ needs.prepare.outputs.milestoned_branch }}"
 
       # Label original PR with failure tag
       - name: Add "cherry pick failed" label
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
@@ -280,7 +268,8 @@ jobs:
             })
 
       # Comment on original PR about failure
-      - name: Comment on original PR
+      - name: Comment on original PR about cherry-pick failure
+        if: always()
         uses: actions/github-script@v7
         env:
           ERROR_MESSAGE: ${{ needs.cherry-pick-milestoned.outputs.error_message || 'Unknown error' }}
@@ -316,6 +305,7 @@ jobs:
 
       # Notify Slack about failed cherry-pick to milestoned branch
       - name: Notify Slack on failure
+        if: always()
         uses: archive/github-actions-slack@c643e5093620d65506466f2c9b317d5d29a5e517 # v2.10.1
         env:
           WORKFLOW_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
@@ -325,6 +315,7 @@ jobs:
           TARGET_BRANCH: ${{ needs.prepare.outputs.milestoned_branch }}
         with:
           slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
+          slack-optional-unfurl_links: false
           slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
           slack-text: |
             :warning: *Cherry pick from `trunk` to `${{ env.TARGET_BRANCH }}` <${{ env.WORKFLOW_RUN_URL }}|failed>*  
@@ -335,7 +326,7 @@ jobs:
   handle-failures-next:
     needs: [prepare, cherry-pick-next]
     runs-on: ubuntu-latest
-    if: ${{ always() && needs.cherry-pick-next.result == 'failure' }}
+    if: ${{ always() && needs.cherry-pick-next.outputs.status == 'failure' }}
     steps:
       - name: Handle failure for next branch
         if: ${{ needs.cherry-pick-next.outputs.status == 'failed' }}
@@ -343,6 +334,7 @@ jobs:
 
       # Label original PR with failure tag
       - name: Add "cherry pick failed" label
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
@@ -355,6 +347,7 @@ jobs:
 
       # Comment on original PR about failure
       - name: Comment on original PR
+        if: always()
         uses: actions/github-script@v7
         env:
           ERROR_MESSAGE: ${{ needs.cherry-pick-next.outputs.error_message || 'Unknown error' }}
@@ -390,6 +383,7 @@ jobs:
 
       # Notify Slack about failed cherry-pick to next branch
       - name: Notify Slack on failure
+        if: always()
         uses: archive/github-actions-slack@c643e5093620d65506466f2c9b317d5d29a5e517 # v2.10.1
         env:
           WORKFLOW_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
@@ -399,6 +393,7 @@ jobs:
           TARGET_BRANCH: ${{ needs.prepare.outputs.next_branch }}
         with:
           slack-bot-user-oauth-access-token: ${{ secrets.CODE_FREEZE_BOT_TOKEN }}
+          slack-optional-unfurl_links: false
           slack-channel: ${{ secrets.WOO_RELEASE_SLACK_NOTIFICATION_CHANNEL }}
           slack-text: |
             :warning: *Cherry pick from `trunk` to `${{ env.TARGET_BRANCH }}` <${{ env.WORKFLOW_RUN_URL }}|failed>*  
