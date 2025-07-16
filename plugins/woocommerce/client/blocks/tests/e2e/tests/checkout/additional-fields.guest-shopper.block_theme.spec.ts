@@ -304,6 +304,11 @@ test.describe( 'Shopper → Additional Checkout Fields', () => {
 			await checkoutPageObject.fillInCheckoutWithTestData(
 				{},
 				{
+					contact: {
+						'Alternative Email': 'alt@email.com',
+						'Is this a personal purchase or a business purchase?':
+							'Personal',
+					},
 					address: {
 						shipping: {
 							'Government ID': '12345',
@@ -379,6 +384,11 @@ test.describe( 'Shopper → Additional Checkout Fields', () => {
 			await checkoutPageObject.fillInCheckoutWithTestData(
 				{},
 				{
+					contact: {
+						'Alternative Email': 'alt@email.com',
+						'Is this a personal purchase or a business purchase?':
+							'Personal',
+					},
 					address: {
 						shipping: {
 							'Government ID': '12345',
