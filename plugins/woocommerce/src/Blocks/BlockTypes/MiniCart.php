@@ -477,6 +477,7 @@ class MiniCart extends AbstractBlock {
 		wp_enqueue_script_module( $this->get_full_block_name() );
 		$this->register_cart_interactivity( 'I acknowledge that using private APIs means my theme or plugin will inevitably break in the next version of WooCommerce' );
 		$this->initialize_shared_config( 'I acknowledge that using private APIs means my theme or plugin will inevitably break in the next version of WooCommerce' );
+		$this->placeholder_image( 'I acknowledge that using private APIs means my theme or plugin will inevitably break in the next version of WooCommerce' );
 
 		$cart = $this->get_cart_instance();
 
@@ -523,7 +524,7 @@ class MiniCart extends AbstractBlock {
 					'badgeIsVisible'     => $badge_is_visible,
 					'formattedSubtotal'  => $formatted_subtotal,
 					'drawerOverlayClass' => 'wc-block-components-drawer__screen-overlay wc-block-components-drawer__screen-overlay--with-slide-out wc-block-components-drawer__screen-overlay--is-hidden',
-					'buttonAriaLabel'    => function () {
+					'buttonAriaLabel'    => function () use ( $button_aria_label_template ) {
 						$state = wp_interactivity_state();
 						return isset( $attributes['hasHiddenPrice'] ) && false !== $attributes['hasHiddenPrice']
 							? sprintf( $button_aria_label_template, $state['totalItemsInCart'] )
