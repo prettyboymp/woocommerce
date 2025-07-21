@@ -5,7 +5,6 @@ on:
       version:
         description: 'Version (in X.Y or X.Y.Z format). Branch "release/{x.y.z}" or "release/{x.y}" should already exist.'
         required: true
-        default: ''
       append_changelog:
         description: 'Append changelog entries to the existing changelog file instead of replacing it.'
         type: boolean
@@ -40,7 +39,6 @@ jobs:
             const version = process.env.VERSION;
             if (!/^\d+\.\d+(?:\.\d+)?$/.test(version)) {
               core.setFailed('Invalid version format. The version must be in the format X.Y or X.Y.Z');
-              process.exit(1);
             }
 
             console.log(`Version: ${version}`);
@@ -57,9 +55,11 @@ jobs:
       - name: Validate release date input
         if: ${{ github.event.inputs.release_date != '' }}
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
+        env:
+          RELEASE_DATE: ${{ github.event.inputs.release_date }}
         with:
           script: |
-            const releaseDate = '${{ github.event.inputs.release_date }}';
+            const releaseDate = process.env.RELEASE_DATE;
 
             const regex = /^\d{4}-\d{2}-\d{2}$/;
             if (!regex.test(releaseDate)) {
