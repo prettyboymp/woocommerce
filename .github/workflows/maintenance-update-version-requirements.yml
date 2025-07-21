@@ -61,8 +61,10 @@ jobs:
           echo "required_php_version=$REQUIRED_PHP" >> $GITHUB_OUTPUT
           echo "Required PHP version for WordPress $WP_PREV_VERSION: $REQUIRED_PHP"
 
-      - name: Checkout repository
+      - name: Check out trunk
         uses: actions/checkout@v4
+        with:
+          ref: trunk
 
       - name: Set up dev environment
         run: |
@@ -105,7 +107,8 @@ jobs:
           # Create new branch with timestamp
           BRANCH_NAME="update-version-requirements-$(date +%s)"
           git checkout -b "$BRANCH_NAME"
-          
+
+          cd plugins/woocommerce
           composer exec -- changelogger add \
             --significance minor \
             --type update \
