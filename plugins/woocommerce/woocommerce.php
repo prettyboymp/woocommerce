@@ -8,8 +8,8 @@
  * Author URI: https://woocommerce.com
  * Text Domain: woocommerce
  * Domain Path: /i18n/languages/
- * Requires at least: 6.7
- * Requires PHP: 7.4
+ * Requires at least: 6.2
+ * Requires PHP: 7.1
  *
  * @package WooCommerce
  */
