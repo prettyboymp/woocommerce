@@ -14,6 +14,13 @@
  * @package WooCommerce
  */
 
+<<<<<<< HEAD
+=======
+
+// some stupid random change
+// Another random change
+// yet another change
+>>>>>>> 6e86db6f2b (Yet another change (#178))
 defined( 'ABSPATH' ) || exit;
 
 if ( ! defined( 'WC_PLUGIN_FILE' ) ) {
