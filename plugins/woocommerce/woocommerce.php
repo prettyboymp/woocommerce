@@ -14,6 +14,12 @@
  * @package WooCommerce
  */
 
+<<<<<<< HEAD
+=======
+
+// some stupid random change
+// Another random change
+>>>>>>> a801750714 (Another ranodm change (#175))
 defined( 'ABSPATH' ) || exit;
 
 if ( ! defined( 'WC_PLUGIN_FILE' ) ) {
