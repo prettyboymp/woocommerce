@@ -17,6 +17,7 @@
 
 // some stupid random change
 // Another random change
+// yet another change
 defined( 'ABSPATH' ) || exit;
 
 if ( ! defined( 'WC_PLUGIN_FILE' ) ) {
