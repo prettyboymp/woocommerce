@@ -14,6 +14,8 @@
  * @package WooCommerce
  */
 
+
+// some stupid random change
 defined( 'ABSPATH' ) || exit;
 
 if ( ! defined( 'WC_PLUGIN_FILE' ) ) {
