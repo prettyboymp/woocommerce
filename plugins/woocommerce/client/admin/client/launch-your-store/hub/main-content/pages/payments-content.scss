@@ -49,7 +49,8 @@
 	}
 
 	.settings-payments-onboarding-modal__wrapper {
-		background-color: transparent;
+		background-color: $white;
+		border-radius: 10px;
 	}
 
 	.woocommerce-layout__header {
