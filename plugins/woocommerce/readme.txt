@@ -340,5 +340,7 @@ WooCommerce comes with some sample data you can use to see how products look; im
 * Enhancement - Improve initial load for the checkout block [#58782](https://github.com/woocommerce/woocommerce/pull/58782)
 * Enhancement - Only include WordPress.org themes in the Blueprint export steps. [#57888](https://github.com/woocommerce/woocommerce/pull/57888)
 * Enhancement - Order-pay page can also use the session choosen gateway [#47100](https://github.com/woocommerce/woocommerce/pull/47100)
+* Update - Another Update version requirements to WordPress 6.7 and PHP 7.4 in readme.txt and woocommerce.php.
+* Update - Update version requirements to WordPress 6.7 and PHP 7.4 in readme.txt and woocommerce.php.
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/changelog.txt).
