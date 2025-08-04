@@ -129,7 +129,7 @@ jobs:
           echo "Current version from woocommerce.php: '$current_version'"
           echo "Input version: '$VERSION'"
 
-          if [[ "$current_version" != "$VERSION" ]]; then
+          if [[ "$current_version" != "$VERSION"* ]]; then
             echo "::error::The version in the selected branch ($current_version) does not match the input version ($VERSION)."
             exit 1
           fi
