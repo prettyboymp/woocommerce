@@ -12,6 +12,13 @@ Everything you need to launch an online store in days and keep it growing for ye
 
 == Description ==
 
+<<<<<<< HEAD
+=======
+Another random change
+
+And another change
+
+>>>>>>> 50f5fdffd5 (Test pr 60231 forwardporting (#192))
 [WooCommerce](https://woocommerce.com/woocommerce/) is the open-source ecommerce platform for WordPress.
 
 Our core platform is free, flexible, and amplified by a global community. The freedom of open-source means you retain full ownership of your store’s content and data forever.
