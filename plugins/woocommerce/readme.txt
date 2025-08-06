@@ -12,6 +12,8 @@ Everything you need to launch an online store in days and keep it growing for ye
 
 == Description ==
 
+Another random change
+
 [WooCommerce](https://woocommerce.com/woocommerce/) is the open-source ecommerce platform for WordPress.
 
 Our core platform is free, flexible, and amplified by a global community. The freedom of open-source means you retain full ownership of your store’s content and data forever.
