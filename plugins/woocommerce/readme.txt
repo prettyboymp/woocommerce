@@ -12,9 +12,13 @@ Everything you need to launch an online store in days and keep it growing for ye
 
 == Description ==
 
+<<<<<<< HEAD
 Another random change
 
 And another change
+=======
+A random change
+>>>>>>> 495c43cef3 (A random change for testing (#198))
 
 [WooCommerce](https://woocommerce.com/woocommerce/) is the open-source ecommerce platform for WordPress.
 
