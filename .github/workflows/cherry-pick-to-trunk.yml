@@ -115,6 +115,7 @@ jobs:
         if: github.event.pull_request.milestone.number != null
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.WC_BOT_PR_CREATE_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             github.rest.issues.update({
               owner: context.repo.owner,
@@ -132,6 +133,7 @@ jobs:
           ADD_CP_TO_FROZEN_NAG: ${{ needs.frozen-release-check.outputs.add_cp_to_frozen_nag }}
           NEXT_BRANCH: ${{ needs.frozen-release-check.outputs.next_branch }}
         with:
+          github-token: ${{ secrets.WC_BOT_PR_CREATE_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const cherryPickPrNumber = process.env.CHERRY_PICK_PR_NUMBER;
             const targetBranch = 'trunk';
@@ -194,6 +196,7 @@ jobs:
         if: always()
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.WC_BOT_PR_CREATE_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             github.rest.issues.addLabels({
               owner: context.repo.owner,
@@ -211,6 +214,7 @@ jobs:
           ADD_CP_TO_FROZEN_NAG: ${{ needs.frozen-release-check.outputs.add_cp_to_frozen_nag }}
           NEXT_BRANCH: ${{ needs.frozen-release-check.outputs.next_branch }}
         with:
+          github-token: ${{ secrets.WC_BOT_PR_CREATE_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const pr = (await github.rest.pulls.get({
               owner: context.repo.owner,
