@@ -52,7 +52,7 @@ jobs:
       # Identify release branches to cherry-pick to
       - name: Get release branches
         id: get-branches
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
         env:
           BASE_VERSION: ${{ steps.extract-version.outputs.base_version }}
         with:
@@ -122,7 +122,7 @@ jobs:
     steps:
       # Add original milestone to new PR
       - name: Add milestone
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
         with:
           github-token: ${{ secrets.WC_BOT_PR_CREATE_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -136,7 +136,7 @@ jobs:
       # Comment on original PR about cherry-pick success
       - name: Comment on original PR about cherry-pick success
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
         env:
           TARGET_BRANCH: ${{ needs.prepare.outputs.milestoned_branch }}
           CHERRY_PICK_PR_NUMBER: ${{ needs.cherry-pick-milestoned.outputs.cherry_pick_pr_number }}
@@ -192,7 +192,7 @@ jobs:
     steps:
       # Add original milestone to new PR
       - name: Add milestone
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
         with:
           github-token: ${{ secrets.WC_BOT_PR_CREATE_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -206,7 +206,7 @@ jobs:
       # Comment on original PR about cherry-pick success
       - name: Comment on original PR about cherry-pick success
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
         env:
           TARGET_BRANCH: ${{ needs.prepare.outputs.next_branch }}
           CHERRY_PICK_PR_NUMBER: ${{ needs.cherry-pick-next.outputs.cherry_pick_pr_number }}
@@ -266,7 +266,7 @@ jobs:
       # Label original PR with failure tag
       - name: Add "cherry pick failed" label
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
         with:
           github-token: ${{ secrets.WC_BOT_PR_CREATE_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -280,7 +280,7 @@ jobs:
       # Comment on original PR about failure
       - name: Comment on original PR about cherry-pick failure
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
         env:
           ERROR_MESSAGE: ${{ needs.cherry-pick-milestoned.outputs.error_message || 'Unknown error' }}
           TARGET_BRANCH: ${{ needs.prepare.outputs.milestoned_branch }}
@@ -346,7 +346,7 @@ jobs:
       # Label original PR with failure tag
       - name: Add "cherry pick failed" label
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
         with:
           github-token: ${{ secrets.WC_BOT_PR_CREATE_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -360,7 +360,7 @@ jobs:
       # Comment on original PR about failure
       - name: Comment on original PR
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
         env:
           ERROR_MESSAGE: ${{ needs.cherry-pick-next.outputs.error_message || 'Unknown error' }}
           TARGET_BRANCH: ${{ needs.prepare.outputs.next_branch }}
