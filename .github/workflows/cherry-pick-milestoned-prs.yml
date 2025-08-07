@@ -9,10 +9,10 @@ on:
     branches: [trunk]
 
 env:
-  GIT_COMMITTER_NAME: 'WooCommerce Bot'
-  GIT_COMMITTER_EMAIL: 'no-reply@woocommerce.com'
-  GIT_AUTHOR_NAME: 'WooCommerce Bot'
-  GIT_AUTHOR_EMAIL: 'no-reply@woocommerce.com'
+  GIT_COMMITTER_NAME: 'woocommercebot'
+  GIT_COMMITTER_EMAIL: 'woocommercebot@users.noreply.github.com'
+  GIT_AUTHOR_NAME: 'woocommercebot'
+  GIT_AUTHOR_EMAIL: 'woocommercebot@users.noreply.github.com'
 
 jobs:
   prepare:
@@ -102,6 +102,7 @@ jobs:
     with:
       pr_number: ${{ needs.prepare.outputs.pr_number }}
       target_branch: ${{ needs.prepare.outputs.milestoned_branch }}
+    secrets: inherit
 
   # Cherry-pick to next branch
   cherry-pick-next:
@@ -111,6 +112,7 @@ jobs:
     with:
       pr_number: ${{ needs.prepare.outputs.pr_number }}
       target_branch: ${{ needs.prepare.outputs.next_branch }}
+    secrets: inherit
 
   # Handle successful cherry-pick to milestoned branch
   handle-success-milestoned:
