@@ -131,38 +131,42 @@ class QuantitySelector extends AbstractBlock {
 		if ( $product->is_type( ProductType::VARIABLE ) ) {
 			wp_enqueue_script_module( 'woocommerce/product-elements' );
 
-			$variations_data           = $product->get_available_variations( 'objects' );
-			$formatted_variations_data = array();
-			foreach ( $variations_data as $variation ) {
-				$variation_quantity_constraints = AddToCartWithOptionsUtils::get_product_quantity_constraints( $variation );
-				$variation_data                 = array();
+			// Only pre-load quantity constraints if under the threshold
+			// For products over threshold, constraints will be fetched on-demand via AJAX
+			if ( ! $this->is_over_variation_threshold( $product ) ) {
+				$variations_data           = $product->get_available_variations( 'objects' );
+				$formatted_variations_data = array();
+				foreach ( $variations_data as $variation ) {
+					$variation_quantity_constraints = AddToCartWithOptionsUtils::get_product_quantity_constraints( $variation );
+					$variation_data                 = array();
 
-				// Only add variation data if it's different than the defaults.
-				if ( 1 !== $variation_quantity_constraints['min'] ) {
-					$variation_data['min'] = $variation_quantity_constraints['min'];
+					// Only add variation data if it's different than the defaults.
+					if ( 1 !== $variation_quantity_constraints['min'] ) {
+						$variation_data['min'] = $variation_quantity_constraints['min'];
+					}
+					if ( null !== $variation_quantity_constraints['max'] ) {
+						$variation_data['max'] = $variation_quantity_constraints['max'];
+					}
+					if ( 1 !== $variation_quantity_constraints['step'] ) {
+						$variation_data['step'] = $variation_quantity_constraints['step'];
+					}
+					if ( $variation->is_sold_individually() ) {
+						$variation_data['sold_individually'] = true;
+					}
+					$formatted_variations_data[ $variation->get_id() ] = $variation_data;
 				}
-				if ( null !== $variation_quantity_constraints['max'] ) {
-					$variation_data['max'] = $variation_quantity_constraints['max'];
-				}
-				if ( 1 !== $variation_quantity_constraints['step'] ) {
-					$variation_data['step'] = $variation_quantity_constraints['step'];
-				}
-				if ( $variation->is_sold_individually() ) {
-					$variation_data['sold_individually'] = true;
-				}
-				$formatted_variations_data[ $variation->get_id() ] = $variation_data;
-			}
 
-			wp_interactivity_config(
-				'woocommerce',
-				array(
-					'products' => array(
-						$product->get_id() => array(
-							'variations' => $formatted_variations_data,
+				wp_interactivity_config(
+					'woocommerce',
+					array(
+						'products' => array(
+							$product->get_id() => array(
+								'variations' => $formatted_variations_data,
+							),
 						),
-					),
-				)
-			);
+					)
+				);
+			}
 
 			$wrapper_attributes['data-wp-bind--hidden'] = 'woocommerce/add-to-cart-with-options-quantity-selector::!state.allowsQuantityChange';
 			$input_attributes['data-wp-bind--min']      = 'woocommerce/product-elements::state.productData.min';
@@ -176,5 +180,24 @@ class QuantitySelector extends AbstractBlock {
 		$product = $previous_product;
 
 		return $form;
+	}
+
+	/**
+	 * Check if the product's variation count exceeds the threshold.
+	 *
+	 * Uses the same filter as legacy templates for consistency.
+	 *
+	 * @param \WC_Product $product The product to check.
+	 * @return bool True if over threshold, false otherwise.
+	 */
+	private function is_over_variation_threshold( $product ): bool {
+		if ( ! $product->is_type( 'variable' ) ) {
+			return false;
+		}
+
+		$threshold       = apply_filters( 'woocommerce_ajax_variation_threshold', 30, $product );
+		$variation_count = count( $product->get_children() );
+
+		return $variation_count > $threshold;
 	}
 }

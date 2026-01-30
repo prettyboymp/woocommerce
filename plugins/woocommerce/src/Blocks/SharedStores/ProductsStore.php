@@ -160,13 +160,33 @@ class ProductsStore {
 	/**
 	 * Load all variations of a variable product into state.
 	 *
+	 * When the number of variations exceeds the threshold (default 30), variations
+	 * are not loaded upfront to improve performance. They can be loaded on-demand
+	 * via AJAX when needed.
+	 *
 	 * @param string $consent_statement The consent statement string.
 	 * @param int    $parent_id         The parent product ID.
-	 * @return array The variations keyed by ID.
+	 * @return array The variations keyed by ID, or empty array if over threshold.
 	 * @throws InvalidArgumentException If consent statement doesn't match.
 	 */
 	public static function load_variations( string $consent_statement, int $parent_id ): array {
 		self::check_consent( $consent_statement );
+
+		// Get the parent product to check threshold.
+		$product = wc_get_product( $parent_id );
+		if ( ! $product || ! $product->is_type( 'variable' ) ) {
+			return array();
+		}
+
+		// Check if variation count exceeds threshold.
+		// Uses the same filter as legacy templates for consistency.
+		$threshold       = apply_filters( 'woocommerce_ajax_variation_threshold', 30, $product );
+		$variation_count = count( $product->get_children() );
+
+		if ( $variation_count > $threshold ) {
+			// Return empty array - variations will be loaded on-demand via AJAX.
+			return array();
+		}
 
 		$response = Package::container()->get( Hydration::class )->get_rest_api_response_data( '/wc/store/v1/products?parent[]=' . $parent_id . '&type=variation' );
 

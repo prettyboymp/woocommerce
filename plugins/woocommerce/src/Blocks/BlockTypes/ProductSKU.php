@@ -71,12 +71,15 @@ class ProductSKU extends AbstractBlock {
 		$is_interactive = $product->is_type( ProductType::VARIABLE );
 
 		if ( $is_interactive ) {
-			$variations                = $product->get_available_variations( 'objects' );
 			$formatted_variations_data = array();
-			foreach ( $variations as $variation ) {
-				$formatted_variations_data[ $variation->get_id() ] = array(
-					'sku' => $variation->get_sku(),
-				);
+			// Only load variation SKUs if under threshold - SKU will be fetched on-demand otherwise
+			if ( ! $this->is_over_variation_threshold( $product ) ) {
+				$variations = $product->get_available_variations( 'objects' );
+				foreach ( $variations as $variation ) {
+					$formatted_variations_data[ $variation->get_id() ] = array(
+						'sku' => $variation->get_sku(),
+					);
+				}
 			}
 
 			wp_interactivity_config(
@@ -121,4 +124,20 @@ class ProductSKU extends AbstractBlock {
 			$suffix
 		);
 	}
+
+	/**
+	 * Check if the product's variation count exceeds the threshold.
+	 *
+	 * @param \WC_Product $product The product to check.
+	 * @return bool True if over threshold, false otherwise.
+	 */
+	private function is_over_variation_threshold( $product ): bool {
+		if ( ! $product->is_type( 'variable' ) ) {
+			return false;
+		}
+		$threshold       = apply_filters( 'woocommerce_ajax_variation_threshold', 30, $product );
+		$variation_count = count( $product->get_children() );
+		return $variation_count > $threshold;
+	}
+
 }

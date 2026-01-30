@@ -88,39 +88,41 @@ class ProductPrice extends AbstractBlock {
 				$formatted_variations_data = array();
 
 				if ( $prices_vary ) {
-					$variations_data = $product->get_available_variations( 'objects' );
+					// Check if we're over the variation threshold.
+					// For products with many variations, don't pre-load prices - they'll be fetched on-demand via AJAX.
+					if ( ! $this->is_over_variation_threshold( $product ) ) {
+						// For products under threshold, pre-load variation prices.
+						$variations_data = $product->get_available_variations( 'objects' );
 
-					foreach ( $variations_data as $variation ) {
-						/**
-						 * Filter whether to show variation price.
-						 * Replicates the filter from WC_Product_Variable::get_available_variation().
-						 *
-						 * @since 2.4.0
-						 *
-						 * @param bool                  $show_price Whether to show the price.
-						 * @param \WC_Product_Variable  $product    The variable product.
-						 * @param \WC_Product_Variation $variation  The variation.
-						 */
-						$show_variation_price = apply_filters(
-							'woocommerce_show_variation_price',
-							true,
-							$product,
-							$variation
-						);
+						foreach ( $variations_data as $variation ) {
+							/**
+							 * Filter whether to show variation price.
+							 * Replicates the filter from WC_Product_Variable::get_available_variation().
+							 *
+							 * @since 2.4.0
+							 *
+							 * @param bool                  $show_price Whether to show the price.
+							 * @param \WC_Product_Variable  $product    The variable product.
+							 * @param \WC_Product_Variation $variation  The variation.
+							 */
+							$show_variation_price = apply_filters(
+								'woocommerce_show_variation_price',
+								true,
+								$product,
+								$variation
+							);
 
-						if ( ! $show_variation_price ) {
-							continue;
+							if ( ! $show_variation_price ) {
+								continue;
+							}
+
+							$formatted_variations_data[ $variation->get_id() ] = array(
+								'price_html' => '<span class="price">' . $variation->get_price_html() . '</span>',
+							);
 						}
-
-						$formatted_variations_data[ $variation->get_id() ] = array(
-							'price_html' => '<span class="price">' . $variation->get_price_html() . '</span>',
-						);
 					}
-				}
-
-				if ( empty( $formatted_variations_data ) ) {
-					$is_interactive = false;
-				} else {
+					// For products over threshold or with varying prices, always make interactive
+					// even if variation data is empty (will be fetched on-demand)
 					wp_interactivity_config(
 						'woocommerce',
 						array(
@@ -155,4 +157,24 @@ class ProductPrice extends AbstractBlock {
 			);
 		}
 	}
+
+	/**
+	 * Check if the product's variation count exceeds the threshold.
+	 *
+	 * Uses the same filter as legacy templates for consistency.
+	 *
+	 * @param \WC_Product_Variable $product The variable product.
+	 * @return bool True if over threshold, false otherwise.
+	 */
+	private function is_over_variation_threshold( $product ): bool {
+		if ( ! $product->is_type( 'variable' ) ) {
+			return false;
+		}
+
+		$threshold       = apply_filters( 'woocommerce_ajax_variation_threshold', 30, $product );
+		$variation_count = count( $product->get_children() );
+
+		return $variation_count > $threshold;
+	}
+
 }

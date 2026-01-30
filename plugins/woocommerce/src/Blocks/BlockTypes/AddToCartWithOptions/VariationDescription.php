@@ -36,14 +36,17 @@ class VariationDescription extends AbstractBlock {
 			return '';
 		}
 
-		$variations                = $product->get_available_variations( 'objects' );
 		$formatted_variations_data = array();
-		foreach ( $variations as $variation ) {
-			$variation_description = $variation->get_description();
-			if ( is_string( $variation_description ) && ! empty( $variation_description ) ) {
-				$formatted_variations_data[ $variation->get_id() ] = array(
-					'variation_description' => wp_kses_post( wc_format_content( $variation_description ) ),
-				);
+		// Only load variation descriptions if under threshold
+		if ( ! $this->is_over_variation_threshold( $product ) ) {
+			$variations = $product->get_available_variations( 'objects' );
+			foreach ( $variations as $variation ) {
+				$variation_description = $variation->get_description();
+				if ( is_string( $variation_description ) && ! empty( $variation_description ) ) {
+					$formatted_variations_data[ $variation->get_id() ] = array(
+						'variation_description' => wp_kses_post( wc_format_content( $variation_description ) ),
+					);
+				}
 			}
 		}
 
@@ -72,5 +75,20 @@ class VariationDescription extends AbstractBlock {
 		);
 
 		return '<div ' . $context_directive . ' ' . get_block_wrapper_attributes( $wrapper_attributes ) . ' data-wp-watch="callbacks.updateValue"></div>';
+	}
+
+	/**
+	 * Check if the product's variation count exceeds the threshold.
+	 *
+	 * @param \WC_Product_Variable $product The variable product.
+	 * @return bool True if over threshold, false otherwise.
+	 */
+	private function is_over_variation_threshold( $product ): bool {
+		if ( ! $product->is_type( 'variable' ) ) {
+			return false;
+		}
+		$threshold       = apply_filters( 'woocommerce_ajax_variation_threshold', 30, $product );
+		$variation_count = count( $product->get_children() );
+		return $variation_count > $threshold;
 	}
 }

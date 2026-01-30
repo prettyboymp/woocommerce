@@ -56,24 +56,40 @@ class VariationSelectorAttribute extends AbstractBlock {
 	private function get_product_row( $attribute_name, $product_attribute_terms, $block ): string {
 		global $product;
 
-		$attribute_terms    = $this->get_terms( $attribute_name, $product_attribute_terms );
-		$product_variations = $product->get_available_variations( 'objects' );
+		$attribute_terms = $this->get_terms( $attribute_name, $product_attribute_terms );
 
-		// Filter out terms which are not available in any product variation.
-		$attribute_terms = array_filter(
-			$attribute_terms,
-			function ( $term ) use ( $product_variations, $attribute_name ) {
-				foreach ( $product_variations as $variation ) {
-					$attributes = $variation->get_variation_attributes();
-					if (
-						$term['value'] === $attributes[ wc_variation_attribute_name( $attribute_name ) ] ||
-						'' === $attributes[ wc_variation_attribute_name( $attribute_name ) ]
-					) {
-						return true;
+		// Check if we're over the variation threshold.
+		// For products with many variations, use an efficient query instead of loading all variation objects.
+		if ( $this->is_over_variation_threshold( $product ) ) {
+			$available_values = $this->get_available_attribute_values( $product, $attribute_name );
+
+			// Filter terms to only those available in variations.
+			$attribute_terms = array_filter(
+				$attribute_terms,
+				function ( $term ) use ( $available_values ) {
+					return in_array( $term['value'], $available_values, true ) || in_array( '', $available_values, true );
+				}
+			);
+		} else {
+			// For products under threshold, use existing behavior with full variation objects.
+			$product_variations = $product->get_available_variations( 'objects' );
+
+			// Filter out terms which are not available in any product variation.
+			$attribute_terms = array_filter(
+				$attribute_terms,
+				function ( $term ) use ( $product_variations, $attribute_name ) {
+					foreach ( $product_variations as $variation ) {
+						$attributes = $variation->get_variation_attributes();
+						if (
+							$term['value'] === $attributes[ wc_variation_attribute_name( $attribute_name ) ] ||
+							'' === $attributes[ wc_variation_attribute_name( $attribute_name ) ]
+						) {
+							return true;
+						}
 					}
 				}
-			}
-		);
+			);
+		}
 
 		if ( empty( $attribute_terms ) ) {
 			return '';
@@ -91,6 +107,60 @@ class VariationSelectorAttribute extends AbstractBlock {
 		// Render the inner blocks of the Variation Selector Item Template block with `dynamic` set to `false`
 		// to prevent calling `render_callback` and ensure that no wrapper markup is included.
 		return $block_content;
+	}
+
+	/**
+	 * Check if the product's variation count exceeds the threshold.
+	 *
+	 * Uses the same filter as legacy templates for consistency.
+	 *
+	 * @param \WC_Product_Variable $product The variable product.
+	 * @return bool True if over threshold, false otherwise.
+	 */
+	private function is_over_variation_threshold( $product ): bool {
+		if ( ! $product->is_type( 'variable' ) ) {
+			return false;
+		}
+
+		$threshold       = apply_filters( 'woocommerce_ajax_variation_threshold', 30, $product );
+		$variation_count = count( $product->get_children() );
+
+		return $variation_count > $threshold;
+	}
+
+	/**
+	 * Efficiently get available attribute values without loading full variation objects.
+	 *
+	 * This method queries postmeta directly to get distinct attribute values,
+	 * avoiding the overhead of loading complete variation objects.
+	 *
+	 * @param \WC_Product_Variable $product The variable product.
+	 * @param string               $attribute_name The attribute name to query.
+	 * @return array Array of available attribute values (slugs).
+	 */
+	private function get_available_attribute_values( $product, $attribute_name ): array {
+		global $wpdb;
+
+		$variation_ids = $product->get_children();
+		if ( empty( $variation_ids ) ) {
+			return array();
+		}
+
+		$meta_key = wc_variation_attribute_name( $attribute_name );
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $variation_ids is sanitized with intval.
+		$values = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT DISTINCT meta_value
+				FROM {$wpdb->postmeta}
+				WHERE post_id IN (" . implode( ',', array_map( 'intval', $variation_ids ) ) . ")
+				AND meta_key = %s
+				AND meta_value != ''",
+				$meta_key
+			)
+		);
+
+		return $values ?: array();
 	}
 
 	/**

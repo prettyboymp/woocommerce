@@ -68,13 +68,16 @@ class ProductSpecifications extends AbstractBlock {
 		$is_interactive = $product->is_type( ProductType::VARIABLE );
 
 		if ( $is_interactive ) {
-			$variations                = $product->get_available_variations( 'objects' );
 			$formatted_variations_data = array();
-			foreach ( $variations as $variation ) {
-				$formatted_variations_data[ $variation->get_id() ] = array(
-					'weight'     => wc_format_weight( $variation->get_weight() ),
-					'dimensions' => html_entity_decode( wc_format_dimensions( $variation->get_dimensions( false ) ), ENT_QUOTES, get_bloginfo( 'charset' ) ),
-				);
+			// Only load variation specifications if under threshold
+			if ( ! $this->is_over_variation_threshold( $product ) ) {
+				$variations = $product->get_available_variations( 'objects' );
+				foreach ( $variations as $variation ) {
+					$formatted_variations_data[ $variation->get_id() ] = array(
+						'weight'     => wc_format_weight( $variation->get_weight() ),
+						'dimensions' => html_entity_decode( wc_format_dimensions( $variation->get_dimensions( false ) ), ENT_QUOTES, get_bloginfo( 'charset' ) ),
+					);
+				}
 			}
 
 			wp_interactivity_config(
@@ -181,4 +184,20 @@ class ProductSpecifications extends AbstractBlock {
 
 		return array_merge( array( 'wp-block-table' ), $deps );
 	}
+
+	/**
+	 * Check if the product's variation count exceeds the threshold.
+	 *
+	 * @param \WC_Product $product The product to check.
+	 * @return bool True if over threshold, false otherwise.
+	 */
+	private function is_over_variation_threshold( $product ): bool {
+		if ( ! $product->is_type( 'variable' ) ) {
+			return false;
+		}
+		$threshold       = apply_filters( 'woocommerce_ajax_variation_threshold', 30, $product );
+		$variation_count = count( $product->get_children() );
+		return $variation_count > $threshold;
+	}
+
 }

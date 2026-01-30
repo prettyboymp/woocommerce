@@ -155,17 +155,33 @@ class ProductGallery extends AbstractBlock {
 			);
 
 			if ( $product->is_type( ProductType::VARIABLE ) ) {
-				$variations_data           = $product->get_available_variations( 'objects' );
 				$formatted_variations_data = array();
 				$has_variation_images      = false;
-				foreach ( $variations_data as $variation ) {
-					$variation_image_id = (int) $variation->get_image_id();
-					if ( $variation_image_id ) {
-						$has_variation_images = true;
 
-						$formatted_variations_data[ $variation->get_id() ] = array(
-							'image_id' => $variation_image_id,
+				// Check if we're over the variation threshold.
+				// For products with many variations, use an efficient query instead of loading all variation objects.
+				if ( $this->is_over_variation_threshold( $product ) ) {
+					$variation_images = $this->get_variation_image_ids( $product );
+
+					foreach ( $variation_images as $variation_id => $image_id ) {
+						$has_variation_images                        = true;
+						$formatted_variations_data[ $variation_id ] = array(
+							'image_id' => $image_id,
 						);
+					}
+				} else {
+					// For products under threshold, use existing behavior with full variation objects.
+					$variations_data = $product->get_available_variations( 'objects' );
+
+					foreach ( $variations_data as $variation ) {
+						$variation_image_id = (int) $variation->get_image_id();
+						if ( $variation_image_id ) {
+							$has_variation_images = true;
+
+							$formatted_variations_data[ $variation->get_id() ] = array(
+								'image_id' => $variation_image_id,
+							);
+						}
 					}
 				}
 
@@ -196,4 +212,67 @@ class ProductGallery extends AbstractBlock {
 
 		return $html;
 	}
+
+	/**
+	 * Check if the product's variation count exceeds the threshold.
+	 *
+	 * Uses the same filter as legacy templates for consistency.
+	 *
+	 * @param \WC_Product $product The product to check.
+	 * @return bool True if over threshold, false otherwise.
+	 */
+	private function is_over_variation_threshold( $product ): bool {
+		if ( ! $product->is_type( 'variable' ) ) {
+			return false;
+		}
+
+		$threshold       = apply_filters( 'woocommerce_ajax_variation_threshold', 30, $product );
+		$variation_count = count( $product->get_children() );
+
+		return $variation_count > $threshold;
+	}
+
+	/**
+	 * Efficiently get variation image IDs without loading full variation objects.
+	 *
+	 * This method queries postmeta directly to get variation image IDs,
+	 * avoiding the overhead of loading complete variation objects.
+	 *
+	 * @param \WC_Product $product The product to check.
+	 * @return array Array of variation_id => image_id pairs. Only includes variations with images.
+	 */
+	private function get_variation_image_ids( $product ): array {
+		global $wpdb;
+
+		$variation_ids = $product->get_children();
+		if ( empty( $variation_ids ) ) {
+			return array();
+		}
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $variation_ids is sanitized with intval.
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT pm.post_id as variation_id, pm.meta_value as image_id
+				FROM {$wpdb->postmeta} pm
+				WHERE pm.post_id IN (" . implode( ',', array_map( 'intval', $variation_ids ) ) . ")
+				AND pm.meta_key = '_thumbnail_id'
+				AND pm.meta_value != ''
+				AND pm.meta_value IS NOT NULL"
+			),
+			ARRAY_A
+		);
+
+		if ( empty( $results ) ) {
+			return array();
+		}
+
+		// Convert to variation_id => image_id format.
+		$variation_images = array();
+		foreach ( $results as $row ) {
+			$variation_images[ (int) $row['variation_id'] ] = (int) $row['image_id'];
+		}
+
+		return $variation_images;
+	}
+
 }

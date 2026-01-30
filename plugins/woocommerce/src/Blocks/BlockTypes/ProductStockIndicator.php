@@ -125,14 +125,17 @@ class ProductStockIndicator extends AbstractBlock {
 		$watch_attribute    = '';
 
 		if ( $is_interactive && 'out-of-stock' !== $availability['class'] ) {
-			$variations                = $product_to_render->get_available_variations( 'objects' );
 			$formatted_variations_data = array();
-			foreach ( $variations as $variation ) {
-				$variation_availability = $variation->get_availability();
+			// Only load variation stock data if under threshold
+			if ( ! $this->is_over_variation_threshold( $product_to_render ) ) {
+				$variations = $product_to_render->get_available_variations( 'objects' );
+				foreach ( $variations as $variation ) {
+					$variation_availability = $variation->get_availability();
 				if ( is_string( $variation_availability['availability'] ) && ! empty( $variation_availability['availability'] ) ) {
 					$formatted_variations_data[ $variation->get_id() ] = array(
 						'availability' => $variation_availability['availability'],
-					);
+						);
+					}
 				}
 			}
 
@@ -169,4 +172,20 @@ class ProductStockIndicator extends AbstractBlock {
 
 		return $output;
 	}
+
+	/**
+	 * Check if the product's variation count exceeds the threshold.
+	 *
+	 * @param \WC_Product_Variable $product The variable product.
+	 * @return bool True if over threshold, false otherwise.
+	 */
+	private function is_over_variation_threshold( $product ): bool {
+		if ( ! $product->is_type( 'variable' ) ) {
+			return false;
+		}
+		$threshold       = apply_filters( 'woocommerce_ajax_variation_threshold', 30, $product );
+		$variation_count = count( $product->get_children() );
+		return $variation_count > $threshold;
+	}
+
 }
